@@ -36,6 +36,92 @@ body {
   overflow: hidden;
 }
 
+/* Mobile overlay */
+.sidebar-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  z-index: 40;
+}
+.sidebar-overlay.open { display: block; }
+
+/* Hamburger button */
+.hamburger {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* Mobile topbar adjustments */
+@media (max-width: 768px) {
+  body { overflow: auto; }
+
+  .sidebar {
+    position: fixed;
+    left: -260px;
+    top: 0;
+    z-index: 50;
+    height: 100vh;
+    transition: left 0.25s ease;
+    width: 260px;
+  }
+  .sidebar.open { left: 0; }
+
+  .hamburger { display: flex; }
+
+  .main { width: 100%; }
+
+  .topbar {
+    padding: 12px 16px;
+    gap: 10px;
+  }
+
+  .topbar-left { gap: 8px; flex: 1; min-width: 0; }
+  .page-title { font-size: 18px; }
+
+  .date-nav { gap: 4px; }
+  .date-label { font-size: 12px; min-width: 0; }
+
+  .topbar-right { gap: 6px; }
+  .view-toggle { display: none; }
+  .btn-primary span { display: none; }
+  .btn-primary { padding: 8px 10px; }
+
+  /* Stats bar: 2x2 grid on mobile */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+  }
+
+  /* Hide right panel on mobile */
+  .right-panel { display: none; }
+
+  /* Calendar: show only today on mobile */
+  .cal-header {
+    grid-template-columns: 48px 1fr !important;
+  }
+  .cal-day-head:not(.today-head) { display: none; }
+  .cal-body {
+    grid-template-columns: 48px 1fr !important;
+  }
+  .day-col:not(.today-col-wrap) { display: none; }
+
+  .content { overflow: hidden; }
+
+  .stat-item { padding: 12px 14px; }
+  .stat-value { font-size: 18px; }
+}
+
 /* Sidebar */
 .sidebar {
   width: var(--sidebar);
@@ -279,8 +365,10 @@ body {
 </head>
 <body>
 
+<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+
 <!-- Sidebar -->
-<nav class="sidebar">
+<nav class="sidebar" id="sidebar">
   <div class="logo">
     <div class="logo-mark">Salon<span>Flow</span></div>
     <div class="logo-sub">Salon management</div>
@@ -334,6 +422,9 @@ body {
   <!-- Topbar -->
   <div class="topbar">
     <div class="topbar-left">
+      <button class="hamburger" onclick="openSidebar()">
+        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
       <div class="page-title">Agenda</div>
       <div class="date-nav">
         <button class="date-btn" onclick="changeWeek(-1)">‹</button>
@@ -637,6 +728,46 @@ document.querySelectorAll('.view-btn').forEach(btn => {
     this.classList.add('active');
   });
 });
+
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+}
+
+// Close sidebar when nav item clicked on mobile
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    if (window.innerWidth <= 768) closeSidebar();
+  });
+});
+
+// Mobile: toon alleen vandaag in kalender
+function applyMobileCalendar() {
+  if (window.innerWidth > 768) {
+    document.getElementById('cal-header').style.gridTemplateColumns = '';
+    document.getElementById('cal-body').style.gridTemplateColumns = '';
+    document.querySelectorAll('#cal-header .cal-day-head').forEach(h => h.style.display = '');
+    document.querySelectorAll('#cal-body > div').forEach(w => w.style.display = '');
+    return;
+  }
+  const header = document.getElementById('cal-header');
+  const body = document.getElementById('cal-body');
+  const heads = header.querySelectorAll('.cal-day-head');
+  let todayIdx = Array.from(heads).findIndex(h => h.querySelector('.today'));
+  if (todayIdx === -1) todayIdx = 0;
+  heads.forEach((h, i) => { h.style.display = i === todayIdx ? '' : 'none'; });
+  const wrappers = Array.from(body.children).filter(c => c.style && c.style.gridColumn);
+  wrappers.forEach((w, i) => { w.style.display = i === todayIdx ? '' : 'none'; });
+  header.style.gridTemplateColumns = '48px 1fr';
+  body.style.gridTemplateColumns = '48px 1fr';
+}
+
+setTimeout(applyMobileCalendar, 150);
+window.addEventListener('resize', () => { renderCalendar(); setTimeout(applyMobileCalendar, 150); });
 </script>
 </body>
 </html>
