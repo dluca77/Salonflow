@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SalonFlow — Kassa</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;--border:#2e2e2e;
+  --accent:#c8f060;--accent2:#a0d040;--text:#f0ede8;--muted:#888;--muted2:#555;
+  --red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;--green:#4dff90;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;}
+.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0;height:100vh;}
+.logo{padding:0 20px 28px;border-bottom:1px solid var(--border);}
+.logo-mark{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);letter-spacing:-0.5px;}
+.logo-mark span{color:var(--accent);}
+.logo-sub{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:0.5px;text-transform:uppercase;}
+.nav{padding:20px 12px;flex:1;}
+.nav-section{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:8px;margin-top:20px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);transition:all 0.15s;margin-bottom:2px;text-decoration:none;}
+.nav-item:hover{background:var(--surface2);color:var(--text);}
+.nav-item.active{background:var(--accent);color:#1a1a1a;font-weight:600;}
+.nav-icon{width:18px;height:18px;flex-shrink:0;}
+.sidebar-bottom{padding:16px 12px;border-top:1px solid var(--border);}
+.salon-info{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--surface2);cursor:pointer;}
+.salon-avatar{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#1a1a1a;flex-shrink:0;}
+.salon-name{font-size:13px;font-weight:500;}
+.salon-plan{font-size:11px;color:var(--muted);}
+.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
+.page-title{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-0.5px;}
+.topbar-right{display:flex;align-items:center;gap:12px;}
+.btn-primary{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#1a1a1a;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.btn-primary:hover{background:var(--accent2);}
+.btn-ghost{display:flex;align-items:center;gap:6px;padding:8px 14px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.btn-ghost:hover{color:var(--text);border-color:var(--muted);}
+
+/* Kassa layout */
+.kassa-layout{flex:1;display:grid;grid-template-columns:1fr 360px;overflow:hidden;}
+
+/* Linker kant */
+.kassa-left{display:flex;flex-direction:column;overflow:hidden;border-right:1px solid var(--border);}
+
+/* Klant selectie */
+.klant-bar{padding:16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;background:var(--surface);}
+.klant-search{flex:1;position:relative;}
+.klant-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px 9px 36px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;}
+.klant-input::placeholder{color:var(--muted);}
+.klant-selected{display:flex;align-items:center;gap:10px;padding:8px 14px;background:rgba(200,240,96,0.1);border:1px solid rgba(200,240,96,0.3);border-radius:8px;cursor:pointer;}
+.klant-sel-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.klant-sel-name{font-size:13px;font-weight:500;}
+.klant-sel-info{font-size:11px;color:var(--muted);}
+
+/* Services grid */
+.services-area{flex:1;overflow-y:auto;padding:16px;}
+.services-area::-webkit-scrollbar{width:4px;}
+.services-area::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.cat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;margin-top:16px;}
+.cat-label:first-child{margin-top:0;}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px;}
+.service-btn{background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:14px 10px;cursor:pointer;text-align:center;transition:all 0.15s;font-family:'DM Sans',sans-serif;color:var(--text);}
+.service-btn:hover{border-color:var(--accent);background:rgba(200,240,96,0.05);}
+.service-btn:active{transform:scale(0.97);}
+.sb-name{font-size:13px;font-weight:500;margin-bottom:4px;}
+.sb-prijs{font-size:16px;font-weight:700;color:var(--accent);}
+.sb-duur{font-size:11px;color:var(--muted);margin-top:2px;}
+.extra-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.extra-btn{background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 8px;cursor:pointer;text-align:center;transition:all 0.15s;font-family:'DM Sans',sans-serif;color:var(--muted);font-size:12px;}
+.extra-btn:hover{color:var(--text);border-color:var(--muted);}
+
+/* Betaal panel */
+.betaal-panel{display:flex;flex-direction:column;background:var(--surface);overflow:hidden;}
+.bon-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.bon-title{font-size:14px;font-weight:600;}
+.bon-clear{font-size:12px;color:var(--red);cursor:pointer;}
+.bon-list{flex:1;overflow-y:auto;padding:12px 16px;}
+.bon-list::-webkit-scrollbar{width:4px;}
+.bon-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
+.bon-item{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--border);}
+.bon-item:last-child{border-bottom:none;}
+.bon-qty{width:28px;height:28px;background:var(--surface2);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;}
+.bon-name{flex:1;font-size:13px;font-weight:500;}
+.bon-sub{font-size:11px;color:var(--muted);}
+.bon-prijs{font-size:14px;font-weight:600;}
+.bon-del{color:var(--muted2);cursor:pointer;font-size:18px;line-height:1;padding:4px;}
+.bon-del:hover{color:var(--red);}
+.bon-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:120px;color:var(--muted);font-size:13px;gap:6px;}
+
+/* Totaal + betalen */
+.betaal-bottom{border-top:1px solid var(--border);padding:16px 20px;}
+.totaal-rows{margin-bottom:12px;}
+.totaal-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted);margin-bottom:6px;}
+.totaal-final{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-top:1px solid var(--border);margin-bottom:12px;}
+.totaal-label{font-size:15px;font-weight:600;}
+.totaal-prijs{font-size:26px;font-weight:700;color:var(--accent);}
+
+/* Betaalmethodes */
+.betaal-methods{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.method-btn{padding:12px;border-radius:10px;border:2px solid var(--border);background:transparent;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--muted);font-size:13px;font-weight:500;display:flex;align-items:center;justify-content:center;gap:8px;transition:all 0.15s;}
+.method-btn:hover{color:var(--text);border-color:var(--muted);}
+.method-btn.active{border-color:var(--accent);color:var(--accent);background:rgba(200,240,96,0.08);}
+.btn-afrekenen{width:100%;padding:15px;background:var(--accent);color:#1a1a1a;border:none;border-radius:10px;font-size:16px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-afrekenen:hover{background:var(--accent2);}
+.btn-afrekenen:disabled{opacity:0.4;cursor:default;}
+
+/* Transacties */
+.trans-section{padding:0 20px 16px;}
+.trans-title{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:10px;margin-top:16px;}
+.trans-item{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);}
+.trans-item:last-child{border-bottom:none;}
+.trans-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.trans-name{flex:1;font-size:13px;}
+.trans-method{font-size:11px;color:var(--muted);}
+.trans-amount{font-size:13px;font-weight:600;}
+
+/* Success overlay */
+.success-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:100;align-items:center;justify-content:center;}
+.success-overlay.show{display:flex;}
+.success-box{background:var(--surface);border-radius:20px;padding:40px;text-align:center;width:360px;border:1px solid var(--border);}
+.success-icon{width:64px;height:64px;background:rgba(77,255,144,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:28px;color:var(--green);}
+.success-title{font-family:'DM Serif Display',serif;font-size:22px;margin-bottom:6px;}
+.success-sub{font-size:14px;color:var(--muted);margin-bottom:20px;}
+.receipt-row{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px solid var(--border);}
+.receipt-row:last-of-type{border-bottom:none;font-weight:700;font-size:15px;padding-top:10px;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+.bon-item{animation:fadeIn 0.2s ease both;}
+</style>
+</head>
+<body>
+<nav class="sidebar">
+  <div class="logo"><div class="logo-mark">Salon<span>Flow</span></div><div class="logo-sub">Salon management</div></div>
+  <div class="nav">
+    <div class="nav-section">Beheer</div>
+    <a class="nav-item" href="salon-dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a class="nav-item" href="klanten.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a class="nav-item" href="medewerkers.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <div class="nav-section">Groei</div>
+    <a class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+    <a class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 19.07a10 10 0 010-14.14"/></svg>AI Assistent</a>
+  </div>
+  <div class="sidebar-bottom"><div class="salon-info"><div class="salon-avatar">KS</div><div><div class="salon-name">Kapper Studio</div><div class="salon-plan">Pro plan</div></div></div></div>
+</nav>
+
+<div class="main">
+  <div class="topbar">
+    <div class="page-title">Kassa</div>
+    <div class="topbar-right">
+      <div style="font-size:13px;color:var(--muted)" id="clock"></div>
+      <button class="btn-ghost" onclick="alert('Dagafsluiting exporteren')">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        Dagafsluiting
+      </button>
+    </div>
+  </div>
+
+  <div class="kassa-layout">
+    <!-- Links: diensten -->
+    <div class="kassa-left">
+      <!-- Klant selectie -->
+      <div class="klant-bar">
+        <div id="klant-display" style="flex:1">
+          <div class="klant-search">
+            <svg style="position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted)" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input class="klant-input" placeholder="Zoek klant of loop-in klant..." id="klant-zoek" oninput="zoekKlant(this.value)">
+          </div>
+        </div>
+        <div id="klant-results" style="position:relative"></div>
+      </div>
+
+      <!-- Diensten -->
+      <div class="services-area">
+        <div class="cat-label">Knippen</div>
+        <div class="services-grid">
+          <div class="service-btn" onclick="addItem('Knippen',35,45)"><div class="sb-name">Knippen</div><div class="sb-prijs">€35</div><div class="sb-duur">45 min</div></div>
+          <div class="service-btn" onclick="addItem('Knippen + wassen',45,60)"><div class="sb-name">Knippen + wassen</div><div class="sb-prijs">€45</div><div class="sb-duur">60 min</div></div>
+          <div class="service-btn" onclick="addItem('Kinderknippen',22,30)"><div class="sb-name">Kinderknippen</div><div class="sb-prijs">€22</div><div class="sb-duur">30 min</div></div>
+        </div>
+        <div class="cat-label">Baard</div>
+        <div class="services-grid">
+          <div class="service-btn" onclick="addItem('Baard trimmen',25,30)"><div class="sb-name">Baard trimmen</div><div class="sb-prijs">€25</div><div class="sb-duur">30 min</div></div>
+          <div class="service-btn" onclick="addItem('Baard + knippen',55,75)"><div class="sb-name">Baard + knippen</div><div class="sb-prijs">€55</div><div class="sb-duur">75 min</div></div>
+          <div class="service-btn" onclick="addItem('Scheren',35,40)"><div class="sb-name">Scheren</div><div class="sb-prijs">€35</div><div class="sb-duur">40 min</div></div>
+        </div>
+        <div class="cat-label">Kleur</div>
+        <div class="services-grid">
+          <div class="service-btn" onclick="addItem('Highlights',80,90)"><div class="sb-name">Highlights</div><div class="sb-prijs">€80</div><div class="sb-duur">90 min</div></div>
+          <div class="service-btn" onclick="addItem('Balayage',120,150)"><div class="sb-name">Balayage</div><div class="sb-prijs">€120</div><div class="sb-duur">2,5 u</div></div>
+          <div class="service-btn" onclick="addItem('Verven vol',95,120)"><div class="sb-name">Verven vol</div><div class="sb-prijs">€95</div><div class="sb-duur">2 u</div></div>
+        </div>
+        <div class="cat-label">Extra's & producten</div>
+        <div class="extra-grid">
+          <div class="extra-btn" onclick="addItem('Hoofdmassage',15,15)">+ Massage<br><strong style="color:var(--text)">€15</strong></div>
+          <div class="extra-btn" onclick="addItem('Haarmasker',12,0)">+ Masker<br><strong style="color:var(--text)">€12</strong></div>
+          <div class="extra-btn" onclick="addItem('Keratine',180,0)">Keratine<br><strong style="color:var(--text)">€180</strong></div>
+          <div class="extra-btn" onclick="addItem('Shampoo',14,0)">Shampoo<br><strong style="color:var(--text)">€14</strong></div>
+          <div class="extra-btn" onclick="addItem('Conditioner',12,0)">Cond.<br><strong style="color:var(--text)">€12</strong></div>
+          <div class="extra-btn" onclick="addItem('Serum',18,0)">Serum<br><strong style="color:var(--text)">€18</strong></div>
+          <div class="extra-btn" onclick="addItem('Styling gel',10,0)">Gel<br><strong style="color:var(--text)">€10</strong></div>
+          <div class="extra-btn" onclick="addItem('Fooi',5,0)">+ Fooi<br><strong style="color:var(--text)">€5</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rechts: bon + betalen -->
+    <div class="betaal-panel">
+      <div class="bon-header">
+        <div class="bon-title">Bon</div>
+        <div class="bon-clear" onclick="clearBon()">Wis bon</div>
+      </div>
+      <div class="bon-list" id="bon-list">
+        <div class="bon-empty">
+          <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+          Voeg een dienst toe
+        </div>
+      </div>
+
+      <div class="trans-section">
+        <div class="trans-title">Vandaag afgerekend</div>
+        <div class="trans-item"><div class="trans-dot" style="background:var(--accent)"></div><div><div class="trans-name">Thomas van Dijk</div><div class="trans-method">iDEAL · Knippen + wassen</div></div><div class="trans-amount">€45</div></div>
+        <div class="trans-item"><div class="trans-dot" style="background:var(--blue)"></div><div><div class="trans-name">Lars Smit</div><div class="trans-method">Pin · Baard + knippen</div></div><div class="trans-amount">€55</div></div>
+        <div class="trans-item"><div class="trans-dot" style="background:var(--purple)"></div><div><div class="trans-name">Fatima El Moudden</div><div class="trans-method">Contant · Highlights</div></div><div class="trans-amount">€80</div></div>
+        <div class="trans-item"><div class="trans-dot" style="background:var(--amber)"></div><div><div class="trans-name">Loop-in klant</div><div class="trans-method">Contant · Knippen</div></div><div class="trans-amount">€35</div></div>
+      </div>
+
+      <div class="betaal-bottom">
+        <div class="totaal-rows">
+          <div class="totaal-row"><span>Subtotaal</span><span id="sum-sub">€0</span></div>
+          <div class="totaal-row"><span>BTW (21%)</span><span id="sum-btw">€0</span></div>
+          <div class="totaal-row" id="korting-row" style="display:none;color:var(--green)"><span>Korting</span><span id="sum-korting"></span></div>
+        </div>
+        <div class="totaal-final">
+          <div class="totaal-label">Totaal</div>
+          <div class="totaal-prijs" id="sum-total">€0</div>
+        </div>
+        <div class="betaal-methods">
+          <button class="method-btn active" id="m-pin" onclick="setMethod('pin',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Pin
+          </button>
+          <button class="method-btn" id="m-cash" onclick="setMethod('cash',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+            Contant
+          </button>
+          <button class="method-btn" id="m-ideal" onclick="setMethod('ideal',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            iDEAL
+          </button>
+          <button class="method-btn" id="m-gift" onclick="setMethod('gift',this)">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 010-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 000-5C13 2 12 7 12 7z"/></svg>
+            Cadeaubon
+          </button>
+        </div>
+        <button class="btn-afrekenen" id="btn-afrekenen" onclick="afrekenen()" disabled>
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>
+          Afrekenen
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Success overlay -->
+<div class="success-overlay" id="success-overlay" onclick="this.classList.remove('show')">
+  <div class="success-box" onclick="event.stopPropagation()">
+    <div class="success-icon">✓</div>
+    <div class="success-title">Betaald!</div>
+    <div class="success-sub" id="suc-sub">Bon wordt verstuurd</div>
+    <div id="suc-rows"></div>
+    <div style="display:flex;gap:10px;margin-top:20px">
+      <button class="btn-ghost" style="flex:1;justify-content:center" onclick="printBon()">Print bon</button>
+      <button class="btn-primary" style="flex:1;justify-content:center" onclick="newBon()">Nieuwe bon</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let bon=[];
+let method='pin';
+
+function addItem(naam,prijs,duur){
+  const existing=bon.find(i=>i.naam===naam);
+  if(existing){existing.qty++;existing.prijs+=prijs;}
+  else bon.push({naam,prijs,duur,qty:1,basePrijs:prijs});
+  renderBon();
+}
+
+function renderBon(){
+  const list=document.getElementById('bon-list');
+  if(bon.length===0){
+    list.innerHTML='<div class="bon-empty"><svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>Voeg een dienst toe</div>';
+    document.getElementById('btn-afrekenen').disabled=true;
+    updateTotaal();
+    return;
+  }
+  list.innerHTML=bon.map((item,i)=>`
+    <div class="bon-item">
+      <div class="bon-qty" onclick="changeQty(${i})">${item.qty}×</div>
+      <div style="flex:1"><div class="bon-name">${item.naam}</div>${item.duur?`<div class="bon-sub">${item.duur} min</div>`:''}</div>
+      <div class="bon-prijs">€${item.prijs}</div>
+      <div class="bon-del" onclick="removeItem(${i})">×</div>
+    </div>`).join('');
+  document.getElementById('btn-afrekenen').disabled=false;
+  updateTotaal();
+}
+
+function removeItem(i){bon.splice(i,1);renderBon();}
+function changeQty(i){
+  bon[i].qty++;bon[i].prijs+=bon[i].basePrijs;renderBon();
+}
+function clearBon(){bon=[];renderBon();}
+
+function updateTotaal(){
+  const sub=bon.reduce((s,i)=>s+i.prijs,0);
+  const btw=Math.round(sub*0.21*100)/100;
+  document.getElementById('sum-sub').textContent='€'+sub;
+  document.getElementById('sum-btw').textContent='€'+btw.toFixed(2);
+  document.getElementById('sum-total').textContent='€'+(sub+btw).toFixed(2);
+}
+
+function setMethod(m,btn){
+  method=m;
+  document.querySelectorAll('.method-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function afrekenen(){
+  if(bon.length===0) return;
+  const sub=bon.reduce((s,i)=>s+i.prijs,0);
+  const btw=Math.round(sub*0.21*100)/100;
+  const total=(sub+btw).toFixed(2);
+  const methodLabel={pin:'Pinbetaling',cash:'Contant',ideal:'iDEAL',gift:'Cadeaubon'}[method];
+  document.getElementById('suc-sub').textContent=`${methodLabel} · €${total}`;
+  document.getElementById('suc-rows').innerHTML=bon.map(i=>`
+    <div class="receipt-row"><span>${i.naam}</span><span>€${i.prijs}</span></div>`).join('')+
+    `<div class="receipt-row"><span>BTW (21%)</span><span>€${btw.toFixed(2)}</span></div>
+     <div class="receipt-row"><span>Totaal</span><span style="color:var(--green)">€${total}</span></div>`;
+  document.getElementById('success-overlay').classList.add('show');
+}
+
+function printBon(){alert('Bon wordt geprint...');}
+function newBon(){bon=[];renderBon();document.getElementById('success-overlay').classList.remove('show');}
+
+const klanten=['Thomas van Dijk','Fatima El Moudden','Lars Smit','Emma de Groot','Kevin Bakker','Sophie Visser'];
+function zoekKlant(q){
+  // simplified
+}
+
+// Clock
+function updateClock(){
+  const now=new Date();
+  document.getElementById('clock').textContent=now.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})+' · '+now.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
+}
+setInterval(updateClock,1000);
+updateClock();
+</script>
+</body>
+</html>
