@@ -171,10 +171,16 @@ const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
 // Als al ingelogd en niet bewust naar login genagiveerd -> door naar dashboard
-const vanHomepage = document.referrer.includes('index.html') || document.referrer === '';
-sb.auth.getSession().then(({ data: { session } }) => {
-  if (session && !vanHomepage) window.location.href = 'dashboard.html';
-});
+// Als er een access_token in de URL hash staat = e-mail bevestigd, meteen naar dashboard
+if (window.location.hash.includes('access_token')) {
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) window.location.href = 'dashboard.html';
+  });
+} else {
+  sb.auth.getSession().then(({ data: { session } }) => {
+    if (session) window.location.href = 'dashboard.html';
+  });
+}
 
 // ── TAB WISSELEN ──
 function toonLogin() {
