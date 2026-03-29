@@ -91,6 +91,8 @@ html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .btsv{width:100%;padding:15px;background:var(--ac);color:#1a1a1a;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="planr.js"></script>
 </head>
 <body>
 <div class="ov" id="ov" onclick="closeSB()"></div>
@@ -106,7 +108,7 @@ html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;
     <div class="nvsec">Groei</div>
     <a href="rapportages.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
   </nav>
-  <div class="sbf"><div class="sc"><div class="sca">KS</div><div><div style="font-size:13px;font-weight:500">Mijn Studio</div><div style="font-size:11px;color:var(--mu)">Pro plan</div></div></div></div>
+  <div class="sbf"><div class="sc"><div class="sca">KS</div><div><div style="font-size:13px;font-weight:500" class="salon-naam">Laden...</div><div style="font-size:11px;color:var(--mu)" class="salon-plan">...</div></div></div></div>
 </aside>
 
 <header class="topbar">
@@ -178,71 +180,93 @@ html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;
     <div class="fr"><div class="fl">Telefoon</div><input class="fi" type="tel" placeholder="+31 6 12345678"></div>
     <div class="fr"><div class="fl">E-mail</div><input class="fi" type="email" placeholder="naam@email.nl"></div>
     <div class="fr"><div class="fl">Notitie</div><textarea class="fi" rows="2" placeholder="Allergieën, voorkeuren..."></textarea></div>
-    <button class="btsv" onclick="closeM('m-new')">Klant opslaan</button>
+    <button class="btsv" onclick="slaKlantOp()">Klant opslaan</button>
   </div>
 </div>
 
 <script>
-const KLANTEN=[
-  {naam:'Thomas van Dijk',email:'thomas@gmail.com',since:'jan 2022',bz:28,omzet:1260,last:'22 mrt',sv:'Knippen + wassen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(107,196,255,0.2)',tx:'var(--blue)'},init:'TD'},
-  {naam:'Lars Smit',email:'lars@work.nl',since:'sep 2021',bz:42,omzet:1890,last:'25 mrt',sv:'Baard trimmen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(255,184,77,0.2)',tx:'var(--amber)'},init:'LS'},
-  {naam:'Kevin Bakker',email:'kevin@gmail.com',since:'aug 2020',bz:58,omzet:2320,last:'26 mrt',sv:'Knippen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(200,240,96,0.2)',tx:'var(--ac)'},init:'KB'},
-  {naam:'Fatima El Moudden',email:'fatima@hotmail.com',since:'mrt 2023',bz:15,omzet:980,last:'20 mrt',sv:'Verven',med:'Marco Koster',loy:'silver',c:{bg:'rgba(176,139,255,0.2)',tx:'var(--purple)'},init:'FE'},
-  {naam:'Lotte van Berg',email:'lotte@berg.nl',since:'jan 2023',bz:18,omzet:1100,last:'12 mrt',sv:'Knippen + verven',med:'Marco Koster',loy:'silver',c:{bg:'rgba(77,255,212,0.2)',tx:'var(--teal)'},init:'LB'},
-  {naam:'Daan Mulder',email:'daan@gmail.com',since:'apr 2021',bz:35,omzet:1400,last:'8 mrt',sv:'Knippen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(107,196,255,0.2)',tx:'var(--blue)'},init:'DM'},
-  {naam:'Emma de Groot',email:'emma@gmail.com',since:'feb 2024',bz:8,omzet:560,last:'18 mrt',sv:'Highlights',med:'Sara Bakker',loy:'nieuw',c:{bg:'rgba(255,184,77,0.2)',tx:'var(--amber)'},init:'EG'},
-  {naam:'Sophie Visser',email:'sophie@icloud.com',since:'nov 2023',bz:10,omzet:750,last:'10 mrt',sv:'Balayage',med:'Sara Bakker',loy:'nieuw',c:{bg:'rgba(255,107,107,0.2)',tx:'var(--red)'},init:'SV'},
-  {naam:'Ravi Sharma',email:'ravi@example.com',since:'mei 2022',bz:22,omzet:770,last:'15 mrt',sv:'Knippen',med:'Marco Koster',loy:'silver',c:{bg:'rgba(176,139,255,0.2)',tx:'var(--purple)'},init:'RS'},
-  {naam:'Yasmin Hassan',email:'yasmin@hotmail.com',since:'jun 2024',bz:4,omzet:180,last:'5 mrt',sv:'Wassen + föhnen',med:'Sara Bakker',loy:'nieuw',c:{bg:'rgba(77,255,212,0.2)',tx:'var(--teal)'},init:'YH'},
+const COLORS_CYCLE = [
+  {bg:'rgba(107,196,255,0.2)',tx:'var(--blue)'},
+  {bg:'rgba(255,184,77,0.2)',tx:'var(--amber)'},
+  {bg:'rgba(200,240,96,0.2)',tx:'var(--ac)'},
+  {bg:'rgba(176,139,255,0.2)',tx:'var(--purple)'},
+  {bg:'rgba(77,255,212,0.2)',tx:'var(--teal)'},
+  {bg:'rgba(255,107,107,0.2)',tx:'var(--red)'},
 ];
 const BADGES={gold:'background:rgba(255,184,77,0.15);color:var(--amber)',silver:'background:rgba(176,139,255,0.15);color:var(--purple)',nieuw:'background:rgba(200,240,96,0.15);color:var(--ac)'};
-const BLBL={gold:'★ Gold',silver:'◆ Silver',nieuw:'✦ Nieuw'};
-let activeF='alle',activeQ='';
+const BLBL={gold:'\u2605 Gold',silver:'\u25C6 Silver',nieuw:'\u2726 Nieuw'};
+let KLANTEN=[], activeF='alle', activeQ='';
+
+async function loadData() {
+  const { data } = await sb.from('klanten').select('*').eq('salon_id', SALON_ID).order('naam');
+  KLANTEN = (data||[]).map((k,i) => ({...k, c: COLORS_CYCLE[i%COLORS_CYCLE.length], init: k.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()}));
+  document.getElementById('kcount').textContent = KLANTEN.length+' klanten';
+  render();
+}
+
 function render(){
-  const list=document.getElementById('klist');
-  const filtered=KLANTEN.filter(k=>{
-    const q=activeQ.toLowerCase();
-    const mq=!q||k.naam.toLowerCase().includes(q)||k.email.includes(q);
-    const mf=activeF==='alle'||(activeF==='vip'&&k.loy==='gold')||(activeF==='nieuw'&&k.loy==='nieuw')||(activeF==='inactief'&&k.bz<5);
-    return mq&&mf;
+  const list = document.getElementById('klist');
+  const filtered = KLANTEN.filter(k => {
+    const q = activeQ.toLowerCase();
+    const mq = !q || k.naam.toLowerCase().includes(q) || (k.email||'').includes(q);
+    const mf = activeF==='alle' || (activeF==='inactief');
+    return mq && mf;
   });
-  document.getElementById('kcount').textContent=`${filtered.length} klanten`;
-  list.innerHTML=filtered.map(k=>`
-    <div class="kcard" onclick="showK('${k.naam}')">
+  document.getElementById('kcount').textContent = filtered.length+' klanten';
+  list.innerHTML = filtered.map(k=>`
+    <div class="kcard" onclick="showK('${k.id}')">
       <div class="kav" style="background:${k.c.bg};color:${k.c.tx}">${k.init}</div>
       <div class="kinfo">
         <div class="kname">${k.naam}</div>
-        <div class="kmeta">${k.last} · ${k.sv}</div>
-        <span class="kbadge" style="${BADGES[k.loy]}">${BLBL[k.loy]}</span>
+        <div class="kmeta">${k.email||'Geen e-mail'}</div>
+        <span class="kbadge" style="${BADGES.nieuw}">${BLBL.nieuw}</span>
       </div>
       <div class="kright">
-        <div class="kval">€${k.omzet}</div>
-        <div class="kvis">${k.bz}x</div>
+        <div class="kval">${k.telefoon||''}</div>
       </div>
     </div>`).join('');
+  if (!filtered.length) list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--mu)">Geen klanten gevonden</div>';
 }
-function showK(naam){
-  const k=KLANTEN.find(x=>x.naam===naam);
-  document.getElementById('d-av').textContent=k.init;
-  document.getElementById('d-av').style.background=k.c.bg;
-  document.getElementById('d-av').style.color=k.c.tx;
-  document.getElementById('d-naam').textContent=k.naam;
-  document.getElementById('d-sub').textContent=`Klant sinds ${k.since} · ${k.email}`;
-  document.getElementById('d-omzet').textContent='€'+k.omzet;
-  document.getElementById('d-bz').textContent=k.bz;
-  document.getElementById('d-gem').textContent='€'+Math.round(k.omzet/k.bz);
-  document.getElementById('d-last').textContent=k.last+' 2026';
-  document.getElementById('d-med').textContent=k.med;
-  document.getElementById('d-sv').textContent=k.sv;
+
+function showK(id){
+  const k = KLANTEN.find(x=>x.id===id);
+  if (!k) return;
+  document.getElementById('d-av').textContent = k.init;
+  document.getElementById('d-av').style.background = k.c.bg;
+  document.getElementById('d-av').style.color = k.c.tx;
+  document.getElementById('d-naam').textContent = k.naam;
+  document.getElementById('d-sub').textContent = (k.email||'')+(k.telefoon?' \u00b7 '+k.telefoon:'');
+  document.getElementById('d-omzet').textContent = '\u20ac0';
+  document.getElementById('d-bz').textContent = '0';
+  document.getElementById('d-gem').textContent = '\u20ac0';
+  document.getElementById('d-last').textContent = '\u2014';
+  document.getElementById('d-med').textContent = '\u2014';
+  document.getElementById('d-sv').textContent = k.notities||'\u2014';
   openM('m-detail');
 }
+
+async function slaKlantOp() {
+  const inputs = document.querySelectorAll('#m-new .fi');
+  const voornaam = inputs[0].value.trim();
+  const achternaam = inputs[1].value.trim();
+  const telefoon = inputs[2].value.trim();
+  const email = inputs[3].value.trim();
+  const notities = inputs[4]?.value.trim()||'';
+  if (!voornaam) { alert('Vul een naam in.'); return; }
+  const naam = voornaam + (achternaam?' '+achternaam:'');
+  const { error } = await sb.from('klanten').insert({salon_id:SALON_ID, naam, email:email||null, telefoon:telefoon||null, notities:notities||null});
+  if (error) { alert('Fout bij opslaan: '+error.message); return; }
+  inputs.forEach(i=>i.value='');
+  closeM('m-new');
+  await loadData();
+}
+
 function filter(v){activeQ=v;render();}
 function setF(f,btn){activeF=f;document.querySelectorAll('.ft').forEach(b=>b.classList.remove('on'));btn.classList.add('on');render();}
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
 function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
 function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
-render();
+
+planrInit(loadData);
 </script>
-</body>
-</html>

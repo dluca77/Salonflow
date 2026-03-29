@@ -201,6 +201,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .mbn-item svg { width: 22px; height: 22px; }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="planr.js"></script>
 </head>
 <body>
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
@@ -277,100 +279,77 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
     </div>
     <div class="modal-actions">
       <button class="btn-ghost" onclick="closeModal()">Annuleren</button>
-      <button class="btn-primary" onclick="closeModal()">Dienst opslaan</button>
+      <button class="btn-primary" onclick="slaDienstOp()">Dienst opslaan</button>
     </div>
   </div>
 </div>
 
 <script>
-const diensten = {
-  'Knippen': [
-    {naam:'Knippen',prijs:35,duur:45,color:'#e6f4ff',icon:'✂',omzet:1190,boekingen:34,actief:true,desc:'Knippen op maat, inclusief föhnen'},
-    {naam:'Knippen + wassen',prijs:45,duur:60,color:'#e6f4ff',icon:'✂',omzet:3060,boekingen:68,actief:true,desc:'Uitgebreide behandeling met wassen en föhnen'},
-    {naam:'Kinderknippen',prijs:22,duur:30,color:'#e6f4ff',icon:'✂',omzet:396,boekingen:18,actief:true,desc:'Voor kinderen tot 12 jaar'},
-  ],
-  'Baard': [
-    {naam:'Baard trimmen',prijs:25,duur:30,color:'#f3f0e6',icon:'🧔',omzet:700,boekingen:28,actief:true,desc:'Professioneel trimmen en modelleren'},
-    {naam:'Baard + knippen',prijs:55,duur:75,color:'#f3f0e6',icon:'🧔',omzet:825,boekingen:15,actief:true,desc:'Combinatie behandeling'},
-    {naam:'Scheren',prijs:35,duur:40,color:'#f3f0e6',icon:'🪒',omzet:280,boekingen:8,actief:false,desc:'Klassiek scheren met rechte lijn'},
-  ],
-  'Kleur & behandeling': [
-    {naam:'Highlights',prijs:80,duur:90,color:'#f3eeff',icon:'🎨',omzet:2560,boekingen:32,actief:true,desc:'Gedeeltelijke of volledige highlights'},
-    {naam:'Balayage',prijs:120,duur:150,color:'#f3eeff',icon:'🎨',omzet:1680,boekingen:14,actief:true,desc:'Handgeschilderd kleurverloop'},
-    {naam:'Verven vol',prijs:95,duur:120,color:'#f3eeff',icon:'🎨',omzet:760,boekingen:8,actief:true,desc:'Volledige haarkleur behandeling'},
-    {naam:'Keratine',prijs:180,duur:180,color:'#f3eeff',icon:'💆',omzet:540,boekingen:3,actief:true,desc:'Anti-frizz behandeling, 12 weken effect'},
-  ],
-  'Extra\'s': [
-    {naam:'Hoofdmassage',prijs:15,duur:15,color:'#e8f5ef',icon:'💆',omzet:300,boekingen:20,actief:true,desc:'Ontspannende hoofdmassage'},
-    {naam:'Haarmasker',prijs:12,duur:0,color:'#e8f5ef',icon:'🧴',omzet:144,boekingen:12,actief:true,desc:'Verzorgend masker bij elke behandeling'},
-  ],
-  'Producten': [
-    {naam:'Shampoo',prijs:14,duur:0,color:'#fff8e6',icon:'🧴',omzet:196,boekingen:14,actief:true,desc:'Professionele salon shampoo'},
-    {naam:'Conditioner',prijs:12,duur:0,color:'#fff8e6',icon:'🧴',omzet:96,boekingen:8,actief:true,desc:'Verzorgende conditioner'},
-    {naam:'Serum',prijs:18,duur:0,color:'#fff8e6',icon:'✨',omzet:90,boekingen:5,actief:false,desc:'Anti-frizz haarserum'},
-  ],
-};
+let DIENSTEN=[], activeTab='Alle';
 
-let activeTab = 'Alle';
-const cats = ['Alle', ...Object.keys(diensten)];
-
-function renderTabs(){
-  document.getElementById('cat-tabs').innerHTML = cats.map(c=>`
-    <button class="cat-tab${activeTab===c?' active':''}" onclick="setTab('${c}')">${c}</button>`).join('');
+async function loadData() {
+  const { data } = await sb.from('diensten').select('*').eq('salon_id',SALON_ID).order('categorie').order('naam');
+  DIENSTEN = data||[];
+  renderTabs();
+  renderContent();
 }
 
-function renderContent(){
-  const toShow = activeTab==='Alle' ? diensten : {[activeTab]: diensten[activeTab]};
-  document.getElementById('diensten-content').innerHTML = Object.entries(toShow).map(([cat,items])=>`
-    <div class="cat-section">
-      <div class="cat-header">
-        <div class="cat-title">${cat} <span class="cat-count">${items.length}</span></div>
-        <div class="cat-add" onclick="openModal()">+ Dienst toevoegen</div>
+function renderTabs() {
+  const cats = ['Alle', ...new Set(DIENSTEN.map(d=>d.categorie).filter(Boolean))];
+  const tabs = document.querySelector('.cat-tabs');
+  if (tabs) tabs.innerHTML = cats.map(c=>`<button class="cat-btn${c===activeTab?' on':''}" onclick="setTab('${c}')">${c}</button>`).join('');
+}
+
+function renderContent() {
+  const el = document.getElementById('diensten-list');
+  if (!el) return;
+  const filtered = activeTab==='Alle' ? DIENSTEN : DIENSTEN.filter(d=>d.categorie===activeTab);
+  el.innerHTML = filtered.map(d=>`
+    <div class="dcard">
+      <div class="dcard-left">
+        <div class="dcard-name">${d.naam}</div>
+        <div class="dcard-meta">${d.duur_min} min${d.beschrijving?' \u00b7 '+d.beschrijving:''}</div>
       </div>
-      <div class="diensten-grid">
-        ${items.map((d,i)=>`
-          <div class="dienst-card" style="animation-delay:${i*0.05}s;opacity:${d.actief?1:0.5}">
-            <div class="dc-top">
-              <div class="dc-color" style="background:${d.color}">${d.icon}</div>
-              <div class="dc-info">
-                <div class="dc-name">${d.naam}</div>
-                <div class="dc-desc">${d.desc}</div>
-              </div>
-            </div>
-            <div class="dc-meta">
-              <div class="dc-stat"><div class="dc-stat-label">Prijs</div><div class="dc-stat-val" style="color:var(--accent)">€${d.prijs}</div></div>
-              <div class="dc-stat"><div class="dc-stat-label">Duur</div><div class="dc-stat-val">${d.duur?d.duur+'m':'—'}</div></div>
-              <div class="dc-stat"><div class="dc-stat-label">Boekingen</div><div class="dc-stat-val">${d.boekingen}</div></div>
-            </div>
-            <div class="dc-actions">
-              <div class="dc-action" onclick="editDienst('${d.naam}')">Bewerken</div>
-              <div class="dc-action" style="color:var(--red)" onclick="confirm('Verwijder ${d.naam}?')">Verwijderen</div>
-              <div class="dc-toggle" onclick="toggleDienst(this)">
-                <div class="toggle-pill${d.actief?'':' off'}"></div>
-                <span>${d.actief?'Actief':'Inactief'}</span>
-              </div>
-            </div>
-          </div>`).join('')}
+      <div class="dcard-right">
+        <div class="dcard-prijs">\u20ac${d.prijs}</div>
+        <button class="dtoggle ${d.actief?'on':''}" onclick="toggleDienst('${d.id}',${d.actief},this)">${d.actief?'Actief':'Inactief'}</button>
       </div>
     </div>`).join('');
+  if (!filtered.length) el.innerHTML = '<div style="text-align:center;padding:40px;color:var(--mu)">Geen diensten in deze categorie</div>';
+}
+
+async function toggleDienst(id, huidigActief, btn) {
+  const nieuw = !huidigActief;
+  await sb.from('diensten').update({actief:nieuw}).eq('id',id);
+  btn.textContent = nieuw?'Actief':'Inactief';
+  btn.classList.toggle('on', nieuw);
+  const d = DIENSTEN.find(x=>x.id===id);
+  if (d) d.actief = nieuw;
+}
+
+async function slaDienstOp() {
+  const modal = document.getElementById('modal');
+  const inputs = modal.querySelectorAll('input, select, textarea');
+  const naam = inputs[0]?.value.trim();
+  const prijs = parseFloat(inputs[1]?.value)||0;
+  const duur  = parseInt(inputs[2]?.value)||30;
+  const cat   = inputs[3]?.value||'Algemeen';
+  const desc  = inputs[4]?.value.trim()||'';
+  if (!naam) { alert('Vul een naam in.'); return; }
+  const { error } = await sb.from('diensten').insert({salon_id:SALON_ID,naam,prijs,duur_min:duur,categorie:cat,beschrijving:desc||null,actief:true});
+  if (error) { alert('Fout: '+error.message); return; }
+  closeModal();
+  await loadData();
 }
 
 function setTab(t){activeTab=t;renderTabs();renderContent();}
-function toggleDienst(el){
-  const pill=el.querySelector('.toggle-pill');
-  const span=el.querySelector('span');
-  const isOn=!pill.classList.contains('off');
-  pill.classList.toggle('off',isOn);
-  span.textContent=isOn?'Inactief':'Actief';
-  el.closest('.dienst-card').style.opacity=isOn?'0.5':'1';
-}
-function editDienst(naam){alert('Bewerk dienst: '+naam);}
+function editDienst(naam){alert('Bewerk: '+naam);}
 function openModal(){document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
+function openSidebar(){document.getElementById('sidebar').classList.add('open');document.getElementById('overlay').classList.add('open');}
+function closeSidebar(){document.getElementById('sidebar').classList.remove('open');document.getElementById('overlay').classList.remove('open');}
 
-renderTabs();
-renderContent();
-function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
+planrInit(loadData);
 </script>
 
 
