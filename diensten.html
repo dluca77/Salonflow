@@ -200,22 +200,6 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .mbn-item.active { color: var(--accent); }
 .mbn-item svg { width: 22px; height: 22px; }
 
-
-/* ═══ DESKTOP LAYOUT ═══ */
-@media (min-width: 769px) {
-  body { display:flex; height:100vh; overflow:hidden; }
-  .sb { position:static; left:0; width:240px; height:100vh; flex-shrink:0; border-right:1px solid var(--bd); display:flex !important; }
-  .ov { display:none !important; }
-  .hbg { display:none !important; }
-  .sbx { display:none !important; }
-  .app-main { flex:1; overflow-y:auto; height:100vh; display:flex; flex-direction:column; }
-  .bnav { display:none !important; }
-  .mobile-bottom-nav { display:none !important; }
-  .topbar { position:sticky; top:0; }
-  .agenda { padding-bottom:20px; }
-  .kpi-grid { grid-template-columns:repeat(4,1fr); }
-  .stats { grid-template-columns:repeat(4,1fr); }
-}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="planr.js"></script>
@@ -414,6 +398,5 @@ function signOut(e){e.preventDefault();uitloggen();}
   <a href="medewerkers.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team</a>
 </nav>
 
-</div><!-- /app-main -->
 </body>
 </html>
