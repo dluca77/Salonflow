@@ -100,7 +100,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 
   <!-- Register form -->
-  <div id="register" style="display:none"><div id="register-form" style="display:none">
+  <div id="register-form" style="display:none">
     <div class="form-row">
       <div class="form-label">Naam van je bedrijf</div>
       <input class="form-input" type="text" id="reg-naam" placeholder="bijv. Beauty Studio Mila" autocomplete="organization">
@@ -132,9 +132,10 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
     <button class="btn" id="register-btn" onclick="register()">Gratis account aanmaken →</button>
     <div class="terms">Door te registreren ga je akkoord met onze <a href="#">voorwaarden</a> en <a href="#">privacybeleid</a>.</div>
   </div>
+
 </div>
 
-<a href="dashboard.html" class="back-home">← Terug naar Planr.nl</a>
+<a href="index.html" class="back-home">← Terug naar Planr.nl</a>
 
 <!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -149,9 +150,10 @@ const SUPABASE_ANON_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Check al ingelogd
+// Check al ingelogd — maar NIET redirecten als je bewust op login.html bent via de homepage
+const cameFromHome = document.referrer.includes('index.html') || document.referrer === '';
 supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) window.location.href = 'dashboard.html';
+  if (session && !cameFromHome) window.location.href = 'dashboard.html';
 });
 
 function setTab(tab) {
