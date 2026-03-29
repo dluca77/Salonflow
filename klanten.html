@@ -2,546 +2,247 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SalonFlow — Klanten</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Planr — Klanten</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;--border:#2e2e2e;
-  --accent:#c8f060;--accent2:#a0d040;--text:#f0ede8;--muted:#888;--muted2:#555;
-  --red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;
-  --green:#4dff90;--sidebar:240px;--radius:12px;
-}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;}
-
+:root{--bg:#0f0f0f;--sf:#1a1a1a;--s2:#242424;--bd:#2e2e2e;--ac:#c8f060;--tx:#f0ede8;--mu:#888;--mu2:#3a3a3a;--red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;}
+html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
+.topbar{position:sticky;top:0;z-index:20;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:54px;gap:8px;}
+.t-left{display:flex;align-items:center;gap:10px;}
+.logo{font-family:'DM Serif Display',serif;font-size:19px;letter-spacing:-0.5px;}
+.logo span{color:var(--ac);}
+.hbg{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-add{display:flex;align-items:center;gap:5px;padding:8px 12px;background:var(--ac);color:#1a1a1a;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.search-wrap{padding:12px 14px;background:var(--sf);border-bottom:1px solid var(--bd);position:sticky;top:54px;z-index:15;}
+.search-inner{position:relative;}
+.si{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:10px 12px 10px 38px;font-size:14px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;}
+.si:focus{border-color:var(--ac);}
+.si-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mu);}
+.filters{display:flex;gap:6px;padding:0 14px 12px;overflow-x:auto;scrollbar-width:none;background:var(--sf);border-bottom:1px solid var(--bd);}
+.filters::-webkit-scrollbar{display:none;}
+.ft{padding:6px 14px;border-radius:99px;border:1px solid var(--bd);background:transparent;color:var(--mu);font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;flex-shrink:0;}
+.ft.on{background:var(--ac);color:#1a1a1a;border-color:var(--ac);font-weight:600;}
+.kcount{padding:10px 14px 4px;font-size:12px;color:var(--mu);}
+.klist{padding:8px 14px 96px;}
+.kcard{display:flex;align-items:center;gap:12px;padding:14px;background:var(--sf);border-radius:12px;margin-bottom:8px;cursor:pointer;-webkit-tap-highlight-color:transparent;border:1px solid var(--bd);}
+.kcard:active{background:var(--s2);}
+.kav{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;}
+.kinfo{flex:1;min-width:0;}
+.kname{font-size:15px;font-weight:600;margin-bottom:2px;}
+.kmeta{font-size:12px;color:var(--mu);}
+.kbadge{display:inline-block;padding:2px 8px;border-radius:99px;font-size:10px;font-weight:600;margin-top:4px;}
+.kright{text-align:right;flex-shrink:0;}
+.kval{font-size:14px;font-weight:700;color:var(--ac);}
+.kvis{font-size:11px;color:var(--mu);margin-top:2px;}
 /* Sidebar */
-.sidebar{width:var(--sidebar);background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0;height:100vh;}
-.logo{padding:0 20px 28px;border-bottom:1px solid var(--border);}
-.logo-mark{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);letter-spacing:-0.5px;}
-.logo-mark span{color:var(--accent);}
-.logo-sub{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:0.5px;text-transform:uppercase;}
-.nav{padding:20px 12px;flex:1;}
-.nav-section{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:8px;margin-top:20px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);transition:all 0.15s;margin-bottom:2px;text-decoration:none;}
-.nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{background:var(--accent);color:#1a1a1a;font-weight:600;}
-.nav-icon{width:18px;height:18px;flex-shrink:0;}
-.nav-badge{margin-left:auto;background:var(--red);color:#fff;font-size:11px;font-weight:600;padding:1px 6px;border-radius:99px;}
-.sidebar-bottom{padding:16px 12px;border-top:1px solid var(--border);}
-.salon-info{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--surface2);cursor:pointer;}
-.salon-avatar{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#1a1a1a;flex-shrink:0;}
-.salon-name{font-size:13px;font-weight:500;}
-.salon-plan{font-size:11px;color:var(--muted);}
-
-/* Main */
-.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
-.page-title{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-0.5px;}
-.topbar-right{display:flex;align-items:center;gap:12px;}
-.btn-primary{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#1a1a1a;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
-.btn-primary:hover{background:var(--accent2);}
-.btn-ghost{display:flex;align-items:center;gap:6px;padding:8px 14px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
-.btn-ghost:hover{color:var(--text);border-color:var(--muted);}
-
-/* Content layout */
-.content{flex:1;display:flex;overflow:hidden;}
-
-/* Left: klanten lijst */
-.list-panel{width:380px;border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
-.list-toolbar{padding:16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:10px;}
-.search-wrap{position:relative;}
-.search-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:9px 12px 9px 36px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s;}
-.search-input::placeholder{color:var(--muted);}
-.search-input:focus{border-color:var(--accent);}
-.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;}
-.filter-row{display:flex;gap:6px;}
-.filter-btn{padding:5px 12px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;white-space:nowrap;}
-.filter-btn:hover{color:var(--text);border-color:var(--muted);}
-.filter-btn.active{background:var(--accent);color:#1a1a1a;border-color:var(--accent);font-weight:600;}
-.list-count{padding:10px 16px 0;font-size:12px;color:var(--muted);}
-.klanten-list{flex:1;overflow-y:auto;padding:8px;}
-.klanten-list::-webkit-scrollbar{width:4px;}
-.klanten-list::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-.klant-item{display:flex;align-items:center;gap:12px;padding:12px;border-radius:10px;cursor:pointer;transition:all 0.15s;margin-bottom:2px;}
-.klant-item:hover{background:var(--surface2);}
-.klant-item.active{background:var(--surface2);border:1px solid var(--accent);}
-.klant-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;flex-shrink:0;}
-.klant-info{flex:1;min-width:0;}
-.klant-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.klant-meta{font-size:12px;color:var(--muted);margin-top:1px;}
-.klant-right{text-align:right;flex-shrink:0;}
-.klant-value{font-size:13px;font-weight:600;color:var(--accent);}
-.klant-visits{font-size:11px;color:var(--muted);}
-.loyalty-badge{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;margin-top:3px;}
-.loyalty-gold{background:rgba(255,184,77,0.15);color:var(--amber);}
-.loyalty-silver{background:rgba(176,139,255,0.15);color:var(--purple);}
-.loyalty-new{background:rgba(77,255,144,0.15);color:var(--green);}
-
-/* Right: klant detail */
-.detail-panel{flex:1;overflow-y:auto;background:var(--bg);}
-.detail-panel::-webkit-scrollbar{width:4px;}
-.detail-panel::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-.detail-header{padding:28px;border-bottom:1px solid var(--border);background:var(--surface);display:flex;align-items:flex-start;gap:20px;}
-.detail-avatar{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;flex-shrink:0;}
-.detail-name{font-family:'DM Serif Display',serif;font-size:24px;letter-spacing:-0.5px;}
-.detail-since{font-size:13px;color:var(--muted);margin-top:3px;}
-.detail-tags{display:flex;gap:6px;margin-top:10px;flex-wrap:wrap;}
-.tag{display:inline-block;padding:4px 10px;border-radius:99px;font-size:12px;font-weight:500;}
-.tag-accent{background:rgba(200,240,96,0.15);color:var(--accent);}
-.tag-blue{background:rgba(107,196,255,0.15);color:var(--blue);}
-.tag-amber{background:rgba(255,184,77,0.15);color:var(--amber);}
-.tag-red{background:rgba(255,107,107,0.15);color:var(--red);}
-.detail-actions{margin-left:auto;display:flex;gap:8px;flex-shrink:0;}
-
-.detail-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--border);}
-.dstat{background:var(--surface);padding:16px 20px;}
-.dstat-label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;}
-.dstat-value{font-size:22px;font-weight:600;margin-top:4px;}
-.dstat-sub{font-size:11px;color:var(--muted);margin-top:2px;}
-
-.detail-body{padding:24px;display:grid;grid-template-columns:1fr 1fr;gap:20px;}
-.detail-card{background:var(--surface);border-radius:var(--radius);padding:20px;border:1px solid var(--border);}
-.detail-card-title{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;}
-.detail-card-title a{font-size:11px;color:var(--accent);text-transform:none;letter-spacing:0;cursor:pointer;}
-
-.afspraak-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
-.afspraak-item:last-child{border-bottom:none;}
-.afspraak-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
-.afspraak-date{font-size:12px;color:var(--muted);min-width:80px;}
-.afspraak-service{font-size:13px;font-weight:500;flex:1;}
-.afspraak-price{font-size:13px;font-weight:600;color:var(--accent);}
-.afspraak-staff{font-size:11px;color:var(--muted);}
-
-.voorkeur-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
-.voorkeur-item:last-child{border-bottom:none;}
-.voorkeur-label{font-size:13px;color:var(--muted);min-width:100px;}
-.voorkeur-value{font-size:13px;font-weight:500;}
-
-.notitie-box{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;color:var(--text);font-family:'DM Sans',sans-serif;resize:none;outline:none;min-height:80px;transition:border-color 0.15s;line-height:1.6;}
-.notitie-box:focus{border-color:var(--accent);}
-
-.omzet-bar-wrap{display:flex;flex-direction:column;gap:8px;}
-.omzet-bar-item{display:flex;align-items:center;gap:10px;}
-.omzet-bar-label{font-size:12px;color:var(--muted);min-width:90px;}
-.omzet-bar-track{flex:1;height:6px;background:var(--surface2);border-radius:99px;overflow:hidden;}
-.omzet-bar-fill{height:100%;border-radius:99px;background:var(--accent);transition:width 0.6s ease;}
-.omzet-bar-val{font-size:12px;font-weight:600;min-width:44px;text-align:right;}
-
-/* Empty state */
-.empty-detail{flex:1;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:var(--muted);padding:40px;}
-.empty-icon{font-size:40px;opacity:0.3;}
-
-/* Modal overlay */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:100;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border-radius:16px;padding:28px;width:460px;border:1px solid var(--border);}
-.modal-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:20px;}
-.form-row{margin-bottom:14px;}
-.form-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s;}
-.form-input:focus{border-color:var(--accent);}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
-
-@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
-.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:40;}
-.sidebar-overlay.open{display:block;}
-.hamburger{display:none;align-items:center;justify-content:center;width:36px;height:36px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);cursor:pointer;flex-shrink:0;}
-@media(max-width:768px){.sidebar{position:fixed;left:-260px;top:0;z-index:50;height:100vh;transition:left 0.25s ease;width:260px;}.sidebar.open{left:0;}.hamburger{display:flex;}.topbar{padding:12px 16px;}.page-title{font-size:18px;}.topbar-right .btn-ghost:not(:last-child){display:none;}}
-.klant-item{animation:fadeIn 0.2s ease both;}
-
-/* Mobile bottom nav */
-.mobile-nav {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: 8px 4px 20px;
-  z-index: 30;
-  justify-content: space-around;
-}
-.mob-nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 6px 8px; border-radius: 8px; text-decoration: none;
-  color: var(--muted); font-size: 10px; cursor: pointer; transition: color 0.15s; flex: 1;
-}
-.mob-nav-item.active { color: var(--accent); }
-.mob-nav-item svg { width: 20px; height: 20px; }
-@media (max-width: 768px) {
-  .mobile-nav { display: flex; }
-  .main { padding-bottom: 80px; }
-  body { overflow: auto; display: block; }
-  .main { width: 100%; height: auto; min-height: 100vh; overflow: visible; }
-  .content { overflow: auto; }
-  .topbar { padding: 12px 16px; gap: 8px; }
-  .page-title { font-size: 17px; }
-  .topbar-right .btn-ghost:not(:last-child) { display: none; }
-  .hamburger { display: flex !important; }
-  .sidebar { position: fixed !important; left: -260px !important; top: 0; z-index: 50; height: 100vh; transition: left 0.25s ease; width: 260px !important; }
-  .sidebar.open { left: 0 !important; }
-}
-
-/* ═══ MOBILE RESET ═══ */
-@media (max-width: 768px) {
-  body { display: block !important; overflow-x: hidden; overflow-y: auto; }
-  .sidebar {
-    position: fixed !important; left: -280px !important; top: 0 !important;
-    width: 280px !important; height: 100vh !important; z-index: 50 !important;
-    transition: left 0.25s ease !important; overflow-y: auto;
-  }
-  .sidebar.open { left: 0 !important; }
-  .hamburger { display: flex !important; }
-  .main { width: 100% !important; height: auto !important; overflow: visible !important; min-height: 100vh; }
-  .content { overflow: visible !important; height: auto !important; display: block !important; }
-  .topbar {
-    padding: 0 14px !important; height: 52px !important;
-    display: flex !important; align-items: center !important;
-    justify-content: space-between !important; gap: 8px !important;
-  }
-  .page-title { font-size: 17px !important; white-space: nowrap; }
-  .view-toggle { display: none !important; }
-  .date-nav { display: none !important; }
-  .topbar-right { gap: 8px !important; flex-shrink: 0; }
-  .right-panel { display: none !important; }
-  .stats-bar {
-    display: grid !important; grid-template-columns: 1fr 1fr !important;
-    flex-direction: unset !important;
-  }
-  .stat-value { font-size: 20px !important; }
-  .stat-item { padding: 12px 14px !important; }
-  .list-panel { width: 100% !important; border-right: none !important; }
-  .detail-panel { display: none !important; }
-  .team-grid { grid-template-columns: 1fr !important; }
-  .detail-section { grid-template-columns: 1fr !important; }
-  .detail-stats { grid-template-columns: 1fr 1fr !important; }
-  .detail-body { grid-template-columns: 1fr !important; padding: 14px !important; }
-  .kassa-layout { grid-template-columns: 1fr !important; }
-  .betaal-panel { display: none !important; }
-  .services-area { padding: 12px !important; }
-  .services-grid { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
-  .extra-grid { grid-template-columns: repeat(3,1fr) !important; }
-  .charts-grid { grid-template-columns: 1fr !important; }
-  .kpi-grid { grid-template-columns: 1fr 1fr !important; }
-  .second-row { grid-template-columns: 1fr !important; }
-  .ai-grid { grid-template-columns: 1fr !important; }
-  .diensten-grid { grid-template-columns: 1fr 1fr !important; }
-  .cat-tabs { flex-wrap: wrap; }
-  .medewerker-grid { grid-template-columns: 1fr 1fr !important; }
-  .table-head div:nth-child(n+3) { display: none !important; }
-  .table-row > div:nth-child(n+3) { display: none !important; }
-  .table-head { grid-template-columns: 2fr 1fr !important; }
-  .table-row { grid-template-columns: 2fr 1fr !important; }
-  .btn-primary { font-size: 13px !important; padding: 8px 12px !important; }
-  .btn-ghost { font-size: 12px !important; padding: 6px 10px !important; }
-  /* Bottom nav padding */
-  .content, .main { padding-bottom: 80px; }
-}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:40;}
+.ov.on{display:block;}
+.sb{position:fixed;left:-100%;top:0;width:280px;height:100%;background:var(--sf);z-index:50;display:flex;flex-direction:column;transition:left .25s ease;border-right:1px solid var(--bd);overflow:hidden;}
+.sb.on{left:0;}
+.sbh{padding:16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sblogo{font-family:'DM Serif Display',serif;font-size:19px;}
+.sblogo span{color:var(--ac);}
+.sbx{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.sbn{flex:1;overflow-y:auto;padding:10px;}
+.nvsec{font-size:10px;color:var(--mu2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:12px 0 5px;}
+.nvi{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--mu);font-size:14px;text-decoration:none;margin-bottom:1px;-webkit-tap-highlight-color:transparent;}
+.nvi.on{background:var(--ac);color:#1a1a1a;font-weight:600;}
+.nvi svg{width:19px;height:19px;flex-shrink:0;}
+.sbf{padding:12px;border-top:1px solid var(--bd);flex-shrink:0;}
+.sc{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;}
+.sca{width:34px;height:34px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#1a1a1a;flex-shrink:0;}
 /* Bottom nav */
-.mobile-bottom-nav {
-  display: none;
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--surface); border-top: 1px solid var(--border);
-  z-index: 30; padding: 6px 0 20px;
-  justify-content: space-around;
-}
-@media (max-width: 768px) { .mobile-bottom-nav { display: flex; } }
-.mbn-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-  text-decoration: none; color: var(--muted); font-size: 10px; padding: 4px 0;
-  -webkit-tap-highlight-color: transparent;
-}
-.mbn-item.active { color: var(--accent); }
-.mbn-item svg { width: 22px; height: 22px; }
-
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:7px 0 20px;z-index:30;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--mu);font-size:10px;padding:4px 0;-webkit-tap-highlight-color:transparent;}
+.bni.on{color:var(--ac);}
+.bni svg{width:22px;height:22px;}
+/* Klant detail modal */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:60;align-items:flex-end;}
+.mbg.on{display:flex;}
+.modal{background:var(--sf);border-radius:20px 20px 0 0;padding:20px 18px 40px;width:100%;border-top:1px solid var(--bd);animation:su .25s ease;max-height:90vh;overflow-y:auto;}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{width:36px;height:4px;background:var(--bd);border-radius:99px;margin:0 auto 18px;}
+.dhead{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.dav{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
+.dname{font-size:20px;font-weight:600;margin-bottom:2px;}
+.dsub{font-size:13px;color:var(--mu);}
+.dstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
+.dst{background:var(--s2);border-radius:10px;padding:12px;text-align:center;}
+.dstv{font-size:20px;font-weight:700;}
+.dstl{font-size:10px;color:var(--mu);margin-top:3px;}
+.drows{background:var(--s2);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.dr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd);}
+.dr:last-child{border-bottom:none;}
+.drl{font-size:13px;color:var(--mu);}
+.drv{font-size:13px;font-weight:500;}
+.dbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.dbtn{padding:13px;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;border:none;text-align:center;}
+.dbtn-sec{background:var(--s2);color:var(--tx);}
+.dbtn-pri{background:var(--ac);color:#1a1a1a;}
+/* Nieuw klant modal */
+.mt{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px;}
+.msub{font-size:13px;color:var(--mu);margin-bottom:18px;}
+.fr{margin-bottom:12px;}
+.fl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 13px;font-size:15px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;appearance:none;}
+.fi:focus{border-color:var(--ac);}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btsv{width:100%;padding:15px;background:var(--ac);color:#1a1a1a;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
 </style>
 </head>
 <body>
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<aside class="sb" id="sb">
+  <div class="sbh"><div class="sblogo">Planr<span>.</span></div><button class="sbx" onclick="closeSB()">✕</button></div>
+  <nav class="sbn">
+    <div class="nvsec">Beheer</div>
+    <a href="index.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="nvi on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a href="kassa.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="diensten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
+    <div class="nvsec">Groei</div>
+    <a href="rapportages.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  </nav>
+  <div class="sbf"><div class="sc"><div class="sca">KS</div><div><div style="font-size:13px;font-weight:500">Mijn Studio</div><div style="font-size:11px;color:var(--mu)">Pro plan</div></div></div></div>
+</aside>
 
-<!-- Sidebar -->
-<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
-<nav class="sidebar" id="sidebar">
-  <div class="logo">
-    <div class="logo-mark">Salon<span>Flow</span></div>
-    <div class="logo-sub">Salon management</div>
+<header class="topbar">
+  <div class="t-left">
+    <button class="hbg" onclick="openSB()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="logo">Planr<span>.</span></div>
   </div>
-  <div class="nav">
-    <div class="nav-section">Beheer</div>
-    <a href="index.html" class="nav-item" href="salon-dashboard.html">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Agenda
-    </a>
-    <a href="klanten.html" class="nav-item active">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-      Klanten
-    </a>
-    <a href="kassa.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      Kassa
-    </a>
-    <a href="diensten.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-      Diensten
-    </a>
-    <div class="nav-section">Groei</div>
-    <a href="rapportages.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Rapportages
-    </a>
-    <a href="#" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-      Marketing
-    </a>
-    <a href="#" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 19.07a10 10 0 010-14.14"/></svg>
-      AI Assistent
-    </a>
+  <button class="btn-add" onclick="openM('m-new')">+ Klant</button>
+</header>
+
+<div class="search-wrap">
+  <div class="search-inner">
+    <svg class="si-icon" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input class="si" type="text" placeholder="Zoek klant..." oninput="filter(this.value)" autocomplete="off">
   </div>
-  <div class="sidebar-bottom">
-    <div class="salon-info">
-      <div class="salon-avatar">KS</div>
-      <div><div class="salon-name">Kapper Studio</div><div class="salon-plan">Pro plan</div></div>
-    </div>
-  </div>
+</div>
+<div class="filters">
+  <button class="ft on" onclick="setF('alle',this)">Alle</button>
+  <button class="ft" onclick="setF('vip',this)">VIP</button>
+  <button class="ft" onclick="setF('nieuw',this)">Nieuw</button>
+  <button class="ft" onclick="setF('inactief',this)">Inactief</button>
+</div>
+<div class="kcount" id="kcount">10 klanten</div>
+<div class="klist" id="klist"></div>
+
+<nav class="bnav">
+  <a href="index.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="klanten.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+  <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
+  <a href="medewerkers.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Team</a>
 </nav>
 
-<!-- Main -->
-<div class="main">
-  <div class="topbar" style="display:flex;align-items:center;gap:10px;">
-    <button class="hamburger" onclick="openSidebar()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-      <div class="page-title">Klanten</div>
-    <div class="topbar-right">
-      <button class="btn-ghost">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Exporteren
-      </button>
-      <button class="btn-primary" onclick="openModal()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nieuwe klant
-      </button>
+<!-- Klant detail -->
+<div class="mbg" id="m-detail" onclick="if(event.target===this)closeM('m-detail')">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="dhead">
+      <div class="dav" id="d-av">TD</div>
+      <div><div class="dname" id="d-naam">Thomas van Dijk</div><div class="dsub" id="d-sub">Klant sinds jan 2022</div></div>
     </div>
-  </div>
-
-  <div class="content">
-    <!-- Lijst -->
-    <div class="list-panel">
-      <div class="list-toolbar">
-        <div class="search-wrap">
-          <svg class="search-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          <input class="search-input" type="text" placeholder="Zoek klant..." oninput="filterKlanten(this.value)" id="search-input">
-        </div>
-        <div class="filter-row">
-          <button class="filter-btn active" onclick="setFilter('alle',this)">Alle</button>
-          <button class="filter-btn" onclick="setFilter('vip',this)">VIP</button>
-          <button class="filter-btn" onclick="setFilter('nieuw',this)">Nieuw</button>
-          <button class="filter-btn" onclick="setFilter('inactief',this)">Inactief</button>
-        </div>
-      </div>
-      <div class="list-count" id="list-count">24 klanten</div>
-      <div class="klanten-list" id="klanten-list"></div>
+    <div class="dstats">
+      <div class="dst"><div class="dstv" style="color:var(--ac)" id="d-omzet">€1.260</div><div class="dstl">Omzet</div></div>
+      <div class="dst"><div class="dstv" id="d-bz">28</div><div class="dstl">Bezoeken</div></div>
+      <div class="dst"><div class="dstv" id="d-gem">€45</div><div class="dstl">Gem. bon</div></div>
     </div>
-
-    <!-- Detail -->
-    <div class="detail-panel" id="detail-panel">
-      <div class="empty-detail">
-        <div class="empty-icon">👤</div>
-        <div style="font-size:15px;font-weight:500;color:var(--text)">Selecteer een klant</div>
-        <div style="font-size:13px;">Klik op een klant om de details te zien</div>
-      </div>
+    <div class="drows">
+      <div class="dr"><span class="drl">Laatste bezoek</span><span class="drv" id="d-last">22 mrt 2026</span></div>
+      <div class="dr"><span class="drl">Vaste medewerker</span><span class="drv" id="d-med">Jasmijn de Vries</span></div>
+      <div class="dr"><span class="drl">Dienst</span><span class="drv" id="d-sv">Knippen + wassen</span></div>
+    </div>
+    <div class="dbtns">
+      <button class="dbtn dbtn-sec" onclick="closeM('m-detail')">Sluiten</button>
+      <button class="dbtn dbtn-pri" onclick="closeM('m-detail');openM('m-appt')">Afspraak →</button>
     </div>
   </div>
 </div>
 
-<!-- Nieuwe klant modal -->
-<div class="modal-overlay" id="modal" onclick="closeModalOutside(event)">
+<!-- Nieuw klant -->
+<div class="mbg" id="m-new" onclick="if(event.target===this)closeM('m-new')">
   <div class="modal">
-    <div class="modal-title">Nieuwe klant toevoegen</div>
-    <div class="form-grid">
-      <div class="form-row">
-        <div class="form-label">Voornaam</div>
-        <input class="form-input" type="text" placeholder="bijv. Jasmijn">
-      </div>
-      <div class="form-row">
-        <div class="form-label">Achternaam</div>
-        <input class="form-input" type="text" placeholder="bijv. de Vries">
-      </div>
+    <div class="mh"></div>
+    <div class="mt">Nieuwe klant</div>
+    <div class="msub">Voeg een klant toe aan het systeem</div>
+    <div class="fg">
+      <div class="fr"><div class="fl">Voornaam</div><input class="fi" type="text" placeholder="Jasmijn"></div>
+      <div class="fr"><div class="fl">Achternaam</div><input class="fi" type="text" placeholder="de Vries"></div>
     </div>
-    <div class="form-row">
-      <div class="form-label">E-mailadres</div>
-      <input class="form-input" type="email" placeholder="jasmijn@example.com">
-    </div>
-    <div class="form-row">
-      <div class="form-label">Telefoonnummer</div>
-      <input class="form-input" type="tel" placeholder="+31 6 12345678">
-    </div>
-    <div class="form-row">
-      <div class="form-label">Notitie</div>
-      <textarea class="form-input notitie-box" placeholder="Allergieën, voorkeuren, bijzonderheden..."></textarea>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Annuleren</button>
-      <button class="btn-primary" onclick="closeModal()">Klant opslaan</button>
-    </div>
+    <div class="fr"><div class="fl">Telefoon</div><input class="fi" type="tel" placeholder="+31 6 12345678"></div>
+    <div class="fr"><div class="fl">E-mail</div><input class="fi" type="email" placeholder="naam@email.nl"></div>
+    <div class="fr"><div class="fl">Notitie</div><textarea class="fi" rows="2" placeholder="Allergieën, voorkeuren..."></textarea></div>
+    <button class="btsv" onclick="closeM('m-new')">Klant opslaan</button>
   </div>
 </div>
 
 <script>
-const avatarColors = [
-  {bg:'rgba(107,196,255,0.2)',color:'var(--blue)'},
-  {bg:'rgba(176,139,255,0.2)',color:'var(--purple)'},
-  {bg:'rgba(255,184,77,0.2)',color:'var(--amber)'},
-  {bg:'rgba(77,255,212,0.2)',color:'var(--teal)'},
-  {bg:'rgba(200,240,96,0.2)',color:'var(--accent)'},
-  {bg:'rgba(255,107,107,0.2)',color:'var(--red)'},
+const KLANTEN=[
+  {naam:'Thomas van Dijk',email:'thomas@gmail.com',since:'jan 2022',bz:28,omzet:1260,last:'22 mrt',sv:'Knippen + wassen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(107,196,255,0.2)',tx:'var(--blue)'},init:'TD'},
+  {naam:'Lars Smit',email:'lars@work.nl',since:'sep 2021',bz:42,omzet:1890,last:'25 mrt',sv:'Baard trimmen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(255,184,77,0.2)',tx:'var(--amber)'},init:'LS'},
+  {naam:'Kevin Bakker',email:'kevin@gmail.com',since:'aug 2020',bz:58,omzet:2320,last:'26 mrt',sv:'Knippen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(200,240,96,0.2)',tx:'var(--ac)'},init:'KB'},
+  {naam:'Fatima El Moudden',email:'fatima@hotmail.com',since:'mrt 2023',bz:15,omzet:980,last:'20 mrt',sv:'Verven',med:'Marco Koster',loy:'silver',c:{bg:'rgba(176,139,255,0.2)',tx:'var(--purple)'},init:'FE'},
+  {naam:'Lotte van Berg',email:'lotte@berg.nl',since:'jan 2023',bz:18,omzet:1100,last:'12 mrt',sv:'Knippen + verven',med:'Marco Koster',loy:'silver',c:{bg:'rgba(77,255,212,0.2)',tx:'var(--teal)'},init:'LB'},
+  {naam:'Daan Mulder',email:'daan@gmail.com',since:'apr 2021',bz:35,omzet:1400,last:'8 mrt',sv:'Knippen',med:'Jasmijn de Vries',loy:'gold',c:{bg:'rgba(107,196,255,0.2)',tx:'var(--blue)'},init:'DM'},
+  {naam:'Emma de Groot',email:'emma@gmail.com',since:'feb 2024',bz:8,omzet:560,last:'18 mrt',sv:'Highlights',med:'Sara Bakker',loy:'nieuw',c:{bg:'rgba(255,184,77,0.2)',tx:'var(--amber)'},init:'EG'},
+  {naam:'Sophie Visser',email:'sophie@icloud.com',since:'nov 2023',bz:10,omzet:750,last:'10 mrt',sv:'Balayage',med:'Sara Bakker',loy:'nieuw',c:{bg:'rgba(255,107,107,0.2)',tx:'var(--red)'},init:'SV'},
+  {naam:'Ravi Sharma',email:'ravi@example.com',since:'mei 2022',bz:22,omzet:770,last:'15 mrt',sv:'Knippen',med:'Marco Koster',loy:'silver',c:{bg:'rgba(176,139,255,0.2)',tx:'var(--purple)'},init:'RS'},
+  {naam:'Yasmin Hassan',email:'yasmin@hotmail.com',since:'jun 2024',bz:4,omzet:180,last:'5 mrt',sv:'Wassen + föhnen',med:'Sara Bakker',loy:'nieuw',c:{bg:'rgba(77,255,212,0.2)',tx:'var(--teal)'},init:'YH'},
 ];
-
-const klanten = [
-  {id:1,naam:'Thomas van Dijk',email:'thomas@gmail.com',tel:'+31 6 12345678',sinds:'jan 2022',bezoeken:28,omzet:1260,laatste:'22 mrt 2026',dienst:'Knippen + wassen',loyaliteit:'gold',tags:['Vaste klant','Knippen'],notitie:'Prefereert Jasmijn. Kort aan de zijkanten, iets langer bovenop.',medewerker:'Jasmijn de Vries',kleur:0,omzetPerMaand:[120,95,140,110,130,105]},
-  {id:2,naam:'Fatima El Moudden',email:'fatima@hotmail.com',tel:'+31 6 87654321',sinds:'mrt 2023',bezoeken:15,omzet:980,laatste:'20 mrt 2026',dienst:'Verven + knippen',loyaliteit:'silver',tags:['Verven','Highlights'],notitie:'Gevoelige hoofdhuid. Altijd eerst patch test doen bij nieuwe producten.',medewerker:'Marco Koster',kleur:1,omzetPerMaand:[80,90,75,100,85,95]},
-  {id:3,naam:'Lars Smit',email:'lars.smit@work.nl',tel:'+31 6 11223344',sinds:'sep 2021',bezoeken:42,omzet:1890,laatste:'25 mrt 2026',dienst:'Knippen + baard',loyaliteit:'gold',tags:['VIP','Baard','Vaste klant'],notitie:'Elke 3 weken. Baard kort houden, strak afgewerkt.',medewerker:'Jasmijn de Vries',kleur:2,omzetPerMaand:[155,140,165,150,145,160]},
-  {id:4,naam:'Emma de Groot',email:'emma.degroot@gmail.com',tel:'+31 6 55667788',sinds:'feb 2024',bezoeken:8,omzet:560,laatste:'18 mrt 2026',dienst:'Highlights',loyaliteit:'nieuw',tags:['Highlights','Nieuw'],notitie:'Wil geleidelijke balayage. Liever warm blond dan asblond.',medewerker:'Sara Bakker',kleur:3,omzetPerMaand:[0,0,70,80,65,90]},
-  {id:5,naam:'Ravi Sharma',email:'ravi@example.com',tel:'+31 6 99887766',sinds:'mei 2022',bezoeken:22,omzet:770,laatste:'15 mrt 2026',dienst:'Knippen',loyaliteit:'silver',tags:['Knippen'],notitie:'Krullend haar. Droog knippen, niet nat.',medewerker:'Marco Koster',kleur:4,omzetPerMaand:[65,70,60,75,70,68]},
-  {id:6,naam:'Sophie Visser',email:'sophiev@icloud.com',tel:'+31 6 44556677',sinds:'nov 2023',bezoeken:10,omzet:750,laatste:'10 mrt 2026',dienst:'Balayage',loyaliteit:'nieuw',tags:['Balayage','Kleur'],notitie:'Allergie voor ammoniak. Altijd ammoniakvrije verf gebruiken.',medewerker:'Sara Bakker',kleur:5,omzetPerMaand:[0,80,70,90,75,85]},
-  {id:7,naam:'Kevin Bakker',email:'kevin.b@gmail.com',tel:'+31 6 33445566',sinds:'aug 2020',bezoeken:58,omzet:2320,laatste:'26 mrt 2026',dienst:'Knippen',loyaliteit:'gold',tags:['VIP','Vaste klant'],notitie:'Stamgast. Altijd om 9u op dinsdag. Sidepart links.',medewerker:'Jasmijn de Vries',kleur:0,omzetPerMaand:[190,175,200,185,195,180]},
-  {id:8,naam:'Yasmin Hassan',email:'yasmin.h@hotmail.com',tel:'+31 6 22334455',sinds:'jun 2024',bezoeken:4,omzet:180,laatste:'5 mrt 2026',dienst:'Wassen + föhnen',loyaliteit:'nieuw',tags:['Nieuw'],notitie:'',medewerker:'Sara Bakker',kleur:1,omzetPerMaand:[0,0,0,45,50,55]},
-  {id:9,naam:'Lotte van Berg',email:'lotte@berg.nl',tel:'+31 6 66778899',sinds:'jan 2023',bezoeken:18,omzet:1100,laatste:'12 mrt 2026',dienst:'Knippen + verven',loyaliteit:'silver',tags:['Verven','Knippen'],notitie:'Heeft snel last van split ends. Elke 6 weken adviseren.',medewerker:'Marco Koster',kleur:2,omzetPerMaand:[90,85,95,100,88,92]},
-  {id:10,naam:'Daan Mulder',email:'daan.mulder@gmail.com',tel:'+31 6 77889900',sinds:'apr 2021',bezoeken:35,omzet:1400,laatste:'8 mrt 2026',dienst:'Knippen',loyaliteit:'gold',tags:['VIP','Vaste klant'],notitie:'Fade knippen. Graad 2 aan de zijkant.',medewerker:'Jasmijn de Vries',kleur:3,omzetPerMaand:[115,108,120,112,118,110]},
-];
-
-let activeFilter = 'alle';
-let activeKlant = null;
-let searchTerm = '';
-
-function getInitials(naam) {
-  return naam.split(' ').map(n=>n[0]).join('').slice(0,2).toUpperCase();
-}
-
-function renderList() {
-  const list = document.getElementById('klanten-list');
-  let filtered = klanten.filter(k => {
-    const matchSearch = k.naam.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      k.email.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchFilter = activeFilter === 'alle' ||
-      (activeFilter === 'vip' && k.loyaliteit === 'gold') ||
-      (activeFilter === 'nieuw' && k.loyaliteit === 'nieuw') ||
-      (activeFilter === 'inactief' && k.bezoeken < 5);
-    return matchSearch && matchFilter;
+const BADGES={gold:'background:rgba(255,184,77,0.15);color:var(--amber)',silver:'background:rgba(176,139,255,0.15);color:var(--purple)',nieuw:'background:rgba(200,240,96,0.15);color:var(--ac)'};
+const BLBL={gold:'★ Gold',silver:'◆ Silver',nieuw:'✦ Nieuw'};
+let activeF='alle',activeQ='';
+function render(){
+  const list=document.getElementById('klist');
+  const filtered=KLANTEN.filter(k=>{
+    const q=activeQ.toLowerCase();
+    const mq=!q||k.naam.toLowerCase().includes(q)||k.email.includes(q);
+    const mf=activeF==='alle'||(activeF==='vip'&&k.loy==='gold')||(activeF==='nieuw'&&k.loy==='nieuw')||(activeF==='inactief'&&k.bz<5);
+    return mq&&mf;
   });
-  document.getElementById('list-count').textContent = `${filtered.length} klanten`;
-  list.innerHTML = filtered.map((k,i) => {
-    const c = avatarColors[k.kleur];
-    const badge = k.loyaliteit === 'gold'
-      ? `<span class="loyalty-badge loyalty-gold">★ Gold</span>`
-      : k.loyaliteit === 'silver'
-      ? `<span class="loyalty-badge loyalty-silver">◆ Silver</span>`
-      : `<span class="loyalty-badge loyalty-new">✦ Nieuw</span>`;
-    return `<div class="klant-item${activeKlant===k.id?' active':''}" onclick="selectKlant(${k.id})" style="animation-delay:${i*0.03}s">
-      <div class="klant-avatar" style="background:${c.bg};color:${c.color}">${getInitials(k.naam)}</div>
-      <div class="klant-info">
-        <div class="klant-name">${k.naam}</div>
-        <div class="klant-meta">${k.laatste} · ${k.dienst}</div>
-        ${badge}
+  document.getElementById('kcount').textContent=`${filtered.length} klanten`;
+  list.innerHTML=filtered.map(k=>`
+    <div class="kcard" onclick="showK('${k.naam}')">
+      <div class="kav" style="background:${k.c.bg};color:${k.c.tx}">${k.init}</div>
+      <div class="kinfo">
+        <div class="kname">${k.naam}</div>
+        <div class="kmeta">${k.last} · ${k.sv}</div>
+        <span class="kbadge" style="${BADGES[k.loy]}">${BLBL[k.loy]}</span>
       </div>
-      <div class="klant-right">
-        <div class="klant-value">€${k.omzet}</div>
-        <div class="klant-visits">${k.bezoeken}x</div>
+      <div class="kright">
+        <div class="kval">€${k.omzet}</div>
+        <div class="kvis">${k.bz}x</div>
       </div>
-    </div>`;
-  }).join('');
+    </div>`).join('');
 }
-
-function selectKlant(id) {
-  activeKlant = id;
-  renderList();
-  const k = klanten.find(x=>x.id===id);
-  const c = avatarColors[k.kleur];
-  const maanden = ['okt','nov','dec','jan','feb','mrt'];
-  const maxOmzet = Math.max(...k.omzetPerMaand);
-  document.getElementById('detail-panel').innerHTML = `
-    <div class="detail-header">
-      <div class="detail-avatar" style="background:${c.bg};color:${c.color};font-size:22px">${getInitials(k.naam)}</div>
-      <div style="flex:1">
-        <div class="detail-name">${k.naam}</div>
-        <div class="detail-since">Klant sinds ${k.sinds} · ${k.email} · ${k.tel}</div>
-        <div class="detail-tags">
-          ${k.tags.map(t=>`<span class="tag tag-accent">${t}</span>`).join('')}
-        </div>
-      </div>
-      <div class="detail-actions">
-        <button class="btn-ghost" onclick="alert('Afspraak inplannen voor ${k.naam}')">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-          Afspraak
-        </button>
-        <button class="btn-ghost" onclick="alert('Bericht sturen naar ${k.naam}')">
-          <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
-          Bericht
-        </button>
-      </div>
-    </div>
-    <div class="detail-stats">
-      <div class="dstat"><div class="dstat-label">Totaal omzet</div><div class="dstat-value" style="color:var(--accent)">€${k.omzet}</div><div class="dstat-sub">alle bezoeken</div></div>
-      <div class="dstat"><div class="dstat-label">Bezoeken</div><div class="dstat-value">${k.bezoeken}</div><div class="dstat-sub">totaal</div></div>
-      <div class="dstat"><div class="dstat-label">Gem. besteding</div><div class="dstat-value">€${Math.round(k.omzet/k.bezoeken)}</div><div class="dstat-sub">per bezoek</div></div>
-      <div class="dstat"><div class="dstat-label">Vaste medewerker</div><div class="dstat-value" style="font-size:14px;margin-top:6px">${k.medewerker}</div><div class="dstat-sub">voorkeur</div></div>
-    </div>
-    <div class="detail-body">
-      <div class="detail-card">
-        <div class="detail-card-title">Recente afspraken <a onclick="alert('Alle afspraken van ${k.naam}')">Bekijk alle →</a></div>
-        <div class="afspraak-item"><div class="afspraak-dot" style="background:var(--accent)"></div><div class="afspraak-date">26 mrt</div><div><div class="afspraak-service">${k.dienst}</div><div class="afspraak-staff">${k.medewerker}</div></div><div class="afspraak-price">€${Math.round(k.omzet/k.bezoeken)}</div></div>
-        <div class="afspraak-item"><div class="afspraak-dot" style="background:var(--blue)"></div><div class="afspraak-date">5 mrt</div><div><div class="afspraak-service">${k.dienst}</div><div class="afspraak-staff">${k.medewerker}</div></div><div class="afspraak-price">€${Math.round(k.omzet/k.bezoeken)}</div></div>
-        <div class="afspraak-item"><div class="afspraak-dot" style="background:var(--purple)"></div><div class="afspraak-date">12 feb</div><div><div class="afspraak-service">${k.dienst}</div><div class="afspraak-staff">${k.medewerker}</div></div><div class="afspraak-price">€${Math.round(k.omzet/k.bezoeken)}</div></div>
-      </div>
-      <div class="detail-card">
-        <div class="detail-card-title">Omzet per maand</div>
-        <div class="omzet-bar-wrap">
-          ${maanden.map((m,i)=>`
-            <div class="omzet-bar-item">
-              <div class="omzet-bar-label">${m}</div>
-              <div class="omzet-bar-track"><div class="omzet-bar-fill" style="width:${maxOmzet?Math.round(k.omzetPerMaand[i]/maxOmzet*100):0}%"></div></div>
-              <div class="omzet-bar-val">€${k.omzetPerMaand[i]}</div>
-            </div>`).join('')}
-        </div>
-      </div>
-      <div class="detail-card">
-        <div class="detail-card-title">Voorkeuren</div>
-        <div class="voorkeur-item"><div class="voorkeur-label">Medewerker</div><div class="voorkeur-value">${k.medewerker}</div></div>
-        <div class="voorkeur-item"><div class="voorkeur-label">Dienst</div><div class="voorkeur-value">${k.dienst}</div></div>
-        <div class="voorkeur-item"><div class="voorkeur-label">Loyaliteit</div><div class="voorkeur-value" style="text-transform:capitalize">${k.loyaliteit === 'gold' ? '★ Gold' : k.loyaliteit === 'silver' ? '◆ Silver' : '✦ Nieuw'}</div></div>
-        <div class="voorkeur-item"><div class="voorkeur-label">Interval</div><div class="voorkeur-value">~${Math.round(365/k.bezoeken * (k.bezoeken>10?1:2))} dagen</div></div>
-      </div>
-      <div class="detail-card">
-        <div class="detail-card-title">Notities</div>
-        <textarea class="notitie-box" placeholder="Voeg een notitie toe...">${k.notitie}</textarea>
-        <div style="margin-top:10px;text-align:right"><button class="btn-primary" style="font-size:12px;padding:6px 14px" onclick="alert('Notitie opgeslagen!')">Opslaan</button></div>
-      </div>
-    </div>`;
+function showK(naam){
+  const k=KLANTEN.find(x=>x.naam===naam);
+  document.getElementById('d-av').textContent=k.init;
+  document.getElementById('d-av').style.background=k.c.bg;
+  document.getElementById('d-av').style.color=k.c.tx;
+  document.getElementById('d-naam').textContent=k.naam;
+  document.getElementById('d-sub').textContent=`Klant sinds ${k.since} · ${k.email}`;
+  document.getElementById('d-omzet').textContent='€'+k.omzet;
+  document.getElementById('d-bz').textContent=k.bz;
+  document.getElementById('d-gem').textContent='€'+Math.round(k.omzet/k.bz);
+  document.getElementById('d-last').textContent=k.last+' 2026';
+  document.getElementById('d-med').textContent=k.med;
+  document.getElementById('d-sv').textContent=k.sv;
+  openM('m-detail');
 }
-
-function filterKlanten(val) { searchTerm = val; renderList(); }
-function setFilter(filter, btn) {
-  activeFilter = filter;
-  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  renderList();
-}
-function openModal() { document.getElementById('modal').classList.add('open'); }
-function closeModal() { document.getElementById('modal').classList.remove('open'); }
-function closeModalOutside(e) { if(e.target===document.getElementById('modal')) closeModal(); }
-
-renderList();
-function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
+function filter(v){activeQ=v;render();}
+function setF(f,btn){activeF=f;document.querySelectorAll('.ft').forEach(b=>b.classList.remove('on'));btn.classList.add('on');render();}
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+render();
 </script>
-
-
-
-<nav class="mobile-bottom-nav">
-  <a href="index.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a href="klanten.html" class="mbn-item active"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-  <a href="kassa.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-  <a href="rapportages.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
-  <a href="medewerkers.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team</a>
-</nav>
-
 </body>
 </html>
