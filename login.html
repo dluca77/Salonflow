@@ -143,15 +143,15 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 // CONFIGURATIE — VUL DIT IN
 // Haal deze waarden op uit: Supabase > Project Settings > API
 // ═══════════════════════════════════════
-const SUPABASE_URL = 'JOUW_SUPABASE_URL_HIER';
-const SUPABASE_ANON_KEY = 'JOUW_ANON_KEY_HIER';
+const SUPABASE_URL = 'https://pscybcirexnltqvziixt.supabase.co';
+const SUPABASE_ANON_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 // ═══════════════════════════════════════
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Check al ingelogd
 supabase.auth.getSession().then(({ data: { session } }) => {
-  if (session) window.location.href = 'index.html';
+  if (session) window.location.href = 'dashboard.html';
 });
 
 function setTab(tab) {
@@ -189,7 +189,7 @@ async function login() {
     showMsg('Inloggen mislukt. Controleer je e-mailadres en wachtwoord.');
     setLoading('login-btn', false);
   } else {
-    window.location.href = 'index.html';
+    window.location.href = 'dashboard.html';
   }
 }
 

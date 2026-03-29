@@ -73,6 +73,8 @@ html,body{background:var(--bg);color:var(--tx);font-family:"DM Sans",sans-serif;
 .bni.on{color:var(--ac);}
 .bni svg{width:22px;height:22px;}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="planr.js"></script>
 </head>
 <body>
 <div class="ov" id="ov" onclick="closeSB()"></div>
@@ -173,7 +175,8 @@ function showToast(msg) {
   setTimeout(() => { t.style.opacity = '0'; }, 2500);
 }
 
-function signOut(e){e.preventDefault();localStorage.clear();sessionStorage.clear();window.location.href="login.html";}
+function signOut(e){e.preventDefault();uitloggen();}
+planrInit(null);
 </script>
 </body>
 </html>

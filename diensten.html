@@ -201,6 +201,8 @@ body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min
 .mbn-item svg { width: 22px; height: 22px; }
 
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="planr.js"></script>
 </head>
 <body>
 <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
@@ -368,8 +370,7 @@ function editDienst(naam){alert('Bewerk dienst: '+naam);}
 function openModal(){document.getElementById('modal').classList.add('open');}
 function closeModal(){document.getElementById('modal').classList.remove('open');}
 
-renderTabs();
-renderContent();
+planrInit(() => { renderTabs(); renderContent(); });
 function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
 function showToast(msg) {
   let t = document.getElementById('planr-toast');
@@ -384,7 +385,7 @@ function showToast(msg) {
   setTimeout(() => { t.style.opacity = '0'; }, 2500);
 }
 
-function signOut(e){e.preventDefault();localStorage.clear();sessionStorage.clear();window.location.href="login.html";}
+function signOut(e){e.preventDefault();uitloggen();}
 </script>
 
 
