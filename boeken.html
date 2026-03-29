@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mijn Studio — Afspraak maken</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --bg:#faf9f6;--surface:#fff;--border:#e8e5df;--text:#1a1a1a;--muted:#888;--muted2:#bbb;
+  --accent:#1a1a1a;--accent-light:#f0f0ee;--green:#2d9e6b;--green-light:#e8f5ef;
+  --radius:14px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+/* Header */
+.header{background:var(--surface);border-bottom:1px solid var(--border);padding:0 40px;display:flex;align-items:center;justify-content:space-between;height:64px;}
+.salon-brand{display:flex;align-items:center;gap:14px;}
+.brand-logo{width:40px;height:40px;background:#1a1a1a;border-radius:10px;display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;color:#c8f060;font-size:16px;font-weight:400;}
+.brand-name{font-family:'DM Serif Display',serif;font-size:20px;letter-spacing:-0.5px;}
+.brand-sub{font-size:12px;color:var(--muted);margin-top:1px;}
+.header-right{display:flex;align-items:center;gap:12px;}
+.header-info{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:5px;}
+
+/* Layout */
+.layout{display:grid;grid-template-columns:1fr 380px;min-height:calc(100vh - 64px);}
+
+/* Steps */
+.steps-wrap{padding:40px;}
+.progress-bar{display:flex;align-items:center;gap:0;margin-bottom:40px;}
+.step-dot{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.step-num{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border:2px solid var(--border);color:var(--muted);transition:all 0.2s;}
+.step-num.done{background:#1a1a1a;border-color:#1a1a1a;color:#c8f060;}
+.step-num.active{background:#1a1a1a;border-color:#1a1a1a;color:#fff;}
+.step-label{font-size:13px;font-weight:500;color:var(--muted);}
+.step-label.active{color:var(--text);}
+.step-line{flex:1;height:1px;background:var(--border);margin:0 12px;}
+.step-line.done{background:#1a1a1a;}
+
+.step-panel{display:none;}
+.step-panel.active{display:block;animation:fadeIn 0.25s ease;}
+
+.step-title{font-family:'DM Serif Display',serif;font-size:26px;letter-spacing:-0.5px;margin-bottom:6px;}
+.step-sub{font-size:14px;color:var(--muted);margin-bottom:28px;}
+
+/* Diensten */
+.diensten-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.dienst-card{border:2px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all 0.15s;position:relative;}
+.dienst-card:hover{border-color:#aaa;}
+.dienst-card.selected{border-color:#1a1a1a;background:var(--accent-light);}
+.dienst-card.selected::after{content:'✓';position:absolute;top:12px;right:12px;width:22px;height:22px;background:#1a1a1a;color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;}
+.dienst-name{font-size:15px;font-weight:600;margin-bottom:4px;}
+.dienst-duur{font-size:12px;color:var(--muted);margin-bottom:8px;display:flex;align-items:center;gap:4px;}
+.dienst-prijs{font-size:18px;font-weight:700;}
+.dienst-desc{font-size:12px;color:var(--muted);margin-top:6px;line-height:1.5;}
+
+/* Medewerkers */
+.medewerker-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.med-card{border:2px solid var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all 0.15s;text-align:center;}
+.med-card:hover{border-color:#aaa;}
+.med-card.selected{border-color:#1a1a1a;background:var(--accent-light);}
+.med-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;margin:0 auto 10px;}
+.med-name{font-size:14px;font-weight:600;margin-bottom:2px;}
+.med-rol{font-size:12px;color:var(--muted);margin-bottom:8px;}
+.med-score{font-size:12px;display:flex;align-items:center;justify-content:center;gap:3px;color:#f59e0b;}
+.med-any{border:2px dashed var(--border);border-radius:var(--radius);padding:18px;cursor:pointer;transition:all 0.15s;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+.med-any:hover{border-color:#aaa;background:var(--accent-light);}
+.med-any.selected{border-color:#1a1a1a;background:var(--accent-light);}
+
+/* Kalender */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.cal-month{font-size:16px;font-weight:600;}
+.cal-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer;font-size:16px;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.cal-btn:hover{background:var(--accent-light);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:24px;}
+.cal-dayname{text-align:center;font-size:11px;color:var(--muted);font-weight:500;padding-bottom:8px;text-transform:uppercase;letter-spacing:0.5px;}
+.cal-day{aspect-ratio:1;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all 0.15s;border:2px solid transparent;}
+.cal-day:hover:not(.empty):not(.past){background:var(--accent-light);}
+.cal-day.today{font-weight:700;color:var(--green);}
+.cal-day.selected{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.cal-day.past{color:var(--muted2);cursor:default;}
+.cal-day.empty{cursor:default;}
+.cal-day.busy{position:relative;}
+.cal-day.busy::after{content:'';position:absolute;bottom:3px;left:50%;transform:translateX(-50%);width:4px;height:4px;border-radius:50%;background:var(--green);}
+
+/* Tijdsloten */
+.time-section{margin-bottom:20px;}
+.time-section-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;}
+.time-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;}
+.time-slot{padding:10px;border:2px solid var(--border);border-radius:10px;text-align:center;font-size:14px;font-weight:500;cursor:pointer;transition:all 0.15s;}
+.time-slot:hover{border-color:#aaa;background:var(--accent-light);}
+.time-slot.selected{background:#1a1a1a;color:#fff;border-color:#1a1a1a;}
+.time-slot.vol{color:var(--muted2);cursor:default;text-decoration:line-through;border-color:var(--border);}
+
+/* Formulier */
+.form-row{margin-bottom:16px;}
+.form-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
+.form-input{width:100%;border:2px solid var(--border);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s;background:var(--surface);}
+.form-input:focus{border-color:#1a1a1a;}
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.checkbox-row{display:flex;align-items:center;gap:10px;cursor:pointer;}
+.checkbox-row input{width:18px;height:18px;accent-color:#1a1a1a;cursor:pointer;}
+.checkbox-label{font-size:14px;color:var(--text);}
+
+/* Nav buttons */
+.nav-buttons{display:flex;gap:12px;margin-top:32px;}
+.btn-back{padding:12px 24px;border:2px solid var(--border);border-radius:10px;background:transparent;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;color:var(--text);transition:all 0.15s;}
+.btn-back:hover{border-color:#aaa;}
+.btn-next{flex:1;padding:14px 24px;background:#1a1a1a;color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.btn-next:hover{background:#333;}
+.btn-next:disabled{opacity:0.4;cursor:default;}
+
+/* Sidebar summary */
+.summary-panel{background:var(--surface);border-left:1px solid var(--border);padding:40px 32px;position:sticky;top:0;height:calc(100vh - 64px);overflow-y:auto;}
+.summary-title{font-size:13px;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:20px;}
+.summary-item{display:flex;justify-content:space-between;align-items:flex-start;padding:14px 0;border-bottom:1px solid var(--border);}
+.summary-item:last-of-type{border-bottom:none;}
+.sum-label{font-size:12px;color:var(--muted);margin-bottom:3px;}
+.sum-value{font-size:14px;font-weight:500;}
+.summary-total{background:var(--accent-light);border-radius:10px;padding:16px;margin-top:16px;display:flex;justify-content:space-between;align-items:center;}
+.sum-total-label{font-size:14px;font-weight:600;}
+.sum-total-price{font-size:22px;font-weight:700;}
+.salon-info-block{margin-top:24px;padding-top:24px;border-top:1px solid var(--border);}
+.salon-info-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:10px;}
+
+/* Bevestiging */
+.confirm-wrap{text-align:center;padding:40px 20px;}
+.confirm-icon{width:72px;height:72px;background:var(--green-light);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:28px;}
+.confirm-title{font-family:'DM Serif Display',serif;font-size:28px;margin-bottom:8px;}
+.confirm-sub{font-size:15px;color:var(--muted);margin-bottom:28px;}
+.confirm-card{background:var(--accent-light);border-radius:var(--radius);padding:20px;text-align:left;margin-bottom:20px;}
+.confirm-row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);font-size:14px;}
+.confirm-row:last-child{border-bottom:none;}
+
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* ═══ MOBILE RESET ═══ */
+@media (max-width: 768px) {
+  body { display: block !important; overflow-x: hidden; overflow-y: auto; }
+  .sidebar {
+    position: fixed !important; left: -280px !important; top: 0 !important;
+    width: 280px !important; height: 100vh !important; z-index: 50 !important;
+    transition: left 0.25s ease !important; overflow-y: auto;
+  }
+  .sidebar.open { left: 0 !important; }
+  .hamburger { display: flex !important; }
+  .main { width: 100% !important; height: auto !important; overflow: visible !important; min-height: 100vh; }
+  .content { overflow: visible !important; height: auto !important; display: block !important; }
+  .topbar {
+    padding: 0 14px !important; height: 52px !important;
+    display: flex !important; align-items: center !important;
+    justify-content: space-between !important; gap: 8px !important;
+  }
+  .page-title { font-size: 17px !important; white-space: nowrap; }
+  .view-toggle { display: none !important; }
+  .date-nav { display: none !important; }
+  .topbar-right { gap: 8px !important; flex-shrink: 0; }
+  .right-panel { display: none !important; }
+  .stats-bar {
+    display: grid !important; grid-template-columns: 1fr 1fr !important;
+    flex-direction: unset !important;
+  }
+  .stat-value { font-size: 20px !important; }
+  .stat-item { padding: 12px 14px !important; }
+  .list-panel { width: 100% !important; border-right: none !important; }
+  .detail-panel { display: none !important; }
+  .team-grid { grid-template-columns: 1fr !important; }
+  .detail-section { grid-template-columns: 1fr !important; }
+  .detail-stats { grid-template-columns: 1fr 1fr !important; }
+  .detail-body { grid-template-columns: 1fr !important; padding: 14px !important; }
+  .kassa-layout { grid-template-columns: 1fr !important; }
+  .betaal-panel { display: none !important; }
+  .services-area { padding: 12px !important; }
+  .services-grid { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
+  .extra-grid { grid-template-columns: repeat(3,1fr) !important; }
+  .charts-grid { grid-template-columns: 1fr !important; }
+  .kpi-grid { grid-template-columns: 1fr 1fr !important; }
+  .second-row { grid-template-columns: 1fr !important; }
+  .ai-grid { grid-template-columns: 1fr !important; }
+  .diensten-grid { grid-template-columns: 1fr 1fr !important; }
+  .cat-tabs { flex-wrap: wrap; }
+  .medewerker-grid { grid-template-columns: 1fr 1fr !important; }
+  .table-head div:nth-child(n+3) { display: none !important; }
+  .table-row > div:nth-child(n+3) { display: none !important; }
+  .table-head { grid-template-columns: 2fr 1fr !important; }
+  .table-row { grid-template-columns: 2fr 1fr !important; }
+  .btn-primary { font-size: 13px !important; padding: 8px 12px !important; }
+  .btn-ghost { font-size: 12px !important; padding: 6px 10px !important; }
+  /* Bottom nav padding */
+  .content, .main { padding-bottom: 80px; }
+}
+/* Bottom nav */
+.mobile-bottom-nav {
+  display: none;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  z-index: 30; padding: 6px 0 20px;
+  justify-content: space-around;
+}
+@media (max-width: 768px) { .mobile-bottom-nav { display: flex; } }
+.mbn-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  text-decoration: none; color: var(--muted); font-size: 10px; padding: 4px 0;
+  -webkit-tap-highlight-color: transparent;
+}
+.mbn-item.active { color: var(--accent); }
+.mbn-item svg { width: 22px; height: 22px; }
+
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="salon-brand">
+    <div class="brand-logo">KS</div>
+    <div>
+      <div class="brand-name">Mijn Studio</div>
+      <div class="brand-sub">Rotterdam · Centrum</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="header-info">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Ma–Vr 09:00–18:00
+    </div>
+    <div class="header-info">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+      010 - 123 45 67
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <div class="steps-wrap">
+    <!-- Progress -->
+    <div class="progress-bar" id="progress-bar">
+      <div class="step-dot" onclick="goStep(1)">
+        <div class="step-num active" id="sn1">1</div>
+        <div class="step-label active" id="sl1">Dienst</div>
+      </div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-dot" onclick="goStep(2)">
+        <div class="step-num" id="sn2">2</div>
+        <div class="step-label" id="sl2">Medewerker</div>
+      </div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-dot" onclick="goStep(3)">
+        <div class="step-num" id="sn3">3</div>
+        <div class="step-label" id="sl3">Datum & tijd</div>
+      </div>
+      <div class="step-line" id="line3"></div>
+      <div class="step-dot" onclick="goStep(4)">
+        <div class="step-num" id="sn4">4</div>
+        <div class="step-label" id="sl4">Gegevens</div>
+      </div>
+    </div>
+
+    <!-- Stap 1: Dienst -->
+    <div class="step-panel active" id="step1">
+      <div class="step-title">Kies je dienst</div>
+      <div class="step-sub">Selecteer de behandeling die je wilt boeken</div>
+      <div class="diensten-grid">
+        <div class="dienst-card" onclick="selectDienst(this,'Knippen',35,45)">
+          <div class="dienst-name">Knippen</div>
+          <div class="dienst-duur">⏱ 45 min</div>
+          <div class="dienst-prijs">€35</div>
+          <div class="dienst-desc">Knippen op maat, inclusief wassen en föhnen</div>
+        </div>
+        <div class="dienst-card" onclick="selectDienst(this,'Knippen + wassen',45,60)">
+          <div class="dienst-name">Knippen + wassen</div>
+          <div class="dienst-duur">⏱ 60 min</div>
+          <div class="dienst-prijs">€45</div>
+          <div class="dienst-desc">Uitgebreide behandeling met hoofdmassage</div>
+        </div>
+        <div class="dienst-card" onclick="selectDienst(this,'Baard trimmen',25,30)">
+          <div class="dienst-name">Baard trimmen</div>
+          <div class="dienst-duur">⏱ 30 min</div>
+          <div class="dienst-prijs">€25</div>
+          <div class="dienst-desc">Professioneel baard trimmen en modelleren</div>
+        </div>
+        <div class="dienst-card" onclick="selectDienst(this,'Highlights',80,90)">
+          <div class="dienst-name">Highlights</div>
+          <div class="dienst-duur">⏱ 90 min</div>
+          <div class="dienst-prijs">€80</div>
+          <div class="dienst-desc">Gedeeltelijke of volledige highlights op maat</div>
+        </div>
+        <div class="dienst-card" onclick="selectDienst(this,'Balayage',120,150)">
+          <div class="dienst-name">Balayage</div>
+          <div class="dienst-duur">⏱ 2,5 uur</div>
+          <div class="dienst-prijs">€120</div>
+          <div class="dienst-desc">Natuurlijk kleurverloop, handgeschilderd</div>
+        </div>
+        <div class="dienst-card" onclick="selectDienst(this,'Wassen + föhnen',30,45)">
+          <div class="dienst-name">Wassen + föhnen</div>
+          <div class="dienst-duur">⏱ 45 min</div>
+          <div class="dienst-prijs">€30</div>
+          <div class="dienst-desc">Inclusief hoofdmassage en styling</div>
+        </div>
+      </div>
+      <div class="nav-buttons"><button class="btn-next" id="btn1" onclick="goStep(2)" disabled>Volgende stap →</button></div>
+    </div>
+
+    <!-- Stap 2: Medewerker -->
+    <div class="step-panel" id="step2">
+      <div class="step-title">Kies je stylist</div>
+      <div class="step-sub">Of laat ons de beste beschikbare keuze maken</div>
+      <div class="medewerker-grid">
+        <div class="med-any selected" id="med-any" onclick="selectMed(null,'Geen voorkeur')">
+          <svg width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+          <div style="font-size:14px;font-weight:600">Geen voorkeur</div>
+          <div style="font-size:12px;color:var(--muted)">Eerste beschikbare</div>
+        </div>
+        <div class="med-card" onclick="selectMed(this,'Jasmijn de Vries')">
+          <div class="med-avatar" style="background:#e6f4ff;color:#1a6ebd">JD</div>
+          <div class="med-name">Jasmijn</div>
+          <div class="med-rol">Senior Kapper</div>
+          <div class="med-score">★★★★★ 4.9</div>
+        </div>
+        <div class="med-card" onclick="selectMed(this,'Marco Koster')">
+          <div class="med-avatar" style="background:#f3eeff;color:#6b3fbd">MK</div>
+          <div class="med-name">Marco</div>
+          <div class="med-rol">Colorist</div>
+          <div class="med-score">★★★★★ 4.7</div>
+        </div>
+        <div class="med-card" onclick="selectMed(this,'Sara Bakker')">
+          <div class="med-avatar" style="background:#fff8e6;color:#b87a00">SB</div>
+          <div class="med-name">Sara</div>
+          <div class="med-rol">Kapper</div>
+          <div class="med-score">★★★★½ 4.5</div>
+        </div>
+      </div>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goStep(1)">← Terug</button>
+        <button class="btn-next" onclick="goStep(3)">Volgende stap →</button>
+      </div>
+    </div>
+
+    <!-- Stap 3: Datum & Tijd -->
+    <div class="step-panel" id="step3">
+      <div class="step-title">Kies datum & tijd</div>
+      <div class="step-sub">Beschikbare momenten worden groen gemarkeerd</div>
+      <div class="cal-nav">
+        <div class="cal-month" id="cal-month">maart 2026</div>
+        <div style="display:flex;gap:6px">
+          <button class="cal-btn" onclick="prevMonth()">‹</button>
+          <button class="cal-btn" onclick="nextMonth()">›</button>
+        </div>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div id="time-slots-wrap"></div>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goStep(2)">← Terug</button>
+        <button class="btn-next" id="btn3" onclick="goStep(4)" disabled>Volgende stap →</button>
+      </div>
+    </div>
+
+    <!-- Stap 4: Gegevens -->
+    <div class="step-panel" id="step4">
+      <div class="step-title">Jouw gegevens</div>
+      <div class="step-sub">We sturen je een bevestiging per e-mail en SMS</div>
+      <div class="form-grid">
+        <div class="form-row"><div class="form-label">Voornaam</div><input class="form-input" type="text" placeholder="bijv. Thomas" id="inp-naam"></div>
+        <div class="form-row"><div class="form-label">Achternaam</div><input class="form-input" type="text" placeholder="bijv. van Dijk"></div>
+      </div>
+      <div class="form-row"><div class="form-label">E-mailadres</div><input class="form-input" type="email" placeholder="jouw@email.nl"></div>
+      <div class="form-row"><div class="form-label">Telefoonnummer</div><input class="form-input" type="tel" placeholder="+31 6 12345678"></div>
+      <div class="form-row"><div class="form-label">Opmerking (optioneel)</div><textarea class="form-input" rows="3" placeholder="Bijzonderheden, allergieen, wensen..."></textarea></div>
+      <label class="checkbox-row" style="margin-bottom:12px">
+        <input type="checkbox" checked>
+        <span class="checkbox-label">Stuur mij een herinnering 24 uur van tevoren</span>
+      </label>
+      <label class="checkbox-row">
+        <input type="checkbox">
+        <span class="checkbox-label">Ik ga akkoord met de <u style="cursor:pointer">algemene voorwaarden</u></span>
+      </label>
+      <div class="nav-buttons">
+        <button class="btn-back" onclick="goStep(3)">← Terug</button>
+        <button class="btn-next" onclick="bevestigen()">Afspraak bevestigen ✓</button>
+      </div>
+    </div>
+
+    <!-- Bevestiging -->
+    <div class="step-panel" id="step5">
+      <div class="confirm-wrap">
+        <div class="confirm-icon">✓</div>
+        <div class="confirm-title">Afspraak bevestigd!</div>
+        <div class="confirm-sub">Je ontvangt een bevestiging per e-mail en SMS</div>
+        <div class="confirm-card">
+          <div class="confirm-row"><span style="color:var(--muted)">Dienst</span><span id="cf-dienst" style="font-weight:600"></span></div>
+          <div class="confirm-row"><span style="color:var(--muted)">Medewerker</span><span id="cf-med" style="font-weight:600"></span></div>
+          <div class="confirm-row"><span style="color:var(--muted)">Datum</span><span id="cf-datum" style="font-weight:600"></span></div>
+          <div class="confirm-row"><span style="color:var(--muted)">Tijd</span><span id="cf-tijd" style="font-weight:600"></span></div>
+          <div class="confirm-row"><span style="color:var(--muted)">Prijs</span><span id="cf-prijs" style="font-weight:600;color:var(--green)"></span></div>
+        </div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6;margin-bottom:20px">Wil je de afspraak wijzigen of annuleren? Dat kan tot 24 uur van tevoren via de link in de bevestigingsmail.</div>
+        <button class="btn-next" onclick="window.location.href='dashboard.html'">Nog een afspraak maken</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Summary sidebar -->
+  <div class="summary-panel">
+    <div class="summary-title">Jouw afspraak</div>
+    <div class="summary-item">
+      <div><div class="sum-label">Dienst</div><div class="sum-value" id="sum-dienst">Nog niet gekozen</div></div>
+    </div>
+    <div class="summary-item">
+      <div><div class="sum-label">Medewerker</div><div class="sum-value" id="sum-med">Geen voorkeur</div></div>
+    </div>
+    <div class="summary-item">
+      <div><div class="sum-label">Datum & tijd</div><div class="sum-value" id="sum-datum">Nog niet gekozen</div></div>
+    </div>
+    <div class="summary-item">
+      <div><div class="sum-label">Duur</div><div class="sum-value" id="sum-duur">—</div></div>
+    </div>
+    <div class="summary-total">
+      <div class="sum-total-label">Totaal</div>
+      <div class="sum-total-price" id="sum-prijs">€0</div>
+    </div>
+    <div class="salon-info-block">
+      <div class="salon-info-item">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+        Westblaak 42, Rotterdam
+      </div>
+      <div class="salon-info-item">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
+        010 - 123 45 67
+      </div>
+      <div class="salon-info-item">
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        Ma–Vr 09:00–18:00, Za 09:00–15:00
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let state = {dienst:null, prijs:0, duur:0, med:'Geen voorkeur', datum:null, tijd:null};
+let calYear=2026, calMonth=2;
+const maanden=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const dagen=['zo','ma','di','wo','do','vr','za'];
+const volTijden = ['09:00','11:30','14:00'];
+const ochtend=['09:00','09:30','10:00','10:30','11:00','11:30'];
+const middag=['12:00','12:30','13:00','13:30','14:00','14:30'];
+const namiddag=['15:00','15:30','16:00','16:30','17:00','17:30'];
+
+function goStep(n){
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  for(let i=1;i<=4;i++){
+    const num=document.getElementById('sn'+i);
+    const lbl=document.getElementById('sl'+i);
+    if(i<n){num.classList.add('done');num.classList.remove('active');num.textContent='✓';}
+    else if(i===n){num.classList.add('active');num.classList.remove('done');num.textContent=i;}
+    else{num.classList.remove('done','active');num.textContent=i;}
+    lbl.classList.toggle('active',i===n);
+    if(i<4){document.getElementById('line'+i).classList.toggle('done',i<n);}
+  }
+  if(n===3) renderCal();
+}
+
+function selectDienst(el, naam, prijs, duur){
+  document.querySelectorAll('.dienst-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.dienst=naam; state.prijs=prijs; state.duur=duur;
+  document.getElementById('sum-dienst').textContent=naam;
+  document.getElementById('sum-prijs').textContent='€'+prijs;
+  document.getElementById('sum-duur').textContent=duur+' min';
+  document.getElementById('btn1').disabled=false;
+}
+
+function selectMed(el, naam){
+  document.querySelectorAll('.med-card,.med-any').forEach(c=>c.classList.remove('selected'));
+  if(el) el.classList.add('selected'); else document.getElementById('med-any').classList.add('selected');
+  state.med=naam||'Geen voorkeur';
+  document.getElementById('sum-med').textContent=state.med;
+}
+
+function renderCal(){
+  const grid=document.getElementById('cal-grid');
+  grid.innerHTML=['Zo','Ma','Di','Wo','Do','Vr','Za'].map(d=>`<div class="cal-dayname">${d}</div>`).join('');
+  document.getElementById('cal-month').textContent=maanden[calMonth]+' '+calYear;
+  const first=new Date(calYear,calMonth,1).getDay();
+  const days=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<first;i++) grid.innerHTML+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=days;d++){
+    const date=new Date(calYear,calMonth,d);
+    const isPast=date<today;
+    const isToday=date.getTime()===today.getTime();
+    const isSel=state.datum&&state.datum===`${d} ${maanden[calMonth]}`;
+    const isBusy=[2,5,9,12,15,18,22,25,26].includes(d);
+    const cls=['cal-day',isPast?'past':'',isToday?'today':'',isSel?'selected':'',isBusy&&!isPast?'busy':''].join(' ').trim();
+    grid.innerHTML+=`<div class="${cls}" onclick="${isPast?'':'pickDay('+d+')'}">${d}</div>`;
+  }
+}
+
+function pickDay(d){
+  state.datum=`${d} ${maanden[calMonth]} ${calYear}`;
+  state.tijd=null;
+  document.getElementById('sum-datum').textContent=state.datum;
+  document.getElementById('btn3').disabled=true;
+  renderCal();
+  document.getElementById('time-slots-wrap').innerHTML=`
+    <div class="time-section"><div class="time-section-label">Ochtend</div><div class="time-grid">${ochtend.map(t=>slotHTML(t)).join('')}</div></div>
+    <div class="time-section"><div class="time-section-label">Middag</div><div class="time-grid">${middag.map(t=>slotHTML(t)).join('')}</div></div>
+    <div class="time-section"><div class="time-section-label">Namiddag</div><div class="time-grid">${namiddag.map(t=>slotHTML(t)).join('')}</div></div>`;
+}
+
+function slotHTML(t){
+  const vol=volTijden.includes(t);
+  return `<div class="time-slot${vol?' vol':''}" onclick="${vol?'':'pickTime(\''+t+'\')'}">${t}${vol?'<br><span style="font-size:10px">vol</span>':''}</div>`;
+}
+
+function pickTime(t){
+  state.tijd=t;
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  event.target.closest('.time-slot').classList.add('selected');
+  document.getElementById('sum-datum').textContent=state.datum+' om '+t;
+  document.getElementById('btn3').disabled=false;
+}
+
+function prevMonth(){if(calMonth===0){calMonth=11;calYear--;}else calMonth--;renderCal();}
+function nextMonth(){if(calMonth===11){calMonth=0;calYear++;}else calMonth++;renderCal();}
+
+function bevestigen(){
+  document.getElementById('cf-dienst').textContent=state.dienst;
+  document.getElementById('cf-med').textContent=state.med;
+  document.getElementById('cf-datum').textContent=state.datum;
+  document.getElementById('cf-tijd').textContent=state.tijd;
+  document.getElementById('cf-prijs').textContent='€'+state.prijs;
+  goStep(5);
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('step5').classList.add('active');
+}
+
+renderCal();
+</script>
+</body>
+</html>
