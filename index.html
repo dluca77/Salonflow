@@ -2,824 +2,407 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SalonFlow — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>SalonFlow — Agenda</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
 <style>
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0f0f0f;--sf:#1a1a1a;--s2:#242424;--bd:#2e2e2e;--ac:#c8f060;--tx:#f0ede8;--mu:#888;--mu2:#3a3a3a;--red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;}
+html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;min-height:100vh;overflow-x:hidden;}
 
-:root {
-  --bg: #0f0f0f;
-  --surface: #1a1a1a;
-  --surface2: #222222;
-  --border: #2e2e2e;
-  --accent: #c8f060;
-  --accent2: #a0d040;
-  --text: #f0ede8;
-  --muted: #888;
-  --muted2: #555;
-  --red: #ff6b6b;
-  --blue: #6bc4ff;
-  --purple: #b08bff;
-  --amber: #ffb84d;
-  --teal: #4dffd4;
-  --sidebar: 240px;
-  --radius: 12px;
-}
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:20;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:54px;gap:8px;}
+.t-left{display:flex;align-items:center;gap:10px;}
+.logo{font-family:'DM Serif Display',serif;font-size:19px;letter-spacing:-0.5px;}
+.logo span{color:var(--ac);}
+.hbg{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.btn-add{display:flex;align-items:center;gap:5px;padding:8px 12px;background:var(--ac);color:#1a1a1a;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
 
-body {
-  font-family: 'DM Sans', sans-serif;
-  background: var(--bg);
-  color: var(--text);
-  min-height: 100vh;
-  display: flex;
-  overflow: hidden;
-}
+/* STATS 2x2 */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);border-bottom:1px solid var(--bd);}
+.stat{background:var(--sf);padding:12px 14px;display:flex;align-items:center;gap:10px;}
+.sdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.slb{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:2px;}
+.sval{font-size:21px;font-weight:700;line-height:1;}
+.ssub{font-size:11px;color:var(--mu);margin-top:2px;}
 
-/* Mobile overlay */
-.sidebar-overlay {
-  display: none;
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.6);
-  z-index: 40;
-}
-.sidebar-overlay.open { display: block; }
+/* DATE NAV */
+.datenav{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--sf);border-bottom:1px solid var(--bd);gap:8px;}
+.dnbtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0;}
+.dnlbl{font-size:15px;font-weight:600;flex:1;text-align:center;}
+.tdbtn{padding:7px 12px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--mu);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;flex-shrink:0;}
 
-/* Hamburger button */
-.hamburger {
-  display: none;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 8px;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--text);
-  cursor: pointer;
-  flex-shrink: 0;
-}
+/* AGENDA */
+.agenda{padding-bottom:96px;}
+.arow{display:flex;border-bottom:1px solid var(--mu2);}
+.atime{width:50px;flex-shrink:0;padding:10px 8px 0;font-size:11px;color:var(--mu);text-align:right;border-right:1px solid var(--bd);min-height:58px;}
+.acol{flex:1;min-height:58px;position:relative;cursor:pointer;}
+.acol:active{background:rgba(200,240,96,0.04);}
 
-/* Mobile topbar adjustments */
+/* Appointment cards */
+.appt{margin:3px 6px;border-radius:10px;padding:9px 11px;border-left:3px solid;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.appt:active{opacity:0.8;}
+.an{font-size:14px;font-weight:600;margin-bottom:2px;}
+.as{font-size:12px;opacity:0.8;}
+.am{font-size:11px;opacity:0.6;margin-top:3px;}
+.ac-blue{background:rgba(107,196,255,0.1);border-color:var(--blue);color:var(--blue);}
+.ac-purple{background:rgba(176,139,255,0.1);border-color:var(--purple);color:var(--purple);}
+.ac-amber{background:rgba(255,184,77,0.1);border-color:var(--amber);color:var(--amber);}
+.ac-teal{background:rgba(77,255,212,0.1);border-color:var(--teal);color:var(--teal);}
+.ac-green{background:rgba(200,240,96,0.1);border-color:var(--ac);color:var(--ac);}
+.ac-red{background:rgba(255,107,107,0.1);border-color:var(--red);color:var(--red);}
+
+/* Now line */
+.nowline{position:absolute;left:0;right:0;height:2px;background:var(--ac);pointer-events:none;z-index:5;}
+.nowline::before{content:'';position:absolute;left:-4px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--ac);}
+
+/* Empty */
+.empty{text-align:center;padding:56px 20px;color:var(--mu);}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:0.25;}
+
+/* SIDEBAR */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:40;}
+.ov.on{display:block;}
+.sb{position:fixed;left:-100%;top:0;width:280px;height:100%;background:var(--sf);z-index:50;display:flex;flex-direction:column;transition:left .25s ease;border-right:1px solid var(--bd);overflow:hidden;}
+.sb.on{left:0;}
+.sbh{padding:16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
+.sblogo{font-family:'DM Serif Display',serif;font-size:19px;}
+.sblogo span{color:var(--ac);}
+.sbx{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.sbn{flex:1;overflow-y:auto;padding:10px;}
+.nvsec{font-size:10px;color:var(--mu2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:12px 0 5px;}
+.nvi{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--mu);font-size:14px;text-decoration:none;margin-bottom:1px;-webkit-tap-highlight-color:transparent;}
+.nvi.on{background:var(--ac);color:#1a1a1a;font-weight:600;}
+.nvi svg{width:19px;height:19px;flex-shrink:0;}
+.sbf{padding:12px;border-top:1px solid var(--bd);flex-shrink:0;}
+.sc{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;}
+.sca{width:34px;height:34px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#1a1a1a;flex-shrink:0;}
+
+/* BOTTOM NAV */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:7px 0 20px;z-index:30;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--mu);font-size:10px;padding:4px 0;-webkit-tap-highlight-color:transparent;}
+.bni.on{color:var(--ac);}
+.bni svg{width:22px;height:22px;}
+
+/* MODAL */
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:60;align-items:flex-end;}
+.mbg.on{display:flex;}
+.modal{background:var(--sf);border-radius:20px 20px 0 0;padding:20px 18px 40px;width:100%;border-top:1px solid var(--bd);animation:su .25s ease;}
+@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.mh{width:36px;height:4px;background:var(--bd);border-radius:99px;margin:0 auto 18px;}
+.mt{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px;}
+.msub{font-size:13px;color:var(--mu);margin-bottom:18px;}
+.fr{margin-bottom:12px;}
+.fl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 13px;font-size:15px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;appearance:none;}
+.fi:focus{border-color:var(--ac);}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btsv{width:100%;padding:15px;background:var(--ac);color:#1a1a1a;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
+
+/* Appt detail modal */
+.appt-detail .mh{background:var(--bd);}
+.detail-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:18px;}
+.detail-avatar{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
+.detail-name{font-size:20px;font-weight:600;margin-bottom:3px;}
+.detail-sub{font-size:13px;color:var(--mu);}
+.detail-rows{background:var(--s2);border-radius:12px;overflow:hidden;margin-bottom:16px;}
+.drow{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd);}
+.drow:last-child{border-bottom:none;}
+.drow-label{font-size:13px;color:var(--mu);}
+.drow-val{font-size:13px;font-weight:500;}
+.btns-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btn-cancel-appt{padding:13px;background:rgba(255,107,107,0.1);color:var(--red);border:1px solid rgba(255,107,107,0.3);border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-edit-appt{padding:13px;background:var(--ac);color:#1a1a1a;border:none;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+
+/* ═══ MOBILE RESET ═══ */
 @media (max-width: 768px) {
-  body { overflow: auto; display: block; }
-  .main { width: 100%; height: auto; min-height: 100vh; overflow: visible; }
-  .content { overflow: visible; height: auto; }
-  .calendar-wrap { overflow: visible; height: auto; }
-
+  body { display: block !important; overflow-x: hidden; overflow-y: auto; }
   .sidebar {
-    position: fixed;
-    left: -260px;
-    top: 0;
-    z-index: 50;
-    height: 100vh;
-    transition: left 0.25s ease;
-    width: 260px;
+    position: fixed !important; left: -280px !important; top: 0 !important;
+    width: 280px !important; height: 100vh !important; z-index: 50 !important;
+    transition: left 0.25s ease !important; overflow-y: auto;
   }
-  .sidebar.open { left: 0; }
-
-  .hamburger { display: flex; }
-
-  .main { width: 100%; }
-
+  .sidebar.open { left: 0 !important; }
+  .hamburger { display: flex !important; }
+  .main { width: 100% !important; height: auto !important; overflow: visible !important; min-height: 100vh; }
+  .content { overflow: visible !important; height: auto !important; display: block !important; }
   .topbar {
-    padding: 12px 16px;
-    gap: 8px;
+    padding: 0 14px !important; height: 52px !important;
+    display: flex !important; align-items: center !important;
+    justify-content: space-between !important; gap: 8px !important;
   }
-
-  .topbar-left { gap: 8px; flex: 1; min-width: 0; overflow: hidden; }
-  .page-title { font-size: 17px; white-space: nowrap; }
-
-  .date-nav { display: none; }
-
-  .topbar-right { gap: 6px; flex-shrink: 0; }
-  .view-toggle { display: none; }
-  .btn-primary { padding: 8px 12px; font-size: 12px; }
-  .btn-primary svg { width: 13px; height: 13px; }
-
-  /* Stats bar: 2x2 grid on mobile */
+  .page-title { font-size: 17px !important; white-space: nowrap; }
+  .view-toggle { display: none !important; }
+  .date-nav { display: none !important; }
+  .topbar-right { gap: 8px !important; flex-shrink: 0; }
+  .right-panel { display: none !important; }
   .stats-bar {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1px;
+    display: grid !important; grid-template-columns: 1fr 1fr !important;
+    flex-direction: unset !important;
   }
-
-  /* Hide right panel on mobile */
-  .right-panel { display: none; }
-
-  /* Calendar: show only today on mobile */
-  .cal-header {
-    grid-template-columns: 48px 1fr !important;
-  }
-  .cal-day-head:not(.today-head) { display: none; }
-  .cal-body {
-    grid-template-columns: 48px 1fr !important;
-  }
-  .day-col:not(.today-col-wrap) { display: none; }
-
-  .content { overflow: hidden; }
-
-  .stat-item { padding: 12px 14px; }
-  .stat-value { font-size: 18px; }
+  .stat-value { font-size: 20px !important; }
+  .stat-item { padding: 12px 14px !important; }
+  .list-panel { width: 100% !important; border-right: none !important; }
+  .detail-panel { display: none !important; }
+  .team-grid { grid-template-columns: 1fr !important; }
+  .detail-section { grid-template-columns: 1fr !important; }
+  .detail-stats { grid-template-columns: 1fr 1fr !important; }
+  .detail-body { grid-template-columns: 1fr !important; padding: 14px !important; }
+  .kassa-layout { grid-template-columns: 1fr !important; }
+  .betaal-panel { display: none !important; }
+  .services-area { padding: 12px !important; }
+  .services-grid { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
+  .extra-grid { grid-template-columns: repeat(3,1fr) !important; }
+  .charts-grid { grid-template-columns: 1fr !important; }
+  .kpi-grid { grid-template-columns: 1fr 1fr !important; }
+  .second-row { grid-template-columns: 1fr !important; }
+  .ai-grid { grid-template-columns: 1fr !important; }
+  .diensten-grid { grid-template-columns: 1fr 1fr !important; }
+  .cat-tabs { flex-wrap: wrap; }
+  .medewerker-grid { grid-template-columns: 1fr 1fr !important; }
+  .table-head div:nth-child(n+3) { display: none !important; }
+  .table-row > div:nth-child(n+3) { display: none !important; }
+  .table-head { grid-template-columns: 2fr 1fr !important; }
+  .table-row { grid-template-columns: 2fr 1fr !important; }
+  .btn-primary { font-size: 13px !important; padding: 8px 12px !important; }
+  .btn-ghost { font-size: 12px !important; padding: 6px 10px !important; }
+  /* Bottom nav padding */
+  .content, .main { padding-bottom: 80px; }
 }
-
-/* Sidebar */
-.sidebar {
-  width: var(--sidebar);
-  background: var(--surface);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  padding: 24px 0;
-  flex-shrink: 0;
-  height: 100vh;
-}
-
-.logo {
-  padding: 0 20px 28px;
-  border-bottom: 1px solid var(--border);
-}
-.logo-mark {
-  font-family: 'DM Serif Display', serif;
-  font-size: 22px;
-  color: var(--text);
-  letter-spacing: -0.5px;
-}
-.logo-mark span { color: var(--accent); }
-.logo-sub { font-size: 11px; color: var(--muted); margin-top: 2px; letter-spacing: 0.5px; text-transform: uppercase; }
-
-.nav { padding: 20px 12px; flex: 1; }
-.nav-section { font-size: 10px; color: var(--muted2); text-transform: uppercase; letter-spacing: 1px; padding: 0 8px; margin-bottom: 8px; margin-top: 20px; }
-.nav-item {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 8px;
-  cursor: pointer; font-size: 14px; color: var(--muted);
-  transition: all 0.15s; margin-bottom: 2px; text-decoration: none;
-}
-.nav-item:hover { background: var(--surface2); color: var(--text); }
-.nav-item.active { background: var(--accent); color: #1a1a1a; font-weight: 600; }
-.nav-item.active .nav-icon { color: #1a1a1a; }
-.nav-icon { width: 18px; height: 18px; flex-shrink: 0; }
-.nav-badge { margin-left: auto; background: var(--red); color: #fff; font-size: 11px; font-weight: 600; padding: 1px 6px; border-radius: 99px; }
-
-.sidebar-bottom {
-  padding: 16px 12px;
-  border-top: 1px solid var(--border);
-}
-.salon-info {
-  display: flex; align-items: center; gap: 10px;
-  padding: 10px 12px; border-radius: 8px;
-  background: var(--surface2); cursor: pointer;
-}
-.salon-avatar {
-  width: 32px; height: 32px; border-radius: 8px;
-  background: var(--accent); display: flex; align-items: center;
-  justify-content: center; font-weight: 700; font-size: 13px; color: #1a1a1a; flex-shrink: 0;
-}
-.salon-name { font-size: 13px; font-weight: 500; }
-.salon-plan { font-size: 11px; color: var(--muted); }
-
-/* Main */
-.main {
-  flex: 1; display: flex; flex-direction: column; height: 100vh; overflow: hidden;
-}
-
-.topbar {
-  display: flex; align-items: center; justify-content: space-between;
-  padding: 16px 28px; border-bottom: 1px solid var(--border);
-  background: var(--surface); flex-shrink: 0;
-}
-.topbar-left { display: flex; align-items: center; gap: 16px; }
-.page-title { font-family: 'DM Serif Display', serif; font-size: 22px; letter-spacing: -0.5px; }
-.date-nav { display: flex; align-items: center; gap: 8px; }
-.date-btn {
-  width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border);
-  background: transparent; color: var(--muted); cursor: pointer; display: flex;
-  align-items: center; justify-content: center; font-size: 14px; transition: all 0.15s;
-}
-.date-btn:hover { background: var(--surface2); color: var(--text); }
-.date-label { font-size: 14px; color: var(--text); font-weight: 500; min-width: 140px; text-align: center; }
-
-.topbar-right { display: flex; align-items: center; gap: 12px; }
-.view-toggle {
-  display: flex; background: var(--surface2); border-radius: 8px; padding: 3px; gap: 2px;
-}
-.view-btn {
-  padding: 5px 12px; border-radius: 6px; border: none; cursor: pointer;
-  font-size: 12px; font-weight: 500; font-family: 'DM Sans', sans-serif;
-  color: var(--muted); background: transparent; transition: all 0.15s;
-}
-.view-btn.active { background: var(--surface); color: var(--text); }
-.btn-primary {
-  display: flex; align-items: center; gap: 6px;
-  padding: 8px 16px; background: var(--accent); color: #1a1a1a;
-  border: none; border-radius: 8px; font-size: 13px; font-weight: 600;
-  cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all 0.15s;
-}
-.btn-primary:hover { background: var(--accent2); }
-
-/* Content */
-.content {
-  flex: 1; display: flex; overflow: hidden;
-}
-
-/* Stats bar */
-.stats-bar {
-  display: flex; gap: 1px; background: var(--border);
-  border-bottom: 1px solid var(--border); flex-shrink: 0;
-}
-.stat-item {
-  flex: 1; background: var(--surface); padding: 14px 20px;
-  display: flex; align-items: center; gap: 12px;
-}
-.stat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
-.stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.stat-value { font-size: 20px; font-weight: 600; line-height: 1; margin-top: 2px; }
-.stat-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
-
-/* Calendar */
-.calendar-wrap {
-  flex: 1; display: flex; flex-direction: column; overflow: hidden;
-}
-
-.cal-header {
-  display: grid; grid-template-columns: 60px repeat(7, 1fr);
-  border-bottom: 1px solid var(--border); flex-shrink: 0;
-  background: var(--surface);
-}
-.cal-corner { border-right: 1px solid var(--border); }
-.cal-day-head {
-  padding: 12px 8px; text-align: center; border-right: 1px solid var(--border);
-}
-.cal-day-name { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
-.cal-day-num {
-  font-size: 20px; font-weight: 600; margin-top: 2px; width: 36px; height: 36px;
-  border-radius: 10px; display: flex; align-items: center; justify-content: center;
-  margin: 4px auto 0;
-}
-.cal-day-num.today { background: var(--accent); color: #1a1a1a; }
-
-.cal-body {
-  flex: 1; overflow-y: auto; display: grid;
-  grid-template-columns: 60px repeat(7, 1fr);
-  align-content: start;
-}
-.cal-body::-webkit-scrollbar { width: 4px; }
-.cal-body::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
-
-.time-slot {
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid #1e1e1e;
-  padding: 6px 8px 0;
-  font-size: 11px; color: var(--muted2); text-align: right;
-  height: 56px; flex-shrink: 0;
-}
-.day-col {
-  border-right: 1px solid var(--border);
-  border-bottom: 1px solid #1e1e1e;
-  height: 56px; position: relative; cursor: pointer;
-  transition: background 0.1s;
-}
-.day-col:hover { background: rgba(200,240,96,0.03); }
-.day-col.today-col { background: rgba(200,240,96,0.02); }
-
-/* Appointments */
-.appt {
-  position: absolute; left: 3px; right: 3px;
-  border-radius: 6px; padding: 5px 8px; cursor: pointer;
-  transition: all 0.15s; z-index: 2; overflow: hidden;
-}
-.appt:hover { filter: brightness(1.1); transform: scale(1.01); z-index: 10; }
-.appt-name { font-size: 12px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.appt-service { font-size: 11px; opacity: 0.8; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.appt-time { font-size: 10px; opacity: 0.7; margin-top: 2px; }
-
-.appt.blue { background: rgba(107,196,255,0.15); border-left: 3px solid var(--blue); color: var(--blue); }
-.appt.purple { background: rgba(176,139,255,0.15); border-left: 3px solid var(--purple); color: var(--purple); }
-.appt.amber { background: rgba(255,184,77,0.15); border-left: 3px solid var(--amber); color: var(--amber); }
-.appt.teal { background: rgba(77,255,212,0.15); border-left: 3px solid var(--teal); color: var(--teal); }
-.appt.red { background: rgba(255,107,107,0.15); border-left: 3px solid var(--red); color: var(--red); }
-.appt.accent { background: rgba(200,240,96,0.15); border-left: 3px solid var(--accent); color: var(--accent); }
-
-/* Right panel */
-.right-panel {
-  width: 280px; border-left: 1px solid var(--border);
-  background: var(--surface); display: flex; flex-direction: column;
-  overflow-y: auto; flex-shrink: 0;
-}
-.right-panel::-webkit-scrollbar { width: 4px; }
-.right-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
-
-.panel-section { padding: 20px; border-bottom: 1px solid var(--border); }
-.panel-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 14px; }
-
-.team-member {
-  display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
-}
-.member-avatar {
-  width: 32px; height: 32px; border-radius: 50%; display: flex;
-  align-items: center; justify-content: center; font-size: 12px; font-weight: 700;
-  flex-shrink: 0;
-}
-.member-name { font-size: 13px; font-weight: 500; }
-.member-appts { font-size: 11px; color: var(--muted); }
-.member-dot { width: 8px; height: 8px; border-radius: 50%; margin-left: auto; flex-shrink: 0; }
-
-.upcoming-item {
-  padding: 10px 12px; border-radius: 8px; background: var(--surface2);
-  margin-bottom: 8px; cursor: pointer; transition: all 0.15s;
-}
-.upcoming-item:hover { background: #2a2a2a; }
-.upcoming-time { font-size: 11px; color: var(--muted); }
-.upcoming-name { font-size: 13px; font-weight: 500; margin-top: 2px; }
-.upcoming-service { font-size: 12px; color: var(--muted); }
-.upcoming-staff { display: flex; align-items: center; gap: 5px; margin-top: 6px; font-size: 11px; color: var(--muted); }
-
-.ai-card {
-  background: linear-gradient(135deg, rgba(200,240,96,0.08), rgba(200,240,96,0.03));
-  border: 1px solid rgba(200,240,96,0.2); border-radius: 10px; padding: 14px;
-}
-.ai-title { font-size: 12px; font-weight: 600; color: var(--accent); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-.ai-insight { font-size: 12px; color: var(--muted); line-height: 1.5; margin-bottom: 8px; }
-.ai-tag {
-  display: inline-block; background: rgba(200,240,96,0.15); color: var(--accent);
-  font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 99px; margin: 2px 2px 0 0;
-}
-
-/* Current time line */
-.time-line {
-  position: absolute; left: 0; right: 0; height: 2px;
-  background: var(--accent); z-index: 5; pointer-events: none;
-}
-.time-line::before {
-  content: ''; position: absolute; left: -4px; top: -4px;
-  width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
-}
-
-/* Animations */
-@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: translateY(0); } }
-.appt { animation: fadeIn 0.3s ease both; }
-
-/* Mobile bottom nav */
-.mobile-nav {
+/* Bottom nav */
+.mobile-bottom-nav {
   display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: 8px 4px 20px;
-  z-index: 30;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: var(--surface); border-top: 1px solid var(--border);
+  z-index: 30; padding: 6px 0 20px;
   justify-content: space-around;
 }
-.mob-nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 6px 8px; border-radius: 8px; text-decoration: none;
-  color: var(--muted); font-size: 10px; cursor: pointer; transition: color 0.15s; flex: 1;
+@media (max-width: 768px) { .mobile-bottom-nav { display: flex; } }
+.mbn-item {
+  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
+  text-decoration: none; color: var(--muted); font-size: 10px; padding: 4px 0;
+  -webkit-tap-highlight-color: transparent;
 }
-.mob-nav-item.active { color: var(--accent); }
-.mob-nav-item svg { width: 20px; height: 20px; }
+.mbn-item.active { color: var(--accent); }
+.mbn-item svg { width: 22px; height: 22px; }
 
-@media (max-width: 768px) {
-  .mobile-nav { display: flex; }
-  .main { padding-bottom: 80px; }
-}
-
-/* Scrollbar */
-.cal-body { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
 </style>
 </head>
 <body>
 
-<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
+<!-- Overlay + Sidebar -->
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<aside class="sb" id="sb">
+  <div class="sbh">
+    <div class="sblogo">Salon<span>Flow</span></div>
+    <button class="sbx" onclick="closeSB()">✕</button>
+  </div>
+  <nav class="sbn">
+    <div class="nvsec">Beheer</div>
+    <a href="index.html" class="nvi on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a href="kassa.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="diensten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
+    <div class="nvsec">Groei</div>
+    <a href="rapportages.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+    <a href="boeken.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Online boeken</a>
+  </nav>
+  <div class="sbf"><div class="sc"><div class="sca">KS</div><div><div style="font-size:13px;font-weight:500">Kapper Studio</div><div style="font-size:11px;color:var(--mu)">Pro plan</div></div></div></div>
+</aside>
 
-<!-- Sidebar -->
-<nav class="sidebar" id="sidebar">
-  <div class="logo">
-    <div class="logo-mark">Salon<span>Flow</span></div>
-    <div class="logo-sub">Salon management</div>
+<!-- Topbar -->
+<header class="topbar">
+  <div class="t-left">
+    <button class="hbg" onclick="openSB()">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    </button>
+    <div class="logo">Salon<span>Flow</span></div>
   </div>
-  <div class="nav">
-    <div class="nav-section">Beheer</div>
-    <a href="index.html" class="nav-item active">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-      Agenda
-    </a>
-    <a href="klanten.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-      Klanten
-      <span class="nav-badge">3</span>
-    </a>
-    <a href="kassa.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-      Kassa
-    </a>
-    <a href="medewerkers.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-      Medewerkers
-    </a>
-    <a href="diensten.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
-      Diensten
-    </a>
-    <div class="nav-section">Groei</div>
-    <a href="rapportages.html" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-      Rapportages
-    </a>
-    <a href="#" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>
-      Marketing
-    </a>
-    <a href="#" class="nav-item">
-      <svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 19.07a10 10 0 010-14.14"/></svg>
-      AI Assistent
-    </a>
-  </div>
-  <div class="sidebar-bottom">
-    <div class="salon-info">
-      <div class="salon-avatar">KS</div>
-      <div>
-        <div class="salon-name">Kapper Studio</div>
-        <div class="salon-plan">Pro plan</div>
-      </div>
-    </div>
-  </div>
+  <button class="btn-add" onclick="openM('m-new')">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Afspraak
+  </button>
+</header>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat"><div class="sdot" style="background:var(--ac)"></div><div><div class="slb">Vandaag</div><div class="sval">8</div><div class="ssub">afspraken</div></div></div>
+  <div class="stat"><div class="sdot" style="background:var(--blue)"></div><div><div class="slb">Omzet</div><div class="sval">€342</div><div class="ssub">verwacht</div></div></div>
+  <div class="stat"><div class="sdot" style="background:var(--amber)"></div><div><div class="slb">Bezetting</div><div class="sval">74%</div><div class="ssub">vandaag</div></div></div>
+  <div class="stat"><div class="sdot" style="background:var(--red)"></div><div><div class="slb">No-shows</div><div class="sval">1</div><div class="ssub">deze week</div></div></div>
+</div>
+
+<!-- Date nav -->
+<div class="datenav">
+  <button class="dnbtn" onclick="chDay(-1)">‹</button>
+  <div class="dnlbl" id="dlbl">Zaterdag 28 maart</div>
+  <button class="tdbtn" onclick="goToday()">Vandaag</button>
+  <button class="dnbtn" onclick="chDay(1)">›</button>
+</div>
+
+<!-- Agenda -->
+<div class="agenda" id="agenda"></div>
+
+<!-- Bottom nav -->
+<nav class="bnav">
+  <a href="index.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+  <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
+  <a href="medewerkers.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Team</a>
 </nav>
 
-<!-- Main -->
-<div class="main">
-  <!-- Topbar -->
-  <div class="topbar">
-    <div class="topbar-left">
-      <button class="hamburger" onclick="openSidebar()">
-        <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-      <div class="page-title">Agenda</div>
-      <div class="date-nav">
-        <button class="date-btn" onclick="changeWeek(-1)">‹</button>
-        <span class="date-label" id="date-label">28 mrt — 3 apr</span>
-        <button class="date-btn" onclick="changeWeek(1)">›</button>
-        <button class="date-btn" onclick="goToday()" style="width:auto;padding:0 10px;font-size:12px;">Vandaag</button>
-      </div>
+<!-- Nieuwe afspraak modal -->
+<div class="mbg" id="m-new" onclick="if(event.target===this)closeM('m-new')">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">Nieuwe afspraak</div>
+    <div class="msub">Plan een afspraak in de agenda</div>
+    <div class="fr"><div class="fl">Klant</div><input class="fi" type="text" placeholder="Naam klant" autocomplete="off"></div>
+    <div class="fr"><div class="fl">Dienst</div><select class="fi"><option>Knippen + wassen</option><option>Knippen</option><option>Baard trimmen</option><option>Highlights</option><option>Balayage</option></select></div>
+    <div class="fg">
+      <div class="fr"><div class="fl">Datum</div><input class="fi" type="date"></div>
+      <div class="fr"><div class="fl">Tijd</div><input class="fi" type="time" value="09:00"></div>
     </div>
-    <div class="topbar-right">
-      <div class="view-toggle">
-        <button class="view-btn active">Week</button>
-        <button class="view-btn">Dag</button>
-        <button class="view-btn">Maand</button>
-      </div>
-      <button class="btn-primary" onclick="newAppt()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Afspraak
-      </button>
-    </div>
+    <div class="fr"><div class="fl">Medewerker</div><select class="fi"><option>Jasmijn de Vries</option><option>Marco Koster</option><option>Sara Bakker</option></select></div>
+    <button class="btsv" onclick="closeM('m-new')">Afspraak opslaan</button>
   </div>
+</div>
 
-  <!-- Stats -->
-  <div class="stats-bar">
-    <div class="stat-item">
-      <div class="stat-dot" style="background:var(--accent)"></div>
+<!-- Afspraak detail modal -->
+<div class="mbg" id="m-detail" onclick="if(event.target===this)closeM('m-detail')">
+  <div class="modal appt-detail">
+    <div class="mh"></div>
+    <div class="detail-header">
+      <div class="detail-avatar" id="d-av" style="background:rgba(107,196,255,0.15);color:var(--blue)">TK</div>
       <div>
-        <div class="stat-label">Vandaag</div>
-        <div class="stat-value">8</div>
-        <div class="stat-sub">afspraken</div>
+        <div class="detail-name" id="d-naam">Thomas van Dijk</div>
+        <div class="detail-sub" id="d-sub">Knippen + wassen</div>
       </div>
     </div>
-    <div class="stat-item">
-      <div class="stat-dot" style="background:var(--blue)"></div>
-      <div>
-        <div class="stat-label">Omzet vandaag</div>
-        <div class="stat-value">€ 342</div>
-        <div class="stat-sub">verwacht</div>
-      </div>
+    <div class="detail-rows">
+      <div class="drow"><span class="drow-label">Tijd</span><span class="drow-val" id="d-tijd">09:00 – 09:45</span></div>
+      <div class="drow"><span class="drow-label">Duur</span><span class="drow-val" id="d-dur">45 min</span></div>
+      <div class="drow"><span class="drow-label">Medewerker</span><span class="drow-val" id="d-med">Jasmijn de Vries</span></div>
+      <div class="drow"><span class="drow-label">Prijs</span><span class="drow-val" id="d-prijs" style="color:var(--ac)">€45</span></div>
     </div>
-    <div class="stat-item">
-      <div class="stat-dot" style="background:var(--amber)"></div>
-      <div>
-        <div class="stat-label">Bezetting</div>
-        <div class="stat-value">74%</div>
-        <div class="stat-sub">van beschikbaar</div>
-      </div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-dot" style="background:var(--red)"></div>
-      <div>
-        <div class="stat-label">No-shows</div>
-        <div class="stat-value">1</div>
-        <div class="stat-sub">deze week</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Calendar + right panel -->
-  <div class="content">
-    <div class="calendar-wrap">
-      <!-- Day headers -->
-      <div class="cal-header" id="cal-header">
-        <div class="cal-corner"></div>
-      </div>
-      <!-- Time grid -->
-      <div class="cal-body" id="cal-body"></div>
-    </div>
-
-    <!-- Right panel -->
-    <div class="right-panel">
-      <div class="panel-section">
-        <div class="panel-title">Team vandaag</div>
-        <div class="team-member">
-          <div class="member-avatar" style="background:rgba(107,196,255,0.2);color:var(--blue)">JD</div>
-          <div>
-            <div class="member-name">Jasmijn de Vries</div>
-            <div class="member-appts">4 afspraken · €180</div>
-          </div>
-          <div class="member-dot" style="background:#4dff90"></div>
-        </div>
-        <div class="team-member">
-          <div class="member-avatar" style="background:rgba(176,139,255,0.2);color:var(--purple)">MK</div>
-          <div>
-            <div class="member-name">Marco Koster</div>
-            <div class="member-appts">3 afspraken · €105</div>
-          </div>
-          <div class="member-dot" style="background:#4dff90"></div>
-        </div>
-        <div class="team-member">
-          <div class="member-avatar" style="background:rgba(255,184,77,0.2);color:var(--amber)">SB</div>
-          <div>
-            <div class="member-name">Sara Bakker</div>
-            <div class="member-appts">1 afspraak · €57</div>
-          </div>
-          <div class="member-dot" style="background:var(--muted2)"></div>
-        </div>
-      </div>
-
-      <div class="panel-section">
-        <div class="panel-title">Volgende afspraken</div>
-        <div class="upcoming-item">
-          <div class="upcoming-time">10:00 — 10:45</div>
-          <div class="upcoming-name">Thomas van Dijk</div>
-          <div class="upcoming-service">Knippen + wassen</div>
-          <div class="upcoming-staff">
-            <div style="width:16px;height:16px;border-radius:50%;background:rgba(107,196,255,0.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--blue);">JD</div>
-            Jasmijn de Vries
-          </div>
-        </div>
-        <div class="upcoming-item">
-          <div class="upcoming-time">10:30 — 12:00</div>
-          <div class="upcoming-name">Fatima El Moudden</div>
-          <div class="upcoming-service">Knippen + verven</div>
-          <div class="upcoming-staff">
-            <div style="width:16px;height:16px;border-radius:50%;background:rgba(176,139,255,0.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--purple);">MK</div>
-            Marco Koster
-          </div>
-        </div>
-        <div class="upcoming-item">
-          <div class="upcoming-time">11:00 — 11:30</div>
-          <div class="upcoming-name">Lars Smit</div>
-          <div class="upcoming-service">Baard trimmen</div>
-          <div class="upcoming-staff">
-            <div style="width:16px;height:16px;border-radius:50%;background:rgba(107,196,255,0.2);display:flex;align-items:center;justify-content:center;font-size:9px;color:var(--blue);">JD</div>
-            Jasmijn de Vries
-          </div>
-        </div>
-      </div>
-
-      <div class="panel-section">
-        <div class="panel-title">AI inzichten</div>
-        <div class="ai-card">
-          <div class="ai-title">
-            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-            SalonFlow AI
-          </div>
-          <div class="ai-insight">Donderdag 14:00–16:00 is nog leeg. Op basis van je klanthistorie zijn dit je beste uren voor lange behandelingen.</div>
-          <div>
-            <span class="ai-tag">Donderdag vrijhouden</span>
-            <span class="ai-tag">Vervolgafspraken sturen</span>
-          </div>
-        </div>
-      </div>
+    <div class="btns-row">
+      <button class="btn-cancel-appt" onclick="closeM('m-detail')">Annuleren</button>
+      <button class="btn-edit-appt" onclick="closeM('m-detail')">Afrekenen →</button>
     </div>
   </div>
 </div>
 
 <script>
-const days = ['Zo','Ma','Di','Wo','Do','Vr','Za'];
-const months = ['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
-const colors = ['blue','purple','amber','teal','red','accent'];
+const MN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const DN=['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'];
+const PRICES={45:'€45','Knippen + wassen':'€45','Knippen':'€35','Baard trimmen':'€25','Highlights':'€80','Balayage':'€120','Verven':'€95','Wassen + föhnen':'€30'};
 
-const appointments = [
-  { day: 1, startH: 9, startM: 0, dur: 45, name: 'Thomas van Dijk', service: 'Knippen + wassen', color: 'blue' },
-  { day: 1, startH: 10, startM: 0, dur: 90, name: 'Fatima El Moudden', service: 'Verven', color: 'purple' },
-  { day: 1, startH: 11, startM: 0, dur: 30, name: 'Lars Smit', service: 'Baard trimmen', color: 'teal' },
-  { day: 1, startH: 13, startM: 30, dur: 60, name: 'Nadia Brouwer', service: 'Knippen', color: 'accent' },
-  { day: 1, startH: 15, startM: 0, dur: 45, name: 'Pieter Jansen', service: 'Knippen + wassen', color: 'amber' },
-  { day: 2, startH: 9, startM: 30, dur: 60, name: 'Emma de Groot', service: 'Highlights', color: 'amber' },
-  { day: 2, startH: 11, startM: 0, dur: 45, name: 'Ravi Sharma', service: 'Knippen', color: 'blue' },
-  { day: 2, startH: 14, startM: 0, dur: 120, name: 'Sophie Visser', service: 'Balayage', color: 'purple' },
-  { day: 3, startH: 10, startM: 0, dur: 45, name: 'Kevin Bakker', service: 'Knippen', color: 'teal' },
-  { day: 3, startH: 13, startM: 0, dur: 30, name: 'Yasmin Hassan', service: 'Wassen + föhnen', color: 'accent' },
-  { day: 4, startH: 9, startM: 0, dur: 60, name: 'Lotte van Berg', service: 'Knippen + verven', color: 'red' },
-  { day: 4, startH: 11, startM: 30, dur: 45, name: 'Daan Mulder', service: 'Knippen', color: 'blue' },
-  { day: 4, startH: 15, startM: 0, dur: 90, name: 'Aisha Mohamed', service: 'Highlights + knippen', color: 'purple' },
-  { day: 5, startH: 10, startM: 30, dur: 45, name: 'Tim de Vries', service: 'Knippen', color: 'amber' },
-  { day: 5, startH: 13, startM: 0, dur: 60, name: 'Julia Wolff', service: 'Knippen + wassen', color: 'teal' },
-  { day: 6, startH: 9, startM: 0, dur: 45, name: 'Mehmet Yilmaz', service: 'Knippen', color: 'blue' },
-  { day: 6, startH: 10, startM: 30, dur: 120, name: 'Lisa van Dam', service: 'Balayage full', color: 'accent' },
-  { day: 6, startH: 14, startM: 0, dur: 45, name: 'Joost Hendriks', service: 'Knippen + baard', color: 'red' },
+let cur=new Date(2026,2,28);
+
+const APPTS=[
+  {d:'2026-03-28',h:9,m:0,dur:45,naam:'Thomas van Dijk',sv:'Knippen + wassen',med:'Jasmijn de Vries',c:'blue',init:'TD'},
+  {d:'2026-03-28',h:10,m:0,dur:90,naam:'Fatima El Moudden',sv:'Verven',med:'Marco Koster',c:'purple',init:'FE'},
+  {d:'2026-03-28',h:11,m:0,dur:30,naam:'Lars Smit',sv:'Baard trimmen',med:'Jasmijn de Vries',c:'teal',init:'LS'},
+  {d:'2026-03-28',h:13,m:30,dur:60,naam:'Nadia Brouwer',sv:'Knippen',med:'Jasmijn de Vries',c:'green',init:'NB'},
+  {d:'2026-03-28',h:15,m:0,dur:45,naam:'Pieter Jansen',sv:'Knippen + wassen',med:'Sara Bakker',c:'amber',init:'PJ'},
+  {d:'2026-03-28',h:16,m:30,dur:60,naam:'Emma de Groot',sv:'Highlights',med:'Marco Koster',c:'red',init:'EG'},
+  {d:'2026-03-29',h:9,m:30,dur:45,naam:'Kevin Bakker',sv:'Knippen',med:'Jasmijn de Vries',c:'blue',init:'KB'},
+  {d:'2026-03-29',h:11,m:0,dur:120,naam:'Sophie Visser',sv:'Balayage',med:'Marco Koster',c:'purple',init:'SV'},
+  {d:'2026-03-30',h:10,m:0,dur:45,naam:'Daan Mulder',sv:'Knippen',med:'Jasmijn de Vries',c:'green',init:'DM'},
+  {d:'2026-03-31',h:9,m:0,dur:45,naam:'Ravi Sharma',sv:'Knippen',med:'Marco Koster',c:'blue',init:'RS'},
+  {d:'2026-03-31',h:14,m:0,dur:90,naam:'Lisa van Dam',sv:'Highlights',med:'Sara Bakker',c:'amber',init:'LD'},
 ];
 
-let weekOffset = 0;
-const hourStart = 8;
-const hourEnd = 20;
-const slotH = 56;
+const COLORS={blue:'rgba(107,196,255,0.2)',purple:'rgba(176,139,255,0.2)',amber:'rgba(255,184,77,0.2)',teal:'rgba(77,255,212,0.2)',green:'rgba(200,240,96,0.2)',red:'rgba(255,107,107,0.2)'};
+const TEXTC={blue:'var(--blue)',purple:'var(--purple)',amber:'var(--amber)',teal:'var(--teal)',green:'var(--ac)',red:'var(--red)'};
 
-function getWeekStart(offset = 0) {
-  const now = new Date();
-  const day = now.getDay();
-  const mon = new Date(now);
-  mon.setDate(now.getDate() - (day === 0 ? 6 : day - 1) + offset * 7);
-  mon.setHours(0,0,0,0);
-  return mon;
-}
+function dk(d){return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;}
+function ft(h,m){return `${h}:${String(m).padStart(2,'0')}`;}
 
-function renderCalendar() {
-  const ws = getWeekStart(weekOffset);
-  const we = new Date(ws); we.setDate(ws.getDate() + 6);
-  document.getElementById('date-label').textContent =
-    `${ws.getDate()} ${months[ws.getMonth()]} — ${we.getDate()} ${months[we.getMonth()]}`;
+function render(){
+  const key=dk(cur);
+  const appts=APPTS.filter(a=>a.d===key);
+  const now=new Date();
+  const isToday=dk(now)===key;
 
-  const today = new Date(); today.setHours(0,0,0,0);
+  document.getElementById('dlbl').textContent=`${DN[cur.getDay()]} ${cur.getDate()} ${MN[cur.getMonth()]}`;
 
-  // Headers
-  const header = document.getElementById('cal-header');
-  header.innerHTML = '<div class="cal-corner"></div>';
-  for (let d = 0; d < 7; d++) {
-    const date = new Date(ws); date.setDate(ws.getDate() + d);
-    const isToday = date.getTime() === today.getTime();
-    const div = document.createElement('div');
-    div.className = 'cal-day-head';
-    div.innerHTML = `<div class="cal-day-name">${days[(d+1)%7]}</div>
-      <div class="cal-day-num${isToday?' today':''}">${date.getDate()}</div>`;
-    header.appendChild(div);
-  }
+  const ag=document.getElementById('agenda');
+  ag.innerHTML='';
 
-  // Body
-  const body = document.getElementById('cal-body');
-  body.innerHTML = '';
+  const hours=[8,9,10,11,12,13,14,15,16,17,18];
+  hours.forEach(h=>{
+    const row=document.createElement('div');
+    row.className='arow';
 
-  const hours = [];
-  for (let h = hourStart; h < hourEnd; h++) hours.push(h);
+    const tl=document.createElement('div');
+    tl.className='atime';
+    tl.textContent=`${h}:00`;
 
-  // Build column containers for absolute positioning
-  const colDivs = [];
-  const timeCol = document.createElement('div');
-  timeCol.style.cssText = 'grid-column:1; display:contents;';
+    const col=document.createElement('div');
+    col.className='acol';
+    col.onclick=()=>openM('m-new');
 
-  for (let h of hours) {
-    const t = document.createElement('div');
-    t.className = 'time-slot';
-    t.style.cssText = `grid-column:1; grid-row:${h - hourStart + 1};`;
-    t.textContent = `${h}:00`;
-    body.appendChild(t);
-  }
-
-  for (let d = 0; d < 7; d++) {
-    const date = new Date(ws); date.setDate(ws.getDate() + d);
-    const isToday = date.getTime() === today.getTime();
-    const wrapper = document.createElement('div');
-    wrapper.style.cssText = `grid-column:${d+2}; grid-row: 1 / ${hours.length+1}; position:relative;`;
-    if (isToday) wrapper.style.background = 'rgba(200,240,96,0.02)';
-
-    // Rows for hover
-    for (let i = 0; i < hours.length; i++) {
-      const row = document.createElement('div');
-      row.className = 'day-col' + (isToday ? ' today-col' : '');
-      row.style.cssText = `position:absolute;top:${i*slotH}px;left:0;right:0;height:${slotH}px;`;
-      row.onclick = () => newAppt();
-      wrapper.appendChild(row);
+    if(isToday&&now.getHours()===h){
+      const nl=document.createElement('div');
+      nl.className='nowline';
+      nl.style.top=(now.getMinutes()/60*56)+'px';
+      col.appendChild(nl);
     }
 
-    // Current time line
-    if (isToday) {
-      const now2 = new Date();
-      const mins = (now2.getHours() - hourStart) * 60 + now2.getMinutes();
-      const top = (mins / 60) * slotH;
-      if (top >= 0 && top < hours.length * slotH) {
-        const line = document.createElement('div');
-        line.className = 'time-line';
-        line.style.top = top + 'px';
-        wrapper.appendChild(line);
-      }
-    }
-
-    // Appointments
-    appointments.filter(a => a.day - 1 === d).forEach((a, i) => {
-      const topPx = ((a.startH - hourStart) + a.startM / 60) * slotH;
-      const heightPx = (a.dur / 60) * slotH - 4;
-      const el = document.createElement('div');
-      el.className = `appt ${a.color}`;
-      el.style.cssText = `top:${topPx + 2}px;height:${heightPx}px;animation-delay:${i*0.04}s;`;
-      el.innerHTML = `<div class="appt-name">${a.name}</div>
-        <div class="appt-service">${a.service}</div>
-        ${heightPx > 50 ? `<div class="appt-time">${a.startH}:${String(a.startM).padStart(2,'0')} — ${Math.floor(a.startH + (a.startM + a.dur)/60)}:${String((a.startM + a.dur)%60).padStart(2,'0')}</div>` : ''}`;
-      el.onclick = e => { e.stopPropagation(); showAppt(a); };
-      wrapper.appendChild(el);
+    appts.filter(a=>a.h===h).forEach(a=>{
+      const eH=Math.floor(a.h+(a.m+a.dur)/60);
+      const eM=(a.m+a.dur)%60;
+      const card=document.createElement('div');
+      card.className=`appt ac-${a.c}`;
+      card.innerHTML=`<div class="an">${a.naam}</div><div class="as">${a.sv}</div><div class="am">${ft(a.h,a.m)} – ${ft(eH,eM)} · ${a.med.split(' ')[0]}</div>`;
+      card.onclick=e=>{
+        e.stopPropagation();
+        document.getElementById('d-av').textContent=a.init;
+        document.getElementById('d-av').style.background=COLORS[a.c];
+        document.getElementById('d-av').style.color=TEXTC[a.c];
+        document.getElementById('d-naam').textContent=a.naam;
+        document.getElementById('d-sub').textContent=a.sv;
+        document.getElementById('d-tijd').textContent=`${ft(a.h,a.m)} – ${ft(eH,eM)}`;
+        document.getElementById('d-dur').textContent=`${a.dur} min`;
+        document.getElementById('d-med').textContent=a.med;
+        document.getElementById('d-prijs').textContent=PRICES[a.sv]||'€-';
+        openM('m-detail');
+      };
+      col.appendChild(card);
     });
 
-    body.appendChild(wrapper);
-  }
-
-  // Scroll to 8am
-  body.scrollTop = 0;
-}
-
-function changeWeek(dir) {
-  weekOffset += dir;
-  renderCalendar();
-}
-function goToday() {
-  weekOffset = 0;
-  renderCalendar();
-}
-
-function showAppt(a) {
-  alert(`📅 ${a.name}\n🔧 ${a.service}\n🕐 ${a.startH}:${String(a.startM).padStart(2,'0')} (${a.dur} min)`);
-}
-function newAppt() {
-  alert('➕ Nieuwe afspraak toevoegen\n\n(In de echte app: formulier met klant, dienst, medewerker & tijd)');
-}
-
-renderCalendar();
-
-// View toggle
-document.querySelectorAll('.view-btn').forEach(btn => {
-  btn.addEventListener('click', function() {
-    document.querySelectorAll('.view-btn').forEach(b => b.classList.remove('active'));
-    this.classList.add('active');
+    row.appendChild(tl);
+    row.appendChild(col);
+    ag.appendChild(row);
   });
-});
 
-function openSidebar() {
-  document.getElementById('sidebar').classList.add('open');
-  document.getElementById('overlay').classList.add('open');
-}
-function closeSidebar() {
-  document.getElementById('sidebar').classList.remove('open');
-  document.getElementById('overlay').classList.remove('open');
-}
-
-// Close sidebar when nav item clicked on mobile
-document.querySelectorAll('.nav-item').forEach(item => {
-  item.addEventListener('click', () => {
-    if (window.innerWidth <= 768) closeSidebar();
-  });
-});
-
-// Mobile: toon alleen vandaag in kalender
-function applyMobileCalendar() {
-  if (window.innerWidth > 768) {
-    document.getElementById('cal-header').style.gridTemplateColumns = '';
-    document.getElementById('cal-body').style.gridTemplateColumns = '';
-    document.querySelectorAll('#cal-header .cal-day-head').forEach(h => h.style.display = '');
-    document.querySelectorAll('#cal-body > div').forEach(w => w.style.display = '');
-    return;
+  if(appts.length===0){
+    const e=document.createElement('div');
+    e.className='empty';
+    e.innerHTML='<div class="empty-icon">📅</div>Geen afspraken<br><span style="font-size:12px;color:var(--mu2)">Tik op een tijdslot om toe te voegen</span>';
+    ag.appendChild(e);
   }
-  const header = document.getElementById('cal-header');
-  const body = document.getElementById('cal-body');
-  const heads = header.querySelectorAll('.cal-day-head');
-  let todayIdx = Array.from(heads).findIndex(h => h.querySelector('.today'));
-  if (todayIdx === -1) todayIdx = 0;
-  heads.forEach((h, i) => { h.style.display = i === todayIdx ? '' : 'none'; });
-  const wrappers = Array.from(body.children).filter(c => c.style && c.style.gridColumn);
-  wrappers.forEach((w, i) => { w.style.display = i === todayIdx ? '' : 'none'; });
-  header.style.gridTemplateColumns = '48px 1fr';
-  body.style.gridTemplateColumns = '48px 1fr';
 }
 
-setTimeout(applyMobileCalendar, 150);
-window.addEventListener('resize', () => { renderCalendar(); setTimeout(applyMobileCalendar, 150); });
-</script><!-- Mobile bottom navigation -->
-<nav class="mobile-nav">
-  <a href="index.html" class="mob-nav-item active">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-    Agenda
-  </a>
-  <a href="klanten.html" class="mob-nav-item">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
-    Klanten
-  </a>
-  <a href="kassa.html" class="mob-nav-item">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
-    Kassa
-  </a>
-  <a href="rapportages.html" class="mob-nav-item">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-    Cijfers
-  </a>
-  <a href="medewerkers.html" class="mob-nav-item">
-    <svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>
-    Team
-  </a>
+function chDay(d){cur=new Date(cur.getTime()+d*86400000);render();}
+function goToday(){cur=new Date(2026,2,28);render();}
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+
+render();
+</script>
+
+<nav class="mobile-bottom-nav">
+  <a href="index.html" class="mbn-item active"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="klanten.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="kassa.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="rapportages.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
+  <a href="medewerkers.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team</a>
 </nav>
 
 </body>
