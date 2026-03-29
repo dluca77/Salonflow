@@ -246,7 +246,10 @@ async function registreer() {
   const { data, error } = await sb.auth.signUp({
     email,
     password: pass,
-    options: { data: { bedrijf_naam: naam, type_bedrijf: type } }
+    options: {
+        emailRedirectTo: 'https://dluca77.github.io/Salonflow/login.html',
+        data: { bedrijf_naam: naam, type_bedrijf: type }
+    }
   });
 
   if (error) {
