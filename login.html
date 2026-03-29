@@ -100,7 +100,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 
   <!-- Register form -->
-  <div id="register-form" style="display:none">
+  <div id="register" style="display:none"><div id="register-form" style="display:none">
     <div class="form-row">
       <div class="form-label">Naam van je bedrijf</div>
       <input class="form-input" type="text" id="reg-naam" placeholder="bijv. Beauty Studio Mila" autocomplete="organization">
@@ -134,7 +134,7 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
   </div>
 </div>
 
-<a href="home.html" class="back-home">← Terug naar Planr.nl</a>
+<a href="dashboard.html" class="back-home">← Terug naar Planr.nl</a>
 
 <!-- Supabase JS -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -143,8 +143,8 @@ html,body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-seri
 // CONFIGURATIE — VUL DIT IN
 // Haal deze waarden op uit: Supabase > Project Settings > API
 // ═══════════════════════════════════════
-const SUPABASE_URL = 'https://pscybcirexnltqvziixt.supabase.co';
-const SUPABASE_ANON_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const SUPABASE_URL = 'JOUW_SUPABASE_URL_HIER';
+const SUPABASE_ANON_KEY = 'JOUW_ANON_KEY_HIER';
 // ═══════════════════════════════════════
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -243,6 +243,11 @@ async function resetPassword() {
   if (!email) return showMsg('Vul eerst je e-mailadres in.');
   await supabase.auth.resetPasswordForEmail(email);
   showMsg('Reset-link verstuurd! Controleer je e-mail.', 'success');
+}
+
+// Auto-switch to register tab if URL has #register
+if (window.location.hash === '#register') {
+  setTab('register');
 }
 
 // Enter key support
