@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Planr — Agenda</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--bg:#0f0f0f;--sf:#1a1a1a;--s2:#222;--bd:#2a2a2a;--ac:#c8f060;--ac2:#a0d040;--tx:#f0ede8;--mu:#666;--mu2:#333;--red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;--green:#4dff90;--row-h:20px;}
+html,body{background:var(--bg);color:var(--tx);font-family:'DM Sans',sans-serif;height:100vh;overflow:hidden;}
+.app{display:flex;height:100vh;}
+.sidebar{width:200px;flex-shrink:0;background:var(--sf);border-right:1px solid var(--bd);display:flex;flex-direction:column;height:100vh;}
+.sb-logo{padding:18px 16px 14px;font-family:'DM Serif Display',serif;font-size:20px;letter-spacing:-0.5px;border-bottom:1px solid var(--bd);}
+.sb-logo span{color:var(--ac);}
+.sb-nav{flex:1;overflow-y:auto;padding:8px;}
+.sb-sec{font-size:10px;color:var(--mu2);text-transform:uppercase;letter-spacing:1px;padding:0 10px;margin:12px 0 4px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:9px;color:var(--mu);font-size:13.5px;text-decoration:none;margin-bottom:1px;transition:all 0.15s;}
+.sb-item:hover{background:var(--s2);color:var(--tx);}
+.sb-item.on{background:var(--ac);color:#1a1a1a;font-weight:600;}
+.sb-item svg{width:17px;height:17px;flex-shrink:0;}
+.sb-foot{padding:10px;border-top:1px solid var(--bd);}
+.sb-user{display:flex;align-items:center;gap:9px;padding:9px 10px;background:var(--s2);border-radius:9px;cursor:pointer;}
+.sb-user:hover{background:var(--mu2);}
+.sb-avatar{width:30px;height:30px;border-radius:7px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;color:#1a1a1a;flex-shrink:0;}
+.sb-name{font-size:12.5px;font-weight:500;line-height:1.2;}
+.sb-role{font-size:11px;color:var(--mu);}
+.main{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:52px;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px;padding:0 14px;flex-shrink:0;}
+.hbg{width:34px;height:34px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--tx);cursor:pointer;display:none;align-items:center;justify-content:center;}
+.tb-logo{font-family:'DM Serif Display',serif;font-size:18px;display:none;}
+.tb-logo span{color:var(--ac);}
+.view-tabs{display:flex;background:var(--s2);border-radius:8px;padding:3px;gap:2px;}
+.vtab{padding:5px 11px;border-radius:6px;font-size:12px;font-weight:500;color:var(--mu);cursor:pointer;border:none;background:transparent;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
+.vtab.on{background:var(--sf);color:var(--tx);}
+.tb-nav{display:flex;align-items:center;gap:4px;}
+.tb-btn{width:28px;height:28px;border-radius:7px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.tb-btn:hover{background:var(--s2);color:var(--tx);}
+.tb-date{font-size:13px;font-weight:600;padding:0 8px;min-width:160px;text-align:center;}
+.tb-today{padding:5px 11px;border-radius:7px;border:1px solid var(--bd);background:transparent;color:var(--mu);font-size:12px;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.tb-today:hover{background:var(--s2);color:var(--tx);}
+.tb-spacer{flex:1;}
+.btn-add{display:flex;align-items:center;gap:5px;padding:7px 13px;background:var(--ac);color:#1a1a1a;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+.btn-add:hover{background:var(--ac2);}
+.stats-bar{display:flex;background:var(--sf);border-bottom:1px solid var(--bd);flex-shrink:0;}
+.stat-item{flex:1;padding:9px 14px;border-right:1px solid var(--bd);display:flex;align-items:center;gap:8px;}
+.stat-item:last-child{border-right:none;}
+.stat-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+.stat-label{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:0.4px;}
+.stat-value{font-size:17px;font-weight:700;line-height:1;margin-top:1px;}
+.stat-sub{font-size:10px;color:var(--mu);margin-top:1px;}
+.cal-wrap{flex:1;overflow:hidden;display:flex;flex-direction:column;}
+.cal-head{display:flex;border-bottom:1px solid var(--bd);background:var(--sf);flex-shrink:0;}
+.cal-head-time{width:52px;flex-shrink:0;border-right:1px solid var(--bd);}
+.cal-head-days{flex:1;display:flex;overflow:hidden;}
+.cal-head-day{flex:1;padding:8px 6px;text-align:center;border-right:1px solid var(--bd);min-width:0;}
+.cal-head-day:last-child{border-right:none;}
+.day-name{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;}
+.day-num{font-size:19px;font-weight:700;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:2px auto 0;}
+.day-num.today{background:var(--ac);color:#1a1a1a;}
+.day-apts{font-size:10px;color:var(--mu);margin-top:2px;}
+.cal-body{flex:1;overflow-y:auto;display:flex;}
+.cal-body::-webkit-scrollbar{width:4px;}
+.cal-body::-webkit-scrollbar-thumb{background:var(--bd);border-radius:2px;}
+.time-col{width:52px;flex-shrink:0;border-right:1px solid var(--bd);}
+.time-label{height:calc(var(--row-h)*4);display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 6px 0;font-size:10px;color:var(--mu);border-bottom:1px solid var(--bd);}
+.days-col{flex:1;display:flex;overflow:hidden;}
+.day-col{flex:1;border-right:1px solid var(--bd);position:relative;min-width:0;}
+.day-col:last-child{border-right:none;}
+.slot{height:var(--row-h);border-bottom:1px solid var(--mu2);cursor:pointer;}
+.slot:hover{background:rgba(200,240,96,0.03);}
+.slot.hour-slot{border-bottom-color:var(--bd);}
+.apt-card{position:absolute;left:3px;right:3px;border-radius:7px;padding:4px 7px;cursor:pointer;z-index:5;border-left:3px solid;overflow:hidden;transition:filter 0.15s;}
+.apt-card:hover{filter:brightness(1.1);}
+.apt-name{font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.apt-svc{font-size:10px;opacity:0.8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.apt-time{font-size:10px;opacity:0.6;margin-top:1px;}
+.apt-blue{background:rgba(107,196,255,0.12);border-color:var(--blue);color:var(--blue);}
+.apt-purple{background:rgba(176,139,255,0.12);border-color:var(--purple);color:var(--purple);}
+.apt-amber{background:rgba(255,184,77,0.12);border-color:var(--amber);color:var(--amber);}
+.apt-teal{background:rgba(77,255,212,0.12);border-color:var(--teal);color:var(--teal);}
+.apt-green{background:rgba(200,240,96,0.12);border-color:var(--ac);color:var(--ac);}
+.apt-red{background:rgba(255,107,107,0.12);border-color:var(--red);color:var(--red);}
+.now-line{position:absolute;left:0;right:0;height:2px;background:var(--ac);z-index:10;pointer-events:none;}
+.now-line::before{content:'';position:absolute;left:-3px;top:-4px;width:10px;height:10px;border-radius:50%;background:var(--ac);}
+.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:60;align-items:flex-end;justify-content:center;}
+.mbg.on{display:flex;}
+.modal{background:var(--sf);border-radius:20px 20px 0 0;padding:20px 18px 40px;width:100%;max-width:520px;border-top:1px solid var(--bd);}
+.mh{width:36px;height:4px;background:var(--bd);border-radius:99px;margin:0 auto 18px;}
+.mt{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:4px;}
+.msub{font-size:13px;color:var(--mu);margin-bottom:18px;}
+.fr{margin-bottom:12px;}
+.fl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;}
+.fi{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 13px;font-size:14px;color:var(--tx);font-family:'DM Sans',sans-serif;outline:none;-webkit-appearance:none;appearance:none;}
+.fi:focus{border-color:var(--ac);}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.btsv{width:100%;padding:14px;background:var(--ac);color:#1a1a1a;border:none;border-radius:11px;font-size:14px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:6px;}
+.btsv:disabled{opacity:0.5;}
+.dr{display:flex;align-items:center;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd);}
+.dr:last-child{border-bottom:none;}
+.dr-l{font-size:13px;color:var(--mu);}
+.dr-v{font-size:13px;font-weight:500;}
+.btns-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:4px;}
+.btn-del{padding:13px;background:rgba(255,107,107,0.1);color:var(--red);border:1px solid rgba(255,107,107,0.3);border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.btn-ok{padding:13px;background:var(--ac);color:#1a1a1a;border:none;border-radius:10px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:40;}
+.ov.on{display:block;}
+.sb-mob{position:fixed;left:-100%;top:0;width:220px;height:100%;background:var(--sf);z-index:50;display:flex;flex-direction:column;transition:left .25s;border-right:1px solid var(--bd);}
+.sb-mob.on{left:0;}
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);padding:6px 0 18px;z-index:30;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--mu);font-size:10px;padding:4px 0;}
+.bni.on{color:var(--ac);}
+.bni svg{width:21px;height:21px;}
+@media(max-width:768px){
+  .sidebar{display:none;}.hbg{display:flex;}.tb-logo{display:block;}
+  .bnav{display:flex;}.cal-body{margin-bottom:64px;}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="planr.js"></script>
+</head>
+<body>
+<div class="app">
+<aside class="sidebar">
+  <div class="sb-logo">Planr<span>.</span></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="diensten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
+    <div class="sb-sec">Groei</div>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+    <a href="boeken.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Online boeken</a>
+  </nav>
+  <div class="sb-foot"><div class="sb-user" onclick="uitloggen()">
+    <div class="sb-avatar salon-init">??</div>
+    <div><div class="sb-name salon-naam">Laden...</div><div class="sb-role">Uitloggen</div></div>
+  </div></div>
+</aside>
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<aside class="sb-mob" id="sb">
+  <div style="padding:16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-family:'DM Serif Display',serif;font-size:18px;">Planr<span style="color:var(--ac)">.</span></div>
+    <button onclick="closeSB()" style="width:30px;height:30px;border-radius:7px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+  </div>
+  <nav style="flex:1;overflow-y:auto;padding:8px;">
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  </nav>
+  <div style="padding:10px;border-top:1px solid var(--bd);"><div class="sb-user" onclick="uitloggen()">
+    <div class="sb-avatar salon-init">??</div>
+    <div><div class="sb-name salon-naam">Laden...</div><div class="sb-role">Uitloggen</div></div>
+  </div></div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <button class="hbg" onclick="openSB()"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="tb-logo">Planr<span>.</span></div>
+    <div class="view-tabs">
+      <button class="vtab" onclick="setView('day')">Dag</button>
+      <button class="vtab on" onclick="setView('week')">Week</button>
+    </div>
+    <div class="tb-nav">
+      <button class="tb-btn" onclick="navPrev()">‹</button>
+      <div class="tb-date" id="tb-date"></div>
+      <button class="tb-btn" onclick="navNext()">›</button>
+    </div>
+    <button class="tb-today" onclick="navToday()">Vandaag</button>
+    <div class="tb-spacer"></div>
+    <button class="btn-add" onclick="openM('m-new')">
+      <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Afspraak
+    </button>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><div class="stat-dot" style="background:var(--ac)"></div><div><div class="stat-label">Vandaag</div><div class="stat-value" id="stat-apts">0</div><div class="stat-sub">afspraken</div></div></div>
+    <div class="stat-item"><div class="stat-dot" style="background:var(--blue)"></div><div><div class="stat-label">Omzet</div><div class="stat-value" id="stat-omzet">€0</div><div class="stat-sub">verwacht</div></div></div>
+    <div class="stat-item"><div class="stat-dot" style="background:var(--amber)"></div><div><div class="stat-label">Volgende</div><div class="stat-value" id="stat-next">—</div><div class="stat-sub">afspraak</div></div></div>
+    <div class="stat-item"><div class="stat-dot" style="background:var(--purple)"></div><div><div class="stat-label">Deze week</div><div class="stat-value" id="stat-week">0</div><div class="stat-sub">afspraken</div></div></div>
+  </div>
+  <div class="cal-wrap">
+    <div class="cal-head"><div class="cal-head-time"></div><div class="cal-head-days" id="cal-head-days"></div></div>
+    <div class="cal-body" id="cal-body"></div>
+  </div>
+</div>
+</div>
+<nav class="bnav">
+  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home</a>
+  <a href="agenda.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
+</nav>
+<div class="mbg" id="m-new" onclick="if(event.target===this)closeM('m-new')">
+  <div class="modal"><div class="mh"></div><div class="mt">Nieuwe afspraak</div><div class="msub">Plan een afspraak in de agenda</div>
+    <div class="fr"><div class="fl">Klant</div><input class="fi" id="inp-klant" type="text" placeholder="Naam klant" autocomplete="off"></div>
+    <div class="fr"><div class="fl">Dienst</div><select class="fi" id="inp-dienst"><option value="">Kies dienst...</option></select></div>
+    <div class="fg">
+      <div class="fr"><div class="fl">Datum</div><input class="fi" id="inp-datum" type="date"></div>
+      <div class="fr"><div class="fl">Tijd</div><input class="fi" id="inp-tijd" type="time" value="09:00"></div>
+    </div>
+    <div class="fr"><div class="fl">Medewerker</div><select class="fi" id="inp-med"><option value="">Geen voorkeur</option></select></div>
+    <button class="btsv" id="btn-opslaan" onclick="slaAfspraakOp()">Afspraak opslaan</button>
+  </div>
+</div>
+<div class="mbg" id="m-detail" onclick="if(event.target===this)closeM('m-detail')">
+  <div class="modal"><div class="mh"></div>
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:16px;">
+      <div id="d-av" style="width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700;flex-shrink:0;"></div>
+      <div><div style="font-size:18px;font-weight:600;" id="d-naam"></div><div style="font-size:13px;color:var(--mu);" id="d-sub"></div></div>
+    </div>
+    <div style="background:var(--s2);border-radius:11px;overflow:hidden;margin-bottom:14px;">
+      <div class="dr"><span class="dr-l">Tijd</span><span class="dr-v" id="d-tijd"></span></div>
+      <div class="dr"><span class="dr-l">Duur</span><span class="dr-v" id="d-dur"></span></div>
+      <div class="dr"><span class="dr-l">Medewerker</span><span class="dr-v" id="d-med"></span></div>
+      <div class="dr"><span class="dr-l">Prijs</span><span class="dr-v" id="d-prijs" style="color:var(--ac)"></span></div>
+    </div>
+    <div class="btns-row">
+      <button class="btn-del" onclick="closeM('m-detail')">Sluiten</button>
+      <button class="btn-ok" onclick="closeM('m-detail')">Afrekenen →</button>
+    </div>
+  </div>
+</div>
+<script>
+const MN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const MNS=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const DN=['Zo','Ma','Di','Wo','Do','Vr','Za'];
+const CL=['blue','purple','amber','teal','green','red'];
+const CBG={blue:'rgba(107,196,255,0.15)',purple:'rgba(176,139,255,0.15)',amber:'rgba(255,184,77,0.15)',teal:'rgba(77,255,212,0.15)',green:'rgba(200,240,96,0.15)',red:'rgba(255,107,107,0.15)'};
+const CTX={blue:'var(--blue)',purple:'var(--purple)',amber:'var(--amber)',teal:'var(--teal)',green:'var(--ac)',red:'var(--red)'};
+const ROW_H=20, START_HOUR=7, END_HOUR=20;
+let viewMode='week', curDate=new Date(), allApts=[], allMed=[], allDiensten=[];
+curDate.setHours(0,0,0,0);
+function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function ft(h,m){return h+':'+String(m).padStart(2,'0');}
+function getWeekStart(d){const day=d.getDay();const diff=day===0?-6:1-day;const s=new Date(d);s.setDate(d.getDate()+diff);s.setHours(0,0,0,0);return s;}
+function getDays(){if(viewMode==='day')return[new Date(curDate)];const ws=getWeekStart(curDate);return Array.from({length:7},(_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d;});}
+async function loadData(){
+  const start=new Date();start.setDate(start.getDate()-14);start.setHours(0,0,0,0);
+  const end=new Date();end.setDate(end.getDate()+30);
+  const[aR,mR,dR]=await Promise.all([
+    sb.from('afspraken').select('*,medewerkers(naam,kleur),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',start.toISOString()).lte('datum_tijd',end.toISOString()).order('datum_tijd'),
+    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
+    sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true)
+  ]);
+  allApts=aR.data||[];allMed=mR.data||[];allDiensten=dR.data||[];
+  document.getElementById('inp-dienst').innerHTML='<option value="">Kies dienst...</option>'+allDiensten.map(d=>`<option value="${d.id}">${d.naam} — €${d.prijs}</option>`).join('');
+  document.getElementById('inp-med').innerHTML='<option value="">Geen voorkeur</option>'+allMed.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
+  const todayKey=dk(new Date());
+  const vandaag=allApts.filter(a=>a.datum_tijd.startsWith(todayKey));
+  const omzet=vandaag.reduce((s,a)=>s+(a.diensten?.prijs||0),0);
+  document.getElementById('stat-apts').textContent=vandaag.length;
+  document.getElementById('stat-omzet').textContent='€'+omzet;
+  const now=new Date();
+  const vol=allApts.filter(a=>new Date(a.datum_tijd)>now).sort((a,b)=>new Date(a.datum_tijd)-new Date(b.datum_tijd))[0];
+  if(vol){const dt=new Date(vol.datum_tijd);document.getElementById('stat-next').textContent=ft(dt.getHours(),dt.getMinutes());}
+  const ws=getWeekStart(new Date()),we=new Date(ws);we.setDate(ws.getDate()+7);
+  document.getElementById('stat-week').textContent=allApts.filter(a=>{const d=new Date(a.datum_tijd);return d>=ws&&d<we;}).length;
+  const nm=document.querySelector('.salon-naam')?.textContent||'';
+  const init=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??';
+  document.querySelectorAll('.salon-init').forEach(el=>el.textContent=init);
+  render();
+}
+function render(){
+  const days=getDays();const today=new Date();today.setHours(0,0,0,0);
+  if(viewMode==='day') document.getElementById('tb-date').textContent=DN[curDate.getDay()]+' '+curDate.getDate()+' '+MN[curDate.getMonth()];
+  else{const ws=days[0],we=days[6];document.getElementById('tb-date').textContent=ws.getDate()+' '+MNS[ws.getMonth()]+' – '+we.getDate()+' '+MNS[we.getMonth()]+' '+we.getFullYear();}
+  const headEl=document.getElementById('cal-head-days');
+  headEl.innerHTML=days.map(d=>{const isToday=d.getTime()===today.getTime();const cnt=allApts.filter(a=>a.datum_tijd.startsWith(dk(d))).length;return`<div class="cal-head-day"><div class="day-name">${DN[d.getDay()]}</div><div class="day-num${isToday?' today':''}">${d.getDate()}</div>${cnt>0?`<div class="day-apts">${cnt} afspr.</div>`:'<div class="day-apts"></div>'}</div>`;}).join('');
+  const bodyEl=document.getElementById('cal-body');bodyEl.innerHTML='';
+  const timeCol=document.createElement('div');timeCol.className='time-col';
+  for(let h=START_HOUR;h<=END_HOUR;h++){for(let q=0;q<4;q++){const l=document.createElement('div');l.className='time-label'+(q===0?' hour':'');if(q===0)l.textContent=ft(h,0);timeCol.appendChild(l);}}
+  bodyEl.appendChild(timeCol);
+  const daysWrap=document.createElement('div');daysWrap.className='days-col';
+  const now=new Date();const todayKey=dk(now);
+  days.forEach(d=>{
+    const key=dk(d);const dayApts=allApts.filter(a=>a.datum_tijd.startsWith(key));
+    const col=document.createElement('div');col.className='day-col';
+    const totalSlots=(END_HOUR-START_HOUR+1)*4;
+    for(let s=0;s<totalSlots;s++){
+      const isHour=s%4===0;const slot=document.createElement('div');slot.className='slot'+(isHour?' hour-slot':'');
+      const h=START_HOUR+Math.floor(s/4);const m=(s%4)*15;
+      slot.onclick=()=>{document.getElementById('inp-datum').value=key;document.getElementById('inp-tijd').value=ft(h,String(m).padStart(2,'0'));openM('m-new');};
+      col.appendChild(slot);
+    }
+    if(key===todayKey){const nowH=now.getHours(),nowM=now.getMinutes();if(nowH>=START_HOUR&&nowH<=END_HOUR){const nl=document.createElement('div');nl.className='now-line';nl.style.top=((nowH-START_HOUR)*60+nowM)/15*ROW_H+'px';col.appendChild(nl);}}
+    dayApts.forEach((a,i)=>{
+      const dt=new Date(a.datum_tijd);const h=dt.getHours(),m=dt.getMinutes();const dur=a.duur_min||45;
+      if(h<START_HOUR||h>END_HOUR)return;
+      const topPx=((h-START_HOUR)*60+m)/15*ROW_H;const heightPx=Math.max(dur/15*ROW_H,ROW_H*1.5);
+      const c=CL[i%CL.length];const naam=a.klant_naam||'Onbekend';const sv=a.diensten?.naam||'';const med=a.medewerkers?.naam||'';
+      const init=naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      const eH=Math.floor(h+(m+dur)/60),eM=(m+dur)%60;
+      const card=document.createElement('div');card.className=`apt-card apt-${c}`;card.style.top=topPx+'px';card.style.height=heightPx+'px';
+      card.innerHTML=`<div class="apt-name">${naam}</div>${sv?`<div class="apt-svc">${sv}</div>`:''}${heightPx>44?`<div class="apt-time">${ft(h,m)}–${ft(eH,eM)}${med?' · '+med.split(' ')[0]:''}</div>`:''}`;
+      card.onclick=e=>{e.stopPropagation();document.getElementById('d-av').textContent=init;document.getElementById('d-av').style.background=CBG[c];document.getElementById('d-av').style.color=CTX[c];document.getElementById('d-naam').textContent=naam;document.getElementById('d-sub').textContent=sv;document.getElementById('d-tijd').textContent=ft(h,m)+' – '+ft(eH,eM);document.getElementById('d-dur').textContent=dur+' min';document.getElementById('d-med').textContent=med||'—';document.getElementById('d-prijs').textContent='€'+(a.diensten?.prijs||0);openM('m-detail');};
+      col.appendChild(card);
+    });
+    daysWrap.appendChild(col);
+  });
+  bodyEl.appendChild(daysWrap);
+  bodyEl.scrollTop=((8-START_HOUR)*60/15)*ROW_H;
+}
+async function slaAfspraakOp(){
+  const naam=document.getElementById('inp-klant').value.trim();const dienstId=document.getElementById('inp-dienst').value;const datum=document.getElementById('inp-datum').value;const tijd=document.getElementById('inp-tijd').value;const medId=document.getElementById('inp-med').value;
+  if(!naam||!datum||!tijd){alert('Vul minimaal klant, datum en tijd in.');return;}
+  const btn=document.getElementById('btn-opslaan');btn.disabled=true;btn.textContent='Opslaan...';
+  const dt=new Date(datum+'T'+tijd);const dienst=allDiensten.find(d=>d.id===dienstId);
+  const{error}=await sb.from('afspraken').insert({salon_id:SALON_ID,klant_naam:naam,dienst_id:dienstId||null,medewerker_id:medId||null,datum_tijd:dt.toISOString(),duur_min:dienst?.duur_min||45,status:'gepland'});
+  btn.disabled=false;btn.textContent='Afspraak opslaan';if(error){alert('Fout: '+error.message);return;}
+  document.getElementById('inp-klant').value='';closeM('m-new');await loadData();
+}
+function setView(v){viewMode=v;document.querySelectorAll('.vtab').forEach(b=>b.classList.toggle('on',(v==='week'&&b.textContent==='Week')||(v==='day'&&b.textContent==='Dag')));render();}
+function navPrev(){if(viewMode==='day')curDate.setDate(curDate.getDate()-1);else curDate.setDate(curDate.getDate()-7);render();}
+function navNext(){if(viewMode==='day')curDate.setDate(curDate.getDate()+1);else curDate.setDate(curDate.getDate()+7);render();}
+function navToday(){curDate=new Date();curDate.setHours(0,0,0,0);render();}
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+setInterval(()=>{document.querySelectorAll('.now-line').forEach(nl=>{const now=new Date();nl.style.top=((now.getHours()-START_HOUR)*60+now.getMinutes())/15*ROW_H+'px';});},60000);
+planrInit(loadData);
+</script>
+</body>
+</html>
