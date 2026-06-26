@@ -4,179 +4,394 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Planr — Rapportages</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#0f0f0f;--sf:#1a1a1a;--s2:#242424;--bd:#2e2e2e;--ac:#c8f060;--tx:#f0ede8;--mu:#888;--mu2:#3a3a3a;--red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;--green:#4dff90;}
-html,body{background:var(--bg);color:var(--tx);font-family:"DM Sans",sans-serif;min-height:100vh;overflow-x:hidden;}
-.topbar{position:sticky;top:0;z-index:20;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:54px;}
-.t-left{display:flex;align-items:center;gap:10px;}
-.logo{font-family:"DM Serif Display",serif;font-size:19px;letter-spacing:-0.5px;}
-.logo span{color:var(--ac);}
-.hbg{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.periods{display:flex;gap:6px;padding:12px 14px;background:var(--sf);border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none;}
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
+.app{display:flex;height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:210px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;position:fixed;top:0;left:0;z-index:20;}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-logo a{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;letter-spacing:1px;color:var(--iv);text-decoration:none;}
+.sb-logo a em{color:var(--gd);font-style:normal;}
+.sb-nav{flex:1;overflow-y:auto;padding:12px 10px;}
+.sb-sec{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 10px;margin:16px 0 6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;color:rgba(255,255,255,0.45);font-size:13px;text-decoration:none;margin-bottom:1px;transition:all 0.15s;border-left:2px solid transparent;}
+.sb-item:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.04);}
+.sb-item.on{color:var(--iv);border-left-color:var(--gd);background:rgba(255,255,255,0.06);}
+.sb-item svg{width:16px;height:16px;flex-shrink:0;}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,0.06);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer;}
+.sb-user:hover{background:rgba(255,255,255,0.04);}
+.sb-av{width:30px;height:30px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--iv);flex-shrink:0;}
+.sb-nm{font-size:12px;color:rgba(255,255,255,0.7);}
+.sb-rl{font-size:10px;color:rgba(255,255,255,0.3);}
+
+/* ── MAIN ── */
+.main{margin-left:210px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.hbg{width:32px;height:32px;border:1px solid var(--bd);background:transparent;color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:none;letter-spacing:0.5px;}
+.tb-logo em{color:var(--gd);font-style:normal;}
+.tb-title{font-size:13px;font-weight:500;color:var(--mu);}
+.tb-spacer{flex:1;}
+
+/* Periode tabs */
+.periods{background:var(--wh);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 .periods::-webkit-scrollbar{display:none;}
-.pd{padding:7px 14px;border-radius:99px;border:1px solid var(--bd);background:transparent;color:var(--mu);font-size:13px;cursor:pointer;font-family:"DM Sans",sans-serif;white-space:nowrap;flex-shrink:0;}
-.pd.on{background:var(--ac);color:#1a1a1a;border-color:var(--ac);font-weight:600;}
-.body{padding:14px 14px 96px;}
-/* KPI cards */
-.kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;}
-.kpi{background:var(--sf);border:1px solid var(--bd);border-radius:13px;padding:16px;}
-.kpi-label{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
-.kpi-val{font-size:26px;font-weight:700;line-height:1;}
-.kpi-change{font-size:12px;margin-top:5px;}
+.pd{padding:14px 18px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);cursor:pointer;border:none;background:transparent;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all 0.15s;}
+.pd.on{color:var(--gd);border-bottom-color:var(--gd);}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:20px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-content:start;}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:var(--bd);}
+
+/* ── KPI ROW ── */
+.kpi-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bd);background:var(--bd);gap:1px;}
+.kpi{background:var(--wh);padding:18px 20px;}
+.kpi-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:10px;}
+.kpi-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--ink);line-height:1;}
+.kpi-val.gold{color:var(--gd);}
+.kpi-change{font-size:11px;color:var(--mu2);margin-top:5px;}
 .up{color:var(--green);}
 .dn{color:var(--red);}
-/* AI card */
-.ai-card{background:rgba(200,240,96,0.06);border:1px solid rgba(200,240,96,0.2);border-radius:13px;padding:16px;margin-bottom:16px;}
-.ai-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-.ai-title{font-size:14px;font-weight:600;color:var(--ac);}
-.ai-insight{font-size:13px;color:var(--mu);line-height:1.6;margin-bottom:8px;padding-bottom:8px;border-bottom:1px solid rgba(200,240,96,0.15);}
-.ai-insight:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0;}
-/* Bar chart */
-.chart-card{background:var(--sf);border:1px solid var(--bd);border-radius:13px;padding:16px;margin-bottom:16px;}
-.chart-title{font-size:13px;font-weight:600;margin-bottom:14px;}
-.bars{display:flex;align-items:flex-end;gap:8px;height:120px;}
-.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;}
-.bar{width:100%;border-radius:6px 6px 0 0;cursor:pointer;min-height:4px;}
-.bar-lbl{font-size:11px;color:var(--mu);}
-.bar-val{font-size:11px;font-weight:600;}
-/* Table */
-.table-card{background:var(--sf);border:1px solid var(--bd);border-radius:13px;overflow:hidden;margin-bottom:16px;}
-.tc-head{padding:14px 14px 10px;font-size:13px;font-weight:600;border-bottom:1px solid var(--bd);}
-.tc-row{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd);}
+
+/* ── CHART ── */
+.card{background:var(--wh);border:1px solid var(--bd);}
+.card-head{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);}
+.card-sub{font-size:10px;letter-spacing:1px;color:var(--mu2);}
+.chart-wrap{padding:20px 18px;}
+.bars{display:flex;align-items:flex-end;gap:6px;height:100px;}
+.bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.bar{width:100%;min-height:3px;transition:height 0.4s ease;cursor:pointer;}
+.bar:hover{filter:brightness(1.1);}
+.bar-val{font-size:10px;font-weight:500;color:var(--gd);}
+.bar-lbl{font-size:9px;color:var(--mu2);letter-spacing:1px;}
+
+/* ── TABLE ── */
+.tc-head-row{display:flex;align-items:center;justify-content:space-between;padding:11px 18px;border-bottom:1px solid var(--bd);}
+.tc-head-row:first-child{background:var(--iv);}
+.tc-row{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;border-bottom:1px solid var(--bd);}
 .tc-row:last-child{border-bottom:none;}
-.tc-name{font-size:14px;font-weight:500;}
-.tc-sub{font-size:12px;color:var(--mu);margin-top:2px;}
-.tc-right{text-align:right;}
-.tc-val{font-size:15px;font-weight:700;color:var(--ac);}
-.tc-apts{font-size:12px;color:var(--mu);margin-top:2px;}
-/* Sidebar */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:40;}
+.tc-row:hover{background:var(--iv);}
+.tc-name{font-size:13px;font-weight:500;}
+.tc-sub{font-size:10px;color:var(--mu2);margin-top:2px;letter-spacing:0.5px;}
+.tc-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gd);text-align:right;}
+.tc-meta{font-size:10px;color:var(--mu2);text-align:right;margin-top:2px;letter-spacing:0.5px;}
+
+/* ── AI ── */
+.ai-card{background:var(--wm);border:1px solid var(--bd);grid-column:1/-1;}
+.ai-head{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--bd);}
+.ai-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);}
+.ai-body{display:grid;grid-template-columns:repeat(3,1fr);border-top:none;}
+.ai-insight{padding:14px 18px;border-right:1px solid var(--bd);font-size:13px;color:var(--ink2);line-height:1.7;font-weight:300;}
+.ai-insight:last-child{border-right:none;}
+
+.empty-state{grid-column:1/-1;padding:48px;text-align:center;}
+.empty-text{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);}
+
+/* ── MOB OVERLAY ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;}
 .ov.on{display:block;}
-.sb{position:fixed;left:-100%;top:0;width:280px;height:100%;background:var(--sf);z-index:50;display:flex;flex-direction:column;transition:left .25s ease;border-right:1px solid var(--bd);overflow:hidden;}
-.sb.on{left:0;}
-.sbh{padding:16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.sblogo{font-family:"DM Serif Display",serif;font-size:19px;}
-.sblogo span{color:var(--ac);}
-.sbx{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.sbn{flex:1;overflow-y:auto;padding:10px;}
-.nvsec{font-size:10px;color:var(--mu2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:12px 0 5px;}
-.nvi{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--mu);font-size:14px;text-decoration:none;margin-bottom:1px;}
-.nvi.on{background:var(--ac);color:#1a1a1a;font-weight:600;}
-.nvi svg{width:19px;height:19px;flex-shrink:0;}
-.sbf{padding:12px;border-top:1px solid var(--bd);flex-shrink:0;}
-.sc{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;}
-.sca{width:34px;height:34px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#1a1a1a;flex-shrink:0;}
-.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:7px 0 20px;z-index:30;}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--mu);font-size:10px;padding:4px 0;-webkit-tap-highlight-color:transparent;}
-.bni.on{color:var(--ac);}
-.bni svg{width:22px;height:22px;}
+.sb-mob{position:fixed;left:-100%;top:0;width:240px;height:100%;background:var(--ink);z-index:50;display:flex;flex-direction:column;transition:left .25s;}
+.sb-mob.on{left:0;}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--bd);padding:6px 0 18px;z-index:30;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--mu2);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:4px 0;}
+.bni.on{color:var(--gd);}
+.bni svg{width:20px;height:20px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .sidebar{width:180px;}.main{margin-left:180px;}
+  .kpi-row{grid-template-columns:1fr 1fr;}
+  .ai-body{grid-template-columns:1fr;}
+  .ai-insight{border-right:none;border-bottom:1px solid var(--bd);}
+  .ai-insight:last-child{border-bottom:none;}
+}
+@media(max-width:768px){
+  .sidebar{display:none;}.main{margin-left:0;}
+  .hbg{display:flex;}.tb-logo{display:block;}.tb-title{display:none;}
+  .bnav{display:flex;}
+  .topbar{padding:0 14px;}
+  .periods{padding:0 14px;}
+  .content{grid-template-columns:1fr;padding:14px 14px 80px;}
+  .kpi-row{grid-template-columns:1fr 1fr;}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="planr.js"></script>
 </head>
 <body>
-<div class="ov" id="ov" onclick="closeSB()"></div>
-<aside class="sb" id="sb">
-  <div class="sbh"><div class="sblogo">Planr<span>.</span></div><button class="sbx" onclick="closeSB()">✕</button></div>
-  <nav class="sbn">
-    <div class="nvsec">Beheer</div>
-    <a href="dashboard.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-    <a href="klanten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-    <a href="kassa.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-    <a href="medewerkers.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
-    <a href="diensten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Diensten</a>
-    <div class="nvsec">Groei</div>
-    <a href="rapportages.html" class="nvi on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+<div class="app">
+
+<!-- Desktop sidebar -->
+<aside class="sidebar">
+  <div class="sb-logo"><a href="dashboard.html">Planr<em>.</em></a></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="diensten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
+    <div class="sb-sec">Groei</div>
+    <a href="rapportages.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+    <a href="boeken.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Online boeken</a>
   </nav>
-  <div class="sbf"><div class="sc"><div class="sca">KS</div><div><div style="font-size:13px;font-weight:500">Mijn Studio</div><div style="font-size:11px;color:var(--mu)">Pro plan</div></div></div></div>
+  <div class="sb-foot">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
+    </div>
+  </div>
 </aside>
 
-<header class="topbar">
-  <div class="t-left">
-    <button class="hbg" onclick="openSB()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <div class="logo">Planr<span>.</span></div>
+<!-- Mobiel overlay -->
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<aside class="sb-mob" id="sb">
+  <div style="padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--iv);letter-spacing:1px;">Planr<em style="color:var(--gd);font-style:normal">.</em></span>
+    <button onclick="closeSB()" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;">✕</button>
   </div>
-  <div style="font-size:12px;color:var(--mu)">Maart 2026</div>
-</header>
-
-<div class="periods">
-  <button class="pd on">Deze maand</button>
-  <button class="pd">Vorige maand</button>
-  <button class="pd">Dit kwartaal</button>
-  <button class="pd">Dit jaar</button>
-</div>
-
-<div class="body">
-  <div class="kpi-grid">
-    <div class="kpi"><div class="kpi-label">Omzet</div><div class="kpi-val" style="color:var(--ac)">€8.420</div><div class="kpi-change up">↑ 12% vs vorige maand</div></div>
-    <div class="kpi"><div class="kpi-label">Afspraken</div><div class="kpi-val">184</div><div class="kpi-change up">↑ 8% meer</div></div>
-    <div class="kpi"><div class="kpi-label">Gem. bon</div><div class="kpi-val">€45,76</div><div class="kpi-change up">↑ 4% hoger</div></div>
-    <div class="kpi"><div class="kpi-label">No-show</div><div class="kpi-val">3,2%</div><div class="kpi-change up">↓ was 4,1%</div></div>
-  </div>
-
-  <div class="ai-card">
-    <div class="ai-header">
-      <svg width="16" height="16" fill="none" stroke="var(--ac)" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-      <div class="ai-title">Planr AI inzichten</div>
+  <nav style="flex:1;overflow-y:auto;padding:12px 10px;">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="rapportages.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  </nav>
+  <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
     </div>
-    <div class="ai-insight">Donderdag is je beste dag — gemiddeld €340/dag, 28% meer dan andere dagen.</div>
-    <div class="ai-insight">18 klanten zijn al 8+ weken niet geweest. Een SMS-actie kan €680 extra opleveren.</div>
-    <div class="ai-insight">Balayage groeide +34% deze maand. Marco is je enige colorist — overweeg uitbreiding.</div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="tb-logo">Planr<em>.</em></div>
+    <div class="tb-title">Rapportages</div>
+    <div class="tb-spacer"></div>
+    <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2)" id="period-label"></div>
   </div>
 
-  <div class="chart-card">
-    <div class="chart-title">Omzet per week — maart</div>
-    <div class="bars" id="bars"></div>
+  <div class="periods">
+    <button class="pd on" onclick="setPeriod('maand',this)">Deze maand</button>
+    <button class="pd" onclick="setPeriod('vorig',this)">Vorige maand</button>
+    <button class="pd" onclick="setPeriod('kwartaal',this)">Dit kwartaal</button>
+    <button class="pd" onclick="setPeriod('jaar',this)">Dit jaar</button>
   </div>
 
-  <div class="table-card">
-    <div class="tc-head">Medewerkers</div>
-    <div class="tc-row"><div><div class="tc-name">Jasmijn de Vries</div><div class="tc-sub">96 afspraken · ★ 4.9</div></div><div class="tc-right"><div class="tc-val">€4.320</div><div class="tc-apts">Senior Kapper</div></div></div>
-    <div class="tc-row"><div><div class="tc-name">Marco Koster</div><div class="tc-sub">62 afspraken · ★ 4.7</div></div><div class="tc-right"><div class="tc-val">€3.180</div><div class="tc-apts">Colorist</div></div></div>
-    <div class="tc-row"><div><div class="tc-name">Sara Bakker</div><div class="tc-sub">26 afspraken · ★ 4.5</div></div><div class="tc-right"><div class="tc-val">€920</div><div class="tc-apts">Kapper</div></div></div>
-  </div>
-
-  <div class="table-card">
-    <div class="tc-head">Top diensten</div>
-    <div class="tc-row"><div><div class="tc-name">Knippen + wassen</div><div class="tc-sub">68x · 36% aandeel</div></div><div class="tc-right"><div class="tc-val">€3.060</div><div class="tc-apts" style="color:var(--green)">↑ 8%</div></div></div>
-    <div class="tc-row"><div><div class="tc-name">Highlights</div><div class="tc-sub">32x · 30% aandeel</div></div><div class="tc-right"><div class="tc-val">€2.560</div><div class="tc-apts" style="color:var(--green)">↑ 12%</div></div></div>
-    <div class="tc-row"><div><div class="tc-name">Balayage</div><div class="tc-sub">14x · 20% aandeel</div></div><div class="tc-right"><div class="tc-val">€1.680</div><div class="tc-apts" style="color:var(--green)">↑ 34%</div></div></div>
-    <div class="tc-row"><div><div class="tc-name">Baard trimmen</div><div class="tc-sub">28x · 8% aandeel</div></div><div class="tc-right"><div class="tc-val">€700</div><div class="tc-apts" style="color:var(--amber)">↑ 2%</div></div></div>
+  <div class="content" id="content">
+    <div class="empty-state"><div class="empty-text">Laden...</div></div>
   </div>
 </div>
+</div>
 
+<!-- Bottom nav -->
 <nav class="bnav">
-  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home</a>
+  <a href="agenda.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
   <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
   <a href="rapportages.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
-  <a href="medewerkers.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Team</a>
 </nav>
 
 <script>
-document.querySelectorAll(".pd").forEach(b=>b.onclick=function(){document.querySelectorAll(".pd").forEach(x=>x.classList.remove("on"));this.classList.add("on");});
-const wd=[{w:"W1",v:1820,c:"var(--purple)"},{w:"W2",v:2140,c:"var(--blue)"},{w:"W3",v:1960,c:"var(--teal)"},{w:"W4",v:2500,c:"var(--ac)"}];
-const mx=Math.max(...wd.map(d=>d.v));
-document.getElementById("bars").innerHTML=wd.map(d=>`<div class="bar-wrap"><div class="bar-val" style="color:${d.c}">€${d.v}</div><div class="bar" style="height:${Math.round(d.v/mx*100)}%;background:${d.c}"></div><div class="bar-lbl">${d.w}</div></div>`).join("");
-function openSB(){document.getElementById("sb").classList.add("on");document.getElementById("ov").classList.add("on");document.body.style.overflow="hidden";}
-function closeSB(){document.getElementById("sb").classList.remove("on");document.getElementById("ov").classList.remove("on");document.body.style.overflow="";}
-function showToast(msg) {
-  let t = document.getElementById('planr-toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'planr-toast';
-    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#f0ede8;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid #2e2e2e;z-index:999;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;';
-    document.body.appendChild(t);
+let activePeriod='maand';
+
+function getDateRange(period){
+  const now=new Date();
+  let start,end=new Date();
+  if(period==='maand'){
+    start=new Date(now.getFullYear(),now.getMonth(),1);
+    end=new Date(now.getFullYear(),now.getMonth()+1,0,23,59,59);
+  } else if(period==='vorig'){
+    start=new Date(now.getFullYear(),now.getMonth()-1,1);
+    end=new Date(now.getFullYear(),now.getMonth(),0,23,59,59);
+  } else if(period==='kwartaal'){
+    const q=Math.floor(now.getMonth()/3);
+    start=new Date(now.getFullYear(),q*3,1);
+    end=new Date(now.getFullYear(),q*3+3,0,23,59,59);
+  } else {
+    start=new Date(now.getFullYear(),0,1);
+    end=new Date(now.getFullYear(),11,31,23,59,59);
   }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  setTimeout(() => { t.style.opacity = '0'; }, 2500);
+  return{start,end};
 }
 
-function signOut(e){e.preventDefault();uitloggen();}
-planrInit(null);
+async function loadData(){
+  const{start,end}=getDateRange(activePeriod);
+  const nm=document.querySelector('.salon-naam')?.textContent||'';
+  document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+
+  const[betRes,aptRes,medRes]=await Promise.all([
+    sb.from('betalingen').select('bedrag,methode,datum').eq('salon_id',SALON_ID).gte('datum',start.toISOString()).lte('datum',end.toISOString()),
+    sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',start.toISOString()).lte('datum_tijd',end.toISOString()),
+    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true)
+  ]);
+
+  const betalingen=betRes.data||[];
+  const afspraken=aptRes.data||[];
+  const medewerkers=medRes.data||[];
+
+  const omzet=betalingen.reduce((s,b)=>s+parseFloat(b.bedrag||0),0);
+  const apts=afspraken.length;
+  const gemBon=apts>0?(omzet/apts).toFixed(2):0;
+  const noshow=afspraken.filter(a=>a.status==='no-show').length;
+  const noshowPct=apts>0?((noshow/apts)*100).toFixed(1):0;
+
+  // Bar chart: omzet per week/maand
+  const weeks=[0,0,0,0];
+  betalingen.forEach(b=>{
+    const d=new Date(b.datum);
+    const w=Math.min(3,Math.floor((d.getDate()-1)/7));
+    weeks[w]+=parseFloat(b.bedrag||0);
+  });
+  const maxW=Math.max(...weeks,1);
+
+  // Per medewerker
+  const medStats=medewerkers.map(m=>{
+    const mApts=afspraken.filter(a=>a.medewerker_id===m.id);
+    const mOmzet=mApts.reduce((s,a)=>s+(a.diensten?.prijs||0),0);
+    return{...m,apts:mApts.length,omzet:mOmzet};
+  }).sort((a,b)=>b.omzet-a.omzet);
+
+  // Top diensten
+  const dienstCount={};
+  afspraken.forEach(a=>{
+    if(!a.diensten?.naam)return;
+    const k=a.diensten.naam;
+    if(!dienstCount[k])dienstCount[k]={naam:k,prijs:a.diensten.prijs||0,count:0,omzet:0};
+    dienstCount[k].count++;
+    dienstCount[k].omzet+=a.diensten.prijs||0;
+  });
+  const topDiensten=Object.values(dienstCount).sort((a,b)=>b.omzet-a.omzet).slice(0,5);
+
+  // Inzichten
+  const insights=[];
+  if(omzet>0) insights.push(`Totale omzet deze periode: €${omzet.toFixed(0)}.`);
+  else insights.push('Nog geen betalingen in deze periode. Gebruik de kassa om betalingen te registreren.');
+  if(apts>0) insights.push(`${apts} afspraken verwerkt, gemiddelde bon €${gemBon}.`);
+  if(noshow>0) insights.push(`${noshow} no-show${noshow>1?'s':''} (${noshowPct}%). Stuur herinneringen om dit te verlagen.`);
+  else if(apts>0) insights.push('Geen no-shows — uitstekend!');
+
+  // Render
+  const c=document.getElementById('content');
+  c.innerHTML=`
+    <!-- KPIs -->
+    <div class="kpi-row">
+      <div class="kpi">
+        <div class="kpi-label">Omzet</div>
+        <div class="kpi-val gold">€${omzet.toFixed(0)}</div>
+        <div class="kpi-change">via kassa geregistreerd</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Afspraken</div>
+        <div class="kpi-val">${apts}</div>
+        <div class="kpi-change">in geselecteerde periode</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">Gem. bon</div>
+        <div class="kpi-val">€${gemBon}</div>
+        <div class="kpi-change">per afspraak</div>
+      </div>
+      <div class="kpi">
+        <div class="kpi-label">No-show</div>
+        <div class="kpi-val">${noshowPct}%</div>
+        <div class="kpi-change">${noshow} van ${apts} afspraken</div>
+      </div>
+    </div>
+
+    <!-- Bar chart -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Omzet per week</div>
+        <div class="card-sub">gebaseerd op kassabetalingen</div>
+      </div>
+      <div class="chart-wrap">
+        <div class="bars">
+          ${weeks.map((v,i)=>`
+            <div class="bar-wrap">
+              <div class="bar-val">€${Math.round(v)}</div>
+              <div class="bar" style="height:${Math.round(v/maxW*100)}%;background:${i===3?'var(--gd)':'var(--bd2)'}"></div>
+              <div class="bar-lbl">W${i+1}</div>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <!-- Medewerkers -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">Medewerkers</div></div>
+      ${medStats.length?medStats.map(m=>`
+        <div class="tc-row">
+          <div>
+            <div class="tc-name">${m.naam}</div>
+            <div class="tc-sub">${m.apts} afspraken · ${m.rol}</div>
+          </div>
+          <div>
+            <div class="tc-val">€${m.omzet}</div>
+            <div class="tc-meta">omzet</div>
+          </div>
+        </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Nog geen medewerkers</div>`}
+    </div>
+
+    <!-- Top diensten -->
+    <div class="card">
+      <div class="card-head"><div class="card-title">Top diensten</div></div>
+      ${topDiensten.length?topDiensten.map(d=>`
+        <div class="tc-row">
+          <div>
+            <div class="tc-name">${d.naam}</div>
+            <div class="tc-sub">${d.count}× geboekt</div>
+          </div>
+          <div>
+            <div class="tc-val">€${d.omzet}</div>
+            <div class="tc-meta">omzet</div>
+          </div>
+        </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Nog geen afspraken met diensten</div>`}
+    </div>
+
+    <!-- AI insights -->
+    <div class="ai-card">
+      <div class="ai-head">
+        <svg width="13" height="13" fill="none" stroke="var(--gd)" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <div class="ai-title">Planr inzichten</div>
+      </div>
+      <div class="ai-body">
+        ${insights.map(i=>`<div class="ai-insight">${i}</div>`).join('')}
+      </div>
+    </div>
+  `;
+}
+
+function setPeriod(p,btn){
+  activePeriod=p;
+  document.querySelectorAll('.pd').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  loadData();
+}
+
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+
+planrInit(loadData);
 </script>
 </body>
 </html>
