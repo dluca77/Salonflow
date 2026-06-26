@@ -4,165 +4,212 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Planr — Inloggen</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --bg:#0a0a0a;--surface:#141414;--s2:#1e1e1e;--border:#2a2a2a;
-  --accent:#c8f060;--accent2:#a0d040;--text:#f0ede8;--muted:#888;
-  --red:#ff6b6b;--green:#4dff90;
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;
+  --mu:#8a7d6e;--mu2:#c2b5a4;--red:#c0392b;--green:#2d6a4f;
 }
-html,body{
-  background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;
-  min-height:100vh;display:flex;flex-direction:column;
-  align-items:center;justify-content:center;padding:24px 16px;
-}
+html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;}
 
-.logo{font-family:'DM Serif Display',serif;font-size:30px;letter-spacing:-0.5px;text-align:center;margin-bottom:6px;}
-.logo span{color:var(--accent);}
-.tagline{font-size:13px;color:var(--muted);text-align:center;margin-bottom:32px;}
+/* ── LAYOUT ── */
+.wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;}
 
-.card{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:28px;width:100%;max-width:400px;}
+/* ── LEFT PANEL ── */
+.left{background:var(--ink);position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:48px;}
+.left-bg{position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 32px,rgba(140,109,63,0.04) 32px,rgba(140,109,63,0.04) 33px);}
+.left-letter{position:absolute;bottom:-0.1em;right:-0.05em;font-family:'Playfair Display',serif;font-size:280px;font-weight:700;color:transparent;-webkit-text-stroke:1px rgba(140,109,63,0.12);line-height:1;user-select:none;pointer-events:none;}
+.left-top{position:relative;z-index:2;}
+.left-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;letter-spacing:1px;color:var(--iv);text-decoration:none;display:inline-block;}
+.left-logo em{color:var(--gd);font-style:normal;}
+.left-bottom{position:relative;z-index:2;}
+.left-title{font-family:'Playfair Display',serif;font-size:clamp(32px,3.5vw,52px);font-weight:700;line-height:1.1;color:var(--iv);margin-bottom:20px;letter-spacing:-1px;}
+.left-title em{font-style:italic;font-weight:400;color:var(--gd);}
+.left-sub{font-size:14px;font-weight:300;color:rgba(255,255,255,0.45);line-height:1.7;max-width:320px;margin-bottom:40px;}
+.left-stats{display:flex;gap:32px;}
+.ls-num{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gd);}
+.ls-lbl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.3);margin-top:3px;}
+
+/* ── RIGHT PANEL ── */
+.right{background:var(--wh);display:flex;flex-direction:column;justify-content:center;padding:64px 8vw 48px;max-width:520px;margin:0 auto;width:100%;}
+.right-top{margin-bottom:40px;}
+.right-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:6px;}
+.right-sub{font-size:13px;color:var(--mu);font-weight:300;}
 
 /* TABS */
-.tabs{display:grid;grid-template-columns:1fr 1fr;background:var(--s2);border-radius:10px;padding:3px;margin-bottom:24px;}
-.tab{
-  padding:10px;text-align:center;font-size:14px;font-weight:500;
-  border-radius:8px;cursor:pointer;color:var(--muted);
-  border:none;background:transparent;font-family:'DM Sans',sans-serif;
-  transition:all 0.15s;
-}
-.tab.active{background:var(--surface);color:var(--text);}
+.tabs{display:flex;border-bottom:1px solid var(--bd);margin-bottom:32px;}
+.tab{flex:1;padding:12px 0;text-align:center;font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);cursor:pointer;border:none;background:transparent;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 0.2s;}
+.tab.active{color:var(--gd);border-bottom-color:var(--gd);}
 
-/* FORMS */
+/* FORM */
 .form-section{display:none;}
 .form-section.visible{display:block;}
-
-.frow{margin-bottom:14px;}
-.flabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:6px;display:block;}
+.frow{margin-bottom:16px;}
+.flabel{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:7px;display:block;}
 .finput{
-  width:100%;background:var(--s2);border:1px solid var(--border);
-  border-radius:10px;padding:13px 14px;font-size:15px;color:var(--text);
-  font-family:'DM Sans',sans-serif;outline:none;
-  transition:border-color 0.15s;-webkit-appearance:none;appearance:none;
+  width:100%;background:var(--iv);border:1px solid var(--bd);
+  padding:14px 16px;font-size:14px;color:var(--ink);
+  font-family:'Inter',sans-serif;outline:none;
+  transition:border-color 0.2s;-webkit-appearance:none;appearance:none;
+  border-radius:0;
 }
-.finput:focus{border-color:var(--accent);}
-select.finput{cursor:pointer;}
+.finput:focus{border-color:var(--gd);}
+.finput::placeholder{color:var(--mu2);}
+select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7d6e' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
 
 /* BUTTONS */
 .btn-main{
-  width:100%;padding:15px;background:var(--accent);color:#1a1a1a;
-  border:none;border-radius:12px;font-size:15px;font-weight:700;
-  cursor:pointer;font-family:'DM Sans',sans-serif;transition:background 0.15s;
+  width:100%;padding:16px;background:var(--ink);color:var(--iv);
+  border:none;font-size:11px;letter-spacing:2.5px;text-transform:uppercase;
+  cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;
   margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px;
+  border-radius:0;
 }
-.btn-main:hover{background:var(--accent2);}
-.btn-main:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-main:hover{background:var(--ink2);}
+.btn-main:disabled{opacity:0.4;cursor:not-allowed;}
+
+.divider{display:flex;align-items:center;gap:14px;margin:20px 0;}
+.dline{flex:1;height:1px;background:var(--bd);}
+.dtxt{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
 
 .btn-google{
-  width:100%;padding:13px;background:var(--s2);color:var(--text);
-  border:1px solid var(--border);border-radius:12px;font-size:14px;font-weight:500;
-  cursor:pointer;font-family:'DM Sans',sans-serif;
+  width:100%;padding:14px;background:var(--wh);color:var(--ink);
+  border:1px solid var(--bd);font-size:12px;font-weight:400;
+  cursor:pointer;font-family:'Inter',sans-serif;
   display:flex;align-items:center;justify-content:center;gap:10px;
-  transition:border-color 0.15s;margin-top:10px;
+  transition:border-color 0.2s;border-radius:0;
 }
-.btn-google:hover{border-color:var(--muted);}
-
-/* DIVIDER */
-.divider{display:flex;align-items:center;gap:12px;margin:18px 0 4px;}
-.dline{flex:1;height:1px;background:var(--border);}
-.dtxt{font-size:12px;color:var(--muted);}
+.btn-google:hover{border-color:var(--mu);}
 
 /* MESSAGES */
-.msg{
-  padding:12px 14px;border-radius:10px;font-size:13px;
-  margin-bottom:16px;line-height:1.5;display:none;
-}
-.msg.err{background:rgba(255,107,107,0.1);border:1px solid rgba(255,107,107,0.3);color:var(--red);display:block;}
-.msg.ok{background:rgba(77,255,144,0.1);border:1px solid rgba(77,255,144,0.3);color:var(--green);display:block;}
+.msg{padding:13px 16px;font-size:13px;margin-bottom:20px;line-height:1.5;display:none;border-left:3px solid;}
+.msg.err{background:rgba(192,57,43,0.06);border-color:var(--red);color:var(--red);display:block;}
+.msg.ok{background:rgba(45,106,79,0.06);border-color:var(--green);color:var(--green);display:block;}
 
-/* EXTRAS */
-.forgot{text-align:right;margin:-8px 0 14px;}
-.forgot a{font-size:12px;color:var(--muted);text-decoration:none;}
-.terms{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;line-height:1.5;}
-.terms a{color:var(--accent);text-decoration:none;}
-.back{display:block;text-align:center;margin-top:20px;font-size:13px;color:var(--muted);text-decoration:none;}
-.back:hover{color:var(--text);}
+.forgot{text-align:right;margin:-10px 0 16px;}
+.forgot a{font-size:11px;letter-spacing:1px;color:var(--mu);text-decoration:none;text-transform:uppercase;}
+.forgot a:hover{color:var(--ink);}
 
-.spinner{width:18px;height:18px;border:2px solid rgba(26,26,26,0.3);border-top-color:#1a1a1a;border-radius:50%;animation:spin 0.7s linear infinite;}
+.terms{font-size:12px;color:var(--mu2);text-align:center;margin-top:16px;line-height:1.6;}
+.terms a{color:var(--gd);text-decoration:none;}
+
+.back{display:block;text-align:center;margin-top:32px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);text-decoration:none;transition:color 0.2s;}
+.back:hover{color:var(--ink);}
+
+.spinner{width:16px;height:16px;border:2px solid rgba(250,248,244,0.3);border-top-color:var(--iv);border-radius:50%;animation:spin 0.7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+.right{animation:fadeUp 0.6s 0.2s ease both;}
+.left-title{animation:fadeUp 0.7s 0.3s ease both;opacity:0;}
+.left-sub{animation:fadeUp 0.7s 0.5s ease both;opacity:0;}
+.left-stats{animation:fadeUp 0.7s 0.7s ease both;opacity:0;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:768px){
+  .wrap{grid-template-columns:1fr;}
+  .left{display:none;}
+  .right{max-width:100%;padding:40px 6vw 40px;min-height:100vh;margin:0;}
+}
 </style>
 </head>
 <body>
+<div class="wrap">
 
-<div class="logo">Planr<span>.</span></div>
-<div class="tagline">Slimmer plannen voor jouw bedrijf</div>
-
-<div class="card">
-
-  <div class="tabs">
-    <button class="tab active" id="tab-login" onclick="toonLogin()">Inloggen</button>
-    <button class="tab" id="tab-reg" onclick="toonRegistreer()">Account aanmaken</button>
+  <!-- LEFT: Brand panel -->
+  <div class="left">
+    <div class="left-bg"></div>
+    <div class="left-letter">P</div>
+    <div class="left-top">
+      <a href="index.html" class="left-logo">Planr<em>.</em></a>
+    </div>
+    <div class="left-bottom">
+      <h2 class="left-title">
+        Software die je<br>salon laat<br><em>groeien</em>
+      </h2>
+      <p class="left-sub">Planr geeft kappers, nagelstudio's en spa's de tools om efficiënter te werken en meer klanten te bedienen.</p>
+      <div class="left-stats">
+        <div><div class="ls-num">2.400+</div><div class="ls-lbl">Salons actief</div></div>
+        <div><div class="ls-num">€0</div><div class="ls-lbl">Om te starten</div></div>
+        <div><div class="ls-num">15 min</div><div class="ls-lbl">Setup tijd</div></div>
+      </div>
+    </div>
   </div>
 
-  <div class="msg" id="msg"></div>
+  <!-- RIGHT: Form panel -->
+  <div class="right">
+    <div class="right-top">
+      <div class="right-title" id="form-title">Welkom terug</div>
+      <div class="right-sub" id="form-sub">Log in op je Planr account</div>
+    </div>
 
-  <!-- ── LOGIN ── -->
-  <div class="form-section visible" id="sectie-login">
-    <div class="frow">
-      <label class="flabel">E-mailadres</label>
-      <input class="finput" type="email" id="l-email" placeholder="jij@bedrijf.nl" autocomplete="email">
+    <div class="tabs">
+      <button class="tab active" id="tab-login" onclick="toonLogin()">Inloggen</button>
+      <button class="tab" id="tab-reg" onclick="toonRegistreer()">Account aanmaken</button>
     </div>
-    <div class="frow">
-      <label class="flabel">Wachtwoord</label>
-      <input class="finput" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
-    </div>
-    <div class="forgot"><a href="#" onclick="resetWw(event)">Wachtwoord vergeten?</a></div>
-    <button class="btn-main" id="btn-login" onclick="login()">Inloggen</button>
-    <div class="divider"><div class="dline"></div><div class="dtxt">of</div><div class="dline"></div></div>
-    <button class="btn-google" onclick="loginGoogle()">
-      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-      Doorgaan met Google
-    </button>
-  </div>
 
-  <!-- ── REGISTREREN ── -->
-  <div class="form-section" id="sectie-reg">
-    <div class="frow">
-      <label class="flabel">Naam van je bedrijf</label>
-      <input class="finput" type="text" id="r-naam" placeholder="bijv. Beauty Studio Mila" autocomplete="organization">
+    <div class="msg" id="msg"></div>
+
+    <!-- LOGIN -->
+    <div class="form-section visible" id="sectie-login">
+      <div class="frow">
+        <label class="flabel">E-mailadres</label>
+        <input class="finput" type="email" id="l-email" placeholder="jij@bedrijf.nl" autocomplete="email">
+      </div>
+      <div class="frow">
+        <label class="flabel">Wachtwoord</label>
+        <input class="finput" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
+      </div>
+      <div class="forgot"><a href="#" onclick="resetWw(event)">Wachtwoord vergeten?</a></div>
+      <button class="btn-main" id="btn-login" onclick="login()">Inloggen</button>
+      <div class="divider"><div class="dline"></div><div class="dtxt">of</div><div class="dline"></div></div>
+      <button class="btn-google" onclick="loginGoogle()">
+        <svg width="17" height="17" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Doorgaan met Google
+      </button>
     </div>
-    <div class="frow">
-      <label class="flabel">Type bedrijf</label>
-      <select class="finput" id="r-type">
-        <option value="Kapper">Kapper / Barbier</option>
-        <option value="Nagelstudio">Nagelstudio</option>
-        <option value="Spa">Spa & Wellness</option>
-        <option value="Hondentrimsalon">Hondentrimsalon</option>
-        <option value="Schoonheidssalon">Schoonheidssalon</option>
-        <option value="Personal trainer">Personal trainer</option>
-        <option value="Tattoo">Tattoo & Piercing</option>
-        <option value="Yoga">Yoga & Fitness</option>
-        <option value="Tandarts">Tandarts / Zorg</option>
-        <option value="Massage">Massagepraktijk</option>
-        <option value="Anders">Anders</option>
-      </select>
+
+    <!-- REGISTREREN -->
+    <div class="form-section" id="sectie-reg">
+      <div class="frow">
+        <label class="flabel">Naam van je bedrijf</label>
+        <input class="finput" type="text" id="r-naam" placeholder="bijv. Beauty Studio Mila" autocomplete="organization">
+      </div>
+      <div class="frow">
+        <label class="flabel">Type bedrijf</label>
+        <select class="finput" id="r-type">
+          <option value="Kapper">Kapper / Barbier</option>
+          <option value="Nagelstudio">Nagelstudio</option>
+          <option value="Spa">Spa & Wellness</option>
+          <option value="Hondentrimsalon">Hondentrimsalon</option>
+          <option value="Schoonheidssalon">Schoonheidssalon</option>
+          <option value="Personal trainer">Personal trainer</option>
+          <option value="Tattoo">Tattoo & Piercing</option>
+          <option value="Yoga">Yoga & Fitness</option>
+          <option value="Tandarts">Tandarts / Zorg</option>
+          <option value="Massage">Massagepraktijk</option>
+          <option value="Anders">Anders</option>
+        </select>
+      </div>
+      <div class="frow">
+        <label class="flabel">E-mailadres</label>
+        <input class="finput" type="email" id="r-email" placeholder="jij@bedrijf.nl" autocomplete="email">
+      </div>
+      <div class="frow">
+        <label class="flabel">Wachtwoord</label>
+        <input class="finput" type="password" id="r-pass" placeholder="Minimaal 8 tekens" autocomplete="new-password">
+      </div>
+      <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken</button>
+      <div class="terms">Door te registreren ga je akkoord met onze <a href="#">voorwaarden</a> en <a href="#">privacybeleid</a>.</div>
     </div>
-    <div class="frow">
-      <label class="flabel">E-mailadres</label>
-      <input class="finput" type="email" id="r-email" placeholder="jij@bedrijf.nl" autocomplete="email">
-    </div>
-    <div class="frow">
-      <label class="flabel">Wachtwoord</label>
-      <input class="finput" type="password" id="r-pass" placeholder="Minimaal 8 tekens" autocomplete="new-password">
-    </div>
-    <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken →</button>
-    <div class="terms">Door te registreren ga je akkoord met onze <a href="#">voorwaarden</a> en <a href="#">privacybeleid</a>.</div>
+
+    <a href="index.html" class="back">← Terug naar Planr.nl</a>
   </div>
 
 </div>
-
-<a href="index.html" class="back">← Terug naar Planr.nl</a>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
@@ -170,8 +217,7 @@ const SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb = window.supabase.createClient(SB_URL, SB_KEY);
 
-// Als al ingelogd en niet bewust naar login genagiveerd -> door naar dashboard
-// Als er een access_token in de URL hash staat = e-mail bevestigd, meteen naar dashboard
+// Auth check — access_token in hash = e-mail bevestigd
 if (window.location.hash.includes('access_token')) {
   sb.auth.getSession().then(({ data: { session } }) => {
     if (session) window.location.href = 'dashboard.html';
@@ -182,12 +228,14 @@ if (window.location.hash.includes('access_token')) {
   });
 }
 
-// ── TAB WISSELEN ──
+// ── TABS ──
 function toonLogin() {
   document.getElementById('sectie-login').classList.add('visible');
   document.getElementById('sectie-reg').classList.remove('visible');
   document.getElementById('tab-login').classList.add('active');
   document.getElementById('tab-reg').classList.remove('active');
+  document.getElementById('form-title').textContent = 'Welkom terug';
+  document.getElementById('form-sub').textContent = 'Log in op je Planr account';
   leegMsg();
 }
 
@@ -196,6 +244,8 @@ function toonRegistreer() {
   document.getElementById('sectie-login').classList.remove('visible');
   document.getElementById('tab-reg').classList.add('active');
   document.getElementById('tab-login').classList.remove('active');
+  document.getElementById('form-title').textContent = 'Begin vandaag gratis';
+  document.getElementById('form-sub').textContent = 'Maak je Planr account aan — geen creditcard nodig';
   leegMsg();
 }
 
@@ -246,44 +296,39 @@ async function registreer() {
   if (!pass)  return toonMsg('Vul een wachtwoord in.');
   if (pass.length < 8) return toonMsg('Wachtwoord moet minimaal 8 tekens zijn.');
 
-  setLaden('btn-reg', true, 'Gratis account aanmaken →');
+  setLaden('btn-reg', true, 'Gratis account aanmaken');
   leegMsg();
 
   const { data, error } = await sb.auth.signUp({
-    email,
-    password: pass,
+    email, password: pass,
     options: {
-        emailRedirectTo: 'https://dluca77.github.io/Salonflow/login.html',
-        data: { bedrijf_naam: naam, type_bedrijf: type }
+      emailRedirectTo: 'https://dluca77.github.io/Salonflow/login.html',
+      data: { bedrijf_naam: naam, type_bedrijf: type }
     }
   });
 
   if (error) {
     toonMsg('Registratie mislukt: ' + error.message);
-    setLaden('btn-reg', false, 'Gratis account aanmaken →');
+    setLaden('btn-reg', false, 'Gratis account aanmaken');
     return;
   }
 
-  // Salon aanmaken in database
   if (data.user) {
     await sb.from('salons').insert({
-      owner_id: data.user.id,
-      naam,
-      type_bedrijf: type,
-      email,
-      plan: 'free'
+      owner_id: data.user.id, naam,
+      type_bedrijf: type, email, plan: 'free'
     });
   }
 
   toonMsg('Account aangemaakt! Check je e-mail om te bevestigen.', 'ok');
-  setLaden('btn-reg', false, 'Gratis account aanmaken →');
+  setLaden('btn-reg', false, 'Gratis account aanmaken');
 }
 
-// ── GOOGLE LOGIN ──
+// ── GOOGLE ──
 async function loginGoogle() {
   await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: window.location.origin + '/dashboard.html' }
+    options: { redirectTo: 'https://dluca77.github.io/Salonflow/dashboard.html' }
   });
 }
 
@@ -293,7 +338,7 @@ async function resetWw(e) {
   const email = document.getElementById('l-email').value.trim();
   if (!email) return toonMsg('Vul eerst je e-mailadres in.');
   await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: window.location.origin + '/login.html'
+    redirectTo: 'https://dluca77.github.io/Salonflow/login.html'
   });
   toonMsg('Reset-link verstuurd! Check je e-mail.', 'ok');
 }
@@ -305,7 +350,7 @@ document.addEventListener('keydown', e => {
   else registreer();
 });
 
-// ── URL HASH: login.html#registreer ──
+// ── URL HASH ──
 if (window.location.hash === '#registreer' || window.location.hash === '#register') {
   toonRegistreer();
 }
