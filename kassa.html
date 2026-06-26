@@ -4,209 +4,344 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Planr — Kassa</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#0f0f0f;--sf:#1a1a1a;--s2:#242424;--bd:#2e2e2e;--ac:#c8f060;--tx:#f0ede8;--mu:#888;--mu2:#3a3a3a;--red:#ff6b6b;--blue:#6bc4ff;--amber:#ffb84d;--green:#4dff90;}
-html,body{background:var(--bg);color:var(--tx);font-family:"DM Sans",sans-serif;min-height:100vh;overflow-x:hidden;}
-.topbar{position:sticky;top:0;z-index:20;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:54px;}
-.t-left{display:flex;align-items:center;gap:10px;}
-.logo{font-family:"DM Serif Display",serif;font-size:19px;letter-spacing:-0.5px;}
-.logo span{color:var(--ac);}
-.hbg{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.clock{font-size:13px;color:var(--mu);}
-/* Services */
-.section{padding:12px 14px 0;}
-.section-title{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;}
-.svc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:12px;}
-.svc{background:var(--sf);border:1px solid var(--bd);border-radius:11px;padding:12px 8px;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.svc:active{background:rgba(200,240,96,0.08);border-color:var(--ac);}
-.svc-name{font-size:13px;font-weight:500;margin-bottom:4px;}
-.svc-prijs{font-size:17px;font-weight:700;color:var(--ac);}
-.svc-dur{font-size:10px;color:var(--mu);margin-top:2px;}
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
+.app{display:flex;height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:210px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;position:fixed;top:0;left:0;z-index:20;}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-logo a{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;letter-spacing:1px;color:var(--iv);text-decoration:none;}
+.sb-logo a em{color:var(--gd);font-style:normal;}
+.sb-nav{flex:1;overflow-y:auto;padding:12px 10px;}
+.sb-sec{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 10px;margin:16px 0 6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;color:rgba(255,255,255,0.45);font-size:13px;text-decoration:none;margin-bottom:1px;transition:all 0.15s;border-left:2px solid transparent;}
+.sb-item:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.04);}
+.sb-item.on{color:var(--iv);border-left-color:var(--gd);background:rgba(255,255,255,0.06);}
+.sb-item svg{width:16px;height:16px;flex-shrink:0;}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,0.06);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer;}
+.sb-user:hover{background:rgba(255,255,255,0.04);}
+.sb-av{width:30px;height:30px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--iv);flex-shrink:0;}
+.sb-nm{font-size:12px;color:rgba(255,255,255,0.7);}
+.sb-rl{font-size:10px;color:rgba(255,255,255,0.3);}
+
+/* ── MAIN ── */
+.main{margin-left:210px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+
+/* ── TOPBAR ── */
+.topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.hbg{width:32px;height:32px;border:1px solid var(--bd);background:transparent;color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:none;letter-spacing:0.5px;}
+.tb-logo em{color:var(--gd);font-style:normal;}
+.tb-title{font-size:13px;font-weight:500;color:var(--mu);}
+.tb-spacer{flex:1;}
+.clock{font-size:13px;color:var(--mu);font-variant-numeric:tabular-nums;}
+
+/* ── KASSA BODY: split layout ── */
+.kassa-body{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden;gap:0;}
+
+/* LEFT: diensten */
+.diensten-panel{background:var(--iv);overflow-y:auto;padding:20px;}
+.diensten-panel::-webkit-scrollbar{width:3px;}
+.diensten-panel::-webkit-scrollbar-thumb{background:var(--bd);}
+.panel-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:14px;}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.svc{background:var(--wh);border:1px solid var(--bd);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.svc:hover{border-color:var(--gd);background:var(--wm);}
+.svc:active{transform:scale(0.98);}
+.svc-name{font-size:12px;font-weight:500;margin-bottom:6px;line-height:1.3;}
+.svc-prijs{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);}
+.svc-dur{font-size:10px;color:var(--mu2);margin-top:3px;letter-spacing:0.5px;}
+.svc-loading{text-align:center;padding:40px;color:var(--mu2);font-size:12px;letter-spacing:1px;text-transform:uppercase;}
+
+/* Extra knoppen */
 .extra-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.ext{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:9px 6px;text-align:center;cursor:pointer;font-size:11px;color:var(--mu);-webkit-tap-highlight-color:transparent;}
-.ext:active{color:var(--tx);}
-.ext strong{display:block;color:var(--tx);font-size:13px;margin-top:2px;}
-/* Bon */
-.bon-wrap{position:fixed;bottom:74px;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);z-index:25;max-height:45vh;display:flex;flex-direction:column;}
-.bon-head{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd);flex-shrink:0;}
-.bon-title{font-size:14px;font-weight:600;}
-.bon-clear{font-size:12px;color:var(--red);cursor:pointer;}
-.bon-list{flex:1;overflow-y:auto;padding:8px 14px;}
-.bon-empty{text-align:center;padding:16px;font-size:13px;color:var(--mu);}
-.bon-item{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--mu2);}
-.bon-item:last-child{border-bottom:none;}
-.bon-qty{width:26px;height:26px;background:var(--s2);border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;}
-.bon-name{flex:1;font-size:13px;}
-.bon-price{font-size:14px;font-weight:600;}
-.bon-del{color:var(--mu);cursor:pointer;font-size:18px;padding:0 4px;}
-.bon-foot{padding:10px 14px;border-top:1px solid var(--bd);flex-shrink:0;}
-.bon-totrow{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-bottom:4px;}
-.bon-total{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.bon-total-lbl{font-size:15px;font-weight:600;}
-.bon-total-val{font-size:26px;font-weight:700;color:var(--ac);}
-.pay-methods{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;margin-bottom:10px;}
-.pm{padding:8px 4px;border-radius:9px;border:2px solid var(--bd);background:transparent;cursor:pointer;font-family:"DM Sans",sans-serif;color:var(--mu);font-size:11px;font-weight:500;display:flex;flex-direction:column;align-items:center;gap:3px;-webkit-tap-highlight-color:transparent;}
-.pm.on{border-color:var(--ac);color:var(--ac);background:rgba(200,240,96,0.06);}
-.pm svg{width:18px;height:18px;}
-.btn-betaal{width:100%;padding:14px;background:var(--ac);color:#1a1a1a;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;}
-.btn-betaal:disabled{opacity:0.4;}
-/* Sidebar */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:40;}
-.ov.on{display:block;}
-.sb{position:fixed;left:-100%;top:0;width:280px;height:100%;background:var(--sf);z-index:50;display:flex;flex-direction:column;transition:left .25s ease;border-right:1px solid var(--bd);overflow:hidden;}
-.sb.on{left:0;}
-.sbh{padding:16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.sblogo{font-family:"DM Serif Display",serif;font-size:19px;}
-.sblogo span{color:var(--ac);}
-.sbx{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.sbn{flex:1;overflow-y:auto;padding:10px;}
-.nvsec{font-size:10px;color:var(--mu2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:12px 0 5px;}
-.nvi{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--mu);font-size:14px;text-decoration:none;margin-bottom:1px;-webkit-tap-highlight-color:transparent;}
-.nvi.on{background:var(--ac);color:#1a1a1a;font-weight:600;}
-.nvi svg{width:19px;height:19px;flex-shrink:0;}
-.sbf{padding:12px;border-top:1px solid var(--bd);flex-shrink:0;}
-.sc{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;}
-.sca{width:34px;height:34px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#1a1a1a;flex-shrink:0;}
-/* Bnav */
-.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:7px 0 20px;z-index:30;}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--mu);font-size:10px;padding:4px 0;-webkit-tap-highlight-color:transparent;}
-.bni.on{color:var(--ac);}
-.bni svg{width:22px;height:22px;}
-/* Success */
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:60;align-items:flex-end;}
+.ext{background:var(--wh);border:1px solid var(--bd);padding:10px 6px;text-align:center;cursor:pointer;font-size:10px;color:var(--mu);letter-spacing:0.5px;transition:all 0.15s;}
+.ext:hover{background:var(--wm);border-color:var(--bd2);}
+.ext strong{display:block;font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--ink);margin-top:3px;}
+
+/* RIGHT: bon */
+.bon-panel{background:var(--wh);border-left:1px solid var(--bd);display:flex;flex-direction:column;}
+.bon-head{padding:16px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
+.bon-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink);}
+.bon-count{font-size:10px;letter-spacing:1px;color:var(--mu2);}
+.bon-list{flex:1;overflow-y:auto;padding:0;}
+.bon-list::-webkit-scrollbar{width:3px;}
+.bon-list::-webkit-scrollbar-thumb{background:var(--bd);}
+.bon-empty{padding:48px 20px;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
+.bon-item{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid var(--bd);gap:10px;}
+.bon-qty{width:28px;height:28px;background:var(--iv);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;cursor:pointer;flex-shrink:0;transition:all 0.15s;}
+.bon-qty:hover{background:var(--wm);border-color:var(--bd2);}
+.bon-name{flex:1;font-size:13px;font-weight:500;}
+.bon-price{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--gd);flex-shrink:0;}
+.bon-del{width:24px;height:24px;display:flex;align-items:center;justify-content:center;color:var(--mu2);cursor:pointer;font-size:16px;flex-shrink:0;transition:color 0.15s;}
+.bon-del:hover{color:var(--red);}
+
+/* Totalen */
+.bon-totals{padding:14px 18px;border-top:1px solid var(--bd);}
+.tot-row{display:flex;justify-content:space-between;font-size:12px;color:var(--mu);padding:3px 0;}
+.tot-row.main{font-size:15px;font-weight:500;color:var(--ink);margin-top:8px;padding-top:10px;border-top:1px solid var(--bd);}
+.tot-row.main .tot-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gd);}
+
+/* Betaalmethodes */
+.pm-wrap{padding:12px 18px;border-top:1px solid var(--bd);}
+.pm-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;}
+.pm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
+.pm{padding:8px 4px;border:1px solid var(--bd);text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+.pm.on{background:var(--ink);color:var(--iv);border-color:var(--ink);}
+.pm:not(.on):hover{background:var(--iv);border-color:var(--bd2);}
+
+/* Betaal knop */
+.bon-actions{padding:12px 18px 16px;display:flex;gap:8px;}
+.btn-clear{padding:14px;background:transparent;border:1px solid var(--bd);color:var(--mu);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.btn-clear:hover{background:var(--iv);}
+.btn-pay{flex:1;padding:14px;background:var(--ink);color:var(--iv);border:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
+.btn-pay:hover{background:var(--ink2);}
+.btn-pay:disabled{opacity:0.3;cursor:not-allowed;}
+
+/* ── MODALS ── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.7);z-index:60;align-items:center;justify-content:center;}
 .mbg.on{display:flex;}
-.modal{background:var(--sf);border-radius:20px 20px 0 0;padding:24px 18px 40px;width:100%;border-top:1px solid var(--bd);animation:su .25s ease;}
-@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.mh{width:36px;height:4px;background:var(--bd);border-radius:99px;margin:0 auto 20px;}
-.success-icon{width:60px;height:60px;background:rgba(77,255,144,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px;}
-.success-title{font-family:"DM Serif Display",serif;font-size:22px;text-align:center;margin-bottom:6px;}
-.success-sub{font-size:14px;color:var(--mu);text-align:center;margin-bottom:20px;}
-.receipt{background:var(--s2);border-radius:12px;overflow:hidden;margin-bottom:16px;}
-.rrow{display:flex;justify-content:space-between;padding:11px 14px;border-bottom:1px solid var(--bd);font-size:13px;}
-.rrow:last-child{border-bottom:none;font-weight:700;font-size:15px;}
-.btn-new-bon{width:100%;padding:14px;background:var(--ac);color:#1a1a1a;border:none;border-radius:11px;font-size:15px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;}
+.modal-success{background:var(--wh);width:100%;max-width:380px;padding:40px 32px;text-align:center;border-top:3px solid var(--gd);}
+.success-icon{width:56px;height:56px;background:rgba(45,106,79,0.1);border:1px solid rgba(45,106,79,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:var(--green);}
+.success-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:6px;}
+.success-sub{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:24px;}
+.receipt{border:1px solid var(--bd);margin-bottom:24px;text-align:left;}
+.rrow{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd);font-size:13px;}
+.rrow:last-child{border-bottom:none;font-weight:500;}
+.btn-new{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-new:hover{background:var(--ink2);}
+
+/* ── MOB OVERLAY ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;}
+.ov.on{display:block;}
+.sb-mob{position:fixed;left:-100%;top:0;width:240px;height:100%;background:var(--ink);z-index:50;display:flex;flex-direction:column;transition:left .25s;}
+.sb-mob.on{left:0;}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--bd);padding:6px 0 18px;z-index:30;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--mu2);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:4px 0;}
+.bni.on{color:var(--gd);}
+.bni svg{width:20px;height:20px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .sidebar{width:180px;}
+  .main{margin-left:180px;}
+  .kassa-body{grid-template-columns:1fr 300px;}
+  .svc-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:768px){
+  .sidebar{display:none;}
+  .main{margin-left:0;}
+  .hbg{display:flex;}
+  .tb-logo{display:block;}
+  .tb-title{display:none;}
+  .bnav{display:flex;}
+  .topbar{padding:0 14px;}
+  .kassa-body{grid-template-columns:1fr;overflow-y:auto;padding-bottom:64px;}
+  .diensten-panel{overflow:visible;}
+  .bon-panel{border-left:none;border-top:1px solid var(--bd);}
+  .svc-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:480px){
+  .svc-grid{grid-template-columns:1fr 1fr;}
+  .pm-grid{grid-template-columns:repeat(2,1fr);}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="planr.js"></script>
 </head>
 <body>
-<div class="ov" id="ov" onclick="closeSB()"></div>
-<aside class="sb" id="sb">
-  <div class="sbh"><div class="sblogo">Planr<span>.</span></div><button class="sbx" onclick="closeSB()">✕</button></div>
-  <nav class="sbn">
-    <div class="nvsec">Beheer</div>
-    <a href="dashboard.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-    <a href="klanten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-    <a href="kassa.html" class="nvi on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-    <a href="medewerkers.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
-    <a href="diensten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Diensten</a>
-    <div class="nvsec">Groei</div>
-    <a href="rapportages.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+<div class="app">
+
+<!-- Desktop sidebar -->
+<aside class="sidebar">
+  <div class="sb-logo"><a href="dashboard.html">Planr<em>.</em></a></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="diensten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
+    <div class="sb-sec">Groei</div>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+    <a href="boeken.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Online boeken</a>
   </nav>
-  <div class="sbf"><div class="sc"><div class="sca">KS</div><div><div style="font-size:13px;font-weight:500">Mijn Studio</div><div style="font-size:11px;color:var(--mu)">Pro plan</div></div></div></div>
+  <div class="sb-foot">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
+    </div>
+  </div>
 </aside>
 
-<header class="topbar">
-  <div class="t-left">
-    <button class="hbg" onclick="openSB()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <div class="logo">Planr<span>.</span></div>
+<!-- Mobiel overlay -->
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<aside class="sb-mob" id="sb">
+  <div style="padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--iv);letter-spacing:1px;">Planr<em style="color:var(--gd);font-style:normal">.</em></span>
+    <button onclick="closeSB()" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;">✕</button>
   </div>
-  <div class="clock" id="clock"></div>
-</header>
+  <nav style="flex:1;overflow-y:auto;padding:12px 10px;">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  </nav>
+  <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
+    </div>
+  </div>
+</aside>
 
-<div style="padding-bottom:340px;">
-  <div class="section">
-    <div class="section-title">Knippen & Wassen</div>
-    <div class="svc-grid">
-      <div class="svc" onclick="add('Knippen',35)"><div class="svc-name">Knippen</div><div class="svc-prijs">€35</div><div class="svc-dur">45 min</div></div>
-      <div class="svc" onclick="add('Knippen + wassen',45)"><div class="svc-name">+ wassen</div><div class="svc-prijs">€45</div><div class="svc-dur">60 min</div></div>
-      <div class="svc" onclick="add('Kinderknippen',22)"><div class="svc-name">Kind</div><div class="svc-prijs">€22</div><div class="svc-dur">30 min</div></div>
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="tb-logo">Planr<em>.</em></div>
+    <div class="tb-title">Kassa</div>
+    <div class="tb-spacer"></div>
+    <div class="clock" id="clock"></div>
+  </div>
+
+  <div class="kassa-body">
+
+    <!-- Diensten panel -->
+    <div class="diensten-panel">
+      <div class="panel-label">Diensten</div>
+      <div class="svc-grid" id="svc-grid">
+        <div class="svc-loading">Laden...</div>
+      </div>
+      <div class="panel-label" style="margin-top:8px;">Overig</div>
+      <div class="extra-grid">
+        <div class="ext" onclick="add('Fooi',5)">Fooi<strong>€5</strong></div>
+        <div class="ext" onclick="add('Fooi',10)">Fooi<strong>€10</strong></div>
+        <div class="ext" onclick="add('Product',15)">Product<strong>€15</strong></div>
+        <div class="ext" onclick="add('Product',25)">Product<strong>€25</strong></div>
+      </div>
     </div>
-    <div class="section-title">Baard</div>
-    <div class="svc-grid">
-      <div class="svc" onclick="add('Baard trimmen',25)"><div class="svc-name">Baard trim</div><div class="svc-prijs">€25</div><div class="svc-dur">30 min</div></div>
-      <div class="svc" onclick="add('Baard + knippen',55)"><div class="svc-name">+ knippen</div><div class="svc-prijs">€55</div><div class="svc-dur">75 min</div></div>
-      <div class="svc" onclick="add('Scheren',35)"><div class="svc-name">Scheren</div><div class="svc-prijs">€35</div><div class="svc-dur">40 min</div></div>
-    </div>
-    <div class="section-title">Kleur</div>
-    <div class="svc-grid">
-      <div class="svc" onclick="add('Highlights',80)"><div class="svc-name">Highlights</div><div class="svc-prijs">€80</div><div class="svc-dur">90 min</div></div>
-      <div class="svc" onclick="add('Balayage',120)"><div class="svc-name">Balayage</div><div class="svc-prijs">€120</div><div class="svc-dur">2.5 u</div></div>
-      <div class="svc" onclick="add('Verven',95)"><div class="svc-name">Verven vol</div><div class="svc-prijs">€95</div><div class="svc-dur">2 u</div></div>
-    </div>
-    <div class="section-title">Extra</div>
-    <div class="extra-grid">
-      <div class="ext" onclick="add('Massage',15)">Massage<strong>€15</strong></div>
-      <div class="ext" onclick="add('Masker',12)">Masker<strong>€12</strong></div>
-      <div class="ext" onclick="add('Shampoo',14)">Shampoo<strong>€14</strong></div>
-      <div class="ext" onclick="add('Fooi',5)">Fooi<strong>€5</strong></div>
+
+    <!-- Bon panel -->
+    <div class="bon-panel">
+      <div class="bon-head">
+        <div class="bon-title">Bon</div>
+        <div class="bon-count" id="bon-count"></div>
+      </div>
+      <div class="bon-list" id="bon-list">
+        <div class="bon-empty">Tik op een dienst om te beginnen</div>
+      </div>
+      <div class="bon-totals">
+        <div class="tot-row"><span>Subtotaal</span><span id="sub">€0</span></div>
+        <div class="tot-row"><span>BTW 21%</span><span id="btw">€0.00</span></div>
+        <div class="tot-row main"><span>Totaal</span><span class="tot-val" id="tot">€0</span></div>
+      </div>
+      <div class="pm-wrap">
+        <div class="pm-label">Betaalmethode</div>
+        <div class="pm-grid">
+          <button class="pm on" onclick="setPM('pin',this)">Pin</button>
+          <button class="pm" onclick="setPM('cash',this)">Contant</button>
+          <button class="pm" onclick="setPM('ideal',this)">iDEAL</button>
+          <button class="pm" onclick="setPM('gift',this)">Bon</button>
+        </div>
+      </div>
+      <div class="bon-actions">
+        <button class="btn-clear" onclick="clearBon()">Wis bon</button>
+        <button class="btn-pay" id="btn-pay" onclick="betaal()" disabled>Afrekenen</button>
+      </div>
     </div>
   </div>
 </div>
-
-<!-- Bon onderaan -->
-<div class="bon-wrap">
-  <div class="bon-head">
-    <div class="bon-title">Bon <span id="bon-count" style="color:var(--mu);font-weight:400;font-size:12px"></span></div>
-    <div class="bon-clear" onclick="clearBon()">Wis bon</div>
-  </div>
-  <div class="bon-list" id="bon-list">
-    <div class="bon-empty">Tik op een dienst om te beginnen</div>
-  </div>
-  <div class="bon-foot">
-    <div class="bon-totrow"><span>Subtotaal</span><span id="sub">€0</span></div>
-    <div class="bon-totrow"><span>BTW 21%</span><span id="btw">€0</span></div>
-    <div class="bon-total"><span class="bon-total-lbl">Totaal</span><span class="bon-total-val" id="tot">€0</span></div>
-    <div class="pay-methods">
-      <button class="pm on" id="pm-pin" onclick="setPM('pin',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Pin</button>
-      <button class="pm" id="pm-cash" onclick="setPM('cash',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Contant</button>
-      <button class="pm" id="pm-ideal" onclick="setPM('ideal',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>iDEAL</button>
-      <button class="pm" id="pm-gift" onclick="setPM('gift',this)"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/></svg>Bon</button>
-    </div>
-    <button class="btn-betaal" id="btn-pay" onclick="betaal()" disabled>Afrekenen</button>
-  </div>
 </div>
+
+<!-- Bottom nav -->
+<nav class="bnav">
+  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home</a>
+  <a href="agenda.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="kassa.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
+</nav>
 
 <!-- Success modal -->
 <div class="mbg" id="m-success" onclick="if(event.target===this)newBon()">
-  <div class="modal">
-    <div class="mh"></div>
+  <div class="modal-success">
     <div class="success-icon">✓</div>
-    <div class="success-title">Betaald!</div>
+    <div class="success-title">Betaald</div>
     <div class="success-sub" id="suc-sub">Pin · €0</div>
     <div class="receipt" id="suc-receipt"></div>
-    <button class="btn-new-bon" onclick="newBon()">Nieuwe bon</button>
+    <button class="btn-new" onclick="newBon()">Nieuwe bon</button>
   </div>
 </div>
 
-<nav class="bnav">
-  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-  <a href="kassa.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
-  <a href="medewerkers.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Team</a>
-</nav>
-
 <script>
-let bon=[],pm='pin';
+let bon=[], pm='pin', allDiensten=[];
+
+async function loadData(){
+  const {data}=await sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('categorie').order('naam');
+  allDiensten=data||[];
+
+  // Sidebar initials
+  const nm=document.querySelector('.salon-naam')?.textContent||'';
+  document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+
+  const grid=document.getElementById('svc-grid');
+  if(!allDiensten.length){
+    grid.innerHTML=`<div class="svc-loading">Nog geen diensten.<br><a href="diensten.html" style="color:var(--gd);text-decoration:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Diensten toevoegen →</a></div>`;
+    return;
+  }
+  grid.innerHTML=allDiensten.map(d=>`
+    <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs})">
+      <div class="svc-name">${d.naam}</div>
+      <div class="svc-prijs">€${d.prijs}</div>
+      <div class="svc-dur">${d.duur_min} min</div>
+    </div>`).join('');
+}
+
 function add(naam,prijs){
   const e=bon.find(i=>i.naam===naam);
   if(e){e.qty++;e.total+=prijs;}else bon.push({naam,prijs,qty:1,total:prijs});
   renderBon();
 }
+
 function renderBon(){
   const list=document.getElementById('bon-list');
-  if(!bon.length){list.innerHTML='<div class="bon-empty">Tik op een dienst om te beginnen</div>';document.getElementById('btn-pay').disabled=true;updateTot();return;}
-  list.innerHTML=bon.map((i,idx)=>`<div class="bon-item"><div class="bon-qty" onclick="addQty(${idx})">${i.qty}x</div><div class="bon-name">${i.naam}</div><div class="bon-price">€${i.total}</div><div class="bon-del" onclick="del(${idx})">×</div></div>`).join('');
-  document.getElementById('bon-count').textContent=`(${bon.length})`;
+  if(!bon.length){
+    list.innerHTML='<div class="bon-empty">Tik op een dienst om te beginnen</div>';
+    document.getElementById('btn-pay').disabled=true;
+    document.getElementById('bon-count').textContent='';
+    updateTot();return;
+  }
+  list.innerHTML=bon.map((i,idx)=>`
+    <div class="bon-item">
+      <div class="bon-qty" onclick="addQty(${idx})">${i.qty}×</div>
+      <div class="bon-name">${i.naam}</div>
+      <div class="bon-price">€${i.total}</div>
+      <div class="bon-del" onclick="del(${idx})">×</div>
+    </div>`).join('');
+  document.getElementById('bon-count').textContent=bon.length+' item'+(bon.length!==1?'s':'');
   document.getElementById('btn-pay').disabled=false;
   updateTot();
 }
+
 function del(i){bon.splice(i,1);renderBon();}
 function addQty(i){bon[i].qty++;bon[i].total+=bon[i].prijs;renderBon();}
 function clearBon(){bon=[];renderBon();}
+
 function updateTot(){
   const sub=bon.reduce((s,i)=>s+i.total,0);
   const btw=Math.round(sub*0.21*100)/100;
@@ -214,38 +349,47 @@ function updateTot(){
   document.getElementById('btw').textContent='€'+btw.toFixed(2);
   document.getElementById('tot').textContent='€'+(sub+btw).toFixed(2);
 }
+
 function setPM(m,btn){pm=m;document.querySelectorAll('.pm').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
-function betaal(){
+
+async function betaal(){
   if(!bon.length)return;
   const sub=bon.reduce((s,i)=>s+i.total,0);
   const btw=Math.round(sub*0.21*100)/100;
-  const total=(sub+btw).toFixed(2);
+  const total=parseFloat((sub+btw).toFixed(2));
   const pml={pin:'Pin',cash:'Contant',ideal:'iDEAL',gift:'Cadeaubon'};
+
+  const btn=document.getElementById('btn-pay');
+  btn.disabled=true;btn.textContent='Verwerken...';
+
+  await sb.from('betalingen').insert({
+    salon_id:SALON_ID,bedrag:total,methode:pm,status:'betaald'
+  });
+
+  btn.disabled=false;btn.textContent='Afrekenen';
+
   document.getElementById('suc-sub').textContent=pml[pm]+' · €'+total;
-  document.getElementById('suc-receipt').innerHTML=bon.map(i=>`<div class="rrow"><span>${i.naam}</span><span>€${i.total}</span></div>`).join('')+`<div class="rrow"><span>BTW 21%</span><span>€${btw.toFixed(2)}</span></div><div class="rrow"><span>Totaal</span><span style="color:var(--green)">€${total}</span></div>`;
+  document.getElementById('suc-receipt').innerHTML=
+    bon.map(i=>`<div class="rrow"><span>${i.naam}</span><span>€${i.total}</span></div>`).join('')+
+    `<div class="rrow"><span>BTW 21%</span><span>€${btw.toFixed(2)}</span></div>`+
+    `<div class="rrow"><span>Totaal</span><span style="color:var(--gd)">€${total}</span></div>`;
   document.getElementById('m-success').classList.add('on');
   document.body.style.overflow='hidden';
 }
-function newBon(){bon=[];renderBon();document.getElementById('m-success').classList.remove('on');document.body.style.overflow='';}
-function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
-function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
-function tick(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});}
-setInterval(tick,1000);tick();
-function showToast(msg) {
-  let t = document.getElementById('planr-toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'planr-toast';
-    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#f0ede8;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid #2e2e2e;z-index:999;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  setTimeout(() => { t.style.opacity = '0'; }, 2500);
+
+function newBon(){
+  bon=[];renderBon();
+  document.getElementById('m-success').classList.remove('on');
+  document.body.style.overflow='';
 }
 
-function signOut(e){e.preventDefault();uitloggen();}
-planrInit(null);
+function tick(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});}
+setInterval(tick,1000);tick();
+
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+
+planrInit(loadData);
 </script>
 </body>
 </html>
