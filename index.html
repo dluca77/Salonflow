@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Planr — Software voor moderne salons</title>
-<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,300;0,6..96,400;0,6..96,500;1,6..96,300;1,6..96,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,700;0,6..96,800;1,6..96,400;1,6..96,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -205,12 +205,12 @@ footer{background:var(--ink);color:var(--ivory);padding:48px 6vw;display:flex;al
 
 /* ── MOBILE ── */
 @media(max-width:900px){
-  .hero{grid-template-columns:1fr;}
-  .hero-right{height:40vh;}
-  .hero-stats{position:static;flex-direction:row;justify-content:flex-start;padding:24px 6vw;background:var(--ink);}
-  .hero-stat-num{font-size:28px;}
-  .hero-left{padding:120px 6vw 60px;}
-  .hero-scroll{display:none;}
+  .hero-title{font-size:clamp(52px,12vw,100px);letter-spacing:-2px;}
+  .hero-bg-word{font-size:clamp(120px,28vw,200px);}
+  .hero-bottom{flex-direction:column;gap:32px;align-items:flex-start;}
+  .hero-actions{align-items:flex-start;}
+  .hero-stats{gap:24px;flex-wrap:wrap;}
+  .hero-vertical{display:none;}
   .forwho-grid{grid-template-columns:1fr 1fr;}
   .features-wrap{grid-template-columns:1fr;}
   .features-visual{position:static;}
@@ -245,28 +245,32 @@ footer{background:var(--ink);color:var(--ivory);padding:48px 6vw;display:flex;al
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-left">
+  <div class="hero-bg-word">PLANR</div>
+  <div class="hero-vertical">Salon Management Software &nbsp; 2026</div>
+
+  <div class="hero-content">
     <div class="hero-badge">Salon management software</div>
     <h1 class="hero-title">
-      Software die je<br>salon laat <em>groeien</em>
+      <div class="hero-title-row">Software</div>
+      <div class="hero-title-row">die je salon</div>
+      <div class="hero-title-row italic">laat <em>groeien</em></div>
     </h1>
-    <div class="hero-divider"></div>
-    <p class="hero-sub">Planr geeft kappers, nagelstudio's, spa's en andere salon-professionals de tools om efficiënter te werken en klanten een uitzonderlijke ervaring te bieden.</p>
-    <div class="hero-actions">
-      <a href="login.html" class="btn-primary">
-        Gratis beginnen
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-      </a>
-      <a href="boeken.html" class="btn-ghost">Bekijk demo</a>
+
+    <div class="hero-bottom">
+      <p class="hero-sub">Planr geeft kappers, nagelstudio's en spa's de tools om efficiënter te werken — zodat jij je focust op je klanten.</p>
+      <div class="hero-actions">
+        <a href="login.html" class="btn-primary">
+          Gratis beginnen
+          <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a href="boeken.html" class="btn-ghost">Bekijk live demo</a>
+      </div>
     </div>
-    <div class="hero-scroll"><div class="hero-scroll-line"></div>Scroll</div>
-  </div>
-  <div class="hero-right">
-    <div class="hero-img-fill"></div>
-    <div class="hero-img-overlay"></div>
+
     <div class="hero-stats">
       <div class="hero-stat"><div class="hero-stat-num">2.400+</div><div class="hero-stat-label">Actieve salons</div></div>
       <div class="hero-stat"><div class="hero-stat-num">98%</div><div class="hero-stat-label">Klanttevredenheid</div></div>
+      <div class="hero-stat"><div class="hero-stat-num">€0</div><div class="hero-stat-label">Om te starten</div></div>
       <div class="hero-stat"><div class="hero-stat-num">15 min</div><div class="hero-stat-label">Setup tijd</div></div>
     </div>
   </div>
