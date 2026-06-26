@@ -2,401 +2,341 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Planr — Diensten</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display:ital@0;1&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;--border:#2e2e2e;--accent:#c8f060;--accent2:#a0d040;--text:#f0ede8;--muted:#888;--muted2:#555;--red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;--green:#4dff90;}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;overflow:hidden;}
-.sidebar{width:240px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;padding:24px 0;flex-shrink:0;height:100vh;}
-.logo{padding:0 20px 28px;border-bottom:1px solid var(--border);}
-.logo-mark{font-family:'DM Serif Display',serif;font-size:22px;color:var(--text);letter-spacing:-0.5px;}
-.logo-mark span{color:var(--accent);}
-.logo-sub{font-size:11px;color:var(--muted);margin-top:2px;letter-spacing:0.5px;text-transform:uppercase;}
-.nav{padding:20px 12px;flex:1;}
-.nav-section{font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin-bottom:8px;margin-top:20px;}
-.nav-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:14px;color:var(--muted);transition:all 0.15s;margin-bottom:2px;text-decoration:none;}
-.nav-item:hover{background:var(--surface2);color:var(--text);}
-.nav-item.active{background:var(--accent);color:#1a1a1a;font-weight:600;}
-.nav-icon{width:18px;height:18px;flex-shrink:0;}
-.sidebar-bottom{padding:16px 12px;border-top:1px solid var(--border);}
-.salon-info{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;background:var(--surface2);cursor:pointer;}
-.salon-avatar{width:32px;height:32px;border-radius:8px;background:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#1a1a1a;flex-shrink:0;}
-.salon-name{font-size:13px;font-weight:500;}
-.salon-plan{font-size:11px;color:var(--muted);}
-.main{flex:1;display:flex;flex-direction:column;height:100vh;overflow:hidden;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 28px;border-bottom:1px solid var(--border);background:var(--surface);flex-shrink:0;}
-.page-title{font-family:'DM Serif Display',serif;font-size:22px;letter-spacing:-0.5px;}
-.topbar-right{display:flex;align-items:center;gap:12px;}
-.btn-primary{display:flex;align-items:center;gap:6px;padding:8px 16px;background:var(--accent);color:#1a1a1a;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
-.btn-primary:hover{background:var(--accent2);}
-.btn-ghost{display:flex;align-items:center;gap:6px;padding:8px 14px;background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:8px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
-.btn-ghost:hover{color:var(--text);border-color:var(--muted);}
-.content{flex:1;overflow-y:auto;padding:28px;}
-.content::-webkit-scrollbar{width:4px;}
-.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:99px;}
-
-/* Category tabs */
-.cat-tabs{display:flex;gap:8px;margin-bottom:24px;flex-wrap:wrap;}
-.cat-tab{padding:8px 18px;border-radius:99px;border:1px solid var(--border);background:transparent;color:var(--muted);font-size:13px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.15s;}
-.cat-tab:hover{color:var(--text);border-color:var(--muted);}
-.cat-tab.active{background:var(--accent);color:#1a1a1a;border-color:var(--accent);font-weight:600;}
-
-/* Category section */
-.cat-section{margin-bottom:28px;}
-.cat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
-.cat-title{font-size:16px;font-weight:600;display:flex;align-items:center;gap:10px;}
-.cat-count{font-size:12px;color:var(--muted);background:var(--surface2);padding:2px 8px;border-radius:99px;}
-.cat-add{font-size:12px;color:var(--accent);cursor:pointer;display:flex;align-items:center;gap:4px;}
-
-/* Dienst kaarten */
-.diensten-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
-.dienst-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;overflow:hidden;transition:all 0.15s;}
-.dienst-card:hover{border-color:var(--muted2);}
-.dc-top{padding:16px;display:flex;align-items:flex-start;gap:12px;}
-.dc-color{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
-.dc-info{flex:1;min-width:0;}
-.dc-name{font-size:14px;font-weight:600;margin-bottom:3px;}
-.dc-desc{font-size:12px;color:var(--muted);line-height:1.4;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
-.dc-meta{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--border);}
-.dc-stat{padding:10px 12px;text-align:center;}
-.dc-stat-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:0.3px;}
-.dc-stat-val{font-size:15px;font-weight:700;margin-top:2px;}
-.dc-actions{display:flex;border-top:1px solid var(--border);}
-.dc-action{flex:1;padding:10px;text-align:center;font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.15s;border-right:1px solid var(--border);}
-.dc-action:last-child{border-right:none;}
-.dc-action:hover{background:var(--surface2);color:var(--text);}
-.dc-toggle{display:flex;align-items:center;gap:6px;padding:10px 12px;font-size:12px;color:var(--muted);cursor:pointer;transition:all 0.15s;}
-.dc-toggle:hover{color:var(--text);}
-.toggle-pill{width:32px;height:18px;border-radius:99px;background:var(--green);position:relative;transition:background 0.2s;flex-shrink:0;}
-.toggle-pill.off{background:var(--muted2);}
-.toggle-pill::after{content:'';position:absolute;width:12px;height:12px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform 0.2s;}
-.toggle-pill.off::after{transform:none;}
-.toggle-pill:not(.off)::after{transform:translateX(14px);}
-
-/* Modal */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:100;align-items:center;justify-content:center;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border-radius:16px;padding:28px;width:520px;border:1px solid var(--border);max-height:90vh;overflow-y:auto;}
-.modal-title{font-family:'DM Serif Display',serif;font-size:20px;margin-bottom:6px;}
-.modal-sub{font-size:13px;color:var(--muted);margin-bottom:24px;}
-.form-row{margin-bottom:14px;}
-.form-label{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;}
-.form-input{width:100%;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:10px 12px;font-size:14px;color:var(--text);font-family:'DM Sans',sans-serif;outline:none;transition:border-color 0.15s;}
-.form-input:focus{border-color:var(--accent);}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
-.form-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end;}
-.medewerker-check{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
-.medewerker-check:last-child{border-bottom:none;}
-.m-chk-avatar{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;}
-.m-chk-name{flex:1;font-size:13px;}
-
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-.dienst-card{animation:fadeIn 0.2s ease both;}
-
-/* Mobile bottom nav */
-.mobile-nav {
-  display: none;
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: var(--surface);
-  border-top: 1px solid var(--border);
-  padding: 8px 4px 20px;
-  z-index: 30;
-  justify-content: space-around;
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
 }
-.mob-nav-item {
-  display: flex; flex-direction: column; align-items: center; gap: 3px;
-  padding: 6px 8px; border-radius: 8px; text-decoration: none;
-  color: var(--muted); font-size: 10px; cursor: pointer; transition: color 0.15s; flex: 1;
-}
-.mob-nav-item.active { color: var(--accent); }
-.mob-nav-item svg { width: 20px; height: 20px; }
-@media (max-width: 768px) {
-  .mobile-nav { display: flex; }
-  .main { padding-bottom: 80px; }
-  body { overflow: auto; display: block; }
-  .main { width: 100%; height: auto; min-height: 100vh; overflow: visible; }
-  .content { overflow: auto; }
-  .topbar { padding: 12px 16px; gap: 8px; }
-  .page-title { font-size: 17px; }
-  .topbar-right .btn-ghost:not(:last-child) { display: none; }
-  .hamburger { display: flex !important; }
-  .sidebar { position: fixed !important; left: -260px !important; top: 0; z-index: 50; height: 100vh; transition: left 0.25s ease; width: 260px !important; }
-  .sidebar.open { left: 0 !important; }
-}
+html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
+.app{display:flex;height:100vh;}
 
-/* ═══ MOBILE RESET ═══ */
-@media (max-width: 768px) {
-  body { display: block !important; overflow-x: hidden; overflow-y: auto; }
-  .sidebar {
-    position: fixed !important; left: -280px !important; top: 0 !important;
-    width: 280px !important; height: 100vh !important; z-index: 50 !important;
-    transition: left 0.25s ease !important; overflow-y: auto;
-  }
-  .sidebar.open { left: 0 !important; }
-  .hamburger { display: flex !important; }
-  .main { width: 100% !important; height: auto !important; overflow: visible !important; min-height: 100vh; }
-  .content { overflow: visible !important; height: auto !important; display: block !important; }
-  .topbar {
-    padding: 0 14px !important; height: 52px !important;
-    display: flex !important; align-items: center !important;
-    justify-content: space-between !important; gap: 8px !important;
-  }
-  .page-title { font-size: 17px !important; white-space: nowrap; }
-  .view-toggle { display: none !important; }
-  .date-nav { display: none !important; }
-  .topbar-right { gap: 8px !important; flex-shrink: 0; }
-  .right-panel { display: none !important; }
-  .stats-bar {
-    display: grid !important; grid-template-columns: 1fr 1fr !important;
-    flex-direction: unset !important;
-  }
-  .stat-value { font-size: 20px !important; }
-  .stat-item { padding: 12px 14px !important; }
-  .list-panel { width: 100% !important; border-right: none !important; }
-  .detail-panel { display: none !important; }
-  .team-grid { grid-template-columns: 1fr !important; }
-  .detail-section { grid-template-columns: 1fr !important; }
-  .detail-stats { grid-template-columns: 1fr 1fr !important; }
-  .detail-body { grid-template-columns: 1fr !important; padding: 14px !important; }
-  .kassa-layout { grid-template-columns: 1fr !important; }
-  .betaal-panel { display: none !important; }
-  .services-area { padding: 12px !important; }
-  .services-grid { grid-template-columns: repeat(2,1fr) !important; gap: 8px !important; }
-  .extra-grid { grid-template-columns: repeat(3,1fr) !important; }
-  .charts-grid { grid-template-columns: 1fr !important; }
-  .kpi-grid { grid-template-columns: 1fr 1fr !important; }
-  .second-row { grid-template-columns: 1fr !important; }
-  .ai-grid { grid-template-columns: 1fr !important; }
-  .diensten-grid { grid-template-columns: 1fr 1fr !important; }
-  .cat-tabs { flex-wrap: wrap; }
-  .medewerker-grid { grid-template-columns: 1fr 1fr !important; }
-  .table-head div:nth-child(n+3) { display: none !important; }
-  .table-row > div:nth-child(n+3) { display: none !important; }
-  .table-head { grid-template-columns: 2fr 1fr !important; }
-  .table-row { grid-template-columns: 2fr 1fr !important; }
-  .btn-primary { font-size: 13px !important; padding: 8px 12px !important; }
-  .btn-ghost { font-size: 12px !important; padding: 6px 10px !important; }
-  /* Bottom nav padding */
-  .content, .main { padding-bottom: 80px; }
-}
-/* Bottom nav */
-.mobile-bottom-nav {
-  display: none;
-  position: fixed; bottom: 0; left: 0; right: 0;
-  background: var(--surface); border-top: 1px solid var(--border);
-  z-index: 30; padding: 6px 0 20px;
-  justify-content: space-around;
-}
-@media (max-width: 768px) { .mobile-bottom-nav { display: flex; } }
-.mbn-item {
-  flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px;
-  text-decoration: none; color: var(--muted); font-size: 10px; padding: 4px 0;
-  -webkit-tap-highlight-color: transparent;
-}
-.mbn-item.active { color: var(--accent); }
-.mbn-item svg { width: 22px; height: 22px; }
+/* ── SIDEBAR ── */
+.sidebar{width:210px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;position:fixed;top:0;left:0;z-index:20;}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-logo a{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;letter-spacing:1px;color:var(--iv);text-decoration:none;}
+.sb-logo a em{color:var(--gd);font-style:normal;}
+.sb-nav{flex:1;overflow-y:auto;padding:12px 10px;}
+.sb-sec{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 10px;margin:16px 0 6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;color:rgba(255,255,255,0.45);font-size:13px;text-decoration:none;margin-bottom:1px;transition:all 0.15s;border-left:2px solid transparent;}
+.sb-item:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.04);}
+.sb-item.on{color:var(--iv);border-left-color:var(--gd);background:rgba(255,255,255,0.06);}
+.sb-item svg{width:16px;height:16px;flex-shrink:0;}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,0.06);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer;}
+.sb-user:hover{background:rgba(255,255,255,0.04);}
+.sb-av{width:30px;height:30px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--iv);flex-shrink:0;}
+.sb-nm{font-size:12px;color:rgba(255,255,255,0.7);}
+.sb-rl{font-size:10px;color:rgba(255,255,255,0.3);}
 
+/* ── MAIN ── */
+.main{margin-left:210px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.hbg{width:32px;height:32px;border:1px solid var(--bd);background:transparent;color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:none;letter-spacing:0.5px;}
+.tb-logo em{color:var(--gd);font-style:normal;}
+.tb-title{font-size:13px;font-weight:500;color:var(--mu);}
+.tb-spacer{flex:1;}
+.btn-add{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--ink);color:var(--iv);font-size:10px;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
+.btn-add:hover{background:var(--ink2);}
+
+/* ── TABS ── */
+.tabs-bar{background:var(--wh);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.cat-tab{padding:14px 18px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);cursor:pointer;border:none;background:transparent;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all 0.15s;}
+.cat-tab.on{color:var(--gd);border-bottom-color:var(--gd);}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:20px;}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:var(--bd);}
+
+/* Diensten tabel */
+.diensten-table{background:var(--wh);border:1px solid var(--bd);margin-bottom:80px;}
+.dt-head{display:grid;grid-template-columns:1fr 80px 70px 90px 100px;padding:10px 18px;border-bottom:1px solid var(--bd);background:var(--iv);}
+.dt-head-cell{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);}
+.dt-row{display:grid;grid-template-columns:1fr 80px 70px 90px 100px;padding:14px 18px;border-bottom:1px solid var(--bd);align-items:center;transition:background 0.1s;}
+.dt-row:last-child{border-bottom:none;}
+.dt-row:hover{background:var(--iv);}
+.dt-naam{font-size:13px;font-weight:500;}
+.dt-desc{font-size:11px;color:var(--mu2);margin-top:2px;}
+.dt-prijs{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gd);}
+.dt-duur{font-size:12px;color:var(--mu);}
+.dt-cat{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
+.dt-toggle{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.toggle{width:36px;height:20px;border-radius:10px;background:var(--bd);position:relative;transition:background 0.2s;flex-shrink:0;}
+.toggle.on{background:var(--gd);}
+.toggle-dot{width:16px;height:16px;background:var(--wh);border-radius:50%;position:absolute;top:2px;left:2px;transition:left 0.2s;}
+.toggle.on .toggle-dot{left:18px;}
+.toggle-label{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
+.toggle.on+.toggle-label{color:var(--green);}
+
+.empty-state{padding:60px 20px;text-align:center;}
+.empty-text{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;}
+.empty-sub{font-size:12px;color:var(--mu2);}
+
+/* ── MODALS ── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.6);z-index:60;align-items:flex-end;justify-content:center;}
+.mbg.on{display:flex;}
+.modal{background:var(--wh);width:100%;max-width:520px;padding:24px 20px 40px;border-top:2px solid var(--gd);}
+.mh{width:32px;height:3px;background:var(--bd);margin:0 auto 20px;}
+.mt{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:4px;}
+.msub{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-bottom:20px;}
+.fr{margin-bottom:14px;}
+.fl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
+.fi{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.15s;}
+.fi:focus{border-color:var(--gd);}
+.fi::placeholder{color:var(--mu2);}
+select.fi{cursor:pointer;}
+.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.btsv{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background 0.2s;}
+.btsv:hover{background:var(--ink2);}
+.btsv:disabled{opacity:0.4;}
+.spinner-inline{display:inline-block;width:14px;height:14px;border:2px solid rgba(250,248,244,0.3);border-top-color:var(--iv);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── MOB OVERLAY ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;}
+.ov.on{display:block;}
+.sb-mob{position:fixed;left:-100%;top:0;width:240px;height:100%;background:var(--ink);z-index:50;display:flex;flex-direction:column;transition:left .25s;}
+.sb-mob.on{left:0;}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--bd);padding:6px 0 18px;z-index:30;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--mu2);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:4px 0;}
+.bni.on{color:var(--gd);}
+.bni svg{width:20px;height:20px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .sidebar{width:180px;}.main{margin-left:180px;}
+  .dt-head,.dt-row{grid-template-columns:1fr 80px 70px 100px;}
+  .dt-head-cell:nth-child(4),.dt-row .dt-cat{display:none;}
+}
+@media(max-width:768px){
+  .sidebar{display:none;}.main{margin-left:0;}
+  .hbg{display:flex;}.tb-logo{display:block;}.tb-title{display:none;}
+  .bnav{display:flex;}
+  .topbar{padding:0 14px;}
+  .tabs-bar{padding:0 14px;}
+  .content{padding:14px 14px 80px;}
+  .dt-head,.dt-row{grid-template-columns:1fr 70px 90px;}
+  .dt-head-cell:nth-child(3),.dt-head-cell:nth-child(4),.dt-row .dt-duur,.dt-row .dt-cat{display:none;}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="planr.js"></script>
 </head>
 <body>
-<div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
-<nav class="sidebar" id="sidebar">
-  <div class="logo"><div class="logo-mark">Planr<span>.</span></div><div class="logo-sub">Afsprakenbeheer</div></div>
-  <div class="nav">
-    <a href="dashboard.html" class="nav-item" style="color:var(--muted);margin-bottom:8px;font-size:12px;">← Terug naar Planr.nl</a>
-    <div class="nav-section">Beheer</div>
-    <a href="dashboard.html" class="nav-item" href="dashboard.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-    <a href="klanten.html" class="nav-item" href="klanten.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
-    <a href="kassa.html" class="nav-item" href="kassa.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-    <a href="medewerkers.html" class="nav-item" href="medewerkers.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
-    <a href="diensten.html" class="nav-item active"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
-    <div class="nav-section">Groei</div>
-    <a href="rapportages.html" class="nav-item" href="rapportages.html"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
-    <a href="#" class="nav-item"><svg class="nav-icon" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 19.07a10 10 0 010-14.14"/></svg>AI Assistent</a>
-  </div>
-  <div class="sidebar-bottom"><div class="salon-info"><div class="salon-avatar">KS</div><div><div class="salon-name">Mijn Studio</div><div class="salon-plan">Pro plan</div></div></div></div>
-</nav>
+<div class="app">
 
-<div class="main">
-  <div class="topbar" style="display:flex;align-items:center;gap:10px;">
-    <button class="hamburger" onclick="openSidebar()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-      <div class="page-title">Diensten & prijzen</div>
-    <div class="topbar-right">
-      <button class="btn-ghost" onclick="document.getElementById('csv-import')&&document.getElementById('csv-import').click()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Importeren
-      </button>
-      <button class="btn-primary" onclick="openModal()">
-        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-        Nieuwe dienst
-      </button>
+<!-- Desktop sidebar -->
+<aside class="sidebar">
+  <div class="sb-logo"><a href="dashboard.html">Planr<em>.</em></a></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="diensten.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
+    <div class="sb-sec">Groei</div>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+    <a href="boeken.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Online boeken</a>
+  </nav>
+  <div class="sb-foot">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
     </div>
   </div>
+</aside>
+
+<!-- Mobiel overlay -->
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<aside class="sb-mob" id="sb">
+  <div style="padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--iv);letter-spacing:1px;">Planr<em style="color:var(--gd);font-style:normal">.</em></span>
+    <button onclick="closeSB()" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;">✕</button>
+  </div>
+  <nav style="flex:1;overflow-y:auto;padding:12px 10px;">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="diensten.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Diensten</a>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  </nav>
+  <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
+    </div>
+  </div>
+</aside>
+
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="tb-logo">Planr<em>.</em></div>
+    <div class="tb-title">Diensten</div>
+    <div class="tb-spacer"></div>
+    <button class="btn-add" onclick="openM('m-new')">+ Dienst</button>
+  </div>
+
+  <div class="tabs-bar" id="tabs-bar"></div>
 
   <div class="content">
-    <div class="cat-tabs" id="cat-tabs"></div>
-    <div id="diensten-content"></div>
+    <div class="diensten-table" id="diensten-table">
+      <div class="dt-head">
+        <div class="dt-head-cell">Dienst</div>
+        <div class="dt-head-cell">Prijs</div>
+        <div class="dt-head-cell">Duur</div>
+        <div class="dt-head-cell">Categorie</div>
+        <div class="dt-head-cell">Status</div>
+      </div>
+      <div id="diensten-rows"><div class="empty-state"><div class="empty-text">Laden...</div></div></div>
+    </div>
   </div>
 </div>
+</div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal" onclick="if(event.target===this)closeModal()">
+<!-- Bottom nav -->
+<nav class="bnav">
+  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home</a>
+  <a href="agenda.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
+</nav>
+
+<!-- Nieuwe dienst modal -->
+<div class="mbg" id="m-new" onclick="if(event.target===this)closeM('m-new')">
   <div class="modal">
-    <div class="modal-title">Nieuwe dienst toevoegen</div>
-    <div class="modal-sub">De dienst wordt direct zichtbaar in de kassa en online boekingspagina</div>
-    <div class="form-row"><div class="form-label">Naam</div><input class="form-input" placeholder="bijv. Balayage full colour"></div>
-    <div class="form-row"><div class="form-label">Omschrijving</div><textarea class="form-input" rows="2" placeholder="Korte beschrijving voor klanten..."></textarea></div>
-    <div class="form-row"><div class="form-label">Categorie</div>
-      <select class="form-input"><option>Knippen</option><option>Baard</option><option>Kleur & behandeling</option><option>Extra's</option><option>Producten</option></select>
+    <div class="mh"></div>
+    <div class="mt">Nieuwe dienst</div>
+    <div class="msub">Voeg een dienst toe aan je aanbod</div>
+    <div id="d-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+    <div class="fr"><label class="fl">Naam</label><input class="fi" id="d-naam" type="text" placeholder="bijv. Knippen + wassen"></div>
+    <div class="fg">
+      <div class="fr"><label class="fl">Prijs (€)</label><input class="fi" id="d-prijs" type="number" placeholder="45" min="0" step="0.50"></div>
+      <div class="fr"><label class="fl">Duur (min)</label><input class="fi" id="d-duur" type="number" placeholder="60" min="0" step="5"></div>
     </div>
-    <div class="form-grid-3">
-      <div class="form-row"><div class="form-label">Prijs (€)</div><input class="form-input" type="number" placeholder="45"></div>
-      <div class="form-row"><div class="form-label">Duur (min)</div><input class="form-input" type="number" placeholder="45"></div>
-      <div class="form-row"><div class="form-label">BTW %</div><select class="form-input"><option>21%</option><option>9%</option><option>0%</option></select></div>
+    <div class="fr"><label class="fl">Categorie</label>
+      <select class="fi" id="d-cat">
+        <option value="Basis">Basis</option>
+        <option value="Kleur">Kleur</option>
+        <option value="Behandeling">Behandeling</option>
+        <option value="Extra">Extra</option>
+        <option value="Product">Product</option>
+        <option value="Overig">Overig</option>
+      </select>
     </div>
-    <div class="form-row"><div class="form-label" style="margin-bottom:12px">Uitvoerbaar door</div>
-      <div class="medewerker-check">
-        <input type="checkbox" id="m1" checked style="accent-color:var(--accent)">
-        <div class="m-chk-avatar" style="background:rgba(107,196,255,0.2);color:var(--blue)">JD</div>
-        <label class="m-chk-name" for="m1">Jasmijn de Vries</label>
-      </div>
-      <div class="medewerker-check">
-        <input type="checkbox" id="m2" checked style="accent-color:var(--accent)">
-        <div class="m-chk-avatar" style="background:rgba(176,139,255,0.2);color:var(--purple)">MK</div>
-        <label class="m-chk-name" for="m2">Marco Koster</label>
-      </div>
-      <div class="medewerker-check">
-        <input type="checkbox" id="m3" style="accent-color:var(--accent)">
-        <div class="m-chk-avatar" style="background:rgba(255,184,77,0.2);color:var(--amber)">SB</div>
-        <label class="m-chk-name" for="m3">Sara Bakker</label>
-      </div>
-    </div>
-    <div class="modal-actions">
-      <button class="btn-ghost" onclick="closeModal()">Annuleren</button>
-      <button class="btn-primary" onclick="closeModal()">Dienst opslaan</button>
-    </div>
+    <div class="fr"><label class="fl">Omschrijving (optioneel)</label><input class="fi" id="d-omschr" type="text" placeholder="Korte omschrijving..."></div>
+    <button class="btsv" id="btn-dienst-opslaan" onclick="slaDienstOp()">Dienst opslaan</button>
   </div>
 </div>
 
 <script>
-const diensten = {
-  'Knippen': [
-    {naam:'Knippen',prijs:35,duur:45,color:'#e6f4ff',icon:'✂',omzet:1190,boekingen:34,actief:true,desc:'Knippen op maat, inclusief föhnen'},
-    {naam:'Knippen + wassen',prijs:45,duur:60,color:'#e6f4ff',icon:'✂',omzet:3060,boekingen:68,actief:true,desc:'Uitgebreide behandeling met wassen en föhnen'},
-    {naam:'Kinderknippen',prijs:22,duur:30,color:'#e6f4ff',icon:'✂',omzet:396,boekingen:18,actief:true,desc:'Voor kinderen tot 12 jaar'},
-  ],
-  'Baard': [
-    {naam:'Baard trimmen',prijs:25,duur:30,color:'#f3f0e6',icon:'🧔',omzet:700,boekingen:28,actief:true,desc:'Professioneel trimmen en modelleren'},
-    {naam:'Baard + knippen',prijs:55,duur:75,color:'#f3f0e6',icon:'🧔',omzet:825,boekingen:15,actief:true,desc:'Combinatie behandeling'},
-    {naam:'Scheren',prijs:35,duur:40,color:'#f3f0e6',icon:'🪒',omzet:280,boekingen:8,actief:false,desc:'Klassiek scheren met rechte lijn'},
-  ],
-  'Kleur & behandeling': [
-    {naam:'Highlights',prijs:80,duur:90,color:'#f3eeff',icon:'🎨',omzet:2560,boekingen:32,actief:true,desc:'Gedeeltelijke of volledige highlights'},
-    {naam:'Balayage',prijs:120,duur:150,color:'#f3eeff',icon:'🎨',omzet:1680,boekingen:14,actief:true,desc:'Handgeschilderd kleurverloop'},
-    {naam:'Verven vol',prijs:95,duur:120,color:'#f3eeff',icon:'🎨',omzet:760,boekingen:8,actief:true,desc:'Volledige haarkleur behandeling'},
-    {naam:'Keratine',prijs:180,duur:180,color:'#f3eeff',icon:'💆',omzet:540,boekingen:3,actief:true,desc:'Anti-frizz behandeling, 12 weken effect'},
-  ],
-  'Extra\'s': [
-    {naam:'Hoofdmassage',prijs:15,duur:15,color:'#e8f5ef',icon:'💆',omzet:300,boekingen:20,actief:true,desc:'Ontspannende hoofdmassage'},
-    {naam:'Haarmasker',prijs:12,duur:0,color:'#e8f5ef',icon:'🧴',omzet:144,boekingen:12,actief:true,desc:'Verzorgend masker bij elke behandeling'},
-  ],
-  'Producten': [
-    {naam:'Shampoo',prijs:14,duur:0,color:'#fff8e6',icon:'🧴',omzet:196,boekingen:14,actief:true,desc:'Professionele salon shampoo'},
-    {naam:'Conditioner',prijs:12,duur:0,color:'#fff8e6',icon:'🧴',omzet:96,boekingen:8,actief:true,desc:'Verzorgende conditioner'},
-    {naam:'Serum',prijs:18,duur:0,color:'#fff8e6',icon:'✨',omzet:90,boekingen:5,actief:false,desc:'Anti-frizz haarserum'},
-  ],
-};
+let DIENSTEN=[], activeTab='Alle';
 
-let activeTab = 'Alle';
-const cats = ['Alle', ...Object.keys(diensten)];
-
-function renderTabs(){
-  document.getElementById('cat-tabs').innerHTML = cats.map(c=>`
-    <button class="cat-tab${activeTab===c?' active':''}" onclick="setTab('${c}')">${c}</button>`).join('');
+async function loadData(){
+  const{data}=await sb.from('diensten').select('*').eq('salon_id',SALON_ID).order('categorie').order('naam');
+  DIENSTEN=data||[];
+  const nm=document.querySelector('.salon-naam')?.textContent||'';
+  document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+  renderTabs();
+  renderRows();
 }
 
-function renderContent(){
-  const toShow = activeTab==='Alle' ? diensten : {[activeTab]: diensten[activeTab]};
-  document.getElementById('diensten-content').innerHTML = Object.entries(toShow).map(([cat,items])=>`
-    <div class="cat-section">
-      <div class="cat-header">
-        <div class="cat-title">${cat} <span class="cat-count">${items.length}</span></div>
-        <div class="cat-add" onclick="openModal()">+ Dienst toevoegen</div>
+function renderTabs(){
+  const cats=['Alle',...new Set(DIENSTEN.map(d=>d.categorie).filter(Boolean))];
+  document.getElementById('tabs-bar').innerHTML=cats.map(c=>
+    `<button class="cat-tab${activeTab===c?' on':''}" onclick="setTab('${c}')">${c}</button>`
+  ).join('');
+}
+
+function renderRows(){
+  const filtered=activeTab==='Alle'?DIENSTEN:DIENSTEN.filter(d=>d.categorie===activeTab);
+  const rows=document.getElementById('diensten-rows');
+
+  if(!filtered.length){
+    rows.innerHTML=`<div class="empty-state">
+      <div class="empty-text">${DIENSTEN.length?'Geen diensten in deze categorie':'Nog geen diensten'}</div>
+      <div class="empty-sub">${DIENSTEN.length?'':'Voeg je eerste dienst toe via + Dienst'}</div>
+    </div>`;
+    return;
+  }
+
+  rows.innerHTML=filtered.map(d=>`
+    <div class="dt-row" style="opacity:${d.actief?1:0.5}">
+      <div>
+        <div class="dt-naam">${d.naam}</div>
+        ${d.beschrijving?`<div class="dt-desc">${d.beschrijving}</div>`:''}
       </div>
-      <div class="diensten-grid">
-        ${items.map((d,i)=>`
-          <div class="dienst-card" style="animation-delay:${i*0.05}s;opacity:${d.actief?1:0.5}">
-            <div class="dc-top">
-              <div class="dc-color" style="background:${d.color}">${d.icon}</div>
-              <div class="dc-info">
-                <div class="dc-name">${d.naam}</div>
-                <div class="dc-desc">${d.desc}</div>
-              </div>
-            </div>
-            <div class="dc-meta">
-              <div class="dc-stat"><div class="dc-stat-label">Prijs</div><div class="dc-stat-val" style="color:var(--accent)">€${d.prijs}</div></div>
-              <div class="dc-stat"><div class="dc-stat-label">Duur</div><div class="dc-stat-val">${d.duur?d.duur+'m':'—'}</div></div>
-              <div class="dc-stat"><div class="dc-stat-label">Boekingen</div><div class="dc-stat-val">${d.boekingen}</div></div>
-            </div>
-            <div class="dc-actions">
-              <div class="dc-action" onclick="editDienst('${d.naam}')">Bewerken</div>
-              <div class="dc-action" style="color:var(--red)" onclick="confirm('Verwijder ${d.naam}?')">Verwijderen</div>
-              <div class="dc-toggle" onclick="toggleDienst(this)">
-                <div class="toggle-pill${d.actief?'':' off'}"></div>
-                <span>${d.actief?'Actief':'Inactief'}</span>
-              </div>
-            </div>
-          </div>`).join('')}
+      <div class="dt-prijs">€${d.prijs}</div>
+      <div class="dt-duur">${d.duur_min?d.duur_min+' min':'—'}</div>
+      <div class="dt-cat">${d.categorie||'—'}</div>
+      <div class="dt-toggle" onclick="toggleDienst('${d.id}',${d.actief})">
+        <div class="toggle${d.actief?' on':''}"><div class="toggle-dot"></div></div>
+        <span class="toggle-label">${d.actief?'Actief':'Inactief'}</span>
       </div>
     </div>`).join('');
 }
 
-function setTab(t){activeTab=t;renderTabs();renderContent();}
-function toggleDienst(el){
-  const pill=el.querySelector('.toggle-pill');
-  const span=el.querySelector('span');
-  const isOn=!pill.classList.contains('off');
-  pill.classList.toggle('off',isOn);
-  span.textContent=isOn?'Inactief':'Actief';
-  el.closest('.dienst-card').style.opacity=isOn?'0.5':'1';
-}
-function editDienst(naam){alert('Bewerk dienst: '+naam);}
-function openModal(){document.getElementById('modal').classList.add('open');}
-function closeModal(){document.getElementById('modal').classList.remove('open');}
-
-planrInit(() => { renderTabs(); renderContent(); });
-function openSidebar(){document.getElementById("sidebar").classList.add("open");document.getElementById("overlay").classList.add("open");}function closeSidebar(){document.getElementById("sidebar").classList.remove("open");document.getElementById("overlay").classList.remove("open");}
-function showToast(msg) {
-  let t = document.getElementById('planr-toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'planr-toast';
-    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#f0ede8;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid #2e2e2e;z-index:999;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  setTimeout(() => { t.style.opacity = '0'; }, 2500);
+async function toggleDienst(id, huidig){
+  const nieuw=!huidig;
+  await sb.from('diensten').update({actief:nieuw}).eq('id',id);
+  const d=DIENSTEN.find(x=>x.id===id);
+  if(d){d.actief=nieuw;}
+  renderRows();
 }
 
-function signOut(e){e.preventDefault();uitloggen();}
+function setTab(t){activeTab=t;renderTabs();renderRows();}
+
+async function slaDienstOp(){
+  const naam=document.getElementById('d-naam').value.trim();
+  const prijs=parseFloat(document.getElementById('d-prijs').value)||0;
+  const duur=parseInt(document.getElementById('d-duur').value)||0;
+  const cat=document.getElementById('d-cat').value;
+  const omschr=document.getElementById('d-omschr').value.trim();
+  const errEl=document.getElementById('d-err');
+
+  if(!naam){errEl.textContent='Vul een naam in.';errEl.style.display='block';return;}
+  if(!prijs){errEl.textContent='Vul een prijs in.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+
+  const btn=document.getElementById('btn-dienst-opslaan');
+  btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
+
+  const{error}=await sb.from('diensten').insert({
+    salon_id:SALON_ID,naam,prijs,duur_min:duur,
+    categorie:cat,beschrijving:omschr||null,actief:true
+  });
+
+  btn.disabled=false;btn.textContent='Dienst opslaan';
+
+  if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
+
+  ['d-naam','d-prijs','d-duur','d-omschr'].forEach(id=>document.getElementById(id).value='');
+  closeM('m-new');
+  await loadData();
+}
+
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+
+planrInit(loadData);
 </script>
-
-
-
-<nav class="mobile-bottom-nav">
-  <a href="dashboard.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a href="klanten.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-  <a href="kassa.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-  <a href="rapportages.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
-  <a href="medewerkers.html" class="mbn-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Team</a>
-</nav>
-
 </body>
 </html>
