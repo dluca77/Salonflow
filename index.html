@@ -206,9 +206,60 @@ footer{background:var(--ink);padding:40px 6vw;display:flex;align-items:center;ju
   footer{flex-direction:column;text-align:center;}
   .foot-links{justify-content:center;}
 }
+
+/* ── CURSOR ORB ── */
+#cursor-orb{position:fixed;width:320px;height:320px;border-radius:50%;background:radial-gradient(circle,rgba(140,109,63,0.07),transparent 70%);pointer-events:none;z-index:0;transform:translate(-50%,-50%);transition:opacity 0.5s;opacity:0;}
+
+/* ── NAV ENTRANCE ── */
+@keyframes navIn{from{opacity:0;transform:translateY(-100%)}to{opacity:1;transform:translateY(0)}}
+.nav{animation:navIn 0.6s 0.1s ease both;}
+
+/* ── HERO TITLE: woord voor woord ── */
+.hero-title .word{display:inline-block;overflow:hidden;}
+.hero-title .word-inner{display:inline-block;opacity:0;transform:translateY(110%);animation:wordUp 0.7s ease forwards;}
+@keyframes wordUp{to{opacity:1;transform:translateY(0);}}
+
+/* ── EYEBROW LIJN groeit ── */
+.eyebrow::before{width:0;animation:lineGrow 0.6s 0.4s ease forwards;}
+@keyframes lineGrow{to{width:24px;}}
+
+/* ── HERO BADGE ── */
+.eyebrow{opacity:0;animation:fadeUp 0.6s 0.3s ease forwards;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── HERO SUB + BTNS ── */
+.hero-sub{opacity:0;animation:fadeUp 0.7s 1.2s ease forwards;}
+.hero-btns{opacity:0;animation:fadeUp 0.7s 1.4s ease forwards;}
+
+/* ── HERO RIGHT STATS ── */
+.hero-stats-col > div{opacity:0;transform:translateX(16px);}
+
+/* ── COUNTER ── */
+.count-done{transition:none;}
+
+/* ── SECTION EYEBROW LIJN ── */
+.sec-ey.on::before{animation:lineGrow2 0.6s ease forwards;}
+.sec-ey::before{width:0;}
+@keyframes lineGrow2{to{width:20px;}}
+
+/* ── TYPE CARDS: hover lift ── */
+.tc{transform:translateY(0);transition:background 0.25s, transform 0.25s, color 0.25s;}
+.tc:hover{transform:translateY(-3px);}
+
+/* ── PLAN HOVER ── */
+.plan{transition:transform 0.25s, box-shadow 0.25s;}
+.plan:hover{transform:translateY(-4px);}
+
+/* ── QUOTE CARD ── */
+.q-card{transition:background 0.25s;}
+.q-card:hover{background:#242018;}
+
+/* ── HERO RIGHT PARALLAX ── */
+.hero-right-letter{transition:transform 0.1s linear;}
 </style>
 </head>
 <body>
+<div id="cursor-orb"></div>
 
 <nav class="nav" id="nav">
   <a href="index.html" class="nav-logo">Planr<em>.</em></a>
@@ -230,9 +281,7 @@ footer{background:var(--ink);padding:40px 6vw;display:flex;align-items:center;ju
   <div class="hero-left">
     <div>
       <div class="eyebrow">Salon management software</div>
-      <h1 class="hero-title">
-        Software die je<br>salon laat<br><em>groeien</em>
-      </h1>
+      <h1 class="hero-title" id="hero-title"></h1>
       <p class="hero-sub">Planr geeft kappers, nagelstudio's en spa's de tools om efficiënter te werken en klanten een uitzonderlijke ervaring te bieden.</p>
       <div class="hero-btns">
         <a href="login.html" class="btn-p">
@@ -247,8 +296,8 @@ footer{background:var(--ink);padding:40px 6vw;display:flex;align-items:center;ju
     <div class="hero-right-pattern"></div>
     <div class="hero-right-letter">P</div>
     <div class="hero-stats-col">
-      <div><div class="hs-num">2.400+</div><div class="hs-lbl">Actieve salons</div></div>
-      <div><div class="hs-num">98%</div><div class="hs-lbl">Klanttevredenheid</div></div>
+      <div><div class="hs-num" data-count="2400" data-suffix="+">2.400+</div><div class="hs-lbl">Actieve salons</div></div>
+      <div><div class="hs-num" data-count="98" data-suffix="%">98%</div><div class="hs-lbl">Klanttevredenheid</div></div>
       <div><div class="hs-num">15 min</div><div class="hs-lbl">Setup tijd</div></div>
     </div>
   </div>
@@ -256,8 +305,8 @@ footer{background:var(--ink);padding:40px 6vw;display:flex;align-items:center;ju
 
 <!-- STATS BAR -->
 <div class="stats-bar">
-  <div class="sb-item"><span class="sb-num">€0</span><span class="sb-lbl">Om te starten</span></div>
-  <div class="sb-item"><span class="sb-num">80%</span><span class="sb-lbl">Minder no-shows</span></div>
+  <div class="sb-item"><span class="sb-num" data-count="0" data-prefix="€">€0</span><span class="sb-lbl">Om te starten</span></div>
+  <div class="sb-item"><span class="sb-num" data-count="80" data-suffix="%">80%</span><span class="sb-lbl">Minder no-shows</span></div>
   <div class="sb-item"><span class="sb-num">24/7</span><span class="sb-lbl">Online boekingen</span></div>
   <div class="sb-item"><span class="sb-num">5★</span><span class="sb-lbl">Gemiddelde score</span></div>
 </div>
@@ -382,18 +431,105 @@ footer{background:var(--ink);padding:40px 6vw;display:flex;align-items:center;ju
 </footer>
 
 <script>
+// ── NAV SCROLL ──────────────────────────────────────────────────────────────
 window.addEventListener('scroll',()=>{
   document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
+  // Parallax op hero letter
+  const letter = document.querySelector('.hero-right-letter');
+  if(letter) letter.style.transform = 'translateY('+window.scrollY*0.15+'px)';
 },{passive:true});
 
-const io=new IntersectionObserver(entries=>{
+// ── CURSOR ORB ────────────────────────────────────────────────────────────────
+const orb = document.getElementById('cursor-orb');
+let ox=window.innerWidth/2, oy=window.innerHeight/2, tx=ox, ty=oy;
+document.addEventListener('mousemove',e=>{
+  tx=e.clientX; ty=e.clientY;
+  orb.style.opacity='1';
+},{passive:true});
+(function animOrb(){
+  ox+=(tx-ox)*0.06; oy+=(ty-oy)*0.06;
+  orb.style.left=ox+'px'; orb.style.top=oy+'px';
+  requestAnimationFrame(animOrb);
+})();
+
+// ── HERO TITLE: woord-voor-woord animatie ──────────────────────────────────
+const TITLE_LINES = ['Software die je', 'salon laat', 'groeien'];
+const titleEl = document.getElementById('hero-title');
+if(titleEl){
+  TITLE_LINES.forEach((line, li) => {
+    const words = line.split(' ');
+    const lineDiv = document.createElement('div');
+    words.forEach((word, wi) => {
+      const isLast = li === TITLE_LINES.length - 1;
+      const delay = 0.5 + li * 0.18 + wi * 0.08;
+      const span = document.createElement('span');
+      span.className = 'word';
+      const inner = document.createElement('span');
+      inner.className = 'word-inner';
+      inner.style.animationDelay = delay + 's';
+      if(isLast && word === 'groeien'){
+        const em = document.createElement('em');
+        em.textContent = word;
+        inner.appendChild(em);
+      } else {
+        inner.textContent = word;
+      }
+      span.appendChild(inner);
+      lineDiv.appendChild(span);
+      if(wi < words.length - 1) lineDiv.appendChild(document.createTextNode(' '));
+    });
+    titleEl.appendChild(lineDiv);
+  });
+}
+
+// ── HERO STATS STAGGER ─────────────────────────────────────────────────────
+setTimeout(()=>{
+  document.querySelectorAll('.hero-stats-col > div').forEach((el,i)=>{
+    setTimeout(()=>{
+      el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+      el.style.opacity = '1';
+      el.style.transform = 'translateX(0)';
+    }, 1400 + i*150);
+  });
+},0);
+
+// ── COUNTER ANIMATIE ────────────────────────────────────────────────────────
+function animateCounter(el){
+  if(el.dataset.done) return;
+  el.dataset.done = '1';
+  const target = parseInt(el.dataset.count)||0;
+  const prefix = el.dataset.prefix||'';
+  const suffix = el.dataset.suffix||'';
+  if(!target){ el.textContent = prefix + '0' + suffix; return; }
+  const dur = 1600;
+  const start = performance.now();
+  const easeOut = t => 1 - Math.pow(1-t, 3);
+  function step(now){
+    const progress = Math.min((now-start)/dur, 1);
+    const val = Math.round(easeOut(progress)*target);
+    el.textContent = prefix + val.toLocaleString('nl') + suffix;
+    if(progress < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── INTERSECTION OBSERVER ───────────────────────────────────────────────────
+const io = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
-    if(!e.isIntersecting)return;
+    if(!e.isIntersecting) return;
     e.target.classList.add('on');
+    // Counters triggeren
+    e.target.querySelectorAll('[data-count]').forEach(animateCounter);
     io.unobserve(e.target);
   });
-},{threshold:0.1});
+},{threshold:0.12});
+
 document.querySelectorAll('.reveal,.stagger').forEach(el=>io.observe(el));
+
+// Stats bar counters bij load
+setTimeout(()=>{
+  document.querySelectorAll('.sb-num[data-count],.hs-num[data-count]').forEach(animateCounter);
+}, 1800);
 </script>
 </body>
 </html>
