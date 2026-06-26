@@ -3,233 +3,360 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Planr — Team</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+<title>Planr — Medewerkers</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--bg:#0f0f0f;--sf:#1a1a1a;--s2:#242424;--bd:#2e2e2e;--ac:#c8f060;--tx:#f0ede8;--mu:#888;--mu2:#3a3a3a;--red:#ff6b6b;--blue:#6bc4ff;--purple:#b08bff;--amber:#ffb84d;--teal:#4dffd4;--green:#4dff90;}
-html,body{background:var(--bg);color:var(--tx);font-family:"DM Sans",sans-serif;min-height:100vh;overflow-x:hidden;}
-.topbar{position:sticky;top:0;z-index:20;background:var(--sf);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 14px;height:54px;}
-.t-left{display:flex;align-items:center;gap:10px;}
-.logo{font-family:"DM Serif Display",serif;font-size:19px;letter-spacing:-0.5px;}
-.logo span{color:var(--ac);}
-.hbg{width:36px;height:36px;border-radius:9px;border:1px solid var(--bd);background:transparent;color:var(--tx);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.btn-add{display:flex;align-items:center;gap:5px;padding:8px 12px;background:var(--ac);color:#1a1a1a;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;}
-.body{padding:14px 14px 96px;}
-/* Team cards */
-.mcard{background:var(--sf);border:1px solid var(--bd);border-radius:14px;margin-bottom:12px;overflow:hidden;cursor:pointer;-webkit-tap-highlight-color:transparent;}
-.mcard:active{background:var(--s2);}
-.mc-top{padding:16px;display:flex;align-items:center;gap:14px;}
-.mc-av{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;flex-shrink:0;}
-.mc-info{flex:1;}
-.mc-name{font-size:16px;font-weight:600;margin-bottom:2px;}
-.mc-role{font-size:13px;color:var(--mu);}
-.mc-status{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;margin-top:5px;}
-.mc-stats{display:grid;grid-template-columns:1fr 1fr 1fr;border-top:1px solid var(--bd);}
-.mcs{padding:12px 8px;text-align:center;}
-.mcs-val{font-size:17px;font-weight:700;}
-.mcs-lbl{font-size:10px;color:var(--mu);margin-top:2px;}
-/* Detail modal */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:40;}
-.ov.on{display:block;}
-.sb{position:fixed;left:-100%;top:0;width:280px;height:100%;background:var(--sf);z-index:50;display:flex;flex-direction:column;transition:left .25s ease;border-right:1px solid var(--bd);overflow:hidden;}
-.sb.on{left:0;}
-.sbh{padding:16px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;}
-.sblogo{font-family:"DM Serif Display",serif;font-size:19px;}
-.sblogo span{color:var(--ac);}
-.sbx{width:32px;height:32px;border-radius:8px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;}
-.sbn{flex:1;overflow-y:auto;padding:10px;}
-.nvsec{font-size:10px;color:var(--mu2);text-transform:uppercase;letter-spacing:1px;padding:0 8px;margin:12px 0 5px;}
-.nvi{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:10px;color:var(--mu);font-size:14px;text-decoration:none;margin-bottom:1px;}
-.nvi.on{background:var(--ac);color:#1a1a1a;font-weight:600;}
-.nvi svg{width:19px;height:19px;flex-shrink:0;}
-.sbf{padding:12px;border-top:1px solid var(--bd);flex-shrink:0;}
-.sc{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--s2);border-radius:10px;}
-.sca{width:34px;height:34px;border-radius:8px;background:var(--ac);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#1a1a1a;flex-shrink:0;}
-.mbg{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:60;align-items:flex-end;}
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
+.app{display:flex;height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:210px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;position:fixed;top:0;left:0;z-index:20;}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.06);}
+.sb-logo a{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;letter-spacing:1px;color:var(--iv);text-decoration:none;}
+.sb-logo a em{color:var(--gd);font-style:normal;}
+.sb-nav{flex:1;overflow-y:auto;padding:12px 10px;}
+.sb-sec{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 10px;margin:16px 0 6px;}
+.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;color:rgba(255,255,255,0.45);font-size:13px;text-decoration:none;margin-bottom:1px;transition:all 0.15s;border-left:2px solid transparent;}
+.sb-item:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.04);}
+.sb-item.on{color:var(--iv);border-left-color:var(--gd);background:rgba(255,255,255,0.06);}
+.sb-item svg{width:16px;height:16px;flex-shrink:0;}
+.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,0.06);}
+.sb-user{display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer;}
+.sb-user:hover{background:rgba(255,255,255,0.04);}
+.sb-av{width:30px;height:30px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--iv);flex-shrink:0;}
+.sb-nm{font-size:12px;color:rgba(255,255,255,0.7);}
+.sb-rl{font-size:10px;color:rgba(255,255,255,0.3);}
+
+/* ── MAIN ── */
+.main{margin-left:210px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.hbg{width:32px;height:32px;border:1px solid var(--bd);background:transparent;color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:none;letter-spacing:0.5px;}
+.tb-logo em{color:var(--gd);font-style:normal;}
+.tb-title{font-size:13px;font-weight:500;color:var(--mu);}
+.tb-spacer{flex:1;}
+.btn-add{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--ink);color:var(--iv);font-size:10px;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
+.btn-add:hover{background:var(--ink2);}
+
+/* ── CONTENT ── */
+.content{flex:1;overflow-y:auto;padding:20px;}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:var(--bd);}
+
+.team-count{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:16px;}
+
+/* Team grid */
+.team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:80px;}
+.mcard{background:var(--wh);border:1px solid var(--bd);cursor:pointer;transition:all 0.2s;overflow:hidden;}
+.mcard:hover{border-color:var(--gd);transform:translateY(-2px);}
+.mc-top{padding:20px 20px 14px;display:flex;align-items:flex-start;gap:14px;border-bottom:1px solid var(--bd);}
+.mc-av{width:44px;height:44px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gd);flex-shrink:0;}
+.mc-name{font-size:14px;font-weight:500;margin-bottom:3px;}
+.mc-role{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;}
+.mc-status{display:inline-flex;align-items:center;gap:5px;font-size:10px;letter-spacing:1px;text-transform:uppercase;}
+.mc-dot{width:5px;height:5px;border-radius:50%;}
+.mc-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd);}
+.mcs{background:var(--iv);padding:10px 12px;text-align:center;}
+.mcs-val{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gd);}
+.mcs-lbl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-top:2px;}
+
+.empty-state{padding:60px 20px;text-align:center;}
+.empty-text{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;}
+.empty-sub{font-size:12px;color:var(--mu2);}
+
+/* ── MODALS ── */
+.mbg{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.6);z-index:60;align-items:flex-end;justify-content:center;}
 .mbg.on{display:flex;}
-.modal{background:var(--sf);border-radius:20px 20px 0 0;padding:20px 18px 40px;width:100%;border-top:1px solid var(--bd);animation:su .25s ease;max-height:90vh;overflow-y:auto;}
-@keyframes su{from{transform:translateY(100%)}to{transform:translateY(0)}}
-.mh{width:36px;height:4px;background:var(--bd);border-radius:99px;margin:0 auto 18px;}
-.dhead{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
-.dav{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;flex-shrink:0;}
-.dname{font-size:20px;font-weight:600;margin-bottom:2px;}
-.dsub{font-size:13px;color:var(--mu);}
-.dstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px;}
-.dst{background:var(--s2);border-radius:10px;padding:12px;text-align:center;}
-.dstv{font-size:20px;font-weight:700;}
-.dstl{font-size:10px;color:var(--mu);margin-top:3px;}
-.schema-title{font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;}
-.schema-grid{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;}
-.sdag{padding:6px 10px;border-radius:8px;font-size:13px;font-weight:500;}
-.drows{background:var(--s2);border-radius:12px;overflow:hidden;margin-bottom:16px;}
-.dr{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--bd);}
-.dr:last-child{border-bottom:none;}
-.drl{font-size:13px;color:var(--mu);}
-.drv{font-size:13px;font-weight:500;}
-.dbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.dbtn{padding:13px;border-radius:11px;font-size:14px;font-weight:600;cursor:pointer;font-family:"DM Sans",sans-serif;border:none;text-align:center;}
-.dbtn-sec{background:var(--s2);color:var(--tx);}
-.dbtn-pri{background:var(--ac);color:#1a1a1a;}
-/* New med modal */
-.mt{font-family:"DM Serif Display",serif;font-size:20px;margin-bottom:4px;}
-.msub{font-size:13px;color:var(--mu);margin-bottom:18px;}
-.fr{margin-bottom:12px;}
-.fl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px;}
-.fi{width:100%;background:var(--s2);border:1px solid var(--bd);border-radius:10px;padding:12px 13px;font-size:15px;color:var(--tx);font-family:"DM Sans",sans-serif;outline:none;-webkit-appearance:none;appearance:none;}
-.fi:focus{border-color:var(--ac);}
+.modal{background:var(--wh);width:100%;max-width:520px;padding:24px 20px 40px;border-top:2px solid var(--gd);}
+.mh{width:32px;height:3px;background:var(--bd);margin:0 auto 20px;}
+.mt{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:4px;}
+.msub{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-bottom:20px;}
+.fr{margin-bottom:14px;}
+.fl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
+.fi{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.15s;}
+.fi:focus{border-color:var(--gd);}
+.fi::placeholder{color:var(--mu2);}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btsv{width:100%;padding:15px;background:var(--ac);color:#1a1a1a;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:"DM Sans",sans-serif;margin-top:6px;}
-.bnav{position:fixed;bottom:0;left:0;right:0;background:var(--sf);border-top:1px solid var(--bd);display:flex;padding:7px 0 20px;z-index:30;}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;text-decoration:none;color:var(--mu);font-size:10px;padding:4px 0;-webkit-tap-highlight-color:transparent;}
-.bni.on{color:var(--ac);}
-.bni svg{width:22px;height:22px;}
+.btsv{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background 0.2s;}
+.btsv:hover{background:var(--ink2);}
+.btsv:disabled{opacity:0.4;}
+.spinner-inline{display:inline-block;width:14px;height:14px;border:2px solid rgba(250,248,244,0.3);border-top-color:var(--iv);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* Detail modal */
+.dhead{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
+.dav{width:52px;height:52px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);flex-shrink:0;}
+.dstats{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--bd);margin-bottom:16px;}
+.dst{background:var(--iv);padding:12px;text-align:center;}
+.dstv{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gd);}
+.dstl{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-top:3px;}
+.dr{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--bd);}
+.dr:last-child{border-bottom:none;}
+.drl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
+.drv{font-size:13px;font-weight:500;}
+.dbtns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.dbtn{padding:13px;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
+.dbtn-sec{background:transparent;color:var(--mu);border:1px solid var(--bd);}
+.dbtn-pri{background:var(--ink);color:var(--iv);border:none;}
+
+/* ── MOB OVERLAY ── */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;}
+.ov.on{display:block;}
+.sb-mob{position:fixed;left:-100%;top:0;width:240px;height:100%;background:var(--ink);z-index:50;display:flex;flex-direction:column;transition:left .25s;}
+.sb-mob.on{left:0;}
+
+/* ── BOTTOM NAV ── */
+.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--bd);padding:6px 0 18px;z-index:30;}
+.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--mu2);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:4px 0;}
+.bni.on{color:var(--gd);}
+.bni svg{width:20px;height:20px;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){.sidebar{width:180px;}.main{margin-left:180px;}.team-grid{grid-template-columns:1fr 1fr;}}
+@media(max-width:768px){
+  .sidebar{display:none;}.main{margin-left:0;}
+  .hbg{display:flex;}.tb-logo{display:block;}.tb-title{display:none;}
+  .bnav{display:flex;}
+  .topbar{padding:0 14px;}
+  .content{padding:14px 14px 80px;}
+  .team-grid{grid-template-columns:1fr;}
+}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="planr.js"></script>
 </head>
 <body>
-<div class="ov" id="ov" onclick="closeSB()"></div>
-<aside class="sb" id="sb">
-  <div class="sbh"><div class="sblogo">Planr<span>.</span></div><button class="sbx" onclick="closeSB()">✕</button></div>
-  <nav class="sbn">
-    <div class="nvsec">Beheer</div>
-    <a href="dashboard.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-    <a href="klanten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-    <a href="kassa.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-    <a href="medewerkers.html" class="nvi on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
-    <a href="diensten.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Diensten</a>
-    <div class="nvsec">Groei</div>
-    <a href="rapportages.html" class="nvi"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+<div class="app">
+
+<!-- Desktop sidebar -->
+<aside class="sidebar">
+  <div class="sb-logo"><a href="dashboard.html">Planr<em>.</em></a></div>
+  <nav class="sb-nav">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="diensten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
+    <div class="sb-sec">Groei</div>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+    <a href="boeken.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Online boeken</a>
   </nav>
-  <div class="sbf"><div class="sc"><div class="sca">KS</div><div><div style="font-size:13px;font-weight:500">Mijn Studio</div><div style="font-size:11px;color:var(--mu)">Pro plan</div></div></div></div>
+  <div class="sb-foot">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
+    </div>
+  </div>
 </aside>
 
-<header class="topbar">
-  <div class="t-left">
-    <button class="hbg" onclick="openSB()"><svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <div class="logo">Planr<span>.</span></div>
+<!-- Mobiel overlay -->
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<aside class="sb-mob" id="sb">
+  <div style="padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
+    <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--iv);letter-spacing:1px;">Planr<em style="color:var(--gd);font-style:normal">.</em></span>
+    <button onclick="closeSB()" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;">✕</button>
   </div>
-  <button class="btn-add" onclick="openM('m-new')">+ Medewerker</button>
-</header>
+  <nav style="flex:1;overflow-y:auto;padding:12px 10px;">
+    <div class="sb-sec">Beheer</div>
+    <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+    <a href="medewerkers.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  </nav>
+  <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.06);">
+    <div class="sb-user" onclick="uitloggen()">
+      <div class="sb-av salon-init">??</div>
+      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
+    </div>
+  </div>
+</aside>
 
-<div class="body" id="body"></div>
+<!-- Main -->
+<div class="main">
+  <div class="topbar">
+    <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="tb-logo">Planr<em>.</em></div>
+    <div class="tb-title">Medewerkers</div>
+    <div class="tb-spacer"></div>
+    <button class="btn-add" onclick="openM('m-new')">+ Medewerker</button>
+  </div>
+
+  <div class="content">
+    <div class="team-count" id="team-count">Laden...</div>
+    <div class="team-grid" id="team-grid"></div>
+  </div>
+</div>
+</div>
+
+<!-- Bottom nav -->
+<nav class="bnav">
+  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home</a>
+  <a href="agenda.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
+</nav>
+
+<!-- Nieuwe medewerker modal -->
+<div class="mbg" id="m-new" onclick="if(event.target===this)closeM('m-new')">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">Nieuwe medewerker</div>
+    <div class="msub">Voeg een teamlid toe</div>
+    <div id="m-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+    <div class="fg">
+      <div class="fr"><label class="fl">Voornaam</label><input class="fi" id="m-voor" type="text" placeholder="Jasmijn"></div>
+      <div class="fr"><label class="fl">Achternaam</label><input class="fi" id="m-achter" type="text" placeholder="de Vries"></div>
+    </div>
+    <div class="fr"><label class="fl">Functie / Rol</label>
+      <select class="fi" id="m-rol">
+        <option>Kapper</option><option>Colorist</option><option>Barbier</option>
+        <option>Stylist</option><option>Nagelstyliste</option><option>Masseur</option>
+        <option>Therapeut</option><option>Eigenaar</option><option>Overig</option>
+      </select>
+    </div>
+    <div class="fr"><label class="fl">E-mail</label><input class="fi" id="m-email" type="email" placeholder="naam@salon.nl"></div>
+    <div class="fr"><label class="fl">Telefoon</label><input class="fi" id="m-tel" type="tel" placeholder="+31 6 12345678"></div>
+    <button class="btsv" id="btn-med-opslaan" onclick="slaMedewerkOp()">Medewerker opslaan</button>
+  </div>
+</div>
 
 <!-- Detail modal -->
 <div class="mbg" id="m-detail" onclick="if(event.target===this)closeM('m-detail')">
   <div class="modal">
     <div class="mh"></div>
     <div class="dhead">
-      <div class="dav" id="d-av">JD</div>
-      <div><div class="dname" id="d-naam">Jasmijn de Vries</div><div class="dsub" id="d-rol">Senior Kapper</div></div>
+      <div class="dav" id="d-av"></div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;" id="d-naam"></div>
+        <div style="font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-top:3px;" id="d-rol"></div>
+      </div>
     </div>
     <div class="dstats">
-      <div class="dst"><div class="dstv" style="color:var(--ac)" id="d-omzet">€6.840</div><div class="dstl">Omzet</div></div>
-      <div class="dst"><div class="dstv" id="d-apts">142</div><div class="dstl">Afspraken</div></div>
-      <div class="dst"><div class="dstv" style="color:var(--amber)" id="d-score">4.9</div><div class="dstl">Score</div></div>
+      <div class="dst"><div class="dstv" id="d-omzet">€0</div><div class="dstl">Omzet</div></div>
+      <div class="dst"><div class="dstv" id="d-apts">0</div><div class="dstl">Afspraken</div></div>
+      <div class="dst"><div class="dstv" id="d-actief">—</div><div class="dstl">Status</div></div>
     </div>
-    <div class="schema-title">Werkdagen</div>
-    <div class="schema-grid" id="d-schema"></div>
-    <div class="drows">
-      <div class="dr"><span class="drl">Specialisatie</span><span class="drv" id="d-spec">Knippen, Baard</span></div>
-      <div class="dr"><span class="drl">Klanten</span><span class="drv" id="d-kl">38 vaste klanten</span></div>
+    <div style="border:1px solid var(--bd);">
+      <div class="dr"><span class="drl">E-mail</span><span class="drv" id="d-email">—</span></div>
+      <div class="dr"><span class="drl">Telefoon</span><span class="drv" id="d-tel">—</span></div>
     </div>
     <div class="dbtns">
       <button class="dbtn dbtn-sec" onclick="closeM('m-detail')">Sluiten</button>
-      <button class="dbtn dbtn-pri" onclick="closeM('m-detail')">Rooster →</button>
+      <button class="dbtn dbtn-pri" onclick="closeM('m-detail')">Agenda bekijken →</button>
     </div>
   </div>
 </div>
-
-<!-- Nieuw modal -->
-<div class="mbg" id="m-new" onclick="if(event.target===this)closeM('m-new')">
-  <div class="modal">
-    <div class="mh"></div>
-    <div class="mt">Nieuwe medewerker</div>
-    <div class="msub">Voeg een teamlid toe</div>
-    <div class="fg">
-      <div class="fr"><div class="fl">Voornaam</div><input class="fi" type="text" placeholder="Jasmijn"></div>
-      <div class="fr"><div class="fl">Achternaam</div><input class="fi" type="text" placeholder="de Vries"></div>
-    </div>
-    <div class="fr"><div class="fl">Functie</div><select class="fi"><option>Kapper</option><option>Colorist</option><option>Barbier</option><option>Stylist</option></select></div>
-    <div class="fr"><div class="fl">E-mail</div><input class="fi" type="email" placeholder="naam@salon.nl"></div>
-    <button class="btsv" onclick="closeM('m-new')">Opslaan</button>
-  </div>
-</div>
-
-<nav class="bnav">
-  <a href="dashboard.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-  <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
-  <a href="medewerkers.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Team</a>
-</nav>
 
 <script>
-const TEAM=[
-  {naam:"Jasmijn de Vries",rol:"Senior Kapper",actief:true,omzet:"€6.840",apts:142,score:"4.9",init:"JD",c:{bg:"rgba(107,196,255,0.2)",tx:"var(--blue)"},schema:["Ma","Di","Wo","Vr","Za"],spec:"Knippen, Baard, Highlights",kl:"38 vaste klanten"},
-  {naam:"Marco Koster",rol:"Colorist",actief:true,omzet:"€5.720",apts:98,score:"4.7",init:"MK",c:{bg:"rgba(176,139,255,0.2)",tx:"var(--purple)"},schema:["Ma","Wo","Do","Vr","Za"],spec:"Verven, Balayage, Highlights",kl:"24 vaste klanten"},
-  {naam:"Sara Bakker",rol:"Kapper",actief:false,omzet:"€2.430",apts:54,score:"4.5",init:"SB",c:{bg:"rgba(255,184,77,0.2)",tx:"var(--amber)"},schema:["Di","Wo","Do","Za"],spec:"Knippen, Kinderknippen",kl:"19 vaste klanten"},
-];
+let TEAM=[];
+
+function getInit(naam){return naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
+
+async function loadData(){
+  const{data}=await sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).order('naam');
+  TEAM=data||[];
+  const nm=document.querySelector('.salon-naam')?.textContent||'';
+  document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+  render();
+}
+
 function render(){
-  document.getElementById("body").innerHTML=TEAM.map(m=>`
-    <div class="mcard" onclick="show('${m.naam}')">
+  const grid=document.getElementById('team-grid');
+  document.getElementById('team-count').textContent=TEAM.length+' medewerker'+(TEAM.length!==1?'s':'');
+
+  if(!TEAM.length){
+    grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1">
+      <div class="empty-text">Nog geen medewerkers</div>
+      <div class="empty-sub">Voeg je eerste teamlid toe via + Medewerker</div>
+    </div>`;
+    return;
+  }
+
+  grid.innerHTML=TEAM.map(m=>{
+    const init=getInit(m.naam);
+    const actief=m.actief!==false;
+    return `<div class="mcard" onclick="toonDetail('${m.id}')">
       <div class="mc-top">
-        <div class="mc-av" style="background:${m.c.bg};color:${m.c.tx}">${m.init}</div>
-        <div class="mc-info">
+        <div class="mc-av">${init}</div>
+        <div>
           <div class="mc-name">${m.naam}</div>
           <div class="mc-role">${m.rol}</div>
-          <span class="mc-status" style="background:${m.actief?"rgba(77,255,144,0.15)":"rgba(136,135,128,0.15)"};color:${m.actief?"var(--green)":"var(--mu)"}">
-            <span style="width:6px;height:6px;border-radius:50%;background:currentColor;display:inline-block"></span>
-            ${m.actief?"Aan het werk":"Vrij"}
-          </span>
+          <div class="mc-status">
+            <div class="mc-dot" style="background:${actief?'var(--green)':'var(--mu2)'}"></div>
+            <span style="font-size:10px;letter-spacing:1px;color:${actief?'var(--green)':'var(--mu2)'}">
+              ${actief?'Actief':'Inactief'}
+            </span>
+          </div>
         </div>
       </div>
       <div class="mc-stats">
-        <div class="mcs"><div class="mcs-val" style="color:var(--ac)">${m.omzet}</div><div class="mcs-lbl">Omzet</div></div>
-        <div class="mcs"><div class="mcs-val">${m.apts}</div><div class="mcs-lbl">Afspraken</div></div>
-        <div class="mcs"><div class="mcs-val" style="color:var(--amber)">${m.score}</div><div class="mcs-lbl">Score</div></div>
+        <div class="mcs"><div class="mcs-val">€0</div><div class="mcs-lbl">Omzet</div></div>
+        <div class="mcs"><div class="mcs-val">0</div><div class="mcs-lbl">Afspraken</div></div>
+        <div class="mcs"><div class="mcs-val">—</div><div class="mcs-lbl">Score</div></div>
       </div>
-    </div>`).join("");
-}
-function show(naam){
-  const m=TEAM.find(x=>x.naam===naam);
-  document.getElementById("d-av").textContent=m.init;
-  document.getElementById("d-av").style.background=m.c.bg;
-  document.getElementById("d-av").style.color=m.c.tx;
-  document.getElementById("d-naam").textContent=m.naam;
-  document.getElementById("d-rol").textContent=m.rol;
-  document.getElementById("d-omzet").textContent=m.omzet;
-  document.getElementById("d-apts").textContent=m.apts;
-  document.getElementById("d-score").textContent=m.score;
-  document.getElementById("d-spec").textContent=m.spec;
-  document.getElementById("d-kl").textContent=m.kl;
-  document.getElementById("d-schema").innerHTML=["Ma","Di","Wo","Do","Vr","Za","Zo"].map(d=>{
-    const on=m.schema.includes(d);
-    return `<span class="sdag" style="background:${on?"rgba(200,240,96,0.15)":"var(--s2)"};color:${on?"var(--ac)":"var(--mu)"}">${d}</span>`;
-  }).join("");
-  openM("m-detail");
-}
-function openSB(){document.getElementById("sb").classList.add("on");document.getElementById("ov").classList.add("on");document.body.style.overflow="hidden";}
-function closeSB(){document.getElementById("sb").classList.remove("on");document.getElementById("ov").classList.remove("on");document.body.style.overflow="";}
-function openM(id){document.getElementById(id).classList.add("on");document.body.style.overflow="hidden";}
-function closeM(id){document.getElementById(id).classList.remove("on");document.body.style.overflow="";}
-render();
-function showToast(msg) {
-  let t = document.getElementById('planr-toast');
-  if (!t) {
-    t = document.createElement('div');
-    t.id = 'planr-toast';
-    t.style.cssText = 'position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:#1a1a1a;color:#f0ede8;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:500;border:1px solid #2e2e2e;z-index:999;opacity:0;transition:opacity 0.2s;pointer-events:none;white-space:nowrap;';
-    document.body.appendChild(t);
-  }
-  t.textContent = msg;
-  t.style.opacity = '1';
-  setTimeout(() => { t.style.opacity = '0'; }, 2500);
+    </div>`;
+  }).join('');
 }
 
-function signOut(e){e.preventDefault();uitloggen();}
-planrInit(() => { renderCards(); renderDetail(); });
+function toonDetail(id){
+  const m=TEAM.find(x=>x.id===id);if(!m)return;
+  document.getElementById('d-av').textContent=getInit(m.naam);
+  document.getElementById('d-naam').textContent=m.naam;
+  document.getElementById('d-rol').textContent=m.rol;
+  document.getElementById('d-omzet').textContent='€0';
+  document.getElementById('d-apts').textContent='0';
+  document.getElementById('d-actief').textContent=m.actief!==false?'Actief':'Inactief';
+  document.getElementById('d-email').textContent=m.email||'—';
+  document.getElementById('d-tel').textContent=m.telefoon||'—';
+  openM('m-detail');
+}
+
+async function slaMedewerkOp(){
+  const voor=document.getElementById('m-voor').value.trim();
+  const achter=document.getElementById('m-achter').value.trim();
+  const rol=document.getElementById('m-rol').value;
+  const email=document.getElementById('m-email').value.trim();
+  const tel=document.getElementById('m-tel').value.trim();
+  const errEl=document.getElementById('m-err');
+
+  if(!voor){errEl.textContent='Vul een voornaam in.';errEl.style.display='block';return;}
+  errEl.style.display='none';
+
+  const btn=document.getElementById('btn-med-opslaan');
+  btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
+
+  const naam=voor+(achter?' '+achter:'');
+  const{error}=await sb.from('medewerkers').insert({
+    salon_id:SALON_ID,naam,rol,
+    email:email||null,telefoon:tel||null,actief:true
+  });
+
+  btn.disabled=false;btn.textContent='Medewerker opslaan';
+
+  if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
+
+  ['m-voor','m-achter','m-email','m-tel'].forEach(id=>document.getElementById(id).value='');
+  closeM('m-new');
+  await loadData();
+}
+
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
+function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+
+planrInit(loadData);
 </script>
 </body>
 </html>
