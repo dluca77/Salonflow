@@ -56,12 +56,12 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 
 /* ── KALENDER ──
    Één scrollbare container, sticky header + sticky tijdkolom */
-.cal{flex:1;overflow:auto;position:relative;background:var(--wh);}
+.cal{flex:1;overflow:auto;position:relative;background:var(--wh);padding-bottom:env(safe-area-inset-bottom,16px);}
 .cal::-webkit-scrollbar{width:4px;height:4px;}
 .cal::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
 
 /* De kalender bestaat uit een tabel-achtige structuur */
-.cal-inner{display:inline-flex;flex-direction:column;min-width:100%;min-height:100%;}
+.cal-inner{display:inline-flex;flex-direction:column;min-width:100%;}
 
 /* Header rij */
 .cal-row-head{display:flex;position:sticky;top:0;z-index:20;background:var(--wh);border-bottom:2px solid var(--bd2);}
@@ -234,6 +234,12 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
         <div class="cal-days-body" id="cdb"></div>
       </div>
     </div>
+    <!-- Footer -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 16px 24px;border-top:1px solid var(--bd);margin-top:auto;background:var(--wh);min-width:100%;">
+      <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--ink);">Planr<span style="color:var(--gd)">.</span></div>
+      <div style="font-size:11px;color:var(--mu2);">© 2026 · Gemaakt in Nederland</div>
+      <a href="boeken.html" style="font-size:11px;color:var(--gd);text-decoration:none;">Online boeken →</a>
+    </div>
   </div>
 </div>
 </div>
@@ -272,7 +278,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 <script>
 const MNS=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
 const DN=['Zo','Ma','Di','Wo','Do','Vr','Za'];
-const RH=28,SH=7,EH=21;
+const RH=28,SH=6,EH=24;
 let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],filterMed=null;
 cur.setHours(0,0,0,0);
 const dk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
@@ -357,7 +363,7 @@ function render(){
 
   // Scroll naar 8u
   const cal=document.getElementById('cal');
-  cal.scrollTop=((8-SH)*4)*RH;
+  cal.scrollTop=((9-SH)*4)*RH;
 }
 
 function showPop(a,card){
