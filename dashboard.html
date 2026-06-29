@@ -11,7 +11,7 @@
   --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
   --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--mu:#8a7d6e;--mu2:#c2b5a4;
 }
-html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
+html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden;}
 .app{display:flex;height:100vh;}
 
 /* ── SIDEBAR ── */
@@ -34,7 +34,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .tb-date{font-size:12px;color:var(--mu2);letter-spacing:.5px;}
 
 /* ── CONTENT ── */
-.content{flex:1;overflow-y:auto;padding:20px;display:grid;grid-template-columns:1fr 300px;gap:16px;align-content:start;}
+.content{flex:1;overflow-y:auto;padding:20px 20px 40px;display:grid;grid-template-columns:1fr 300px;gap:16px;align-content:start;}
 .content::-webkit-scrollbar{width:4px;}
 .content::-webkit-scrollbar-thumb{background:var(--bd);}
 
@@ -42,7 +42,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .greeting{grid-column:1/-1;padding-bottom:16px;border-bottom:1px solid var(--bd);}
 .greeting-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:-.5px;color:var(--ink);}
 .greeting-title em{font-style:italic;color:var(--gd);}
-.greeting-sub{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-top:4px;}
+.greeting-sub{font-size:12px;color:var(--mu2);margin-top:6px;font-weight:300;}
 
 /* ── KPI ROW ── */
 .kpi-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bd);gap:1px;background:var(--bd);}
@@ -50,12 +50,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .kpi-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:10px;}
 .kpi-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1;}
 .kpi-val.gold{color:var(--gd);}
-.kpi-sub{font-size:11px;color:var(--mu2);margin-top:4px;}
+.kpi-sub{font-size:11px;color:var(--mu2);margin-top:4px;letter-spacing:.3px;}
 
 /* ── CARDS ── */
 .card{background:var(--wh);border:1px solid var(--bd);}
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd);}
-.card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);font-weight:500;}
+.card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);font-weight:600;}
 .card-link{font-size:11px;color:var(--gd);text-decoration:none;font-weight:500;}
 .card-link:hover{color:var(--gd2);}
 
@@ -66,7 +66,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .apt-time{font-size:11px;font-weight:600;color:var(--mu);min-width:42px;font-variant-numeric:tabular-nums;}
 .apt-bar{width:3px;height:36px;background:var(--gd);opacity:.5;flex-shrink:0;border-radius:2px;}
 .apt-info{flex:1;min-width:0;}
-.apt-naam{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.apt-naam{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;letter-spacing:-.1px;}
 .apt-svc{font-size:11px;color:var(--mu2);margin-top:2px;}
 .apt-dur{font-size:11px;color:var(--mu2);flex-shrink:0;}
 
@@ -90,11 +90,11 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .ai-card{background:var(--wm);border:1px solid var(--bd);}
 .ai-head{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--bd);}
 .ai-head-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);font-weight:500;}
-.ai-ins{font-size:13px;color:var(--ink);padding:12px 18px;border-bottom:1px solid var(--bd);line-height:1.65;font-weight:300;}
+.ai-ins{font-size:13px;color:var(--ink2);padding:12px 18px;border-bottom:1px solid var(--bd);line-height:1.7;font-weight:400;}
 .ai-ins:last-child{border-bottom:none;}
 
 /* Notities */
-.notes-inp{width:100%;background:transparent;border:none;padding:14px 18px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;resize:none;min-height:80px;font-weight:300;}
+.notes-inp{width:100%;background:transparent;border:none;padding:14px 18px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;resize:none;min-height:80px;font-weight:400;line-height:1.6;}
 .notes-inp::placeholder{color:var(--mu2);}
 
 /* Empty state */
