@@ -4,183 +4,135 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Planr — Dashboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
-  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;
-  --mu:#8a7d6e;--mu2:#c2b5a4;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--mu:#8a7d6e;--mu2:#c2b5a4;
 }
 html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
-
-/* ── APP SHELL ── */
 .app{display:flex;height:100vh;}
 
 /* ── SIDEBAR ── */
-.sidebar{width:210px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;position:fixed;top:0;left:0;z-index:20;}
-.sb-logo{padding:20px 20px 16px;border-bottom:1px solid rgba(255,255,255,0.06);}
-.sb-logo a{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;letter-spacing:1px;color:var(--iv);text-decoration:none;}
-.sb-logo a em{color:var(--gd);font-style:normal;}
-.sb-nav{flex:1;overflow-y:auto;padding:12px 10px;}
-.sb-sec{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:rgba(255,255,255,0.2);padding:0 10px;margin:16px 0 6px;}
-.sb-item{display:flex;align-items:center;gap:10px;padding:9px 10px;color:rgba(255,255,255,0.45);font-size:13px;text-decoration:none;margin-bottom:1px;transition:all 0.15s;border-left:2px solid transparent;}
-.sb-item:hover{color:rgba(255,255,255,0.9);background:rgba(255,255,255,0.04);}
-.sb-item.on{color:var(--iv);border-left-color:var(--gd);background:rgba(255,255,255,0.06);}
-.sb-item svg{width:16px;height:16px;flex-shrink:0;}
-.sb-foot{padding:12px;border-top:1px solid rgba(255,255,255,0.06);}
-.sb-user{display:flex;align-items:center;gap:10px;padding:10px;cursor:pointer;transition:background 0.15s;}
-.sb-user:hover{background:rgba(255,255,255,0.04);}
-.sb-av{width:30px;height:30px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;color:var(--iv);flex-shrink:0;}
-.sb-nm{font-size:12px;color:rgba(255,255,255,0.7);line-height:1.3;}
-.sb-rl{font-size:10px;color:rgba(255,255,255,0.3);letter-spacing:0.5px;}
+.sidebar{width:52px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;align-items:center;height:100vh;position:fixed;left:0;top:0;z-index:20;padding:12px 0;}
+.sb-logo{width:32px;height:32px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;color:#fff;font-size:13px;font-weight:700;margin-bottom:20px;text-decoration:none;border-radius:4px;}
+.si{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);cursor:pointer;border-radius:8px;margin-bottom:4px;text-decoration:none;transition:all .15s;}
+.si:hover,.si.on{background:rgba(255,255,255,.1);color:#fff;}
+.si svg{width:18px;height:18px;}
+.sb-foot{margin-top:auto;}
+.sb-av{width:28px;height:28px;background:var(--gd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;cursor:pointer;}
 
 /* ── MAIN ── */
-.main{margin-left:210px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.main{margin-left:52px;flex:1;display:flex;flex-direction:column;overflow:hidden;}
 
 /* ── TOPBAR ── */
-.topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 24px;gap:12px;flex-shrink:0;}
-.hbg{width:32px;height:32px;border:1px solid var(--bd);background:transparent;color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
-.tb-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:none;letter-spacing:0.5px;}
-.tb-logo em{color:var(--gd);font-style:normal;}
-.tb-title{font-size:13px;font-weight:500;color:var(--mu);}
-.tb-spacer{flex:1;}
-.btn-add{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--ink);color:var(--iv);font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;transition:background 0.2s;white-space:nowrap;}
-.btn-add:hover{background:var(--ink2);}
+.topbar{height:52px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.hbg{width:32px;height:32px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-title{font-size:17px;font-weight:600;color:var(--ink);}
+.tb-sp{flex:1;}
+.tb-date{font-size:12px;color:var(--mu2);letter-spacing:.5px;}
 
 /* ── CONTENT ── */
-.content{flex:1;overflow-y:auto;padding:24px;display:grid;grid-template-columns:1fr 300px;gap:16px;align-content:start;}
+.content{flex:1;overflow-y:auto;padding:20px;display:grid;grid-template-columns:1fr 300px;gap:16px;align-content:start;}
 .content::-webkit-scrollbar{width:4px;}
 .content::-webkit-scrollbar-thumb{background:var(--bd);}
 
 /* ── GREETING ── */
-.greeting{grid-column:1/-1;padding-bottom:8px;border-bottom:1px solid var(--bd);margin-bottom:4px;}
-.greeting-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:4px;}
-.greeting-title em{font-style:italic;font-weight:400;color:var(--gd);}
-.greeting-sub{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
+.greeting{grid-column:1/-1;padding-bottom:16px;border-bottom:1px solid var(--bd);}
+.greeting-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:-.5px;color:var(--ink);}
+.greeting-title em{font-style:italic;color:var(--gd);}
+.greeting-sub{font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-top:4px;}
 
 /* ── KPI ROW ── */
-.kpi-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bd);background:var(--bd);gap:1px;}
-.kpi{background:var(--wh);padding:18px 20px;position:relative;}
-.kpi-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.kpi-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);}
-.kpi-icon{width:28px;height:28px;border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;}
-.kpi-icon svg{width:13px;height:13px;color:var(--gd);}
-.kpi-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;line-height:1;color:var(--ink);}
+.kpi-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bd);gap:1px;background:var(--bd);}
+.kpi{background:var(--wh);padding:18px 20px;}
+.kpi-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:10px;}
+.kpi-val{font-family:'Playfair Display',serif;font-size:32px;font-weight:700;color:var(--ink);line-height:1;}
+.kpi-val.gold{color:var(--gd);}
 .kpi-sub{font-size:11px;color:var(--mu2);margin-top:4px;}
 
 /* ── CARDS ── */
 .card{background:var(--wh);border:1px solid var(--bd);}
 .card-head{display:flex;align-items:center;justify-content:space-between;padding:14px 18px;border-bottom:1px solid var(--bd);}
-.card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);}
-.card-link{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gd);text-decoration:none;}
+.card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);font-weight:500;}
+.card-link{font-size:11px;color:var(--gd);text-decoration:none;font-weight:500;}
 .card-link:hover{color:var(--gd2);}
 
-/* Agenda today */
-.apt-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--bd);transition:background 0.15s;cursor:pointer;}
+/* Agenda items */
+.apt-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s;}
 .apt-row:last-child{border-bottom:none;}
 .apt-row:hover{background:var(--iv);}
-.apt-time{font-size:11px;font-weight:500;color:var(--mu);min-width:42px;font-variant-numeric:tabular-nums;}
-.apt-line{width:2px;height:36px;background:var(--gd);flex-shrink:0;opacity:0.5;}
+.apt-time{font-size:11px;font-weight:600;color:var(--mu);min-width:42px;font-variant-numeric:tabular-nums;}
+.apt-bar{width:3px;height:36px;background:var(--gd);opacity:.5;flex-shrink:0;border-radius:2px;}
 .apt-info{flex:1;min-width:0;}
 .apt-naam{font-size:13px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.apt-svc{font-size:11px;color:var(--mu);margin-top:2px;}
+.apt-svc{font-size:11px;color:var(--mu2);margin-top:2px;}
 .apt-dur{font-size:11px;color:var(--mu2);flex-shrink:0;}
 
-/* Quick actions */
+/* Snelkoppelingen */
 .quick-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--bd);}
-.quick-btn{background:var(--wh);padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;transition:background 0.15s;text-decoration:none;color:var(--ink);}
-.quick-btn:hover{background:var(--iv);}
-.quick-btn svg{width:18px;height:18px;color:var(--gd);}
-.quick-btn-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);}
+.qb{background:var(--wh);padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:8px;cursor:pointer;text-decoration:none;color:var(--ink);transition:background .15s;}
+.qb:hover{background:var(--iv);}
+.qb svg{width:20px;height:20px;color:var(--gd);}
+.qb-lbl{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);}
 
 /* Team */
 .team-row{display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--bd);}
 .team-row:last-child{border-bottom:none;}
-.team-av{width:30px;height:30px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:500;color:var(--iv);flex-shrink:0;}
-.team-name{font-size:13px;flex:1;line-height:1.3;}
-.team-rol{font-size:10px;color:var(--mu);margin-top:1px;}
-.team-apts{font-size:11px;color:var(--mu2);flex-shrink:0;}
+.team-av{width:32px;height:32px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:var(--gd);flex-shrink:0;border-radius:50%;}
+.team-name{font-size:13px;font-weight:500;flex:1;}
+.team-rol{font-size:10px;color:var(--mu2);margin-top:1px;}
+.team-cnt{font-size:11px;color:var(--mu2);}
+.team-dot{width:6px;height:6px;border-radius:50%;background:#2d6a4f;flex-shrink:0;}
 
-/* AI insights */
+/* AI inzichten */
 .ai-card{background:var(--wm);border:1px solid var(--bd);}
 .ai-head{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--bd);}
-.ai-head-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);}
-.ai-insight{font-size:13px;color:var(--ink2);padding:12px 18px;border-bottom:1px solid var(--bd);line-height:1.6;font-weight:300;}
-.ai-insight:last-child{border-bottom:none;}
+.ai-head-lbl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);font-weight:500;}
+.ai-ins{font-size:13px;color:var(--ink);padding:12px 18px;border-bottom:1px solid var(--bd);line-height:1.65;font-weight:300;}
+.ai-ins:last-child{border-bottom:none;}
 
-/* Notes */
-.notes-input{width:100%;background:transparent;border:none;padding:14px 18px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;resize:none;min-height:80px;font-weight:300;}
-.notes-input::placeholder{color:var(--mu2);}
+/* Notities */
+.notes-inp{width:100%;background:transparent;border:none;padding:14px 18px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;resize:none;min-height:80px;font-weight:300;}
+.notes-inp::placeholder{color:var(--mu2);}
 
 /* Empty state */
-.empty-state{padding:32px 18px;text-align:center;}
-.empty-icon{font-size:24px;margin-bottom:8px;opacity:0.3;}
-.empty-text{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-bottom:4px;}
-.empty-sub{font-size:11px;color:var(--mu2);}
+.empty{padding:32px 18px;text-align:center;}
+.empty-txt{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:6px;}
+.empty-sub{font-size:12px;color:var(--mu2);}
 
 /* Left/right cols */
-.left-col{display:flex;flex-direction:column;gap:16px;}
-.right-col{display:flex;flex-direction:column;gap:16px;}
+.left-col,.right-col{display:flex;flex-direction:column;gap:14px;}
 
-/* ── MOB OVERLAY SIDEBAR ── */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:40;}
+/* Mob overlay */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;}
 .ov.on{display:block;}
-.sb-mob{position:fixed;left:-100%;top:0;width:240px;height:100%;background:var(--ink);z-index:50;display:flex;flex-direction:column;transition:left .25s;border-right:1px solid rgba(255,255,255,0.06);}
+.sb-mob{position:fixed;left:-100%;top:0;bottom:0;width:220px;background:var(--ink);z-index:50;display:flex;flex-direction:column;transition:left .25s;padding:16px 12px;}
 .sb-mob.on{left:0;}
+.mob-logo{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.mob-logo em{color:var(--gd);font-style:normal;}
+.mob-x{background:transparent;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;}
+.mob-item{display:flex;align-items:center;gap:10px;padding:10px;color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;border-radius:8px;margin-bottom:2px;border-left:2px solid transparent;}
+.mob-item.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
+.mob-item svg{width:16px;height:16px;flex-shrink:0;}
+.mob-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
 
-/* ── BOTTOM NAV ── */
-.bnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--wh);border-top:1px solid var(--bd);padding:6px 0 18px;z-index:30;}
-.bni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;text-decoration:none;color:var(--mu2);font-size:9px;letter-spacing:1px;text-transform:uppercase;padding:4px 0;}
-.bni.on{color:var(--gd);}
+/* Bottom nav */
+
+
+
 .bni svg{width:20px;height:20px;}
 
-/* ── RESPONSIVE ── */
-/* ── TABLET / IPAD (max 1024px) ── */
-@media(max-width:1024px){
-  .sidebar{width:180px;}
-  .main{margin-left:180px;}
-  .kpi-val{font-size:26px;}
-}
-
-/* ── KLEINE TABLET (max 900px) ── */
 @media(max-width:900px){
-  .kpi-row{grid-template-columns:1fr 1fr;gap:1px;}
-  .content{grid-template-columns:1fr;padding-bottom:80px;}
-  .right-col{display:contents;}
-  .left-col{display:contents;}
-  /* Volgorde op tablet: greeting, kpis, agenda, quick, team, ai, notes */
-  .greeting{order:0;}
-  .kpi-row{order:1;}
-  .left-col .card:first-child{order:2;}  /* agenda */
-  .right-col .card:first-child{order:3;} /* quick */
-  .right-col .card:nth-child(2){order:4;} /* team */
-  .left-col .ai-card{order:5;}
-  .right-col .card:last-child{order:6;} /* notes */
-}
-
-/* ── MOBIEL / IPHONE (max 768px) ── */
-@media(max-width:768px){
-  .sidebar{display:none;}
-  .main{margin-left:0;}
-  .hbg{display:flex;}
-  .tb-logo{display:block;}
-  .tb-title{display:none;}
-  .bnav{display:flex;}
-  .content{padding:14px 12px 80px;gap:12px;}
-  .topbar{padding:0 14px;height:50px;}
-  .greeting-title{font-size:22px;}
-  .kpi-val{font-size:24px;}
-  .kpi{padding:14px 16px;}
-}
-
-/* ── KLEINE IPHONE (max 390px) ── */
-@media(max-width:390px){
   .kpi-row{grid-template-columns:1fr 1fr;}
-  .kpi-val{font-size:20px;}
-  .kpi-label{font-size:8px;}
-  .greeting-title{font-size:20px;}
-  .content{padding:12px 10px 80px;}
+  .content{grid-template-columns:1fr;}
+}
+@media(max-width:768px){
+  .sidebar{display:none;}.main{margin-left:0;}
+  .hbg{display:flex;}.tb-title{font-size:15px;}
+  
+  .content{padding:14px 14px;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -189,112 +141,60 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 <body>
 <div class="app">
 
-<!-- Desktop sidebar -->
 <aside class="sidebar">
-  <div class="sb-logo"><a href="dashboard.html">Planr<em>.</em></a></div>
-  <nav class="sb-nav">
-    <div class="sb-sec">Beheer</div>
-    <a href="dashboard.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
-    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klanten</a>
-    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-    <a href="medewerkers.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
-    <a href="diensten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>Diensten</a>
-    <div class="sb-sec">Groei</div>
-    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
-    <a href="boeken.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg>Online boeken</a>
-  </nav>
-  <div class="sb-foot">
-    <div class="sb-user" onclick="uitloggen()">
-      <div class="sb-av salon-init">??</div>
-      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
-    </div>
-  </div>
+  <a href="dashboard.html" class="sb-logo">P</a>
+  <a href="dashboard.html" class="si on" title="Dashboard"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></a>
+  <a href="agenda.html" class="si" title="Agenda"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></a>
+  <a href="klanten.html" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></a>
+  <a href="kassa.html" class="si" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></a>
+  <a href="medewerkers.html" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></a>
+  <a href="diensten.html" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg></a>
+  <a href="rapportages.html" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></a>
+  <a href="boeken.html" class="si" title="Online boeken"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></a>
+  <div class="sb-foot"><div class="sb-av salon-init" onclick="uitloggen()">??</div></div>
 </aside>
 
-<!-- Mobiel overlay -->
 <div class="ov" id="ov" onclick="closeSB()"></div>
-<aside class="sb-mob" id="sb">
-  <div style="padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--iv);letter-spacing:1px;">Planr<em style="color:var(--gd);font-style:normal">.</em></span>
-    <button onclick="closeSB()" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;">✕</button>
-  </div>
-  <nav style="flex:1;overflow-y:auto;padding:12px 10px;">
-    <div class="sb-sec">Beheer</div>
-    <a href="dashboard.html" class="sb-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
-    <a href="agenda.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-    <a href="klanten.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-    <a href="kassa.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-    <a href="medewerkers.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
-    <a href="rapportages.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
-  </nav>
-  <div style="padding:12px;border-top:1px solid rgba(255,255,255,0.06);">
-    <div class="sb-user" onclick="uitloggen()">
-      <div class="sb-av salon-init">??</div>
-      <div><div class="sb-nm salon-naam">Laden...</div><div class="sb-rl">Uitloggen</div></div>
-    </div>
-  </div>
-</aside>
+<div class="sb-mob" id="sb">
+  <div class="mob-logo">Planr<em>.</em><button class="mob-x" onclick="closeSB()">✕</button></div>
+  <a href="dashboard.html" class="mob-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+  <a href="agenda.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="klanten.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="kassa.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="rapportages.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  <div class="mob-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
+</div>
 
-<!-- Main -->
 <div class="main">
   <div class="topbar">
     <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <div class="tb-logo">Planr<em>.</em></div>
     <div class="tb-title">Dashboard</div>
-    <div class="tb-spacer"></div>
-    <a href="agenda.html" class="btn-add">
-      <svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <div class="tb-sp"></div>
+    <div class="tb-date" id="tb-date"></div>
+    <a href="agenda.html" style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;background:var(--ink);color:#fff;font-size:10px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;border-radius:6px;transition:background .2s;" onmouseover="this.style.background='#2d2520'" onmouseout="this.style.background='var(--ink)'">
+      <svg width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Afspraak
     </a>
   </div>
 
   <div class="content">
-
     <!-- Greeting -->
     <div class="greeting" style="grid-column:1/-1">
-      <div class="greeting-title" id="greeting-title">Goedemorgen</div>
-      <div class="greeting-sub" id="greeting-sub">Hier is een overzicht van vandaag</div>
+      <div class="greeting-title" id="greeting"></div>
+      <div class="greeting-sub" id="greeting-sub"></div>
     </div>
 
     <!-- KPIs -->
     <div class="kpi-row">
-      <div class="kpi">
-        <div class="kpi-top">
-          <div class="kpi-label">Vandaag</div>
-          <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        </div>
-        <div class="kpi-val" id="kpi-apts">0</div>
-        <div class="kpi-sub">afspraken</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-top">
-          <div class="kpi-label">Omzet vandaag</div>
-          <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        </div>
-        <div class="kpi-val" id="kpi-omzet">€0</div>
-        <div class="kpi-sub">verwacht</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-top">
-          <div class="kpi-label">Klanten</div>
-          <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-        </div>
-        <div class="kpi-val" id="kpi-klanten">0</div>
-        <div class="kpi-sub">totaal in systeem</div>
-      </div>
-      <div class="kpi">
-        <div class="kpi-top">
-          <div class="kpi-label">Deze week</div>
-          <div class="kpi-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        </div>
-        <div class="kpi-val" id="kpi-week">0</div>
-        <div class="kpi-sub">afspraken</div>
-      </div>
+      <div class="kpi"><div class="kpi-label">Vandaag</div><div class="kpi-val" id="kpi-apts">—</div><div class="kpi-sub">afspraken</div></div>
+      <div class="kpi"><div class="kpi-label">Omzet vandaag</div><div class="kpi-val gold" id="kpi-omzet">—</div><div class="kpi-sub">verwacht</div></div>
+      <div class="kpi"><div class="kpi-label">Klanten</div><div class="kpi-val" id="kpi-klanten">—</div><div class="kpi-sub">totaal</div></div>
+      <div class="kpi"><div class="kpi-label">Deze week</div><div class="kpi-val" id="kpi-week">—</div><div class="kpi-sub">afspraken</div></div>
     </div>
 
     <!-- Left col -->
     <div class="left-col">
+      <!-- Agenda vandaag -->
       <div class="card">
         <div class="card-head">
           <div class="card-title">Agenda vandaag</div>
@@ -303,87 +203,83 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         <div id="agenda-today"></div>
       </div>
 
+      <!-- AI inzichten -->
       <div class="ai-card">
         <div class="ai-head">
           <svg width="13" height="13" fill="none" stroke="var(--gd)" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-          <div class="ai-head-title">Planr inzichten</div>
+          <div class="ai-head-lbl">Planr inzichten</div>
         </div>
-        <div class="ai-insight" id="insight-1">Gegevens laden...</div>
-        <div class="ai-insight" id="insight-2" style="display:none"></div>
-        <div class="ai-insight" id="insight-3" style="display:none"></div>
+        <div class="ai-ins" id="ins1">Laden...</div>
+        <div class="ai-ins" id="ins2" style="display:none"></div>
+        <div class="ai-ins" id="ins3" style="display:none"></div>
       </div>
     </div>
 
     <!-- Right col -->
     <div class="right-col">
+      <!-- Snelkoppelingen -->
       <div class="card">
         <div class="card-head"><div class="card-title">Snelkoppelingen</div></div>
         <div class="quick-grid">
-          <a href="agenda.html" class="quick-btn"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><div class="quick-btn-label">Afspraak</div></a>
-          <a href="klanten.html" class="quick-btn"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><div class="quick-btn-label">Klant</div></a>
-          <a href="kassa.html" class="quick-btn"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><div class="quick-btn-label">Kassa</div></a>
-          <a href="rapportages.html" class="quick-btn"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><div class="quick-btn-label">Cijfers</div></a>
+          <a href="agenda.html" class="qb"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span class="qb-lbl">Agenda</span></a>
+          <a href="klanten.html" class="qb"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span class="qb-lbl">Klanten</span></a>
+          <a href="kassa.html" class="qb"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span class="qb-lbl">Kassa</span></a>
+          <a href="rapportages.html" class="qb"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span class="qb-lbl">Cijfers</span></a>
         </div>
       </div>
 
+      <!-- Team vandaag -->
       <div class="card">
-        <div class="card-head"><div class="card-title">Wie werkt er vandaag</div></div>
-        <div id="team-today">
-          <div class="empty-state"><div class="empty-text">Geen medewerkers</div></div>
-        </div>
+        <div class="card-head"><div class="card-title">Team vandaag</div></div>
+        <div id="team-today"></div>
       </div>
 
+      <!-- Notities -->
       <div class="card">
-        <div class="card-head"><div class="card-title">Notities voor vandaag</div></div>
-        <textarea class="notes-input" placeholder="Schrijf hier je notities..."></textarea>
+        <div class="card-head"><div class="card-title">Notities</div></div>
+        <textarea class="notes-inp" placeholder="Notities voor vandaag..."></textarea>
       </div>
     </div>
-
   </div>
 </div>
 </div>
 
-<!-- Bottom nav -->
-<nav class="bnav">
-  <a href="dashboard.html" class="bni on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Home</a>
-  <a href="agenda.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
-  <a href="kassa.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
-  <a href="klanten.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
-  <a href="rapportages.html" class="bni"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Cijfers</a>
-</nav>
+
 
 <script>
-function dk(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
-function ft(h,m){return h+':'+String(m).padStart(2,'0');}
+const dk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+const ft=(h,m)=>String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
 
 function setGreeting(){
   const h=new Date().getHours();
   const gr=h<12?'Goedemorgen':h<18?'Goedemiddag':'Goedenavond';
-  const naam=document.querySelector('.salon-naam')?.textContent||'';
-  document.getElementById('greeting-title').innerHTML=gr+(naam?' — <em>'+naam+'</em>':'');
-  const today=new Date().toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('greeting-sub').textContent=today.charAt(0).toUpperCase()+today.slice(1);
+  const nm=document.querySelector('.salon-naam')?.textContent||'';
+  document.getElementById('greeting').innerHTML=gr+(nm?` — <em>${nm}</em>`:'');
+  const d=new Date().toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('greeting-sub').textContent=d.charAt(0).toUpperCase()+d.slice(1);
+  document.getElementById('tb-date').textContent=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
 }
 
 async function loadData(){
   const todayKey=dk(new Date());
-  const weekStart=new Date();weekStart.setDate(weekStart.getDate()-weekStart.getDay()+1);weekStart.setHours(0,0,0,0);
-  const weekEnd=new Date(weekStart);weekEnd.setDate(weekStart.getDate()+7);
+  const ws=new Date();ws.setDate(ws.getDate()-ws.getDay()+1);ws.setHours(0,0,0,0);
+  const we=new Date(ws);we.setDate(ws.getDate()+7);
 
-  const [aRes,mRes,kRes]=await Promise.all([
-    sb.from('afspraken').select('*,medewerkers(naam,kleur),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',weekStart.toISOString()).lte('datum_tijd',weekEnd.toISOString()).order('datum_tijd'),
+  const[aR,mR,kR]=await Promise.all([
+    sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',ws.toISOString()).lte('datum_tijd',we.toISOString()).order('datum_tijd'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID)
   ]);
 
-  const allApts=aRes.data||[],allMed=mRes.data||[];
-  const vandaag=allApts.filter(a=>a.datum_tijd.startsWith(todayKey));
+  const all=aR.data||[],meds=mR.data||[];
+  const vandaag=all.filter(a=>a.datum_tijd.startsWith(todayKey));
   const omzet=vandaag.reduce((s,a)=>s+(a.diensten?.prijs||0),0);
 
+  // KPIs
   document.getElementById('kpi-apts').textContent=vandaag.length;
   document.getElementById('kpi-omzet').textContent='€'+omzet;
-  document.getElementById('kpi-klanten').textContent=kRes.count||0;
-  document.getElementById('kpi-week').textContent=allApts.length;
+  document.getElementById('kpi-klanten').textContent=kR.count||0;
+  document.getElementById('kpi-week').textContent=all.length;
 
   // Sidebar initials
   const nm=document.querySelector('.salon-naam')?.textContent||'';
@@ -392,46 +288,44 @@ async function loadData(){
   // Agenda vandaag
   const agEl=document.getElementById('agenda-today');
   if(!vandaag.length){
-    agEl.innerHTML='<div class="empty-state"><div class="empty-icon">📅</div><div class="empty-text">Geen afspraken vandaag</div><div class="empty-sub" style="font-size:11px;color:var(--mu2)"><a href="agenda.html" style="color:var(--gd);text-decoration:none">Afspraak inplannen →</a></div></div>';
+    agEl.innerHTML=`<div class="empty"><div class="empty-txt">Geen afspraken vandaag</div><div class="empty-sub"><a href="agenda.html" style="color:var(--gd);text-decoration:none;font-size:12px;">Afspraak inplannen →</a></div></div>`;
   } else {
     agEl.innerHTML=vandaag.slice(0,8).map(a=>{
       const dt=new Date(a.datum_tijd);
-      return `<div class="apt-row">
+      return`<div class="apt-row">
         <div class="apt-time">${ft(dt.getHours(),dt.getMinutes())}</div>
-        <div class="apt-line"></div>
-        <div class="apt-info">
-          <div class="apt-naam">${a.klant_naam||'Onbekend'}</div>
-          <div class="apt-svc">${a.diensten?.naam||''}${a.medewerkers?.naam?' · '+a.medewerkers.naam:''}</div>
-        </div>
-        <div class="apt-dur">${a.duur_min||45} min</div>
+        <div class="apt-bar"></div>
+        <div class="apt-info"><div class="apt-naam">${a.klant_naam||'Onbekend'}</div><div class="apt-svc">${a.diensten?.naam||''}${a.medewerkers?.naam?' · '+a.medewerkers.naam:''}</div></div>
+        <div class="apt-dur">${a.duur_min||45}min</div>
       </div>`;
-    }).join('');
-    if(vandaag.length>8) agEl.innerHTML+=`<div style="padding:10px 18px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);border-top:1px solid var(--bd)"><a href="agenda.html" style="color:var(--gd);text-decoration:none">+ ${vandaag.length-8} meer afspraken</a></div>`;
+    }).join('')+(vandaag.length>8?`<div style="padding:10px 18px;font-size:11px;color:var(--mu2);border-top:1px solid var(--bd)"><a href="agenda.html" style="color:var(--gd);text-decoration:none;">+${vandaag.length-8} meer →</a></div>`:'');
   }
 
   // Team
   const teamEl=document.getElementById('team-today');
-  if(!allMed.length){
-    teamEl.innerHTML='<div class="empty-state"><div class="empty-text">Nog geen medewerkers</div><div class="empty-sub"><a href="medewerkers.html" style="color:var(--gd);text-decoration:none;font-size:11px;letter-spacing:1px;text-transform:uppercase;">Toevoegen →</a></div></div>';
+  if(!meds.length){
+    teamEl.innerHTML=`<div class="empty"><div class="empty-txt">Geen medewerkers</div><div class="empty-sub"><a href="medewerkers.html" style="color:var(--gd);text-decoration:none;font-size:12px;">Toevoegen →</a></div></div>`;
   } else {
-    teamEl.innerHTML=allMed.map(m=>{
-      const init=m.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-      const apts=vandaag.filter(a=>a.medewerker_id===m.id).length;
-      return `<div class="team-row">
-        <div class="team-av" style="background:${m.kleur||'var(--ink)'}33;color:${m.kleur||'var(--ink)'};">${init}</div>
+    teamEl.innerHTML=meds.map(m=>{
+      const ini=m.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      const cnt=vandaag.filter(a=>a.medewerker_id===m.id).length;
+      return`<div class="team-row">
+        <div class="team-av">${ini}</div>
         <div style="flex:1"><div class="team-name">${m.naam}</div><div class="team-rol">${m.rol}</div></div>
-        <div class="team-apts">${apts} afspr.</div>
+        <div class="team-cnt">${cnt} afspr.</div>
+        <div class="team-dot"></div>
       </div>`;
     }).join('');
   }
 
   // Inzichten
   const ins=[];
-  if(!vandaag.length) ins.push('Nog geen afspraken vandaag. Deel je boekingslink om nieuwe klanten te trekken.');
-  else ins.push(`${vandaag.length} afspraak${vandaag.length!==1?'en':''} vandaag${vandaag.length>=5?' — drukke dag!':'. Er is nog ruimte voor nieuwe boekingen.'}`);
-  if(allApts.length) ins.push(`Deze week staan er ${allApts.length} afspraken gepland.`);
-  if(allMed.length) ins.push(`${allMed.length} actieve medewerker${allMed.length!==1?'s':''} in je team.`);
-  ['insight-1','insight-2','insight-3'].forEach((id,i)=>{
+  if(!vandaag.length) ins.push('Nog geen afspraken vandaag. Deel je boekingslink om nieuwe klanten aan te trekken.');
+  else if(vandaag.length>=5) ins.push(`Je hebt ${vandaag.length} afspraken vandaag — een drukke dag. Zorg voor pauzes.`);
+  else ins.push(`Je hebt ${vandaag.length} afspraak${vandaag.length!==1?'en':''} vandaag. Er is nog ruimte voor nieuwe boekingen.`);
+  if(all.length) ins.push(`Deze week staan er ${all.length} afspraken gepland.`);
+  if(meds.length) ins.push(`Je hebt ${meds.length} actieve medewerker${meds.length!==1?'s':''}.`);
+  ['ins1','ins2','ins3'].forEach((id,i)=>{
     const el=document.getElementById(id);
     if(ins[i]){el.textContent=ins[i];el.style.display='';}
     else el.style.display='none';
@@ -442,7 +336,6 @@ async function loadData(){
 
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
 function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
-
 planrInit(loadData);
 </script>
 </body>
