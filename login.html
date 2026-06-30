@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Planr — Inloggen</title>
+<title>Kronr — Inloggen</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -124,13 +124,13 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
     <div class="left-bg"></div>
     <div class="left-letter">P</div>
     <div class="left-top">
-      <a href="index.html" class="left-logo">Planr<em>.</em></a>
+      <a href="index.html" class="left-logo">Kronr<em>.</em></a>
     </div>
     <div class="left-bottom">
       <h2 class="left-title">
         Software die je<br>salon laat<br><em>groeien</em>
       </h2>
-      <p class="left-sub">Planr geeft kappers, nagelstudio's en spa's de tools om efficiënter te werken en meer klanten te bedienen.</p>
+      <p class="left-sub">Kronr geeft kappers, nagelstudio's en spa's de tools om efficiënter te werken en meer klanten te bedienen.</p>
       <div class="left-stats">
         <div><div class="ls-num">2.400+</div><div class="ls-lbl">Salons actief</div></div>
         <div><div class="ls-num">€0</div><div class="ls-lbl">Om te starten</div></div>
@@ -143,7 +143,7 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
   <div class="right">
     <div class="right-top">
       <div class="right-title" id="form-title">Welkom terug</div>
-      <div class="right-sub" id="form-sub">Log in op je Planr account</div>
+      <div class="right-sub" id="form-sub">Log in op je Kronr account</div>
     </div>
 
     <div class="tabs">
@@ -206,7 +206,7 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
       <div class="terms">Door te registreren ga je akkoord met onze <a href="#">voorwaarden</a> en <a href="#">privacybeleid</a>.</div>
     </div>
 
-    <a href="index.html" class="back">← Terug naar Planr.nl</a>
+    <a href="index.html" class="back">← Terug naar Kronr.nl</a>
   </div>
 
 </div>
@@ -235,7 +235,7 @@ function toonLogin() {
   document.getElementById('tab-login').classList.add('active');
   document.getElementById('tab-reg').classList.remove('active');
   document.getElementById('form-title').textContent = 'Welkom terug';
-  document.getElementById('form-sub').textContent = 'Log in op je Planr account';
+  document.getElementById('form-sub').textContent = 'Log in op je Kronr account';
   leegMsg();
 }
 
@@ -245,7 +245,7 @@ function toonRegistreer() {
   document.getElementById('tab-reg').classList.add('active');
   document.getElementById('tab-login').classList.remove('active');
   document.getElementById('form-title').textContent = 'Begin vandaag gratis';
-  document.getElementById('form-sub').textContent = 'Maak je Planr account aan — geen creditcard nodig';
+  document.getElementById('form-sub').textContent = 'Maak je Kronr account aan — geen creditcard nodig';
   leegMsg();
 }
 
