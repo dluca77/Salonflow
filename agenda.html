@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <title>Planr — Agenda</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -11,143 +11,214 @@
   --iv:#faf8f4;--wh:#ffffff;--bd:#e8e2db;--bd2:#c8bdb0;
   --gd:#8c6d3f;--ink:#1a1714;--mu:#8a7d6e;--mu2:#bdb3a8;
   --rh:28px;
+  --s-bevestigd:#2d6a4f;--s-niet:#e07020;--s-gearriveerd:#1a60a8;
+  --s-bezig:#7c4daa;--s-afgerond:#666;--s-noshow:#c02020;--s-geannuleerd:#c02020;
 }
-html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:var(--ink);overflow:hidden;}
+html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:var(--ink);overflow:hidden;-webkit-font-smoothing:antialiased;}
 .app{display:flex;height:100vh;}
 
-/* SIDEBAR */
+/* ── SIDEBAR ── */
 .sidebar{width:52px;flex-shrink:0;background:#1a1714;display:flex;flex-direction:column;align-items:center;height:100vh;position:fixed;left:0;top:0;z-index:100;padding:12px 0;}
 .sb-logo{width:32px;height:32px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;color:#fff;font-size:13px;font-weight:700;margin-bottom:20px;text-decoration:none;border-radius:4px;}
-.si{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.35);cursor:pointer;border-radius:8px;margin-bottom:4px;text-decoration:none;transition:all .15s;}
-.si:hover,.si.on{background:rgba(255,255,255,0.1);color:#fff;}
+.si{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);border-radius:8px;margin-bottom:4px;text-decoration:none;transition:all .15s;cursor:pointer;}
+.si:hover,.si.on{background:rgba(255,255,255,.1);color:#fff;}
 .si svg{width:18px;height:18px;}
 .sb-foot{margin-top:auto;}
 .sb-av{width:28px;height:28px;background:var(--gd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;cursor:pointer;}
 
-/* MAIN */
+/* ── MAIN ── */
 .main{margin-left:52px;flex:1;display:flex;flex-direction:column;overflow:hidden;}
 
-/* TOPBAR */
-.topbar{height:52px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:8px;flex-shrink:0;}
-.tb-title{font-size:17px;font-weight:600;color:var(--ink);}
+/* ── TOPBAR ── */
+.topbar{height:52px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 14px;gap:8px;flex-shrink:0;position:relative;}
+.hbg{width:32px;height:32px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.tb-title{font-size:17px;font-weight:600;flex-shrink:0;}
 .tb-sp{flex:1;}
 
-.vtabs{display:flex;border:1px solid var(--bd);border-radius:6px;overflow:hidden;}
-.vt{padding:6px 12px;border:none;border-right:1px solid var(--bd);background:var(--wh);font-size:12px;font-weight:500;color:var(--mu);cursor:pointer;font-family:'Inter',sans-serif;transition:all .15s;}
-.vt:last-child{border-right:none;}
-.vt.on{background:var(--ink);color:#fff;}
-.tb-nav{display:flex;align-items:center;gap:4px;}
+/* Zoekbalk */
+.search-wrap{position:relative;flex-shrink:0;}
+.search-inp{width:180px;padding:6px 10px 6px 32px;border:1px solid var(--bd);border-radius:6px;background:var(--iv);font-size:12px;font-family:'Inter',sans-serif;color:var(--ink);outline:none;transition:all .15s;}
+.search-inp:focus{border-color:var(--gd);width:220px;}
+.search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--mu2);pointer-events:none;}
+.search-icon svg{width:13px;height:13px;}
+.search-results{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--wh);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.1);z-index:200;max-height:280px;overflow-y:auto;display:none;}
+.search-results.on{display:block;}
+.sr-item{padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--bd);transition:background .1s;}
+.sr-item:last-child{border-bottom:none;}
+.sr-item:hover{background:var(--iv);}
+.sr-naam{font-size:13px;font-weight:500;}
+.sr-meta{font-size:11px;color:var(--mu2);margin-top:2px;}
+.sr-empty{padding:16px 12px;font-size:12px;color:var(--mu2);text-align:center;}
+
+/* View tabs */
+
+
+/* Navigatie */
+.tb-nav{display:flex;align-items:center;gap:3px;flex-shrink:0;}
 .ta{width:28px;height:28px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;transition:background .15s;}
 .ta:hover{background:var(--iv);}
-.td{font-size:13px;font-weight:500;padding:0 8px;min-width:80px;text-align:center;white-space:nowrap;}
-.hbg{width:32px;height:32px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;}
+.td{font-size:12px;font-weight:500;padding:0 6px;min-width:70px;text-align:center;white-space:nowrap;}
 
-/* FILTER */
-.fw{position:relative;}
-.fb{padding:6px 10px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;font-family:'Inter',sans-serif;display:flex;align-items:center;gap:5px;white-space:nowrap;}
-.fb svg{width:11px;height:11px;color:var(--mu);}
-.fd{position:absolute;top:calc(100% + 4px);left:0;background:var(--wh);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.1);min-width:170px;z-index:200;display:none;}
+/* Filter */
+.fw{position:relative;flex-shrink:0;}
+.fb{width:34px;height:34px;border:1px solid var(--bd2);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;flex-shrink:0;}
+.fb:hover{background:var(--iv);}
+.fb.actief{background:var(--ink);color:#fff;border-color:var(--ink);}
+.fd{position:absolute;top:calc(100% + 4px);right:0;background:var(--wh);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.1);min-width:200px;z-index:200;display:none;}
 .fd.on{display:block;}
-.fi{padding:9px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd);}
-.fi:last-child{border-bottom:none;}
-.fi:hover{background:var(--iv);}
-.fi.sel{color:var(--gd);font-weight:500;}
+.fd-item{padding:9px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd);}
+.fd-item:last-child{border-bottom:none;}
+.fd-item:hover{background:var(--iv);}
+.fd-item.sel{color:var(--gd);font-weight:500;}
 .fd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
-/* ── KALENDER ──
-   Één scrollbare container, sticky header + sticky tijdkolom */
-.cal{flex:1;overflow:auto;position:relative;background:var(--wh);padding-bottom:env(safe-area-inset-bottom,16px);}
+/* ── KALENDER CONTAINER ── */
+.cal{flex:1;overflow:auto;background:var(--wh);}
 .cal::-webkit-scrollbar{width:4px;height:4px;}
 .cal::-webkit-scrollbar-thumb{background:var(--bd2);border-radius:2px;}
-
-/* De kalender bestaat uit een tabel-achtige structuur */
 .cal-inner{display:inline-flex;flex-direction:column;min-width:100%;}
 
-/* Header rij */
+/* Sticky header */
 .cal-row-head{display:flex;position:sticky;top:0;z-index:20;background:var(--wh);border-bottom:2px solid var(--bd2);}
-.cal-tc-head{width:52px;flex-shrink:0;position:sticky;left:0;z-index:21;background:var(--wh);border-right:1px solid var(--bd);}
+.cal-tc-head{width:52px;flex-shrink:0;position:sticky;left:0;z-index:21;background:var(--wh);}
 .cal-days-head{display:flex;flex:1;}
+
+/* Dag headers */
 .chd{flex:1;min-width:90px;padding:8px 6px 6px;text-align:center;border-right:1px solid var(--bd);cursor:pointer;transition:background .15s;}
 .chd:last-child{border-right:none;}
 .chd:hover{background:var(--iv);}
-.chd .dn{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);font-weight:500;}
+.chd .dn{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);font-weight:500;}
 .chd .dd{font-size:20px;font-weight:600;width:32px;height:32px;display:flex;align-items:center;justify-content:center;margin:2px auto;border-radius:50%;}
 .chd.today .dd{background:var(--gd);color:#fff;}
-.chd .dc{font-size:10px;color:var(--mu2);min-height:13px;}
+.chd .dc{font-size:9px;color:var(--mu2);min-height:13px;}
 
-/* Body rij */
+/* Body */
 .cal-row-body{display:flex;flex:1;}
-.cal-tc-body{width:52px;flex-shrink:0;position:sticky;left:0;z-index:10;background:var(--wh);border-right:1px solid var(--bd);padding-bottom:48px;}
+.cal-tc-body{width:52px;flex-shrink:0;position:sticky;left:0;z-index:10;background:var(--wh);border-right:1px solid var(--bd);}
 .tr{height:var(--rh);display:flex;align-items:flex-end;justify-content:flex-end;padding:0 7px 3px 0;border-bottom:1px solid #e5ddd5;}
 .tl{font-size:10px;font-weight:600;color:var(--mu);white-space:nowrap;line-height:1;}
 .tr.q .tl{font-size:9px;font-weight:400;color:var(--mu2);}
 .tr.gh{border-bottom:1px solid #c5bdb5;}
 
-.cal-days-body{display:flex;flex:1;padding-bottom:48px;}
+.cal-days-body{display:flex;flex:1;}
 .day-col{flex:1;min-width:90px;border-right:1px solid var(--bd);position:relative;background:var(--wh);}
 .day-col:last-child{border-right:none;}
 .day-col.tod{background:rgba(140,109,63,0.015);}
 
-/* Grid lijnen */
+/* Grid lines */
 .gl{height:var(--rh);border-bottom:1px solid #e5ddd5;cursor:pointer;}
 .gl:hover{background:rgba(140,109,63,0.04);}
 .gl.gh{border-bottom:1px solid #c5bdb5;}
 
-/* Afspraken */
-.apt{position:absolute;left:3px;right:3px;border-radius:4px;padding:4px 7px;cursor:pointer;z-index:5;overflow:hidden;}
-.apt:hover{opacity:.85;}
+/* ── AFSPRAKEN ── */
+.apt{position:absolute;left:3px;right:3px;border-radius:4px;padding:4px 7px;cursor:grab;z-index:5;overflow:hidden;transition:opacity .15s,box-shadow .15s;user-select:none;}
+.apt:hover{opacity:.88;box-shadow:0 2px 8px rgba(0,0,0,.12);}
+.apt.dragging{opacity:.5;cursor:grabbing;}
 .apt-t{font-size:10px;font-weight:500;line-height:1.3;margin-bottom:1px;}
 .apt-n{font-size:11px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.apt-s{font-size:10px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
-.c0{background:#e8d5f5;}.c0 .apt-s{color:#7c4daa;}
-.c1{background:#ffd9c0;}.c1 .apt-s{color:#d06020;}
-.c2{background:#c8f0d8;}.c2 .apt-s{color:#1a8040;}
-.c3{background:#c8e8ff;}.c3 .apt-s{color:#1a60a8;}
-.c4{background:#ffe0e0;}.c4 .apt-s{color:#c02020;}
-.c5{background:#fff3c0;}.c5 .apt-s{color:#906000;}
-.c6{background:#f0d4e8;}.c6 .apt-s{color:#902060;}
-.c7{background:#d4ecd8;}.c7 .apt-s{color:#206030;}
+.apt-s{font-size:10px;opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;}
+.apt-status{display:inline-flex;align-items:center;gap:3px;font-size:9px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-top:2px;opacity:.8;}
+.apt-status::before{content:'';width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
+
+/* Afspraak kleuren */
+.c0{background:#e8d5f5;color:#6b3fa0;}
+.c1{background:#ffd9c0;color:#c05a00;}
+.c2{background:#c8f0d8;color:#1a7a40;}
+.c3{background:#c8e8ff;color:#1a5fa0;}
+.c4{background:#ffe0e0;color:#c02020;}
+.c5{background:#fff3c0;color:#906000;}
+.c6{background:#f0d4e8;color:#902060;}
+.c7{background:#d4ecd8;color:#206030;}
+
+/* Bloktijden */
+.apt.bloktijd{background:repeating-linear-gradient(-45deg,#f0ece6,#f0ece6 4px,#e8e2db 4px,#e8e2db 8px) !important;color:var(--mu) !important;border:1px solid var(--bd2);}
+.apt.bloktijd .apt-n{color:var(--ink);font-weight:500;}
+
+/* Geannuleerd */
+.apt.geannuleerd{opacity:.45;}
+.apt.geannuleerd .apt-n{text-decoration:line-through;}
 
 /* Now line */
 .now-line{position:absolute;left:0;right:0;height:2px;background:#e05050;z-index:6;pointer-events:none;}
 .now-line::before{content:'';position:absolute;left:-5px;top:-4px;width:10px;height:10px;border-radius:50%;background:#e05050;}
 
-/* POPUP */
+/* Drag over highlight */
+.gl.drag-over,.day-col.drag-over-col .gl.drag-target{background:rgba(140,109,63,0.12) !important;}
+
+/* ── MAANDWEERGAVE ── */
+.month-grid{display:grid;grid-template-columns:repeat(7,1fr);border-left:1px solid var(--bd);border-top:1px solid var(--bd);}
+.month-head{padding:8px;text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);font-weight:500;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd2);}
+.month-day{min-height:100px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);padding:6px;cursor:pointer;transition:background .1s;position:relative;}
+.month-day:hover{background:var(--iv);}
+.month-day.other-month{background:#f8f5f1;}
+.month-day.today .md-num{background:var(--gd);color:#fff;border-radius:50%;}
+.md-num{width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;margin-bottom:4px;}
+.md-apt{background:var(--gd);color:#fff;border-radius:3px;padding:2px 5px;font-size:10px;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;}
+.md-apt.bloktijd-dot{background:var(--mu2);}
+.md-more{font-size:10px;color:var(--gd);cursor:pointer;font-weight:500;}
+
+/* ── POPUP ── */
 .pop-ov{display:none;position:fixed;inset:0;z-index:300;}
 .pop-ov.on{display:block;}
-.pop{position:fixed;background:var(--wh);border:1px solid var(--bd);border-radius:8px;box-shadow:0 8px 32px rgba(0,0,0,.12);width:280px;z-index:301;padding:18px;}
-.pop-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:4px;}
+.pop{position:fixed;background:var(--wh);border:1px solid var(--bd);border-radius:10px;box-shadow:0 8px 32px rgba(0,0,0,.14);width:300px;z-index:301;padding:20px;}
+.pop-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:6px;}
 .pop-naam{font-size:16px;font-weight:600;}
-.pop-x{width:22px;height:22px;border:none;background:transparent;cursor:pointer;color:var(--mu);font-size:20px;line-height:1;border-radius:4px;}
+.pop-x{width:24px;height:24px;border:none;background:transparent;cursor:pointer;color:var(--mu);font-size:20px;line-height:1;border-radius:4px;display:flex;align-items:center;justify-content:center;}
 .pop-x:hover{background:var(--iv);}
+.pop-status-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;border-radius:99px;font-size:10px;font-weight:600;letter-spacing:.5px;text-transform:uppercase;margin-bottom:10px;}
 .pop-datum{font-size:12px;color:var(--mu);margin-bottom:14px;}
-.pop-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:13px;}
+.pop-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd);font-size:13px;}
 .pop-row:last-of-type{border-bottom:none;}
 .pop-row svg{width:14px;height:14px;color:var(--mu2);flex-shrink:0;}
 .pop-actions{display:flex;align-items:center;gap:6px;margin-top:14px;padding-top:12px;border-top:1px solid var(--bd);}
-.pop-btn{width:34px;height:34px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;}
+.pop-btn{width:34px;height:34px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:6px;transition:background .15s;}
 .pop-btn:hover{background:var(--iv);}
 .pop-btn svg{width:14px;height:14px;color:var(--mu);}
-.pop-meer{margin-left:auto;padding:7px 14px;border:1px solid var(--bd);background:var(--wh);font-size:12px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;border-radius:6px;}
-.pop-meer:hover{background:var(--iv);}
+.pop-btn.danger:hover{background:#fff0f0;}
+.pop-btn.danger svg{color:#c02020;}
+.pop-status-select{margin-left:auto;padding:6px 10px;border:1px solid var(--bd);background:var(--wh);font-size:11px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;border-radius:6px;color:var(--ink);}
 
-/* MODAL */
-.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;align-items:flex-end;justify-content:center;}
+/* ── MODALS ── */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;justify-content:center;align-items:flex-end;}
 .modal-bg.on{display:flex;}
 @media(min-width:600px){.modal-bg{align-items:center;}}
-.modal{background:var(--wh);width:100%;max-width:480px;padding:24px;border-radius:12px 12px 0 0;}
+.modal{background:var(--wh);width:100%;max-width:520px;padding:24px;border-radius:12px 12px 0 0;max-height:90vh;overflow-y:auto;}
 @media(min-width:600px){.modal{border-radius:12px;}}
-.mo-title{font-size:18px;font-weight:600;margin-bottom:16px;}
+.modal-title{font-size:17px;font-weight:600;margin-bottom:4px;}
+.modal-sub{font-size:12px;color:var(--mu);margin-bottom:20px;}
 .fr{margin-bottom:12px;}
 .fl{font-size:11px;font-weight:500;color:var(--mu);margin-bottom:5px;display:block;}
-.fi-inp{width:100%;background:var(--iv);border:1px solid var(--bd);border-radius:6px;padding:10px 12px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;-webkit-appearance:none;}
-.fi-inp:focus{border-color:var(--gd);}
+.fi{width:100%;background:var(--iv);border:1px solid var(--bd);border-radius:6px;padding:10px 12px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color .15s;-webkit-appearance:none;}
+.fi:focus{border-color:var(--gd);}
+.fi::placeholder{color:var(--mu2);}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.mo-btn{width:100%;padding:12px;background:var(--ink);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.mo-btn{width:100%;padding:12px;background:var(--ink);color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background .15s;}
 .mo-btn:hover{background:#2d2520;}
 .mo-btn:disabled{opacity:.4;}
+.mo-btn-sec{width:100%;padding:11px;background:transparent;color:var(--mu);border:1px solid var(--bd);border-radius:6px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+.modal-tabs{display:flex;gap:0;border:1px solid var(--bd);border-radius:6px;overflow:hidden;margin-bottom:20px;}
+.mtab{flex:1;padding:8px;text-align:center;font-size:12px;font-weight:500;color:var(--mu);cursor:pointer;border:none;background:transparent;font-family:'Inter',sans-serif;border-right:1px solid var(--bd);transition:all .15s;}
+.mtab:last-child{border-right:none;}
+.mtab.on{background:var(--ink);color:#fff;}
+.dienst-row{display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--bd);border-radius:6px;margin-bottom:6px;background:var(--iv);}
+.dienst-row-naam{flex:1;font-size:13px;}
+.dienst-row-del{width:24px;height:24px;border:none;background:transparent;cursor:pointer;color:var(--mu2);font-size:16px;display:flex;align-items:center;justify-content:center;}
 
-/* MOB OVERLAY */
+/* Conflict modal */
+.conflict-modal{background:var(--wh);width:100%;max-width:400px;padding:24px;border-radius:12px;border-top:3px solid #c02020;}
+.conflict-title{font-size:16px;font-weight:600;color:#c02020;margin-bottom:8px;}
+.conflict-info{font-size:13px;color:var(--mu);margin-bottom:16px;line-height:1.6;}
+.conflict-btns{display:flex;gap:8px;}
+.cbtn{flex:1;padding:11px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;border:none;transition:all .15s;}
+.cbtn-cancel{background:var(--iv);color:var(--mu);border:1px solid var(--bd);}
+.cbtn-force{background:#c02020;color:#fff;}
+
+/* Toast */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:500;z-index:500;opacity:0;transition:opacity .25s;pointer-events:none;white-space:nowrap;}
+.toast.on{opacity:1;}
+
+/* Mob */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:90;}
 .ov.on{display:block;}
 .sb-mob{position:fixed;left:-100%;top:0;bottom:0;width:220px;background:#1a1714;z-index:91;display:flex;flex-direction:column;transition:left .25s;padding:16px 12px;}
@@ -158,20 +229,18 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 .mob-item{display:flex;align-items:center;gap:10px;padding:10px;color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;border-radius:8px;margin-bottom:2px;border-left:2px solid transparent;}
 .mob-item.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
 .mob-item svg{width:16px;height:16px;flex-shrink:0;}
-.mob-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;display:flex;align-items:center;gap:10px;}
+.mob-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
 
+/* Responsive */
+@media(max-width:900px){.search-inp{width:140px;}.vtabs .vt{padding:6px 8px;font-size:10px;}}
 @media(max-width:768px){
-  .sidebar{display:none;}
-  .main{margin-left:0;}
+  .sidebar{display:none;}.main{margin-left:0;}
   .hbg{display:flex;}
-  .tb-title{display:none;}
-  .chd{min-width:72px;}
-  .day-col{min-width:72px;}
-}
-@media(max-width:480px){
-  .vtabs{display:none;}
-  .fw{display:none;}
-  .td{min-width:64px;font-size:12px;}
+  .tb-title,.search-wrap{display:none;}
+  .vtabs{overflow-x:auto;scrollbar-width:none;}
+  .vtabs::-webkit-scrollbar{display:none;}
+  .vt{padding:6px 8px;font-size:10px;flex-shrink:0;}
+  .chd{min-width:72px;}.day-col{min-width:72px;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -180,19 +249,20 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 <body>
 <div class="app">
 
+<!-- Sidebar -->
 <aside class="sidebar">
   <a href="dashboard.html" class="sb-logo">P</a>
-  <a href="dashboard.html" class="si" title="Dashboard"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></a>
-  <a href="agenda.html" class="si on" title="Agenda"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></a>
-  <a href="klanten.html" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></a>
-  <a href="kassa.html" class="si" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></a>
-  <a href="medewerkers.html" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></a>
-  <a href="diensten.html" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg></a>
-  <a href="rapportages.html" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></a>
-  <a href="boeken.html" class="si" title="Online boeken"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></a>
+  <a href="dashboard.html" class="si"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></a>
+  <a href="agenda.html" class="si on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></a>
+  <a href="klanten.html" class="si"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></a>
+  <a href="kassa.html" class="si"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></a>
+  <a href="medewerkers.html" class="si"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></a>
+  <a href="diensten.html" class="si"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg></a>
+  <a href="rapportages.html" class="si"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></a>
   <div class="sb-foot"><div class="sb-av salon-init" onclick="uitloggen()">??</div></div>
 </aside>
 
+<!-- Mob overlay -->
 <div class="ov" id="ov" onclick="closeSB()"></div>
 <div class="sb-mob" id="sb">
   <div class="mob-logo">Planr<em>.</em><button class="mob-x" onclick="closeSB()">✕</button></div>
@@ -201,31 +271,43 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
   <a href="klanten.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
   <a href="kassa.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
   <a href="rapportages.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
-  <div class="mob-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam">Laden...</div><div style="font-size:11px">Uitloggen</div></div></div>
+  <div class="mob-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
 </div>
 
 <div class="main">
+  <!-- Topbar -->
   <div class="topbar">
     <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div class="tb-title">Agenda</div>
-    <div class="tb-sp"></div>
-    <div class="vtabs">
-      <button class="vt" id="vt-d" onclick="setView('day')">Dag</button>
-      <button class="vt on" id="vt-w" onclick="setView('week')">Week</button>
+    <!-- Zoeken -->
+    <div class="search-wrap">
+      <div class="search-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></div>
+      <input class="search-inp" id="search-inp" placeholder="Zoek klant..." oninput="doSearch(this.value)" onfocus="toggleSearch(true)" onblur="setTimeout(()=>toggleSearch(false),200)">
+      <div class="search-results" id="search-results"></div>
     </div>
+    <div class="tb-sp"></div>
+
+    <!-- Nav + filter -->
     <div class="tb-nav">
       <button class="ta" onclick="prev()">‹</button>
-      <span class="td" id="td" onclick="goToday()" title="Klik voor vandaag" style="cursor:pointer;"></span>
+      <div style="display:flex;flex-direction:column;align-items:center;min-width:110px;cursor:pointer;" onclick="goToday()">
+        <span style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gd);" id="view-label">Week</span>
+        <span class="td" id="td" style="font-size:12px;font-weight:500;color:var(--ink);"></span>
+      </div>
       <button class="ta" onclick="next()">›</button>
     </div>
     <div class="fw" id="fw">
-      <button class="fb" onclick="toggleFD()"><span id="fl">Toon alles</span><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"/></svg></button>
+      <button class="fb" onclick="toggleFD()" id="filter-btn" title="Filter op medewerker">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0019 4H5a1 1 0 00-.75 1.61z"/></svg>
+        <span id="fl" style="display:none;"></span>
+      </button>
       <div class="fd" id="fd"></div>
     </div>
   </div>
 
+  <!-- Kalender -->
   <div class="cal" id="cal">
-    <div class="cal-inner">
+    <div class="cal-inner" id="cal-inner">
       <div class="cal-row-head">
         <div class="cal-tc-head"></div>
         <div class="cal-days-head" id="cdh"></div>
@@ -242,205 +324,727 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 <!-- Popup -->
 <div class="pop-ov" id="pov" onclick="closePop()">
   <div class="pop" id="pop" onclick="event.stopPropagation()">
-    <div class="pop-head"><div class="pop-naam" id="pn"></div><button class="pop-x" onclick="closePop()">×</button></div>
-    <div class="pop-datum" id="pd"></div>
-    <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span id="ps"></span></div>
-    <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span id="pm"></span></div>
-    <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="pu"></span></div>
+    <div class="pop-head"><div class="pop-naam" id="p-naam"></div><button class="pop-x" onclick="closePop()">×</button></div>
+    <div id="p-status-badge" class="pop-status-badge"></div>
+    <div class="pop-datum" id="p-datum"></div>
+    <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span id="p-svc"></span></div>
+    <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span id="p-med"></span></div>
+    <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="p-dur"></span></div>
+    <div class="pop-row" id="p-notitie-row" style="display:none;"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span id="p-notitie"></span></div>
     <div class="pop-actions">
-      <button class="pop-btn"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
-      <button class="pop-btn"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
-      <button class="pop-meer">Meer</button>
+      <button class="pop-btn" onclick="bewerkHuidige()" title="Bewerken"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="pop-btn danger" onclick="verwijderHuidige()" title="Verwijderen"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
+      <select class="pop-status-select" id="p-status-sel" onchange="updateStatus(this.value)">
+        <option value="gepland">Gepland</option>
+        <option value="bevestigd">Bevestigd</option>
+        <option value="niet_bevestigd">Niet bevestigd</option>
+        <option value="gearriveerd">Gearriveerd</option>
+        <option value="in_behandeling">In behandeling</option>
+        <option value="afgerond">Afgerond</option>
+        <option value="no-show">No-show</option>
+        <option value="geannuleerd">Geannuleerd</option>
+        <option value="verplaatst">Verplaatst</option>
+      </select>
     </div>
   </div>
 </div>
 
-<!-- Modal -->
-<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
+<!-- Nieuwe afspraak modal -->
+<div class="modal-bg" id="modal-apt" onclick="if(event.target===this)closeModal('modal-apt')">
   <div class="modal">
-    <div class="mo-title">Nieuwe afspraak</div>
-    <div class="fr"><label class="fl">Klant</label><input class="fi-inp" id="ik" type="text" placeholder="Naam klant"></div>
-    <div class="fr"><label class="fl">Dienst</label><select class="fi-inp" id="id"><option value="">Kies dienst...</option></select></div>
-    <div class="fg">
-      <div class="fr"><label class="fl">Datum</label><input class="fi-inp" id="idat" type="date"></div>
-      <div class="fr"><label class="fl">Tijd</label><input class="fi-inp" id="itijd" type="time" value="09:00"></div>
+    <div class="modal-title" id="modal-apt-title">Nieuwe afspraak</div>
+    <div class="modal-sub">Klik op een tijdslot om de tijd in te stellen</div>
+    <div class="modal-tabs">
+      <button class="mtab on" onclick="setModalTab('afspraak',this)">Afspraak</button>
+      <button class="mtab" onclick="setModalTab('bloktijd',this)">Bloktijd</button>
     </div>
-    <div class="fr"><label class="fl">Medewerker</label><select class="fi-inp" id="im"><option value="">Geen voorkeur</option></select></div>
-    <button class="mo-btn" id="bsla" onclick="slaOp()">Afspraak opslaan</button>
+    <!-- Afspraak tab -->
+    <div id="tab-afspraak">
+      <div class="fr"><label class="fl">Klant</label><input class="fi" id="ik" type="text" placeholder="Naam klant" autocomplete="off"></div>
+      <div id="diensten-lijst"></div>
+      <button type="button" style="font-size:12px;color:var(--gd);background:none;border:none;cursor:pointer;padding:4px 0;margin-bottom:12px;" onclick="voegDienstToe()">+ Behandeling toevoegen</button>
+      <div class="fg">
+        <div class="fr"><label class="fl">Datum</label><input class="fi" id="idat" type="date"></div>
+        <div class="fr"><label class="fl">Tijd</label><input class="fi" id="itijd" type="time" value="09:00"></div>
+      </div>
+      <div class="fr"><label class="fl">Medewerker</label><select class="fi" id="im"><option value="">Geen voorkeur</option></select></div>
+      <div class="fr"><label class="fl">Status</label>
+        <select class="fi" id="istatus">
+          <option value="gepland">Gepland</option>
+          <option value="bevestigd">Bevestigd</option>
+          <option value="niet_bevestigd">Niet bevestigd</option>
+        </select>
+      </div>
+      <div class="fr"><label class="fl">Herhaling</label>
+        <select class="fi" id="iherhaling">
+          <option value="geen">Geen</option>
+          <option value="dagelijks">Dagelijks</option>
+          <option value="wekelijks">Wekelijks</option>
+          <option value="maandelijks">Maandelijks</option>
+        </select>
+      </div>
+      <div class="fr" id="herhaling-einde-wrap" style="display:none;"><label class="fl">Herhaling t/m</label><input class="fi" id="iherhaling-einde" type="date"></div>
+      <div class="fr"><label class="fl">Notitie</label><input class="fi" id="inotitie" type="text" placeholder="Interne opmerking..."></div>
+    </div>
+    <!-- Bloktijd tab -->
+    <div id="tab-bloktijd" style="display:none;">
+      <div class="fr"><label class="fl">Type bloktijd</label>
+        <select class="fi" id="ibloktijd-type">
+          <option value="pauze">Pauze</option>
+          <option value="lunch">Lunch</option>
+          <option value="vakantie">Vakantie</option>
+          <option value="ziekte">Ziekte</option>
+          <option value="overig">Overig</option>
+        </select>
+      </div>
+      <div class="fg">
+        <div class="fr"><label class="fl">Datum</label><input class="fi" id="iblok-dat" type="date"></div>
+        <div class="fr"><label class="fl">Tijd van</label><input class="fi" id="iblok-van" type="time" value="12:00"></div>
+      </div>
+      <div class="fg">
+        <div class="fr"><label class="fl">Duur (min)</label><input class="fi" id="iblok-duur" type="number" value="60" min="15" step="15"></div>
+        <div class="fr"><label class="fl">Medewerker</label><select class="fi" id="iblok-med"><option value="">Alle</option></select></div>
+      </div>
+      <div class="fr"><label class="fl">Omschrijving</label><input class="fi" id="iblok-omschr" placeholder="bijv. Teamvergadering..." type="text"></div>
+    </div>
+    <button class="mo-btn" id="bsla" onclick="slaOp()">Opslaan</button>
+    <button class="mo-btn-sec" onclick="closeModal('modal-apt')">Annuleren</button>
   </div>
 </div>
+
+<!-- Conflict modal -->
+<div class="modal-bg" id="modal-conflict" onclick="if(event.target===this)closeModal('modal-conflict')">
+  <div class="conflict-modal">
+    <div class="conflict-title">⚠ Conflict gedetecteerd</div>
+    <div class="conflict-info" id="conflict-info"></div>
+    <div class="conflict-btns">
+      <button class="cbtn cbtn-cancel" onclick="closeModal('modal-conflict')">Annuleren</button>
+      <button class="cbtn cbtn-force" onclick="forceSave()">Toch opslaan</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
 
 <script>
-const MNS=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
-const DN=['Zo','Ma','Di','Wo','Do','Vr','Za'];
+// ── CONSTANTEN ──────────────────────────────────────────────────────────────
 const RH=28,SH=6,EH=29;
-let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],filterMed=null;
-cur.setHours(0,0,0,0);
-const dk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const ft=(h,m)=>String(h%24).padStart(2,'0')+':'+String(m).padStart(2,'0');
-function wkStart(d){const c=new Date(d),dy=c.getDay(),df=dy===0?-6:1-dy;c.setDate(c.getDate()+df);c.setHours(0,0,0,0);return c;}
-function getDays(){if(view==='day')return[new Date(cur)];const ws=wkStart(cur);return Array.from({length:7},(_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d;});}
+const MNS=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
+const MNL=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+const DN=['Zo','Ma','Di','Wo','Do','Vr','Za'];
+const STATUS_LABELS={gepland:'Gepland',bevestigd:'Bevestigd',niet_bevestigd:'Niet bevestigd',gearriveerd:'Gearriveerd',in_behandeling:'In behandeling',afgerond:'Afgerond','no-show':'No-show',geannuleerd:'Geannuleerd',verplaatst:'Verplaatst'};
+const STATUS_COLORS={gepland:'#8a7d6e',bevestigd:'#2d6a4f',niet_bevestigd:'#e07020',gearriveerd:'#1a60a8',in_behandeling:'#7c4daa',afgerond:'#888',  'no-show':'#c02020',geannuleerd:'#c02020',verplaatst:'#d08020'};
 
+// ── STATE ───────────────────────────────────────────────────────────────────
+let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[];
+let filterMed=null,modalTab='afspraak',geselecteerdeApt=null,pendingSave=null;
+let geselecteerdeDiensten=[];
+cur.setHours(0,0,0,0);
+
+// ── HELPERS ─────────────────────────────────────────────────────────────────
+const dk=d=>d.getFullYear()+'-'+S2(d.getMonth()+1)+'-'+S2(d.getDate());
+const S2=n=>String(n).padStart(2,'0');
+const ft=(h,m)=>S2(h%24)+':'+S2(m);
+function wkStart(d){const c=new Date(d),dy=c.getDay(),df=dy===0?-6:1-dy;c.setDate(c.getDate()+df);c.setHours(0,0,0,0);return c;}
+function maandStart(d){return new Date(d.getFullYear(),d.getMonth(),1);}
+function toast(msg,dur=2500){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(()=>t.classList.remove('on'),dur);}
+
+function getDays(){
+  if(view==='day') return[new Date(cur)];
+  if(view==='month'){const s=maandStart(cur);const days=[];const first=s.getDay()||7;for(let i=1-first;i<42-first;i++){const d=new Date(s);d.setDate(s.getDate()+i);days.push(d);}return days;}
+  if(view==='medewerker') return[new Date(cur)];
+  const ws=wkStart(cur);
+  const len=view==='werkweek'?5:7;
+  return Array.from({length:len},(_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d;});
+}
+
+// ── DATA LADEN ───────────────────────────────────────────────────────────────
 async function loadData(){
-  const s=new Date();s.setDate(s.getDate()-14);s.setHours(0,0,0,0);
-  const e=new Date();e.setDate(e.getDate()+60);
+  const s=new Date(cur);s.setDate(s.getDate()-60);
+  const e=new Date(cur);e.setDate(e.getDate()+90);
   const[aR,mR,dR]=await Promise.all([
-    sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
+    sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs,duur_min)').eq('salon_id',SALON_ID).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
     sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true)
   ]);
   APTS=aR.data||[];MEDS=mR.data||[];DIENSTEN=dR.data||[];
-  document.getElementById('id').innerHTML='<option value="">Kies dienst...</option>'+DIENSTEN.map(d=>`<option value="${d.id}">${d.naam} — €${d.prijs}</option>`).join('');
-  document.getElementById('im').innerHTML='<option value="">Geen voorkeur</option>'+MEDS.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
-  const nm=document.querySelector('.salon-naam')?.textContent||'';
-  const ini=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??';
+  // Herhaalafspraken uitbreiden
+  APTS=expandHerhaling(APTS);
+  // Medewerker selects vullen
+  const medOpts='<option value="">Geen voorkeur</option>'+MEDS.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
+  document.getElementById('im').innerHTML=medOpts;
+  document.getElementById('iblok-med').innerHTML='<option value="">Alle medewerkers</option>'+MEDS.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
+  const ini=(document.querySelector('.salon-naam')?.textContent||'').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=ini);
   render();
 }
 
+// Herhaalafspraken expanderen voor render periode
+function expandHerhaling(apts){
+  const result=[...apts];
+  apts.filter(a=>a.herhaling&&a.herhaling!=='geen').forEach(a=>{
+    const orig=new Date(a.datum_tijd);
+    const einde=a.herhaling_einde?new Date(a.herhaling_einde):new Date(cur.getFullYear(),cur.getMonth()+2,0);
+    let next=new Date(orig);
+    for(let i=0;i<200;i++){
+      if(a.herhaling==='dagelijks') next.setDate(next.getDate()+1);
+      else if(a.herhaling==='wekelijks') next.setDate(next.getDate()+7);
+      else if(a.herhaling==='maandelijks') next.setMonth(next.getMonth()+1);
+      if(next>einde) break;
+      result.push({...a,datum_tijd:next.toISOString(),_herhaald:true,id:a.id+'_'+i});
+    }
+  });
+  return result;
+}
+
+// ── RENDER ───────────────────────────────────────────────────────────────────
 function render(){
+  if(view==='month'){renderMaand();return;}
+  if(view==='medewerker'){renderMedewerker();return;}
+  renderGrid();
+}
+
+function renderGrid(){
   const days=getDays();
   const today=new Date();today.setHours(0,0,0,0);
   const now=new Date();
 
-  // Datum label
-  if(view==='day') document.getElementById('td').textContent=DN[cur.getDay()]+' '+cur.getDate()+' '+MNS[cur.getMonth()];
-  else{const ws=days[0],we=days[6];document.getElementById('td').textContent=ws.getDate()+' '+MNS[ws.getMonth()]+' – '+we.getDate()+' '+MNS[we.getMonth()];}
+  // Datum label topbar
+  const labels={day:DN[cur.getDay()]+' '+cur.getDate()+' '+MNS[cur.getMonth()],werkweek:'',week:'',medewerker:''};
+  if(view==='week'||view==='werkweek'){const ws=days[0],we=days[days.length-1];labels[view]=ws.getDate()+' '+MNS[ws.getMonth()]+' – '+we.getDate()+' '+MNS[we.getMonth()];}
+  document.getElementById('td').textContent=labels[view]||labels.day;
 
   // Dag headers
   document.getElementById('cdh').innerHTML=days.map(d=>{
     const isToday=d.getTime()===today.getTime();
-    const cnt=APTS.filter(a=>a.datum_tijd.startsWith(dk(d))&&(!filterMed||a.medewerker_id===filterMed)).length;
+    const cnt=getApts(d).length;
     return`<div class="chd${isToday?' today':''}" onclick="clickDay('${dk(d)}')"><div class="dn">${DN[d.getDay()]}</div><div class="dd">${d.getDate()}</div><div class="dc">${cnt?cnt+'×':''}</div></div>`;
   }).join('');
 
   // Tijdkolom
   const tc=document.getElementById('ctc');tc.innerHTML='';
-  for(let h=SH;h<=EH;h++){for(let q=0;q<4;q++){const r=document.createElement('div');r.className='tr'+(q===0?'':q===3?' q gh':' q');const s=document.createElement('span');s.className='tl';s.textContent=ft(h,q*15);r.appendChild(s);tc.appendChild(r);}}
+  for(let h=SH;h<=EH;h++){
+    for(let q=0;q<4;q++){
+      const r=document.createElement('div');
+      r.className='tr'+(q===0?'':q===3?' q gh':' q');
+      const s=document.createElement('span');s.className='tl';s.textContent=ft(h,q*15);
+      r.appendChild(s);tc.appendChild(r);
+    }
+  }
 
   // Dag kolommen
   const dc=document.getElementById('cdb');dc.innerHTML='';
+  const slots=(EH-SH+1)*4;
   days.forEach((d,di)=>{
-    const key=dk(d);
-    const isToday=d.getTime()===today.getTime();
-    const dayApts=APTS.filter(a=>a.datum_tijd.startsWith(key)&&(!filterMed||a.medewerker_id===filterMed));
+    const col=buildDayCol(d,slots,today,now,di);
+    dc.appendChild(col);
+  });
+
+  document.getElementById('cal').scrollTop=((9-SH)*4)*RH;
+}
+
+function buildDayCol(d,slots,today,now,di){
+  const key=dk(d);
+  const isToday=d.getTime()===today.getTime();
+  const col=document.createElement('div');
+  col.className='day-col'+(isToday?' tod':'');
+  col.dataset.date=key;
+
+  // Grid lijnen
+  for(let s=0;s<slots;s++){
+    const gl=document.createElement('div');
+    gl.className='gl'+(s%4===3?' gh':'');
+    gl.dataset.slot=s;
+    const sh=SH+Math.floor(s/4),sm=(s%4)*15;
+    gl.onclick=()=>{openNieuw(key,ft(sh,sm));};
+    // Drag over target
+    gl.addEventListener('dragover',e=>{e.preventDefault();gl.classList.add('drag-over');});
+    gl.addEventListener('dragleave',()=>gl.classList.remove('drag-over'));
+    gl.addEventListener('drop',e=>{e.preventDefault();gl.classList.remove('drag-over');onDrop(key,sh,sm,e);});
+    col.appendChild(gl);
+  }
+
+  // Now line
+  if(isToday&&now.getHours()>=SH&&now.getHours()<=EH){
+    const nl=document.createElement('div');nl.className='now-line';
+    nl.style.top=((now.getHours()-SH)*60+now.getMinutes())/15*RH+'px';
+    col.appendChild(nl);
+  }
+
+  // Afspraken
+  getApts(d).forEach((a,i)=>{col.appendChild(buildAptCard(a,i));});
+  return col;
+}
+
+function getApts(d){
+  const key=dk(d);
+  return APTS.filter(a=>a.datum_tijd.startsWith(key)&&(!filterMed||a.medewerker_id===filterMed));
+}
+
+function buildAptCard(a,i){
+  const dt=new Date(a.datum_tijd);
+  const ah=dt.getHours(),am=dt.getMinutes(),dur=a.duur_min||45;
+  if(ah<SH||ah>EH) return document.createTextNode('');
+  const tp=((ah-SH)*60+am)/15*RH;
+  const hp=Math.max(dur/15*RH,RH*1.5);
+  const eh=Math.floor(ah+(am+dur)/60),em=(am+dur)%60;
+  const naam=a.klant_naam||'Bloktijd';
+  const sv=a.type==='bloktijd'?(a.bloktijd_type||'Bloktijd'):(a.diensten?.naam||'');
+  const status=a.status||'gepland';
+  const isBloktijd=a.type==='bloktijd';
+
+  const card=document.createElement('div');
+  card.className=`apt c${i%8}${isBloktijd?' bloktijd':''}${status==='geannuleerd'?' geannuleerd':''}`;
+  card.style.top=tp+'px';card.style.height=hp+'px';
+  card.draggable=!a._herhaald;
+
+  // Status badge indien groter
+  const statusHtml=hp>52?`<div class="apt-status" style="color:${STATUS_COLORS[status]}">${STATUS_LABELS[status]}</div>`:'';
+  card.innerHTML=`<div class="apt-t">${ft(ah,am)} – ${ft(eh,em)}</div><div class="apt-n">${naam}</div>${hp>40&&sv?`<div class="apt-s">${sv}</div>`:''}${statusHtml}`;
+
+  card.onclick=e=>{e.stopPropagation();showPop(a,card);};
+
+  // Drag & drop
+  card.addEventListener('dragstart',e=>{
+    card.classList.add('dragging');
+    e.dataTransfer.setData('text/plain',a.id);
+    e.dataTransfer.effectAllowed='move';
+  });
+  card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+
+  return card;
+}
+
+// ── MAANDWEERGAVE ────────────────────────────────────────────────────────────
+function renderMaand(){
+  document.getElementById('td').textContent=MNL[cur.getMonth()]+' '+cur.getFullYear();
+  const days=getDays();
+  const today=new Date();today.setHours(0,0,0,0);
+  const curM=cur.getMonth();
+
+  // Verberg tijdkolom
+  document.getElementById('ctc').innerHTML='';
+  document.getElementById('cdh').innerHTML='';
+
+  const inner=document.getElementById('cal-inner');
+  inner.innerHTML=`
+    <div class="month-grid" style="width:100%;">
+      ${DN.slice(1).concat(DN[0]).map(d=>`<div class="month-head">${d}</div>`).join('')}
+      ${days.map(d=>{
+        const isToday=d.getTime()===today.getTime();
+        const isOther=d.getMonth()!==curM;
+        const dayApts=APTS.filter(a=>a.datum_tijd.startsWith(dk(d))&&(!filterMed||a.medewerker_id===filterMed));
+        const visible=dayApts.slice(0,3);
+        const rest=dayApts.length-3;
+        return`<div class="month-day${isOther?' other-month':''}${isToday?' today':''}" onclick="clickDay('${dk(d)}')">
+          <div class="md-num">${d.getDate()}</div>
+          ${visible.map(a=>`<div class="md-apt${a.type==='bloktijd'?' bloktijd-dot':''}" onclick="event.stopPropagation();showPop(a_${a.id.replace(/-/g,'_')},null)">${a.klant_naam||a.bloktijd_type||'Bloktijd'}</div>`).join('')}
+          ${rest>0?`<div class="md-more">+${rest} meer</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>`;
+
+  // Bewaar refs voor popup clicks
+  APTS.forEach(a=>{window['a_'+a.id.replace(/-/g,'_')]=a;});
+}
+
+// ── MEDEWERKERWEERGAVE ───────────────────────────────────────────────────────
+function renderMedewerker(){
+  document.getElementById('td').textContent=DN[cur.getDay()]+' '+cur.getDate()+' '+MNS[cur.getMonth()];
+  const today=new Date();today.setHours(0,0,0,0);
+  const now=new Date();
+  const key=dk(cur);
+  const cols=MEDS.length?MEDS:[{id:null,naam:'Geen medewerkers',rol:''}];
+
+  // Headers: medewerker namen
+  document.getElementById('cdh').innerHTML=cols.map(m=>`
+    <div class="chd" style="min-width:110px;">
+      <div class="dn" style="font-size:11px;letter-spacing:0;">${m.naam}</div>
+      <div style="font-size:10px;color:var(--mu2);margin-top:2px;">${m.rol||''}</div>
+    </div>`).join('');
+
+  // Tijdkolom
+  const tc=document.getElementById('ctc');tc.innerHTML='';
+  for(let h=SH;h<=EH;h++){
+    for(let q=0;q<4;q++){
+      const r=document.createElement('div');
+      r.className='tr'+(q===0?'':q===3?' q gh':' q');
+      const s=document.createElement('span');s.className='tl';s.textContent=ft(h,q*15);
+      r.appendChild(s);tc.appendChild(r);
+    }
+  }
+
+  const dc=document.getElementById('cdb');dc.innerHTML='';
+  const slots=(EH-SH+1)*4;
+  cols.forEach((m,mi)=>{
     const col=document.createElement('div');
-    col.className='day-col'+(isToday?' tod':'');
-    const slots=(EH-SH+1)*4; // 96 slots: 06:00 t/m 05:45
+    col.className='day-col'+(cur.getTime()===today.getTime()?' tod':'');
+    col.style.minWidth='110px';
+    col.dataset.date=key;
+
     for(let s=0;s<slots;s++){
       const gl=document.createElement('div');
       gl.className='gl'+(s%4===3?' gh':'');
       const sh=SH+Math.floor(s/4),sm=(s%4)*15;
-      gl.onclick=()=>{document.getElementById('idat').value=key;document.getElementById('itijd').value=ft(sh,sm);openModal();};
+      gl.onclick=()=>{openNieuw(key,ft(sh,sm),m.id);};
       col.appendChild(gl);
     }
-    if(isToday&&now.getHours()>=SH&&now.getHours()<=EH){
+
+    if(cur.getTime()===today.getTime()&&now.getHours()>=SH){
       const nl=document.createElement('div');nl.className='now-line';
       nl.style.top=((now.getHours()-SH)*60+now.getMinutes())/15*RH+'px';
       col.appendChild(nl);
     }
-    dayApts.forEach((a,i)=>{
-      const dt=new Date(a.datum_tijd);
-      const ah=dt.getHours(),am=dt.getMinutes(),dur=a.duur_min||45;
-      if(ah<SH||ah>EH)return;
-      const tp=((ah-SH)*60+am)/15*RH;
-      const hp=Math.max(dur/15*RH,RH*2);
-      const eh=Math.floor(ah+(am+dur)/60),em=(am+dur)%60;
-      const card=document.createElement('div');
-      card.className=`apt c${i%8}`;
-      card.style.top=tp+'px';card.style.height=hp+'px';
-      card.innerHTML=`<div class="apt-t">${ft(ah,am)} – ${ft(eh,em)}</div><div class="apt-n">${a.klant_naam||'Onbekend'}</div>${hp>52&&a.diensten?.naam?`<div class="apt-s">${a.diensten.naam}</div>`:''}`;
-      card.onclick=e=>{e.stopPropagation();showPop(a,card);};
-      col.appendChild(card);
+
+    APTS.filter(a=>a.datum_tijd.startsWith(key)&&a.medewerker_id===m.id).forEach((a,i)=>{
+      col.appendChild(buildAptCard(a,i));
     });
     dc.appendChild(col);
   });
 
-  // Scroll naar 8u
-  const cal=document.getElementById('cal');
-  cal.scrollTop=((9-SH)*4)*RH;
+  document.getElementById('cal').scrollTop=((9-SH)*4)*RH;
 }
 
+// ── DRAG & DROP ──────────────────────────────────────────────────────────────
+async function onDrop(key,h,m,e){
+  const id=e.dataTransfer.getData('text/plain');
+  const apt=APTS.find(a=>a.id===id);
+  if(!apt) return;
+  const dt=new Date(key+'T'+ft(h,m));
+  // Conflict check
+  const conflict=checkConflict(apt.medewerker_id,dt,apt.duur_min||45,id);
+  if(conflict){toast(`Conflict: ${conflict.klant_naam} staat al ingepland om ${ft(new Date(conflict.datum_tijd).getHours(),new Date(conflict.datum_tijd).getMinutes())}`,3500);return;}
+  await sb.from('afspraken').update({datum_tijd:dt.toISOString()}).eq('id',id);
+  await loadData();
+  toast('Afspraak verplaatst naar '+ft(h,m));
+}
+
+// ── CONFLICT DETECTIE ────────────────────────────────────────────────────────
+function checkConflict(medId,start,dur,skipId){
+  if(!medId) return null;
+  const end=new Date(start.getTime()+dur*60000);
+  return APTS.find(a=>{
+    if(a.id===skipId||a.medewerker_id!==medId||a._herhaald) return false;
+    const as=new Date(a.datum_tijd);
+    const ae=new Date(as.getTime()+(a.duur_min||45)*60000);
+    return start<ae&&end>as;
+  })||null;
+}
+
+// ── ZOEKEN ───────────────────────────────────────────────────────────────────
+let searchTimeout;
+function doSearch(q){
+  clearTimeout(searchTimeout);
+  if(!q.trim()){document.getElementById('search-results').innerHTML='';return;}
+  searchTimeout=setTimeout(()=>{
+    const res=APTS.filter(a=>(a.klant_naam||'').toLowerCase().includes(q.toLowerCase())||(a.diensten?.naam||'').toLowerCase().includes(q.toLowerCase())).slice(0,8);
+    const el=document.getElementById('search-results');
+    if(!res.length){el.innerHTML='<div class="sr-empty">Geen resultaten</div>';return;}
+    el.innerHTML=res.map(a=>{
+      const dt=new Date(a.datum_tijd);
+      return`<div class="sr-item" onclick="springNaarApt('${a.datum_tijd}')">
+        <div class="sr-naam">${a.klant_naam||'Onbekend'}</div>
+        <div class="sr-meta">${DN[dt.getDay()]} ${dt.getDate()} ${MNS[dt.getMonth()]} · ${ft(dt.getHours(),dt.getMinutes())} · ${a.diensten?.naam||''}</div>
+      </div>`;
+    }).join('');
+  },200);
+}
+function toggleSearch(on){document.getElementById('search-results').classList.toggle('on',on);}
+function springNaarApt(dt){
+  cur=new Date(dt);cur.setHours(0,0,0,0);
+  setView('day');
+  document.getElementById('search-inp').value='';
+  document.getElementById('search-results').classList.remove('on');
+}
+
+// ── POPUP ────────────────────────────────────────────────────────────────────
 function showPop(a,card){
+  geselecteerdeApt=a;
   const dt=new Date(a.datum_tijd);
   const ah=dt.getHours(),am=dt.getMinutes(),dur=a.duur_min||45;
   const eh=Math.floor(ah+(am+dur)/60),em=(am+dur)%60;
   const dag=dt.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
-  document.getElementById('pn').textContent=a.klant_naam||'Onbekend';
-  document.getElementById('pd').textContent=dag.charAt(0).toUpperCase()+dag.slice(1)+', '+ft(ah,am)+' – '+ft(eh,em);
-  document.getElementById('ps').textContent=a.diensten?.naam||'—';
-  document.getElementById('pm').textContent=a.medewerkers?.naam||'—';
-  document.getElementById('pu').textContent=dur+' minuten';
-  const pop=document.getElementById('pop');
-  const r=card.getBoundingClientRect();
-  let l=r.right+10,t=r.top;
-  if(l+290>window.innerWidth)l=r.left-300;
-  if(t+220>window.innerHeight)t=window.innerHeight-230;
-  if(t<8)t=8;
-  pop.style.left=Math.max(8,l)+'px';pop.style.top=t+'px';
+  const status=a.status||'gepland';
+
+  document.getElementById('p-naam').textContent=a.klant_naam||a.bloktijd_type||'Bloktijd';
+  document.getElementById('p-datum').textContent=dag.charAt(0).toUpperCase()+dag.slice(1)+', '+ft(ah,am)+' – '+ft(eh,em);
+  document.getElementById('p-svc').textContent=a.diensten?.naam||a.bloktijd_type||'—';
+  document.getElementById('p-med').textContent=a.medewerkers?.naam||'—';
+  document.getElementById('p-dur').textContent=dur+' minuten';
+  const notitie=a.notities||a.interne_opmerking||'';
+  document.getElementById('p-notitie-row').style.display=notitie?'':'none';
+  document.getElementById('p-notitie').textContent=notitie;
+  document.getElementById('p-status-sel').value=status;
+
+  const badge=document.getElementById('p-status-badge');
+  badge.textContent=STATUS_LABELS[status]||status;
+  badge.style.background=STATUS_COLORS[status]+'22';
+  badge.style.color=STATUS_COLORS[status];
+
+  if(card){
+    const pop=document.getElementById('pop');
+    const r=card.getBoundingClientRect();
+    let l=r.right+10,t=r.top;
+    if(l+310>window.innerWidth)l=r.left-320;
+    if(l<8)l=8;
+    if(t+280>window.innerHeight)t=window.innerHeight-290;
+    if(t<8)t=8;
+    pop.style.left=l+'px';pop.style.top=t+'px';
+  } else {
+    const pop=document.getElementById('pop');
+    pop.style.left='50%';pop.style.top='50%';
+    pop.style.transform='translate(-50%,-50%)';
+  }
   document.getElementById('pov').classList.add('on');
 }
-function closePop(){document.getElementById('pov').classList.remove('on');}
-
-function setView(v){
-  view=v;
-  document.getElementById('vt-d').classList.toggle('on',v==='day');
-  document.getElementById('vt-w').classList.toggle('on',v==='week');
-  render();
+function closePop(){
+  document.getElementById('pov').classList.remove('on');
+  document.getElementById('pop').style.transform='';
 }
-function goToday(){cur=new Date();cur.setHours(0,0,0,0);render();}
-function clickDay(k){cur=new Date(k);cur.setHours(0,0,0,0);setView('day');}
-function prev(){cur.setDate(cur.getDate()-(view==='day'?1:7));render();}
-function next(){cur.setDate(cur.getDate()+(view==='day'?1:7));render();}
 
+async function updateStatus(val){
+  if(!geselecteerdeApt) return;
+  await sb.from('afspraken').update({status:val}).eq('id',geselecteerdeApt.id);
+  geselecteerdeApt.status=val;
+  toast('Status bijgewerkt: '+STATUS_LABELS[val]);
+  closePop();
+  await loadData();
+}
+
+async function verwijderHuidige(){
+  if(!geselecteerdeApt||!confirm('Afspraak verwijderen?')) return;
+  await sb.from('afspraken').delete().eq('id',geselecteerdeApt.id);
+  closePop();await loadData();toast('Afspraak verwijderd');
+}
+
+function bewerkHuidige(){
+  if(!geselecteerdeApt) return;
+  const a=geselecteerdeApt;
+  const dt=new Date(a.datum_tijd);
+  document.getElementById('ik').value=a.klant_naam||'';
+  document.getElementById('idat').value=dk(dt);
+  document.getElementById('itijd').value=ft(dt.getHours(),dt.getMinutes());
+  document.getElementById('im').value=a.medewerker_id||'';
+  document.getElementById('istatus').value=a.status||'gepland';
+  document.getElementById('inotitie').value=a.notities||'';
+  closePop();
+  openModal('modal-apt');
+}
+
+// ── NIEUWE AFSPRAAK ───────────────────────────────────────────────────────────
+function openNieuw(date,time,medId=''){
+  geselecteerdeApt=null;
+  geselecteerdeDiensten=[];
+  renderDienstenLijst();
+  document.getElementById('ik').value='';
+  document.getElementById('idat').value=date||dk(cur);
+  document.getElementById('itijd').value=time||'09:00';
+  document.getElementById('im').value=medId||'';
+  document.getElementById('istatus').value='gepland';
+  document.getElementById('inotitie').value='';
+  document.getElementById('iherhaling').value='geen';
+  document.getElementById('herhaling-einde-wrap').style.display='none';
+  document.getElementById('iblok-dat').value=date||dk(cur);
+  document.getElementById('iblok-van').value=time||'09:00';
+  openModal('modal-apt');
+}
+
+function setModalTab(tab,btn){
+  modalTab=tab;
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  document.getElementById('tab-afspraak').style.display=tab==='afspraak'?'':'none';
+  document.getElementById('tab-bloktijd').style.display=tab==='bloktijd'?'':'none';
+}
+
+function voegDienstToe(){
+  geselecteerdeDiensten.push({dienst_id:'',naam:'',prijs:0,duur_min:30});
+  renderDienstenLijst();
+}
+
+function renderDienstenLijst(){
+  const el=document.getElementById('diensten-lijst');
+  el.innerHTML=geselecteerdeDiensten.map((d,i)=>`
+    <div class="dienst-row">
+      <select class="fi" style="flex:1;" onchange="selectDienst(${i},this.value)">
+        <option value="">Kies behandeling...</option>
+        ${DIENSTEN.map(ds=>`<option value="${ds.id}" ${d.dienst_id===ds.id?'selected':''}>${ds.naam} — €${ds.prijs} — ${ds.duur_min}min</option>`).join('')}
+      </select>
+      <button class="dienst-row-del" onclick="verwijderDienst(${i})">×</button>
+    </div>`).join('');
+}
+
+function selectDienst(i,id){
+  const d=DIENSTEN.find(x=>x.id===id);
+  if(d) geselecteerdeDiensten[i]={dienst_id:id,naam:d.naam,prijs:d.prijs,duur_min:d.duur_min||30};
+}
+function verwijderDienst(i){geselecteerdeDiensten.splice(i,1);renderDienstenLijst();}
+
+document.getElementById('iherhaling').addEventListener('change',function(){
+  document.getElementById('herhaling-einde-wrap').style.display=this.value!=='geen'?'':'none';
+});
+
+async function slaOp(){
+  if(modalTab==='bloktijd'){await slaBlokOp();return;}
+
+  const naam=document.getElementById('ik').value.trim();
+  const datum=document.getElementById('idat').value;
+  const tijd=document.getElementById('itijd').value;
+  const mId=document.getElementById('im').value;
+  const status=document.getElementById('istatus').value;
+  const herhaling=document.getElementById('iherhaling').value;
+  const herhalingEinde=document.getElementById('iherhaling-einde').value;
+  const notitie=document.getElementById('inotitie').value.trim();
+
+  if(!naam||!datum||!tijd){toast('Vul klant, datum en tijd in.');return;}
+
+  const dt=new Date(datum+'T'+tijd);
+  const eersteD=geselecteerdeDiensten[0];
+  const duur=geselecteerdeDiensten.reduce((s,d)=>s+(d.duur_min||30),0)||45;
+
+  // Conflict check
+  if(mId){
+    const conflict=checkConflict(mId,dt,duur,geselecteerdeApt?.id);
+    if(conflict){
+      document.getElementById('conflict-info').textContent=`${conflict.klant_naam} heeft al een afspraak van ${ft(new Date(conflict.datum_tijd).getHours(),new Date(conflict.datum_tijd).getMinutes())} (${conflict.duur_min||45} min) bij deze medewerker.`;
+      pendingSave={naam,datum,tijd,mId,status,herhaling,herhalingEinde,notitie,duur,eersteD};
+      openModal('modal-conflict');return;
+    }
+  }
+  await doSave({naam,datum,tijd,mId,status,herhaling,herhalingEinde,notitie,duur,eersteD});
+}
+
+async function forceSave(){closeModal('modal-conflict');if(pendingSave)await doSave(pendingSave);}
+
+async function doSave({naam,datum,tijd,mId,status,herhaling,herhalingEinde,notitie,duur,eersteD}){
+  const btn=document.getElementById('bsla');btn.disabled=true;btn.textContent='Opslaan...';
+  const dt=new Date(datum+'T'+tijd);
+  const payload={
+    salon_id:SALON_ID,klant_naam:naam,
+    dienst_id:eersteD?.dienst_id||null,
+    medewerker_id:mId||null,
+    datum_tijd:dt.toISOString(),
+    duur_min:duur,status,
+    herhaling:herhaling!=='geen'?herhaling:null,
+    herhaling_einde:herhalingEinde||null,
+    notities:notitie||null,
+    type:'afspraak'
+  };
+  if(geselecteerdeApt?.id&&!geselecteerdeApt._herhaald){
+    await sb.from('afspraken').update(payload).eq('id',geselecteerdeApt.id);
+    toast('Afspraak bijgewerkt');
+  } else {
+    const{error}=await sb.from('afspraken').insert(payload);
+    if(error){toast('Fout: '+error.message);btn.disabled=false;btn.textContent='Opslaan';return;}
+    toast('Afspraak aangemaakt');
+  }
+  btn.disabled=false;btn.textContent='Opslaan';
+  closeModal('modal-apt');geselecteerdeApt=null;
+  await loadData();
+}
+
+async function slaBlokOp(){
+  const type=document.getElementById('ibloktijd-type').value;
+  const datum=document.getElementById('iblok-dat').value;
+  const van=document.getElementById('iblok-van').value;
+  const duur=parseInt(document.getElementById('iblok-duur').value)||60;
+  const mId=document.getElementById('iblok-med').value;
+  const omschr=document.getElementById('iblok-omschr').value.trim();
+  if(!datum){toast('Vul een datum in.');return;}
+  const dt=new Date(datum+'T'+van);
+  await sb.from('afspraken').insert({salon_id:SALON_ID,klant_naam:type.charAt(0).toUpperCase()+type.slice(1),bloktijd_type:type,type:'bloktijd',medewerker_id:mId||null,datum_tijd:dt.toISOString(),duur_min:duur,notities:omschr||null,status:'bevestigd'});
+  closeModal('modal-apt');await loadData();toast('Bloktijd aangemaakt');
+}
+
+// ── FILTER ───────────────────────────────────────────────────────────────────
 function toggleFD(){
   const fd=document.getElementById('fd');
   if(!fd.classList.contains('on')){
-    const items=[{id:null,naam:'Toon alles',k:null},...MEDS.map(m=>({id:m.id,naam:m.naam,k:m.kleur||'var(--gd)'}))];
-    if(MEDS.length===0){
-      fd.innerHTML=`<div class="fi" style="color:var(--mu2);cursor:default;"><div class="fd-dot" style="background:var(--mu2)"></div>Toon alles</div>
-        <div style="padding:10px 12px;font-size:11px;color:var(--mu2);border-top:1px solid var(--bd);">Nog geen medewerkers.<br><a href="medewerkers.html" style="color:var(--gd);text-decoration:none;">Medewerkers toevoegen →</a></div>`;
-    } else {
-      fd.innerHTML=items.map(m=>`<div class="fi${filterMed===m.id?' sel':''}" onclick="setFilter('${m.id}','${m.naam}',event)"><div class="fd-dot" style="background:${m.k||'var(--mu2)'}"></div>${m.naam}</div>`).join('');
-    }
+    const views=[
+      {id:'day',lbl:'Dag'},
+      {id:'werkweek',lbl:'Werkweek'},
+      {id:'week',lbl:'Week'},
+      {id:'month',lbl:'Maand'},
+      {id:'medewerker',lbl:'Team'},
+    ];
+    const medItems=[{id:null,naam:'Alle medewerkers'},...MEDS.map(m=>({id:m.id,naam:m.naam}))];
+    fd.innerHTML=
+      `<div style="padding:7px 12px 4px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);font-weight:600;">Weergave</div>`+
+      views.map(v=>`<div class="fd-item${view===v.id?' sel':''}" onclick="setViewFD('${v.id}',event)">
+        <div class="fd-dot" style="background:${view===v.id?'var(--gd)':'var(--mu2)'}"></div>${v.lbl}
+      </div>`).join('')+
+      `<div style="padding:7px 12px 4px;margin-top:4px;border-top:1px solid var(--bd);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);font-weight:600;">Medewerker</div>`+
+      medItems.map(m=>`<div class="fd-item${filterMed===m.id?' sel':''}" onclick="setFilter('${m.id}','${m.naam}',event)">
+        <div class="fd-dot" style="background:${m.id?'var(--gd)':'var(--mu2)'}"></div>${m.naam}
+      </div>`).join('');
+    if(!MEDS.length) fd.innerHTML+='<div style="padding:6px 12px 10px;font-size:11px;color:var(--mu2);"><a href="medewerkers.html" style="color:var(--gd);">Medewerkers toevoegen →</a></div>';
   }
   fd.classList.toggle('on');
 }
-function setFilter(id,naam,e){
+
+function setViewFD(v,e){
   e.stopPropagation();
-  filterMed=id==='null'?null:id;
-  document.getElementById('fl').textContent=filterMed?naam:'Toon alles';
+  document.getElementById('fd').classList.remove('on');
+  setView(v);
+}
+function setFilter(id,naam,e){
+  e.stopPropagation();filterMed=id==='null'?null:id;
+  document.getElementById('fl').textContent=filterMed?naam:'';
+  document.getElementById('filter-btn').classList.toggle('actief',!!filterMed);
   document.getElementById('fd').classList.remove('on');
   render();
 }
 document.addEventListener('click',e=>{
-  if(!document.getElementById('fw')?.contains(e.target))
-    document.getElementById('fd')?.classList.remove('on');
+  if(!document.getElementById('fw')?.contains(e.target)) document.getElementById('fd')?.classList.remove('on');
+  if(!document.querySelector('.search-wrap')?.contains(e.target)) document.getElementById('search-results')?.classList.remove('on');
 });
 
-function openModal(){document.getElementById('modal').classList.add('on');document.body.style.overflow='hidden';}
-function closeModal(){document.getElementById('modal').classList.remove('on');document.body.style.overflow='';}
-async function slaOp(){
-  const naam=document.getElementById('ik').value.trim();
-  const dId=document.getElementById('id').value;
-  const datum=document.getElementById('idat').value;
-  const tijd=document.getElementById('itijd').value;
-  const mId=document.getElementById('im').value;
-  if(!naam||!datum||!tijd){alert('Vul klant, datum en tijd in.');return;}
-  const btn=document.getElementById('bsla');btn.disabled=true;btn.textContent='Opslaan...';
-  const dt=new Date(datum+'T'+tijd);
-  const d=DIENSTEN.find(x=>x.id===dId);
-  const{error}=await sb.from('afspraken').insert({salon_id:SALON_ID,klant_naam:naam,dienst_id:dId||null,medewerker_id:mId||null,datum_tijd:dt.toISOString(),duur_min:d?.duur_min||45,status:'gepland'});
-  btn.disabled=false;btn.textContent='Afspraak opslaan';
-  if(error){alert('Fout: '+error.message);return;}
-  document.getElementById('ik').value='';closeModal();await loadData();
+// ── NAVIGATIE ────────────────────────────────────────────────────────────────
+function setView(v){
+  view=v;
+  // view tabs zijn in filter dropdown
+  const map={day:'vt-d',werkweek:'vt-ww',week:'vt-w',month:'vt-m',medewerker:'vt-med'};
+  const vlabels={day:'Dag',werkweek:'Werkweek',week:'Week',month:'Maand',medewerker:'Team'};
+  const lbl=document.getElementById('view-label');if(lbl)lbl.textContent=vlabels[v]||v;
+
+  // Reset cal-inner voor maand vs time views
+  if(v!=='month'){
+    document.getElementById('cal-inner').innerHTML=`
+      <div class="cal-row-head"><div class="cal-tc-head"></div><div class="cal-days-head" id="cdh"></div></div>
+      <div class="cal-row-body" style="padding-bottom:48px;"><div class="cal-tc-body" id="ctc"></div><div class="cal-days-body" id="cdb"></div></div>`;
+  }
+  render();
 }
+
+function goToday(){cur=new Date();cur.setHours(0,0,0,0);render();}
+function clickDay(k){cur=new Date(k);cur.setHours(0,0,0,0);setView('day');}
+function prev(){
+  if(view==='day') cur.setDate(cur.getDate()-1);
+  else if(view==='month') cur.setMonth(cur.getMonth()-1);
+  else cur.setDate(cur.getDate()-(view==='werkweek'?5:7));
+  render();
+}
+function next(){
+  if(view==='day') cur.setDate(cur.getDate()+1);
+  else if(view==='month') cur.setMonth(cur.getMonth()+1);
+  else cur.setDate(cur.getDate()+(view==='werkweek'?5:7));
+  render();
+}
+
+// ── MODALS ───────────────────────────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
+function closeModal(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+
+// ── SIDEBAR ──────────────────────────────────────────────────────────────────
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
 function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
 
-setInterval(()=>{const now=new Date();document.querySelectorAll('.now-line').forEach(nl=>{nl.style.top=((now.getHours()-SH)*60+now.getMinutes())/15*RH+'px';});},30000);
+// ── NOW LINE UPDATE ───────────────────────────────────────────────────────────
+setInterval(()=>{const n=new Date();document.querySelectorAll('.now-line').forEach(nl=>{nl.style.top=((n.getHours()-SH)*60+n.getMinutes())/15*RH+'px';});},30000);
 
-if(typeof planrInit==='function')planrInit(loadData);
+// ── INIT ─────────────────────────────────────────────────────────────────────
+if(typeof planrInit==='function') planrInit(loadData);
 else window.addEventListener('load',()=>{typeof planrInit==='function'?planrInit(loadData):(document.documentElement.style.opacity='1',render());});
 </script>
 </body>
