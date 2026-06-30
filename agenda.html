@@ -78,9 +78,10 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 /* Body rij */
 .cal-row-body{display:flex;flex:1;}
 .cal-tc-body{width:52px;flex-shrink:0;position:sticky;left:0;z-index:10;background:var(--wh);border-right:1px solid var(--bd);}
-.tr{height:var(--rh);display:flex;align-items:flex-start;justify-content:flex-end;padding:2px 7px 0 0;}
+.tr{height:var(--rh);display:flex;align-items:flex-end;justify-content:flex-end;padding:0 7px 3px 0;border-bottom:1px solid #e5ddd5;}
 .tl{font-size:10px;font-weight:600;color:var(--mu);white-space:nowrap;line-height:1;}
 .tr.q .tl{font-size:9px;font-weight:400;color:var(--mu2);}
+.tr.gh{border-bottom:1px solid #c5bdb5;}
 
 .cal-days-body{display:flex;flex:1;}
 .day-col{flex:1;min-width:90px;border-right:1px solid var(--bd);position:relative;background:var(--wh);}
@@ -88,9 +89,9 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 .day-col.tod{background:rgba(140,109,63,0.015);}
 
 /* Grid lijnen */
-.gl{height:var(--rh);border-bottom:1px solid #ddd5cb;cursor:pointer;}
+.gl{height:var(--rh);border-bottom:1px solid #e5ddd5;cursor:pointer;}
 .gl:hover{background:rgba(140,109,63,0.04);}
-.gl.gh{border-bottom:2px solid #b8ad9e;}
+.gl.gh{border-bottom:1px solid #c5bdb5;}
 
 /* Afspraken */
 .apt{position:absolute;left:3px;right:3px;border-radius:4px;padding:4px 7px;cursor:pointer;z-index:5;overflow:hidden;}
