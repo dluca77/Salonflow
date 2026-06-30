@@ -186,10 +186,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
     <!-- KPIs -->
     <div class="kpi-row">
-      <div class="kpi"><div class="kpi-label">Vandaag</div><div class="kpi-val" id="kpi-apts">—</div><div class="kpi-sub">afspraken</div></div>
+      <div class="kpi"><div class="kpi-label">Afspraken vandaag</div><div class="kpi-val" id="kpi-apts">—</div><div class="kpi-sub">ingepland</div></div>
       <div class="kpi"><div class="kpi-label">Omzet vandaag</div><div class="kpi-val gold" id="kpi-omzet">—</div><div class="kpi-sub">verwacht</div></div>
-      <div class="kpi"><div class="kpi-label">Klanten</div><div class="kpi-val" id="kpi-klanten">—</div><div class="kpi-sub">totaal</div></div>
-      <div class="kpi"><div class="kpi-label">Deze week</div><div class="kpi-val" id="kpi-week">—</div><div class="kpi-sub">afspraken</div></div>
+      <div class="kpi"><div class="kpi-label">No-shows vandaag</div><div class="kpi-val" id="kpi-noshow" style="color:var(--red,#c02020)">—</div><div class="kpi-sub">gemist</div></div>
+      <div class="kpi"><div class="kpi-label">Bezettingsgraad</div><div class="kpi-val gold" id="kpi-bezetting">—</div><div class="kpi-sub">vandaag</div></div>
+    </div>
+    <div class="kpi-row" style="margin-top:1px;">
+      <div class="kpi"><div class="kpi-label">Nieuwe klanten</div><div class="kpi-val" id="kpi-nieuw">—</div><div class="kpi-sub">deze maand</div></div>
+      <div class="kpi"><div class="kpi-label">Totaal klanten</div><div class="kpi-val" id="kpi-klanten">—</div><div class="kpi-sub">in systeem</div></div>
+      <div class="kpi"><div class="kpi-label">Open facturen</div><div class="kpi-val" id="kpi-facturen" style="color:var(--red,#c02020)">—</div><div class="kpi-sub">te innen</div></div>
+      <div class="kpi"><div class="kpi-label">Online boekingen</div><div class="kpi-val gold" id="kpi-boekingen">—</div><div class="kpi-sub">nieuw</div></div>
     </div>
 
     <!-- Left col -->
@@ -201,6 +207,15 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
           <a href="agenda.html" class="card-link">Bekijk alles →</a>
         </div>
         <div id="agenda-today"></div>
+      </div>
+
+      <!-- Openstaande online boekingen -->
+      <div class="card" id="card-boekingen">
+        <div class="card-head">
+          <div class="card-title">Openstaande online boekingen</div>
+          <a href="agenda.html" class="card-link">Bekijk agenda →</a>
+        </div>
+        <div id="boekingen-list"></div>
       </div>
 
       <!-- AI inzichten -->
@@ -273,21 +288,61 @@ async function loadData(){
   const ws=new Date();ws.setDate(ws.getDate()-ws.getDay()+1);ws.setHours(0,0,0,0);
   const we=new Date(ws);we.setDate(ws.getDate()+7);
 
-  const[aR,mR,kR]=await Promise.all([
+  // Laad alles parallel
+  const maandStart=new Date(now.getFullYear(),now.getMonth(),1);
+  const[aR,mR,kR,kNieuwR,boeR]=await Promise.all([
     sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',ws.toISOString()).lte('datum_tijd',we.toISOString()).order('datum_tijd'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
-    sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID)
+    sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID),
+    sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
+    sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').is('klant_email','not.null').order('datum_tijd',{ascending:true}).limit(5)
   ]);
 
   const all=aR.data||[],meds=mR.data||[];
   const vandaag=all.filter(a=>a.datum_tijd.startsWith(todayKey));
   const omzet=vandaag.reduce((s,a)=>s+(a.diensten?.prijs||0),0);
+  const noshow=vandaag.filter(a=>a.status==='no-show').length;
 
-  // KPIs
+  // Bezettingsgraad: afspraken / (medewerkers × werkuren × 4 slots per uur)
+  const werkSlots=meds.length*(8*4); // 8 werkuren, 15 min slots
+  const bezetting=werkSlots>0?Math.round((vandaag.length/werkSlots)*100):0;
+
+  // KPIs rij 1
   document.getElementById('kpi-apts').textContent=vandaag.length;
   document.getElementById('kpi-omzet').textContent='€'+omzet;
+  document.getElementById('kpi-noshow').textContent=noshow;
+  document.getElementById('kpi-bezetting').textContent=bezetting+'%';
+
+  // KPIs rij 2
   document.getElementById('kpi-klanten').textContent=kR.count||0;
-  document.getElementById('kpi-week').textContent=all.length;
+  document.getElementById('kpi-nieuw').textContent=kNieuwR.count||0;
+
+  // Open facturen = afspraken afgerond maar nog geen betaling
+  const afgRond=vandaag.filter(a=>a.status==='afgerond').length;
+  document.getElementById('kpi-facturen').textContent=afgRond?'€'+(afgRond*(omzet/Math.max(vandaag.length,1))).toFixed(0):'€0';
+
+  // Online boekingen
+  const boekingen=boeR.data||[];
+  document.getElementById('kpi-boekingen').textContent=boekingen.length;
+
+  // Boekingen lijst
+  const boeEl=document.getElementById('boekingen-list');
+  if(!boekingen.length){
+    boeEl.innerHTML='<div class="empty"><div class="empty-txt">Geen openstaande boekingen</div></div>';
+  } else {
+    boeEl.innerHTML=boekingen.map(a=>{
+      const dt=new Date(a.datum_tijd);
+      return\`<div class="apt-row">
+        <div class="apt-time">\${ft(dt.getHours(),dt.getMinutes())}</div>
+        <div class="apt-bar" style="background:#e07020;"></div>
+        <div class="apt-info">
+          <div class="apt-naam">\${a.klant_naam||'Onbekend'}</div>
+          <div class="apt-svc">\${a.diensten?.naam||''} · \${dt.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</div>
+        </div>
+        <div style="font-size:10px;padding:3px 8px;background:#fff3e0;color:#e07020;border-radius:99px;font-weight:600;">Nieuw</div>
+      </div>\`;
+    }).join('');
+  }
 
   // Sidebar initials
   const nm=document.querySelector('.salon-naam')?.textContent||'';
