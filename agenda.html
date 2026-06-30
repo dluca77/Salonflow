@@ -77,13 +77,13 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 
 /* Body rij */
 .cal-row-body{display:flex;flex:1;}
-.cal-tc-body{width:52px;flex-shrink:0;position:sticky;left:0;z-index:10;background:var(--wh);border-right:1px solid var(--bd);}
+.cal-tc-body{width:52px;flex-shrink:0;position:sticky;left:0;z-index:10;background:var(--wh);border-right:1px solid var(--bd);padding-bottom:48px;}
 .tr{height:var(--rh);display:flex;align-items:flex-end;justify-content:flex-end;padding:0 7px 3px 0;border-bottom:1px solid #e5ddd5;}
 .tl{font-size:10px;font-weight:600;color:var(--mu);white-space:nowrap;line-height:1;}
 .tr.q .tl{font-size:9px;font-weight:400;color:var(--mu2);}
 .tr.gh{border-bottom:1px solid #c5bdb5;}
 
-.cal-days-body{display:flex;flex:1;}
+.cal-days-body{display:flex;flex:1;padding-bottom:48px;}
 .day-col{flex:1;min-width:90px;border-right:1px solid var(--bd);position:relative;background:var(--wh);}
 .day-col:last-child{border-right:none;}
 .day-col.tod{background:rgba(140,109,63,0.015);}
@@ -235,12 +235,6 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
         <div class="cal-days-body" id="cdb"></div>
       </div>
     </div>
-    <!-- Footer -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:20px 16px 24px;border-top:1px solid var(--bd);margin-top:auto;background:var(--wh);min-width:100%;">
-      <div style="font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--ink);">Planr<span style="color:var(--gd)">.</span></div>
-      <div style="font-size:11px;color:var(--mu2);">© 2026 · Gemaakt in Nederland</div>
-      <a href="boeken.html" style="font-size:11px;color:var(--gd);text-decoration:none;">Online boeken →</a>
-    </div>
   </div>
 </div>
 </div>
@@ -279,11 +273,11 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 <script>
 const MNS=['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec'];
 const DN=['Zo','Ma','Di','Wo','Do','Vr','Za'];
-const RH=28,SH=6,EH=24;
+const RH=28,SH=6,EH=29;
 let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],filterMed=null;
 cur.setHours(0,0,0,0);
 const dk=d=>d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
-const ft=(h,m)=>String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+const ft=(h,m)=>String(h%24).padStart(2,'0')+':'+String(m).padStart(2,'0');
 function wkStart(d){const c=new Date(d),dy=c.getDay(),df=dy===0?-6:1-dy;c.setDate(c.getDate()+df);c.setHours(0,0,0,0);return c;}
 function getDays(){if(view==='day')return[new Date(cur)];const ws=wkStart(cur);return Array.from({length:7},(_,i)=>{const d=new Date(ws);d.setDate(ws.getDate()+i);return d;});}
 
@@ -322,7 +316,7 @@ function render(){
 
   // Tijdkolom
   const tc=document.getElementById('ctc');tc.innerHTML='';
-  for(let h=SH;h<=EH;h++)for(let q=0;q<4;q++){const r=document.createElement('div');r.className='tr'+(q>0?' q':'');const s=document.createElement('span');s.className='tl';s.textContent=ft(h,q*15);r.appendChild(s);tc.appendChild(r);}
+  for(let h=SH;h<=EH;h++){for(let q=0;q<4;q++){const r=document.createElement('div');r.className='tr'+(q===0?'':q===3?' q gh':' q');const s=document.createElement('span');s.className='tl';s.textContent=ft(h,q*15);r.appendChild(s);tc.appendChild(r);}}
 
   // Dag kolommen
   const dc=document.getElementById('cdb');dc.innerHTML='';
@@ -332,7 +326,7 @@ function render(){
     const dayApts=APTS.filter(a=>a.datum_tijd.startsWith(key)&&(!filterMed||a.medewerker_id===filterMed));
     const col=document.createElement('div');
     col.className='day-col'+(isToday?' tod':'');
-    const slots=(EH-SH+1)*4;
+    const slots=(EH-SH+1)*4; // 96 slots: 06:00 t/m 05:45
     for(let s=0;s<slots;s++){
       const gl=document.createElement('div');
       gl.className='gl'+(s%4===3?' gh':'');
