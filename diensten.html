@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Planr — Diensten</title>
+<title>Kronr — Diensten</title>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -131,14 +131,14 @@ select.fi{cursor:pointer;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="planr.js"></script>
+<script src="kronr.js"></script>
 </head>
 <body>
 <div class="app">
 
 <!-- Desktop sidebar -->
 <aside class="sidebar">
-  <div class="sb-logo"><a href="dashboard.html">Planr<em>.</em></a></div>
+  <div class="sb-logo"><a href="dashboard.html">Kronr<em>.</em></a></div>
   <nav class="sb-nav">
     <div class="sb-sec">Beheer</div>
     <a href="dashboard.html" class="sb-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
@@ -163,7 +163,7 @@ select.fi{cursor:pointer;}
 <div class="ov" id="ov" onclick="closeSB()"></div>
 <aside class="sb-mob" id="sb">
   <div style="padding:20px;border-bottom:1px solid rgba(255,255,255,0.06);display:flex;align-items:center;justify-content:space-between;">
-    <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--iv);letter-spacing:1px;">Planr<em style="color:var(--gd);font-style:normal">.</em></span>
+    <span style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--iv);letter-spacing:1px;">Kronr<em style="color:var(--gd);font-style:normal">.</em></span>
     <button onclick="closeSB()" style="width:28px;height:28px;border:1px solid rgba(255,255,255,0.1);background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;">✕</button>
   </div>
   <nav style="flex:1;overflow-y:auto;padding:12px 10px;">
@@ -187,7 +187,7 @@ select.fi{cursor:pointer;}
 <div class="main">
   <div class="topbar">
     <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
-    <div class="tb-logo">Planr<em>.</em></div>
+    <div class="tb-logo">Kronr<em>.</em></div>
     <div class="tb-title">Diensten</div>
     <div class="tb-spacer"></div>
     <button class="btn-add" onclick="openM('m-new')">+ Dienst</button>
