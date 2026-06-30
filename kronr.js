@@ -1,5 +1,5 @@
 // ═══════════════════════════════════════
-// PLANR.JS — Gedeelde Supabase logica
+// KRONR.JS — Gedeelde Supabase logica
 // ═══════════════════════════════════════
 const SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
@@ -10,7 +10,7 @@ let SESSION_USER = null;
 // Verberg pagina direct zodat er geen flits is
 document.documentElement.style.opacity = '0';
 
-async function planrInit(callback) {
+async function kronrInit(callback) {
   try {
     const { data: { session } } = await sb.auth.getSession();
 
@@ -61,7 +61,7 @@ async function planrInit(callback) {
     if (callback) await callback();
 
   } catch(e) {
-    console.error('planrInit fout:', e);
+    console.error('kronrInit fout:', e);
   } finally {
     // Altijd pagina zichtbaar maken, ook bij fout
     document.documentElement.style.opacity = '1';
