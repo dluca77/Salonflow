@@ -285,6 +285,7 @@ async function slaDienstOp(){
 
   if(!naam){errEl.textContent='Vul een naam in.';errEl.style.display='block';return;}
   if(!prijs){errEl.textContent='Vul een prijs in.';errEl.style.display='block';return;}
+  if(!duur){errEl.textContent='Vul een duur in (in minuten).';errEl.style.display='block';return;}
   errEl.style.display='none';
 
   const btn=document.getElementById('btn-dienst-opslaan');
