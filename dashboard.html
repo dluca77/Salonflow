@@ -156,6 +156,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="diensten.html" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span>Diensten</span></a>
   <a href="rapportages.html" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Rapportages</span></a>
   <a href="boeken.html" class="si" title="Online boeken"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg><span>Online boeken</span></a>
+  <a href="instellingen.html" class="si" title="Instellingen"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Instellingen</span></a>
   <div class="sb-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
 </aside>
 
@@ -169,6 +170,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="medewerkers.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
   <a href="diensten.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Diensten</a>
   <a href="rapportages.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  <a href="instellingen.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Instellingen</a>
   <div class="mob-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
 </div>
 
@@ -302,7 +304,7 @@ async function loadData(){
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
-    sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').is('klant_email','not.null').order('datum_tijd',{ascending:true}).limit(5)
+    sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').not('klant_email','is',null).order('datum_tijd',{ascending:true}).limit(5)
   ]);
 
   const all=aR.data||[],meds=mR.data||[];
