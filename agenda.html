@@ -115,6 +115,9 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 
 /* ── AFSPRAKEN ── */
 .apt{position:absolute;left:3px;right:3px;border-radius:4px;padding:4px 7px;cursor:grab;z-index:5;overflow:hidden;transition:opacity .15s,box-shadow .15s;user-select:none;}
+.apt-ghost{position:fixed;z-index:9999;pointer-events:none;transform:translate(-50%,-50%) scale(1.04);opacity:0.92;border-radius:4px;padding:4px 7px;overflow:hidden;box-shadow:0 10px 28px rgba(0,0,0,0.35);}
+.apt.touch-dragging{opacity:0.3;}
+.gl.touch-over{background:rgba(140,109,63,0.16)!important;box-shadow:inset 0 0 0 2px var(--gd,#8c6d3f);}
 .apt:hover{opacity:.88;box-shadow:0 2px 8px rgba(0,0,0,.12);}
 .apt.dragging{opacity:.5;cursor:grabbing;}
 .apt-t{font-size:10px;font-weight:500;line-height:1.3;margin-bottom:1px;}
@@ -642,6 +645,7 @@ function buildAptCard(a,i){
     touchGhost.className='apt-ghost '+card.className.replace('apt ','');
     touchGhost.innerHTML=card.innerHTML;
     touchGhost.style.width=card.offsetWidth+'px';
+    touchGhost.style.height=card.offsetHeight+'px';
     touchGhost.style.left=touch.clientX+'px';
     touchGhost.style.top=touch.clientY+'px';
     document.body.appendChild(touchGhost);
