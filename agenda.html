@@ -437,7 +437,7 @@ const STATUS_LABELS={gepland:'Gepland',bevestigd:'Bevestigd',niet_bevestigd:'Nie
 const STATUS_COLORS={gepland:'#8a7d6e',bevestigd:'#2d6a4f',niet_bevestigd:'#e07020',gearriveerd:'#1a60a8',in_behandeling:'#7c4daa',afgerond:'#888',  'no-show':'#c02020',geannuleerd:'#c02020',verplaatst:'#d08020'};
 
 // ── STATE ───────────────────────────────────────────────────────────────────
-let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[];
+let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],firstLoad=true;
 let filterMed=null,modalTab='afspraak',geselecteerdeApt=null,pendingSave=null;
 let geselecteerdeDiensten=[];
 cur.setHours(0,0,0,0);
@@ -461,6 +461,8 @@ function getDays(){
 
 // ── DATA LADEN ───────────────────────────────────────────────────────────────
 async function loadData(){
+  const calEl=document.getElementById('cal');
+  const savedScroll=(!firstLoad&&calEl)?calEl.scrollTop:null;
   const s=new Date(cur);s.setDate(s.getDate()-60);
   const e=new Date(cur);e.setDate(e.getDate()+90);
   const[aR,mR,dR]=await Promise.all([
@@ -478,6 +480,11 @@ async function loadData(){
   const ini=(document.querySelector('.salon-naam')?.textContent||'').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=ini);
   render();
+  if(savedScroll!==null){
+    const c=document.getElementById('cal');
+    if(c)c.scrollTop=savedScroll;
+  }
+  firstLoad=false;
 }
 
 // Herhaalafspraken expanderen voor render periode
