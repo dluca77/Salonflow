@@ -145,6 +145,16 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
   .form-row-2{grid-template-columns:1fr;}
   .header{padding:0 4vw;}
 }
+
+/* ── EMBED MODE (binnen de Kronr widget-iframe) ── */
+body.embed .header{height:44px;padding:0 16px;}
+body.embed .brand-logo{width:26px;height:26px;font-size:11px;}
+body.embed .brand-name{font-size:14px;}
+body.embed .brand-sub{font-size:9px;}
+body.embed .header-right{display:none;}
+body.embed .steps-main{padding:20px 20px;}
+body.embed .summary-panel{padding:20px 20px;}
+body.embed .layout{grid-template-columns:1fr;max-width:none;}
 </style>
 </head>
 <body>
@@ -239,6 +249,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
         <div class="cr"><span class="cr-label">Prijs</span><span class="cr-val" id="cf-prijs" style="color:var(--gd)"></span></div>
       </div>
       <p style="font-size:13px;color:var(--mu);line-height:1.7;font-weight:300;">Wil je de afspraak wijzigen of annuleren? Dat kan tot 24 uur van tevoren via de link in je bevestigingsmail.</p>
+      <button class="btn-next" id="btn-embed-close" style="display:none;margin-top:20px;" onclick="parent.postMessage('kronr:close','*')">Sluiten</button>
     </div>
   </div>
 
@@ -265,6 +276,8 @@ const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const params=new URLSearchParams(location.search);
 const SALON_ID=params.get('salon');
+const IS_EMBED=params.get('embed')==='1';
+if(IS_EMBED) document.body.classList.add('embed');
 
 let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null};
 let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
@@ -473,6 +486,7 @@ async function bevestigen(){
   document.getElementById('cf-tijd').textContent=state.tijd;
   document.getElementById('cf-prijs').textContent='€'+state.prijs;
   document.getElementById('progress-bar').style.display='none';
+  if(IS_EMBED) document.getElementById('btn-embed-close').style.display='block';
   goStep(5);
 }
 
