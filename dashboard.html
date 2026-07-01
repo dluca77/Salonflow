@@ -28,7 +28,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 /* ── TOPBAR ── */
 .topbar{height:52px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
-.hbg{width:32px;height:32px;border:1px solid var(--bd);border-radius:6px;background:transparent;color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;}
+.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 .tb-title{font-size:17px;font-weight:600;color:var(--ink);}
 .tb-sp{flex:1;}
 .tb-date{font-size:12px;color:var(--mu2);letter-spacing:.5px;}
@@ -106,9 +106,9 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .left-col,.right-col{display:flex;flex-direction:column;gap:14px;}
 
 /* Mob overlay */
-.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:40;}
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;}
 .ov.on{display:block;}
-.sb-mob{position:fixed;left:-100%;top:0;bottom:0;width:220px;background:var(--ink);z-index:50;display:flex;flex-direction:column;transition:left .25s;padding:16px 12px;}
+.sb-mob{position:fixed;left:-100%;top:0;bottom:0;width:220px;background:var(--ink);z-index:999;display:flex;flex-direction:column;transition:left .25s ease;padding:16px 12px;}
 .sb-mob.on{left:0;}
 .mob-logo{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
 .mob-logo em{color:var(--gd);font-style:normal;}
@@ -334,7 +334,7 @@ async function loadData(){
   } else {
     boeEl.innerHTML=boekingen.map(a=>{
       const dt=new Date(a.datum_tijd);
-      return\`<div class="apt-row">
+      return`<div class="apt-row">
         <div class="apt-time">\${ft(dt.getHours(),dt.getMinutes())}</div>
         <div class="apt-bar" style="background:#e07020;"></div>
         <div class="apt-info">
@@ -342,7 +342,7 @@ async function loadData(){
           <div class="apt-svc">\${a.diensten?.naam||''} · \${dt.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</div>
         </div>
         <div style="font-size:10px;padding:3px 8px;background:#fff3e0;color:#e07020;border-radius:99px;font-weight:600;">Nieuw</div>
-      </div>\`;
+      </div>`;
     }).join('');
   }
 
