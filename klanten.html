@@ -223,7 +223,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 <div class="mbg" id="m-new" onclick="if(event.target===this)closeM('m-new')">
   <div class="modal">
     <div class="mh"></div>
-    <div class="mt">Nieuwe klant</div>
+    <div class="mt" id="m-new-title">Nieuwe klant</div>
     <div class="msub">Voeg een klant toe aan het systeem</div>
     <div id="m-new-msg" style="display:none;padding:10px 14px;border-left:3px solid;font-size:13px;margin-bottom:14px;"></div>
     <div class="fg">
@@ -266,14 +266,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="dr"><span class="dr-l">Notities</span><span class="dr-v" id="d-notitie" style="color:var(--mu);font-weight:300;">—</span></div>
     </div>
     <div class="btns-row">
-      <button class="btn-sec" onclick="closeM('m-detail')">Sluiten</button>
+      <button class="btn-sec" onclick="editK()">Bewerken</button>
       <button class="btn-prim" onclick="closeM('m-detail')">Afspraak plannen →</button>
     </div>
   </div>
 </div>
 
 <script>
-let KLANTEN=[], activeF='alle', activeQ='', activeG='alle', activeSort='naam-az';
+let KLANTEN=[], activeF='alle', activeQ='', activeG='alle', activeSort='naam-az', editingId=null, currentDetailId=null;
 
 async function loadData(){
   const {data,error}=await sb.from('klanten').select('*').eq('salon_id',SALON_ID).order('naam');
@@ -336,6 +336,7 @@ function render(){
 
 function showK(id){
   const k=KLANTEN.find(x=>x.id===id);if(!k)return;
+  currentDetailId=id;
   const init=getInit(k.naam);
   const since=new Date(k.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
   document.getElementById('d-av').textContent=init;
@@ -349,6 +350,30 @@ function showK(id){
   document.getElementById('d-sv').textContent='—';
   document.getElementById('d-notitie').textContent=k.notities||'—';
   openM('m-detail');
+}
+
+function editK(){
+  const k=KLANTEN.find(x=>x.id===currentDetailId);if(!k)return;
+  editingId=k.id;
+  document.getElementById('m-new-title').textContent='Klant bewerken';
+  document.getElementById('btn-klant-opslaan').textContent='Wijzigingen opslaan';
+  const delen=k.naam.split(' ');
+  document.getElementById('k-voor').value=delen[0]||'';
+  document.getElementById('k-achter').value=delen.slice(1).join(' ')||'';
+  document.getElementById('k-tel').value=k.telefoon||'';
+  document.getElementById('k-email').value=k.email||'';
+  document.getElementById('k-geslacht').value=k.geslacht||'';
+  document.getElementById('k-notitie').value=k.notities||'';
+  closeM('m-detail');
+  openM('m-new');
+}
+
+function resetKlantForm(){
+  ['k-voor','k-achter','k-tel','k-email','k-notitie'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('k-geslacht').value='';
+  editingId=null;
+  document.getElementById('m-new-title').textContent='Nieuwe klant';
+  document.getElementById('btn-klant-opslaan').textContent='Klant opslaan';
 }
 
 async function slaKlantOp(){
@@ -367,15 +392,19 @@ async function slaKlantOp(){
   }
 
   const btn=document.getElementById('btn-klant-opslaan');
+  const savingLabel=editingId?'Wijzigingen opslaan':'Klant opslaan';
   btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
 
   const naam=voor+(achter?' '+achter:'');
-  const{error}=await sb.from('klanten').insert({
-    salon_id:SALON_ID,naam,
-    email:email||null,telefoon:tel||null,notities:notitie||null,geslacht
-  });
+  const payload={naam,email:email||null,telefoon:tel||null,notities:notitie||null,geslacht};
+  let error;
+  if(editingId){
+    ({error}=await sb.from('klanten').update(payload).eq('id',editingId));
+  }else{
+    ({error}=await sb.from('klanten').insert({salon_id:SALON_ID,...payload}));
+  }
 
-  btn.disabled=false;btn.textContent='Klant opslaan';
+  btn.disabled=false;btn.textContent=savingLabel;
 
   if(error){
     msgEl.textContent='Fout bij opslaan: '+error.message;
@@ -383,10 +412,8 @@ async function slaKlantOp(){
     return;
   }
 
-  // Reset form
-  ['k-voor','k-achter','k-tel','k-email','k-notitie'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('k-geslacht').value='';
   msgEl.style.display='none';
+  resetKlantForm();
   closeM('m-new');
   await loadData();
 }
@@ -428,7 +455,7 @@ document.addEventListener('click',e=>{
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
 function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
-function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';if(id==='m-new')resetKlantForm();}
 
 kronrInit(loadData);
 </script>
