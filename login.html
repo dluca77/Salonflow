@@ -89,6 +89,10 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
 .msg.ok{background:rgba(45,106,79,0.06);border-color:var(--green);color:var(--green);display:block;}
 
 .forgot{text-align:right;margin:-10px 0 16px;}
+.remember-row{display:flex;align-items:center;justify-content:space-between;margin:-10px 0 16px;}
+.remember-lbl{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu);cursor:pointer;user-select:none;}
+.remember-lbl input{width:15px;height:15px;accent-color:var(--gd);cursor:pointer;}
+.remember-row .forgot{margin:0;}
 .forgot a{font-size:11px;letter-spacing:1px;color:var(--mu);text-decoration:none;text-transform:uppercase;}
 .forgot a:hover{color:var(--ink);}
 
@@ -163,7 +167,10 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
         <label class="flabel">Wachtwoord</label>
         <input class="finput" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
       </div>
-      <div class="forgot"><a href="#" onclick="resetWw(event)">Wachtwoord vergeten?</a></div>
+      <div class="remember-row">
+        <label class="remember-lbl"><input type="checkbox" id="l-remember" checked> Onthoud mij</label>
+        <div class="forgot"><a href="#" onclick="resetWw(event)">Wachtwoord vergeten?</a></div>
+      </div>
       <button class="btn-main" id="btn-login" onclick="login()">Inloggen</button>
       <div class="divider"><div class="dline"></div><div class="dtxt">of</div><div class="dline"></div></div>
       <button class="btn-google" onclick="loginGoogle()">
@@ -215,7 +222,22 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
 <script>
 const SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
-const sb = window.supabase.createClient(SB_URL, SB_KEY);
+
+// Zelfde opslag-adapter als kronr.js — leest live de 'kronr_remember' vlag,
+// zodat de sessie na inloggen op de juiste plek staat voor alle andere pagina's.
+function kronrStorage() {
+  function backing() {
+    return localStorage.getItem('kronr_remember') !== '0' ? window.localStorage : window.sessionStorage;
+  }
+  return {
+    getItem: (key) => backing().getItem(key),
+    setItem: (key, value) => backing().setItem(key, value),
+    removeItem: (key) => backing().removeItem(key),
+  };
+}
+const sb = window.supabase.createClient(SB_URL, SB_KEY, {
+  auth: { storage: kronrStorage(), persistSession: true, autoRefreshToken: true }
+});
 
 // Auth check — access_token in hash = e-mail bevestigd
 if (window.location.hash.includes('access_token')) {
@@ -273,6 +295,8 @@ async function login() {
   const email = document.getElementById('l-email').value.trim();
   const pass  = document.getElementById('l-pass').value;
   if (!email || !pass) return toonMsg('Vul je e-mailadres en wachtwoord in.');
+  const onthoud = document.getElementById('l-remember').checked;
+  localStorage.setItem('kronr_remember', onthoud ? '1' : '0');
   setLaden('btn-login', true, 'Inloggen');
   leegMsg();
   const { error } = await sb.auth.signInWithPassword({ email, password: pass });
@@ -298,6 +322,7 @@ async function registreer() {
 
   setLaden('btn-reg', true, 'Gratis account aanmaken');
   leegMsg();
+  localStorage.setItem('kronr_remember', '1');
 
   const { data, error } = await sb.auth.signUp({
     email, password: pass,
@@ -326,6 +351,7 @@ async function registreer() {
 
 // ── GOOGLE ──
 async function loginGoogle() {
+  localStorage.setItem('kronr_remember', '1');
   await sb.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: 'https://dluca77.github.io/Salonflow/dashboard.html' }
