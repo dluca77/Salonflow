@@ -31,7 +31,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 /* Progress */
 .progress-bar{display:flex;align-items:center;margin-bottom:36px;}
 .step-dot{display:flex;align-items:center;gap:8px;}
-.step-num{width:26px;height:26px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:1px solid var(--bd);color:var(--mu2);transition:all 0.2s;flex-shrink:0;}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:1px solid var(--bd);color:var(--mu2);transition:all 0.2s;flex-shrink:0;}
 .step-num.done{background:var(--gd);border-color:var(--gd);color:var(--iv);}
 .step-num.active{background:var(--ink);border-color:var(--ink);color:var(--iv);}
 .step-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
@@ -47,7 +47,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 
 /* Step 1: Diensten */
 .dienst-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px;}
-.dienst-card{background:var(--wh);border:1px solid var(--bd);padding:18px;cursor:pointer;transition:all 0.15s;}
+.dienst-card{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:18px;cursor:pointer;transition:all 0.15s;}
 .dienst-card:hover{border-color:var(--gd);}
 .dienst-card.selected{border-color:var(--ink);background:var(--ink);}
 .dienst-card.selected .dc-naam{color:var(--iv);}
@@ -59,24 +59,24 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 
 /* Step 2: Medewerkers */
 .med-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
-.med-card{background:var(--wh);border:1px solid var(--bd);padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.med-card{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
 .med-card:hover,.med-any:hover{border-color:var(--gd);}
 .med-card.selected,.med-any.selected{border-color:var(--ink);background:var(--ink);}
 .med-card.selected .med-naam,.med-any.selected .med-naam{color:var(--iv);}
 .med-card.selected .med-rol,.med-any.selected .med-rol{color:rgba(255,255,255,0.5);}
-.med-any{background:var(--wh);border:1px solid var(--bd);padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
-.med-av{width:40px;height:40px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gd);margin:0 auto 10px;}
+.med-any{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.med-av{width:40px;height:40px;background:var(--wm);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gd);margin:0 auto 10px;}
 .med-naam{font-size:13px;font-weight:500;transition:color 0.15s;}
 .med-rol{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-top:3px;transition:color 0.15s;}
 
 /* Step 3: Kalender */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .cal-month-label{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
-.cal-nav-btn{width:32px;height:32px;border:1px solid var(--bd);background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s;}
+.cal-nav-btn{width:32px;height:32px;border:1px solid var(--bd);border-radius:50%;background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s;}
 .cal-nav-btn:hover{background:var(--wm);}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:24px;}
 .cal-dayname{text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);padding:6px 0;}
-.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;border-radius:8px;}
 .cal-day:hover:not(.past):not(.empty){background:var(--wm);border-color:var(--bd);}
 .cal-day.today{font-weight:700;color:var(--gd);}
 .cal-day.selected{background:var(--ink);color:var(--iv);}
@@ -86,7 +86,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 
 .time-section-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;margin-top:16px;}
 .time-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
-.time-slot{padding:9px 4px;border:1px solid var(--bd);text-align:center;font-size:12px;cursor:pointer;background:var(--wh);transition:all 0.15s;}
+.time-slot{padding:9px 4px;border:1px solid var(--bd);border-radius:8px;text-align:center;font-size:12px;cursor:pointer;background:var(--wh);transition:all 0.15s;}
 .time-slot:hover:not(.vol){border-color:var(--gd);}
 .time-slot.selected{background:var(--ink);color:var(--iv);border-color:var(--ink);}
 .time-slot.vol{background:var(--iv);color:var(--mu2);cursor:not-allowed;font-size:10px;}
@@ -94,21 +94,21 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 /* Step 4: Gegevens */
 .form-row{margin-bottom:14px;}
 .form-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
-.form-input{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;}
+.form-input{width:100%;background:var(--iv);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;}
 .form-input:focus{border-color:var(--gd);}
 .form-input::placeholder{color:var(--mu2);}
 .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 
 /* Step 5: Bevestiging */
-.confirm-icon{width:56px;height:56px;background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;}
-.confirm-rows{border:1px solid var(--bd);margin-bottom:24px;}
+.confirm-icon{width:56px;height:56px;border-radius:50%;background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;}
+.confirm-rows{border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:24px;}
 .cr{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
 .cr:last-child{border-bottom:none;}
 .cr-label{color:var(--mu);}
 .cr-val{font-weight:500;}
 
 /* Knoppen */
-.btn-next{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;margin-top:8px;}
+.btn-next{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;border-radius:10px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;margin-top:8px;}
 .btn-next:hover{background:var(--ink2);}
 .btn-next:disabled{opacity:0.3;cursor:not-allowed;}
 .btn-back{background:transparent;border:none;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);cursor:pointer;font-family:'Inter',sans-serif;margin-top:12px;padding:8px 0;}
@@ -122,7 +122,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .sum-item:last-of-type{border-bottom:none;}
 .sum-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:4px;}
 .sum-value{font-size:13px;font-weight:500;color:var(--ink);}
-.sum-total{margin-top:20px;padding:16px;background:var(--ink);display:flex;align-items:center;justify-content:space-between;}
+.sum-total{margin-top:20px;padding:16px;background:var(--ink);border-radius:10px;display:flex;align-items:center;justify-content:space-between;}
 .sum-total-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);}
 .sum-total-price{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--iv);}
 .salon-info{margin-top:24px;border-top:1px solid var(--bd);padding-top:20px;}
@@ -147,10 +147,12 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 }
 
 /* ── EMBED MODE (binnen de Kronr widget-iframe) ── */
-body.embed .header{height:44px;padding:0 16px;}
-body.embed .brand-logo{width:26px;height:26px;font-size:11px;}
-body.embed .brand-name{font-size:14px;}
-body.embed .brand-sub{font-size:9px;}
+/* De widget zelf toont al de Kronr-merknaam bovenaan het paneel — hier dus
+   geen tweede logo-blokje, alleen de naam van de salon als context. */
+body.embed .header{height:40px;padding:0 18px;border-bottom:1px solid var(--bd);}
+body.embed .brand-logo{width:22px;height:22px;font-size:10px;background:var(--gd);color:var(--iv);border-radius:6px;}
+body.embed .brand-name{font-size:13px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.2px;}
+body.embed .brand-sub{display:none;}
 body.embed .header-right{display:none;}
 body.embed .steps-main{padding:20px 20px;}
 body.embed .summary-panel{padding:20px 20px;}
@@ -161,7 +163,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
 
 <header class="header">
   <div class="brand">
-    <div class="brand-logo" id="brand-init">P</div>
+    <div class="brand-logo" id="brand-init">K</div>
     <div>
       <div class="brand-name" id="brand-name">Laden...</div>
       <div class="brand-sub" id="brand-type"></div>
@@ -304,7 +306,7 @@ async function init(){
   const salon=sRes.data;
   if(salon){
     const init=salon.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-    document.getElementById('brand-init').textContent=init;
+    if(!IS_EMBED) document.getElementById('brand-init').textContent=init;
     document.getElementById('brand-name').textContent=salon.naam;
     document.getElementById('brand-type').textContent=salon.type_bedrijf||'';
     document.title=salon.naam+' — Afspraak maken';
