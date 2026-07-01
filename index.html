@@ -40,7 +40,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .hero-title{font-family:'Playfair Display',serif;font-size:clamp(44px,7vw,96px);font-weight:800;line-height:1.02;letter-spacing:-2px;color:var(--ink);margin-bottom:24px;max-width:900px;}
 .hero-title em{font-style:italic;color:var(--gd);}
-.hero-sub{font-size:clamp(16px,2vw,20px);font-weight:300;color:var(--mu);line-height:1.7;max-width:560px;margin:0 auto 40px;}
+.hero-sub{font-size:clamp(15px,1.8vw,18px);font-weight:400;color:var(--mu);line-height:1.75;max-width:520px;margin:0 auto 40px;}
 .hero-btns{display:flex;align-items:center;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
 .btn-primary{padding:16px 32px;background:var(--ink);color:var(--white);font-size:15px;font-weight:600;text-decoration:none;border-radius:10px;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
 .btn-primary:hover{background:var(--ink2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,13,11,.2);}
@@ -84,15 +84,15 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .stats-bar{background:var(--ink);padding:32px 24px;}
 .stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.08);}
 .stat-item{padding:28px 32px;background:var(--ink);text-align:center;}
-.stat-num{font-family:'Playfair Display',serif;font-size:42px;font-weight:800;color:var(--white);line-height:1;}
-.stat-num span{color:var(--gd);}
-.stat-lbl{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:6px;}
+.stat-num{font-family:'Inter',sans-serif;font-size:40px;font-weight:700;color:var(--white);line-height:1;letter-spacing:-1px;}
+.stat-num span{color:var(--gd);font-weight:400;}
+.stat-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:8px;font-weight:500;}
 
 /* ── SECTIONS ── */
 .section{padding:100px 24px;}
 .section-inner{max-width:1200px;margin:0 auto;}
 .section-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gd);font-weight:600;margin-bottom:16px;}
-.section-title{font-family:'Playfair Display',serif;font-size:clamp(36px,4.5vw,60px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:20px;}
+.section-title{font-family:'Playfair Display',serif;font-size:clamp(28px,4.5vw,60px);font-weight:700;line-height:1.08;letter-spacing:-1px;color:var(--ink);margin-bottom:20px;}
 .section-sub{font-size:17px;font-weight:300;color:var(--mu);line-height:1.7;max-width:560px;}
 
 /* ── VOOR WIE ── */
@@ -100,7 +100,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .types-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:52px;}
 .type-card{background:var(--white);border:1px solid var(--bd);border-radius:12px;padding:28px 24px;transition:all .2s;cursor:default;}
 .type-card:hover{border-color:var(--gd);transform:translateY(-3px);box-shadow:0 12px 32px rgba(140,109,63,.08);}
-.type-icon{font-size:32px;margin-bottom:16px;}
+.type-icon{width:44px;height:44px;background:var(--gd-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--gd);}
 .type-name{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;}
 .type-desc{font-size:13px;color:var(--mu);line-height:1.6;}
 
@@ -218,6 +218,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
+  .types-grid{grid-template-columns:1fr 1fr;gap:10px;}
+  .type-card{padding:20px 16px;}
+  .type-name{font-size:14px;}
+  .type-desc{font-size:12px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
   .hero{padding:80px 20px 48px;}
   .hero-screenshot{display:none;}
@@ -345,14 +349,14 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="section-label">Voor wie is Kronr?</div>
     <h2 class="section-title">Gebouwd voor elk<br>schoonheidsbedrijf</h2>
     <div class="types-grid">
-      <div class="type-card"><div class="type-icon">✂️</div><div class="type-name">Kappers & Barbiers</div><div class="type-desc">Van solo-kapper tot drukke barbershop. Beheer je agenda en klanten in één oogopslag.</div></div>
-      <div class="type-card"><div class="type-icon">💅</div><div class="type-name">Nagelstudio's</div><div class="type-desc">Meerdere behandelaren, kleurcodering per techniek, eenvoudig boeken voor je klanten.</div></div>
-      <div class="type-card"><div class="type-icon">✨</div><div class="type-name">Schoonheidsspecialisten</div><div class="type-desc">Klantkaarten met behandelhistorie, allergieën en notities. Nooit meer vergeten.</div></div>
-      <div class="type-card"><div class="type-icon">🧖</div><div class="type-name">Spa & Wellness</div><div class="type-desc">Kamer- en apparatuurplanning, cadeaubonnen en loyaliteitsprogramma inbegrepen.</div></div>
-      <div class="type-card"><div class="type-icon">👁️</div><div class="type-name">Wenkbrauw & Wimper</div><div class="type-desc">Snelle boekingen, automatische herinneringen, no-show bescherming.</div></div>
-      <div class="type-card"><div class="type-icon">💆</div><div class="type-name">Massagesalons</div><div class="type-desc">Online boeken 24/7, iDEAL betalingen, klant stuurt zichzelf een herinnering.</div></div>
-      <div class="type-card"><div class="type-icon">🎨</div><div class="type-name">Tattoo & Piercing</div><div class="type-desc">Aanbetaling verplichten bij boeking, lange sessies plannen, klantenfoto's bewaren.</div></div>
-      <div class="type-card"><div class="type-icon">🏥</div><div class="type-name">Medische schoonheid</div><div class="type-desc">GDPR-proof klantbeheer, facturen genereren, boekhoudkoppeling.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M6 3a3 3 0 110 6 3 3 0 010-6zm12 12a3 3 0 110 6 3 3 0 010-6zM3.5 8.5l11 11M20.5 3.5L9 15"/></svg></div><div class="type-name">Kappers & Barbiers</div><div class="type-desc">Van solo-kapper tot drukke barbershop. Beheer je agenda en klanten in één oogopslag.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div class="type-name">Nagelstudio's</div><div class="type-desc">Meerdere behandelaren, kleurcodering per techniek, eenvoudig boeken voor je klanten.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="type-name">Schoonheidsspecialisten</div><div class="type-desc">Klantkaarten met behandelhistorie, allergieën en notities. Nooit meer vergeten.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M12 22s8-4.5 8-11.8A8 8 0 0012 2a8 8 0 00-8 8.2c0 7.3 8 11.8 8 11.8z"/></svg></div><div class="type-name">Spa & Wellness</div><div class="type-desc">Kamer- en apparatuurplanning, cadeaubonnen en loyaliteitsprogramma inbegrepen.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="type-name">Wenkbrauw & Wimper</div><div class="type-desc">Snelle boekingen, automatische herinneringen, no-show bescherming.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><div class="type-name">Massagesalons</div><div class="type-desc">Online boeken 24/7, iDEAL betalingen, klant stuurt zichzelf een herinnering.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="type-name">Tattoo & Piercing</div><div class="type-desc">Aanbetaling verplichten bij boeking, lange sessies plannen, klantenfoto's bewaren.</div></div>
+      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22z"/></svg></div><div class="type-name">Medische schoonheid</div><div class="type-desc">GDPR-proof klantbeheer, facturen genereren, boekhoudkoppeling.</div></div>
     </div>
   </div>
 </section>
@@ -364,37 +368,37 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <h2 class="section-title">Eén tool die alles doet<br>wat Salonized ook doet.</h2>
     <p class="section-sub" style="margin-bottom:0;">En meer. Voor minder geld. Zonder vendor lock-in.</p>
     <div class="features-grid">
-      <div class="feat-item">
+      <div class="feat-item" data-aos>
         <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
         <div class="feat-title">Slimme agenda</div>
         <div class="feat-desc">Dag, week, maand en medewerkerweergave. Drag & drop, herhaalafspraken, bloktijden, conflictdetectie en realtime updates.</div>
         <div class="feat-badge">Drag & drop</div>
       </div>
-      <div class="feat-item">
+      <div class="feat-item" data-aos>
         <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></div>
         <div class="feat-title">Online boeken 24/7</div>
         <div class="feat-desc">Klanten boeken zelf via jouw persoonlijke pagina of via een widget op jouw eigen website. Met aanbetaling en annuleringsbeleid.</div>
         <div class="feat-badge">Eigen boekingslink</div>
       </div>
-      <div class="feat-item">
+      <div class="feat-item" data-aos>
         <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
         <div class="feat-title">Klantenbeheer (CRM)</div>
         <div class="feat-desc">Volledige klantkaarten met behandelhistorie, allergieën, notities, verjaardagen en lifetime value. Altijd alles bij de hand.</div>
         <div class="feat-badge">GDPR-proof</div>
       </div>
-      <div class="feat-item">
+      <div class="feat-item" data-aos>
         <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
         <div class="feat-title">Kassa & betalingen</div>
         <div class="feat-desc">Pin, contant, iDEAL en cadeaubonnen. Facturen genereren, boekhoudkoppeling en BTW-aangifte export in één klik.</div>
         <div class="feat-badge">Stripe integratie</div>
       </div>
-      <div class="feat-item">
+      <div class="feat-item" data-aos>
         <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
         <div class="feat-title">Rapportages</div>
         <div class="feat-desc">Omzet per medewerker, drukste tijden, no-show analyse, bezettingsgraad en nieuwe vs terugkerende klanten. Exporteerbaar naar Excel.</div>
         <div class="feat-badge">Live data</div>
       </div>
-      <div class="feat-item">
+      <div class="feat-item" data-aos>
         <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
         <div class="feat-title">WhatsApp herinneringen</div>
         <div class="feat-desc">Automatische bevestigingen en herinneringen via WhatsApp Business. Minder no-shows, meer tevreden klanten.</div>
@@ -451,7 +455,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <h2 class="section-title">Geen verrassingen.<br>Nooit commissie.</h2>
     <p class="section-sub" style="margin-bottom:0;">Anders dan Fresha betalen wij nooit commissie over jouw boekingen. Jouw klanten, jouw geld.</p>
     <div class="pricing-grid">
-      <div class="price-card">
+      <div class="price-card" data-aos>
         <div class="price-name">Starter</div>
         <div class="price-amount"><sup>€</sup>19</div>
         <div class="price-per">per maand · 1 medewerker</div>
@@ -479,7 +483,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         </ul>
         <a href="login.html" class="price-btn">Gratis proberen</a>
       </div>
-      <div class="price-card">
+      <div class="price-card" data-aos>
         <div class="price-name">Business</div>
         <div class="price-amount"><sup>€</sup>69</div>
         <div class="price-per">per maand · onbeperkt</div>
@@ -503,17 +507,17 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="section-label">Wat salons zeggen</div>
     <h2 class="section-title">Salons die groeien<br>met Kronr</h2>
     <div class="testi-grid">
-      <div class="testi-card">
+      <div class="testi-card" data-aos>
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">Eindelijk software die gewoon werkt op mijn telefoon. Ik beheer mijn hele salon in de trein. Geen gedoe meer met Salonized.</p>
         <div class="testi-author"><div class="testi-av">JV</div><div><div class="testi-name">Jasmijn Vermeer</div><div class="testi-role">Studio Jay, Amsterdam</div></div></div>
       </div>
-      <div class="testi-card">
+      <div class="testi-card" data-aos>
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">De AI die ziet dat ik lege slots heb en automatisch een actie stuurt naar klanten — dat heeft me al €800 extra opgeleverd in de eerste maand.</p>
         <div class="testi-author"><div class="testi-av">MK</div><div><div class="testi-name">Marco Koster</div><div class="testi-role">Barbershop Kings, Rotterdam</div></div></div>
       </div>
-      <div class="testi-card">
+      <div class="testi-card" data-aos>
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">Van 12 no-shows per maand naar 2. Die WhatsApp herinneringen zijn goud waard. Setup duurde letterlijk 15 minuten.</p>
         <div class="testi-author"><div class="testi-av">SB</div><div><div class="testi-name">Sara Bakker</div><div class="testi-role">Nail Lounge Sara, Utrecht</div></div></div>
@@ -595,6 +599,23 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
     const target=document.querySelector(a.getAttribute('href'));
     if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'});}
   });
+});
+
+// Scroll reveal animaties
+const revealEls = document.querySelectorAll('[data-aos]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if(e.isIntersecting) {
+      e.target.style.opacity = '1';
+      e.target.style.transform = 'translateY(0)';
+    }
+  });
+}, {threshold: 0.1});
+revealEls.forEach(el => {
+  el.style.opacity = '0';
+  el.style.transform = 'translateY(24px)';
+  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  observer.observe(el);
 });
 
 // Counter animation
