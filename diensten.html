@@ -132,6 +132,8 @@ select.fi{cursor:pointer;}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="kronr.js"></script>
+
+<script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
 </head>
 <body>
 <div class="app">
@@ -330,7 +332,7 @@ function closeSB(){document.getElementById('sb').classList.remove('on');document
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
 function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
 
-planrInit(loadData);
+kronrInit(loadData);
 </script>
 </body>
 </html>
