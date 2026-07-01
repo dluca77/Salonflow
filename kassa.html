@@ -17,13 +17,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 
 /* ── SIDEBAR ── */
-.sidebar{width:52px;flex-shrink:0;background:#1a1714;display:flex;flex-direction:column;align-items:center;height:100vh;position:fixed;left:0;top:0;z-index:20;padding:12px 0;}
-.sb-logo{width:32px;height:32px;background:var(--gd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;color:#fff;font-size:13px;font-weight:700;margin-bottom:20px;text-decoration:none;border-radius:4px;}
-.si{width:36px;height:36px;display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.35);border-radius:8px;margin-bottom:4px;text-decoration:none;transition:all .15s;cursor:pointer;}
-.si:hover,.si.on{background:rgba(255,255,255,.1);color:#fff;}
+.sidebar{width:212px;flex-shrink:0;background:#1a1714;display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:20;padding:16px 12px;}
+.sb-logo{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:24px;text-decoration:none;padding:0 10px;display:block;}
+.sb-logo em{color:var(--gd);font-style:normal;}
+.si{display:flex;align-items:center;gap:10px;padding:10px;color:rgba(255,255,255,.45);font-size:13px;cursor:pointer;border-radius:8px;margin-bottom:2px;text-decoration:none;border-left:2px solid transparent;transition:all .15s;}
+.si svg{width:17px;height:17px;flex-shrink:0;}
+.si:hover{background:rgba(255,255,255,.06);color:#fff;}
+.si.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
 .si svg{width:18px;height:18px;}
-.sb-foot{margin-top:auto;}
-.sb-av{width:28px;height:28px;background:var(--gd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;cursor:pointer;}
+.sb-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
+.sb-av{width:28px;height:28px;background:var(--gd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0;}
 /* Mobile overlay */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;}
 .ov.on{display:block;}
@@ -38,7 +41,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .mob-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
 .hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 /* ── MAIN ── */
-.main{margin-left:52px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.main{margin-left:212px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
 
 /* ── TOPBAR ── */
 .topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
@@ -136,7 +139,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
   .sidebar{width:180px;}
-  .main{margin-left:52px;}
+  .main{margin-left:212px;}
   .kassa-body{grid-template-columns:1fr 300px;}
   .svc-grid{grid-template-columns:1fr 1fr;}
 }
@@ -167,15 +170,15 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 <div class="app">
 
 <aside class="sidebar">
-  <a href="dashboard.html" class="sb-logo">K</a>
-  <a href="dashboard.html" class="si" title="Dashboard"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></a>
-  <a href="agenda.html" class="si" title="Agenda"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></a>
-  <a href="klanten.html" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg></a>
-  <a href="kassa.html" class="si on" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></a>
-  <a href="medewerkers.html" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg></a>
-  <a href="diensten.html" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg></a>
-  <a href="rapportages.html" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></a>
-  <div class="sb-foot"><div class="sb-av salon-init" onclick="uitloggen()">??</div></div>
+  <a href="dashboard.html" class="sb-logo">Kronr<em>.</em></a>
+  <a href="dashboard.html" class="si" title="Dashboard"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+  <a href="agenda.html" class="si" title="Agenda"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Agenda</span></a>
+  <a href="klanten.html" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Klanten</span></a>
+  <a href="kassa.html" class="si on" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Kassa</span></a>
+  <a href="medewerkers.html" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span>Medewerkers</span></a>
+  <a href="diensten.html" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span>Diensten</span></a>
+  <a href="rapportages.html" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Rapportages</span></a>
+  <div class="sb-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
 </aside>
 
 <div class="ov" id="ov" onclick="closeSB()"></div>
