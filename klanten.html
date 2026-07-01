@@ -50,17 +50,37 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .btn-add:hover{background:var(--ink2);}
 
 /* ── SEARCH + FILTERS ── */
-.search-wrap{background:var(--wh);border-bottom:1px solid var(--bd);padding:12px 20px;flex-shrink:0;}
-.search-inner{position:relative;}
+.search-wrap{background:var(--wh);border-bottom:1px solid var(--bd);padding:12px 20px;flex-shrink:0;display:flex;align-items:center;gap:10px;}
+.search-inner{position:relative;flex:1;min-width:0;}
 .s-inp{width:100%;background:var(--iv);border:1px solid var(--bd);padding:10px 14px 10px 38px;font-size:13px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.15s;}
-.si:focus{border-color:var(--gd);}
-.si::placeholder{color:var(--mu2);}
+.s-inp:focus{border-color:var(--gd);}
+.s-inp::placeholder{color:var(--mu2);}
 .si-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--mu2);}
+
+/* Filter trechter (zelfde patroon als agenda.html) */
+.fw{position:relative;flex-shrink:0;}
+.fb{width:38px;height:38px;border:1px solid var(--bd2);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;flex-shrink:0;}
+.fb:hover{background:var(--iv);}
+.fb.actief{background:var(--ink);color:#fff;border-color:var(--ink);}
+.fb-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--gd);border:2px solid var(--wh);display:none;}
+.fb.actief .fb-dot{display:block;}
+.fd{position:absolute;top:calc(100% + 4px);right:0;background:var(--wh);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12);min-width:210px;z-index:200;display:none;}
+.fd.on{display:block;}
+.fd-lbl{padding:9px 12px 4px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);font-weight:600;}
+.fd-item{padding:9px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd);}
+.fd-item:last-child{border-bottom:none;}
+.fd-item:hover{background:var(--iv);}
+.fd-item.sel{color:var(--gd);font-weight:500;}
+.fd-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
 
 .filters{display:flex;gap:6px;padding:10px 20px;background:var(--wh);border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 .filters::-webkit-scrollbar{display:none;}
 .ft{padding:6px 16px;border:1px solid var(--bd);background:transparent;color:var(--mu);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:all 0.15s;}
 .ft.on{background:var(--ink);color:var(--iv);border-color:var(--ink);}
+.gbadge{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.gbadge.man{background:#6e93b0;}
+.gbadge.vrouw{background:#c07a91;}
+.gbadge.anders{background:var(--mu2);}
 
 /* ── KLANTEN LIJST ── */
 .list-wrap{flex:1;overflow-y:auto;padding:0;}
@@ -179,14 +199,15 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <div class="search-wrap">
     <div class="search-inner">
       <svg class="si-icon" width="15" height="15" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input class="si" type="search" placeholder="Zoek op naam of e-mail..." oninput="filter(this.value)">
+      <input class="s-inp" type="search" placeholder="Zoek op naam of e-mail..." oninput="filter(this.value)">
     </div>
-  </div>
-
-  <div class="filters">
-    <button class="ft on" onclick="setF('alle',this)">Alle klanten</button>
-    <button class="ft" onclick="setF('recent',this)">Recent</button>
-    <button class="ft" onclick="setF('inactief',this)">Inactief</button>
+    <div class="fw" id="fw">
+      <button class="fb" onclick="toggleFD()" id="filter-btn" title="Filters">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0019 4H5a1 1 0 00-.75 1.61z"/></svg>
+        <span class="fb-dot"></span>
+      </button>
+      <div class="fd" id="fd"></div>
+    </div>
   </div>
 
   <div class="list-wrap">
@@ -211,6 +232,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     </div>
     <div class="fr"><label class="fl">Telefoon</label><input class="fi" id="k-tel" type="tel" placeholder="+31 6 12345678"></div>
     <div class="fr"><label class="fl">E-mail</label><input class="fi" id="k-email" type="email" placeholder="naam@email.nl"></div>
+    <div class="fr"><label class="fl">Geslacht</label>
+      <select class="fi" id="k-geslacht">
+        <option value="">Niet opgegeven</option>
+        <option value="man">Man</option>
+        <option value="vrouw">Vrouw</option>
+        <option value="anders">Anders</option>
+      </select>
+    </div>
     <div class="fr"><label class="fl">Notitie</label><textarea class="fi" id="k-notitie" rows="2" placeholder="Allergieën, voorkeuren..."></textarea></div>
     <button class="btsv" id="btn-klant-opslaan" onclick="slaKlantOp()">Klant opslaan</button>
   </div>
@@ -229,6 +258,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     </div>
     <div style="border:1px solid var(--bd);">
       <div class="dr"><span class="dr-l">Omzet totaal</span><span class="dr-v dr-v-gold" id="d-omzet">—</span></div>
+      <div class="dr"><span class="dr-l">Geslacht</span><span class="dr-v" id="d-geslacht">—</span></div>
       <div class="dr"><span class="dr-l">Bezoeken</span><span class="dr-v" id="d-bz">—</span></div>
       <div class="dr"><span class="dr-l">Gem. bon</span><span class="dr-v" id="d-gem">—</span></div>
       <div class="dr"><span class="dr-l">Laatste bezoek</span><span class="dr-v" id="d-last">—</span></div>
@@ -243,7 +273,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 </div>
 
 <script>
-let KLANTEN=[], activeF='alle', activeQ='';
+let KLANTEN=[], activeF='alle', activeQ='', activeG='alle', activeSort='naam-az';
 
 async function loadData(){
   const {data,error}=await sb.from('klanten').select('*').eq('salon_id',SALON_ID).order('naam');
@@ -259,12 +289,21 @@ function getInit(naam){return naam.split(' ').map(w=>w[0]).join('').substring(0,
 function render(){
   const list=document.getElementById('klist');
   const q=activeQ.toLowerCase();
-  const filtered=KLANTEN.filter(k=>{
+  let filtered=KLANTEN.filter(k=>{
     const mq=!q||k.naam.toLowerCase().includes(q)||(k.email||'').toLowerCase().includes(q)||(k.telefoon||'').includes(q);
     const sinceDate=new Date(k.created_at);
     const daysSince=(new Date()-sinceDate)/(1000*60*60*24);
     const mf=activeF==='alle'||(activeF==='recent'&&daysSince<=30)||(activeF==='inactief'&&daysSince>90);
-    return mq&&mf;
+    const mg=activeG==='alle'||k.geslacht===activeG;
+    return mq&&mf&&mg;
+  });
+
+  filtered.sort((a,b)=>{
+    if(activeSort==='naam-az')return a.naam.localeCompare(b.naam);
+    if(activeSort==='naam-za')return b.naam.localeCompare(a.naam);
+    if(activeSort==='nieuw')return new Date(b.created_at)-new Date(a.created_at);
+    if(activeSort==='oud')return new Date(a.created_at)-new Date(b.created_at);
+    return 0;
   });
 
   document.getElementById('kcount').textContent=filtered.length+' klant'+(filtered.length!==1?'en':'');
@@ -280,10 +319,11 @@ function render(){
   list.innerHTML=filtered.map(k=>{
     const init=getInit(k.naam);
     const since=new Date(k.created_at).toLocaleDateString('nl-NL',{month:'short',year:'numeric'});
+    const gb=k.geslacht?`<span class="gbadge ${k.geslacht}"></span>`:'';
     return `<div class="kcard" onclick="showK('${k.id}')">
       <div class="kav">${init}</div>
       <div class="kinfo">
-        <div class="kname">${k.naam}</div>
+        <div class="kname">${gb}${k.naam}</div>
         <div class="kmeta">${k.email||k.telefoon||'Geen contactgegevens'} · Klant sinds ${since}</div>
       </div>
       <div class="kright">
@@ -302,6 +342,7 @@ function showK(id){
   document.getElementById('d-naam').textContent=k.naam;
   document.getElementById('d-sub').textContent=(k.email||'')+(k.telefoon?' · '+k.telefoon:'');
   document.getElementById('d-omzet').textContent='€0';
+  document.getElementById('d-geslacht').textContent=k.geslacht?k.geslacht.charAt(0).toUpperCase()+k.geslacht.slice(1):'—';
   document.getElementById('d-bz').textContent='0';
   document.getElementById('d-gem').textContent='—';
   document.getElementById('d-last').textContent='—';
@@ -315,6 +356,7 @@ async function slaKlantOp(){
   const achter=document.getElementById('k-achter').value.trim();
   const tel=document.getElementById('k-tel').value.trim();
   const email=document.getElementById('k-email').value.trim();
+  const geslacht=document.getElementById('k-geslacht').value||null;
   const notitie=document.getElementById('k-notitie').value.trim();
   const msgEl=document.getElementById('m-new-msg');
 
@@ -330,7 +372,7 @@ async function slaKlantOp(){
   const naam=voor+(achter?' '+achter:'');
   const{error}=await sb.from('klanten').insert({
     salon_id:SALON_ID,naam,
-    email:email||null,telefoon:tel||null,notities:notitie||null
+    email:email||null,telefoon:tel||null,notities:notitie||null,geslacht
   });
 
   btn.disabled=false;btn.textContent='Klant opslaan';
@@ -343,13 +385,46 @@ async function slaKlantOp(){
 
   // Reset form
   ['k-voor','k-achter','k-tel','k-email','k-notitie'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('k-geslacht').value='';
   msgEl.style.display='none';
   closeM('m-new');
   await loadData();
 }
 
 function filter(v){activeQ=v;render();}
-function setF(f,btn){activeF=f;document.querySelectorAll('.ft').forEach(b=>b.classList.remove('on'));btn.classList.add('on');render();}
+
+// ── FILTER TRECHTER (zelfde patroon als agenda.html) ──
+function renderFD(){
+  const fd=document.getElementById('fd');
+  const statusItems=[{id:'alle',lbl:'Alle klanten'},{id:'recent',lbl:'Recent'},{id:'inactief',lbl:'Inactief'}];
+  const genderItems=[{id:'alle',lbl:'Alle geslachten'},{id:'man',lbl:'Man'},{id:'vrouw',lbl:'Vrouw'},{id:'anders',lbl:'Anders'}];
+  const sortItems=[{id:'naam-az',lbl:'Naam A-Z'},{id:'naam-za',lbl:'Naam Z-A'},{id:'nieuw',lbl:'Nieuwste eerst'},{id:'oud',lbl:'Oudste eerst'}];
+  fd.innerHTML=
+    `<div class="fd-lbl">Status</div>`+
+    statusItems.map(s=>`<div class="fd-item${activeF===s.id?' sel':''}" onclick="setStatusFD('${s.id}',event)">
+      <div class="fd-dot" style="background:${activeF===s.id?'var(--gd)':'var(--mu2)'}"></div>${s.lbl}
+    </div>`).join('')+
+    `<div class="fd-lbl">Geslacht</div>`+
+    genderItems.map(g=>`<div class="fd-item${activeG===g.id?' sel':''}" onclick="setGenderFD('${g.id}',event)">
+      <div class="fd-dot" style="background:${activeG===g.id?'var(--gd)':'var(--mu2)'}"></div>${g.lbl}
+    </div>`).join('')+
+    `<div class="fd-lbl">Sorteren</div>`+
+    sortItems.map(s=>`<div class="fd-item${activeSort===s.id?' sel':''}" onclick="setSortFD('${s.id}',event)">
+      <div class="fd-dot" style="background:${activeSort===s.id?'var(--gd)':'var(--mu2)'}"></div>${s.lbl}
+    </div>`).join('');
+}
+function toggleFD(){
+  const fd=document.getElementById('fd');
+  if(!fd.classList.contains('on')) renderFD();
+  fd.classList.toggle('on');
+}
+function isFilterActief(){return activeF!=='alle'||activeG!=='alle'||activeSort!=='naam-az';}
+function setStatusFD(v,e){e.stopPropagation();activeF=v;document.getElementById('filter-btn').classList.toggle('actief',isFilterActief());renderFD();render();}
+function setGenderFD(v,e){e.stopPropagation();activeG=v;document.getElementById('filter-btn').classList.toggle('actief',isFilterActief());renderFD();render();}
+function setSortFD(v,e){e.stopPropagation();activeSort=v;document.getElementById('filter-btn').classList.toggle('actief',isFilterActief());renderFD();render();}
+document.addEventListener('click',e=>{
+  if(!document.getElementById('fw')?.contains(e.target)) document.getElementById('fd')?.classList.remove('on');
+});
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
 function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
