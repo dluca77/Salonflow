@@ -12,7 +12,7 @@
   --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
   --green:#2d6a4f;--red:#c0392b;
 }
-html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
 
 /* ── HEADER ── */
 .header{background:var(--wh);border-bottom:1px solid var(--bd);padding:0 5vw;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:10;}
@@ -156,6 +156,11 @@ body.embed .brand-sub{display:none;}
 body.embed .header-right{display:none;}
 body.embed .steps-main{padding:20px 20px;}
 body.embed .summary-panel{padding:20px 20px;}
+body.embed .progress-bar{margin-bottom:24px;}
+body.embed .step-label{display:none;}
+body.embed .step-dot{gap:0;}
+body.embed .step-line{margin:0 4px;}
+body.embed .step-num{width:22px;height:22px;font-size:10px;}
 body.embed .layout{grid-template-columns:1fr;max-width:none;}
 </style>
 </head>
