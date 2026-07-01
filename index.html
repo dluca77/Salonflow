@@ -209,6 +209,20 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-legal a{font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;}
 .footer-legal a:hover{color:rgba(255,255,255,.6);}
 
+
+/* ── MOBILE MENU ── */
+.mob-nav{position:fixed;inset:0;background:var(--ink);z-index:200;display:flex;flex-direction:column;padding:24px;transform:translateX(100%);transition:transform .3s ease;}
+.mob-nav.on{transform:translateX(0);}
+.mob-nav-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}
+.mob-nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--white);letter-spacing:-.5px;}
+.mob-nav-logo em{color:var(--gd);font-style:normal;}
+.mob-close{width:36px;height:36px;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;}
+.mob-links{display:flex;flex-direction:column;gap:4px;flex:1;}
+.mob-link{font-size:24px;font-weight:600;color:rgba(255,255,255,.6);text-decoration:none;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);transition:color .2s;}
+.mob-link:hover{color:var(--white);}
+.mob-nav-foot{display:flex;flex-direction:column;gap:12px;}
+.mob-btn-login{padding:14px;text-align:center;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:15px;font-weight:500;text-decoration:none;border-radius:10px;}
+.mob-btn-start{padding:14px;text-align:center;background:var(--gd);color:var(--white);font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;}
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
   .types-grid{grid-template-columns:repeat(2,1fr);}
@@ -586,11 +600,13 @@ window.addEventListener('scroll',()=>{
   document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
 });
 
-// Mob menu toggle
-let mobOpen=false;
 function toggleMob(){
-  mobOpen=!mobOpen;
-  // Simple mobile menu - could expand later
+  document.getElementById('mob-nav').classList.add('on');
+  document.body.style.overflow='hidden';
+}
+function closeMob(){
+  document.getElementById('mob-nav').classList.remove('on');
+  document.body.style.overflow='';
 }
 
 // Smooth scroll for anchor links
@@ -639,5 +655,23 @@ const statsObs=new IntersectionObserver(entries=>{
 },{threshold:.3});
 statsObs.observe(document.querySelector('.stats-bar'));
 </script>
+
+<!-- Mobile menu -->
+<div class="mob-nav" id="mob-nav">
+  <div class="mob-nav-head">
+    <div class="mob-nav-logo">Kronr<em>.</em></div>
+    <button class="mob-close" onclick="closeMob()">✕</button>
+  </div>
+  <div class="mob-links">
+    <a href="#voor-wie" class="mob-link" onclick="closeMob()">Voor wie</a>
+    <a href="#features" class="mob-link" onclick="closeMob()">Features</a>
+    <a href="#ai" class="mob-link" onclick="closeMob()">AI</a>
+    <a href="#prijzen" class="mob-link" onclick="closeMob()">Prijzen</a>
+  </div>
+  <div class="mob-nav-foot">
+    <a href="login.html" class="mob-btn-login">Inloggen</a>
+    <a href="login.html" class="mob-btn-start">Gratis starten →</a>
+  </div>
+</div>
 </body>
 </html>
