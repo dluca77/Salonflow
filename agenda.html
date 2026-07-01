@@ -605,13 +605,75 @@ function buildAptCard(a,i){
 
   card.onclick=e=>{e.stopPropagation();showPop(a,card);};
 
-  // Drag & drop
+  // Desktop drag & drop
   card.addEventListener('dragstart',e=>{
     card.classList.add('dragging');
     e.dataTransfer.setData('text/plain',a.id);
     e.dataTransfer.effectAllowed='move';
   });
   card.addEventListener('dragend',()=>card.classList.remove('dragging'));
+
+  // Touch drag & drop (mobiel)
+  let touchGhost=null, touchStartX=0, touchStartY=0;
+
+  card.addEventListener('touchstart',e=>{
+    if(a._herhaald) return;
+    const touch=e.touches[0];
+    touchStartX=touch.clientX;
+    touchStartY=touch.clientY;
+
+    // Ghost element aanmaken
+    touchGhost=document.createElement('div');
+    touchGhost.className='apt-ghost '+card.className.replace('apt ','');
+    touchGhost.innerHTML=card.innerHTML;
+    touchGhost.style.width=card.offsetWidth+'px';
+    touchGhost.style.left=touch.clientX+'px';
+    touchGhost.style.top=touch.clientY+'px';
+    document.body.appendChild(touchGhost);
+
+    setTimeout(()=>{
+      card.classList.add('touch-dragging');
+    },150);
+  },{passive:true});
+
+  card.addEventListener('touchmove',e=>{
+    if(!touchGhost) return;
+    e.preventDefault();
+    const touch=e.touches[0];
+    touchGhost.style.left=touch.clientX+'px';
+    touchGhost.style.top=touch.clientY+'px';
+
+    // Highlight slot onder vinger
+    document.querySelectorAll('.gl.touch-over').forEach(el=>el.classList.remove('touch-over'));
+    touchGhost.style.display='none';
+    const el=document.elementFromPoint(touch.clientX,touch.clientY);
+    touchGhost.style.display='';
+    if(el&&el.classList.contains('gl')) el.classList.add('touch-over');
+  },{passive:false});
+
+  card.addEventListener('touchend',e=>{
+    card.classList.remove('touch-dragging');
+    document.querySelectorAll('.gl.touch-over').forEach(el=>el.classList.remove('touch-over'));
+    if(!touchGhost){return;}
+    touchGhost.remove();touchGhost=null;
+
+    const touch=e.changedTouches[0];
+    // Verberg ghost, vind element onder vinger
+    const ghost2=document.querySelector('.apt-ghost');
+    if(ghost2)ghost2.style.display='none';
+    const target=document.elementFromPoint(touch.clientX,touch.clientY);
+    if(ghost2)ghost2.style.display='';
+
+    if(target&&target.classList.contains('gl')&&target.dataset.slot!==undefined){
+      const col=target.closest('.day-col');
+      if(col&&col.dataset.date){
+        const s=parseInt(target.dataset.slot);
+        const sh=SH+Math.floor(s/4);
+        const sm=(s%4)*15;
+        onDrop(col.dataset.date,sh,sm,{dataTransfer:{getData:()=>a.id}});
+      }
+    }
+  });
 
   return card;
 }
