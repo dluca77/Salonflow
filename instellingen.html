@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kronr — Instellingen</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;overflow:hidden;}
+.app{display:flex;height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:212px;flex-shrink:0;background:#1a1714;display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:20;padding:16px 12px;}
+.sb-logo{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:24px;text-decoration:none;padding:0 10px;display:block;}
+.sb-logo em{color:var(--gd);font-style:normal;}
+.si{display:flex;align-items:center;gap:10px;padding:10px;color:rgba(255,255,255,.45);font-size:13px;cursor:pointer;border-radius:8px;margin-bottom:2px;text-decoration:none;border-left:2px solid transparent;transition:all .15s;}
+.si svg{width:17px;height:17px;flex-shrink:0;}
+.si:hover{background:rgba(255,255,255,.06);color:#fff;}
+.si.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
+.sb-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
+.sb-av{width:28px;height:28px;background:var(--gd);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;flex-shrink:0;overflow:hidden;}
+.sb-av img{width:100%;height:100%;object-fit:cover;}
+/* Mobile overlay */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;}
+.ov.on{display:block;}
+.sb-mob{position:fixed;left:-100%;top:0;bottom:0;width:220px;background:#1a1714;z-index:999;display:flex;flex-direction:column;transition:left .25s ease;padding:16px 12px;}
+.sb-mob.on{left:0;}
+.mob-logo{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.mob-logo em{color:var(--gd);font-style:normal;}
+.mob-x{background:transparent;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;}
+.mob-item{display:flex;align-items:center;gap:10px;padding:10px;color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;border-radius:8px;margin-bottom:2px;border-left:2px solid transparent;}
+.mob-item.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
+.mob-item svg{width:16px;height:16px;flex-shrink:0;}
+.mob-foot{margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
+.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+
+/* ── MAIN ── */
+.main{margin-left:212px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
+.topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
+.tb-logo{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;display:none;letter-spacing:0.5px;}
+.tb-logo em{color:var(--gd);font-style:normal;}
+.tb-title{font-size:13px;font-weight:500;color:var(--mu);}
+
+.content{flex:1;overflow-y:auto;padding:32px 20px 60px;max-width:720px;margin:0 auto;width:100%;}
+.content::-webkit-scrollbar{width:3px;}
+.content::-webkit-scrollbar-thumb{background:var(--bd);}
+
+.pg-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:4px;}
+.pg-sub{font-size:13px;color:var(--mu);margin-bottom:32px;}
+
+.section{background:var(--wh);border:1px solid var(--bd);margin-bottom:20px;padding:24px 24px 28px;}
+.sec-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
+.sec-sub{font-size:12px;color:var(--mu);margin-bottom:20px;line-height:1.5;}
+
+.fr{margin-bottom:16px;}
+.fr:last-child{margin-bottom:0;}
+.fl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:7px;display:block;}
+.fi{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;border-radius:6px;}
+.fi:focus{border-color:var(--gd);}
+.fi:disabled{color:var(--mu2);cursor:not-allowed;background:var(--wm);}
+.fi::placeholder{color:var(--mu2);}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+.btn-sv{padding:12px 24px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;border-radius:6px;margin-top:16px;}
+.btn-sv:hover{background:var(--ink2);}
+.btn-sv:disabled{opacity:0.5;cursor:not-allowed;}
+.btn-sec{padding:12px 24px;background:transparent;color:var(--ink);border:1px solid var(--bd2);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;border-radius:6px;margin-top:16px;}
+.btn-sec:hover{border-color:var(--ink);}
+.btn-danger{padding:9px 16px;background:transparent;color:var(--red);border:1px solid rgba(192,57,43,0.3);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;border-radius:6px;}
+.btn-danger:hover{background:rgba(192,57,43,0.06);}
+
+/* Logo upload */
+.logo-row{display:flex;align-items:center;gap:18px;margin-bottom:20px;}
+.logo-preview{width:72px;height:72px;border-radius:12px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--gd);overflow:hidden;flex-shrink:0;border:1px solid var(--bd);}
+.logo-preview img{width:100%;height:100%;object-fit:cover;}
+.logo-actions{display:flex;flex-direction:column;gap:6px;}
+.btn-upload{padding:8px 16px;background:var(--wh);color:var(--ink);border:1px solid var(--bd2);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;border-radius:6px;display:inline-block;width:fit-content;}
+.btn-upload:hover{border-color:var(--ink);}
+.logo-hint{font-size:11px;color:var(--mu2);}
+
+/* Messages */
+.msg{padding:11px 14px;font-size:13px;margin-top:12px;line-height:1.5;display:none;border-left:3px solid;border-radius:4px;}
+.msg.err{background:rgba(192,57,43,0.06);border-color:var(--red);color:var(--red);display:block;}
+.msg.ok{background:rgba(45,106,79,0.06);border-color:var(--green);color:var(--green);display:block;}
+
+/* 2FA */
+.mfa-status{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;background:var(--iv);border:1px solid var(--bd);border-radius:8px;margin-bottom:16px;}
+.mfa-status-left{display:flex;align-items:center;gap:10px;}
+.mfa-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.mfa-dot.off{background:var(--mu2);}
+.mfa-dot.on{background:var(--green);}
+.mfa-label{font-size:13px;font-weight:500;}
+.mfa-sub{font-size:11px;color:var(--mu);margin-top:2px;}
+
+.mfa-enroll{border:1px dashed var(--bd2);border-radius:8px;padding:24px;text-align:center;margin-top:16px;}
+.mfa-qr{width:180px;height:180px;margin:0 auto 16px;background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:10px;}
+.mfa-qr img{width:100%;height:100%;}
+.mfa-secret{font-family:monospace;font-size:12px;background:var(--wm);padding:8px 12px;border-radius:4px;word-break:break-all;color:var(--mu);margin-bottom:16px;display:inline-block;}
+.mfa-code-input{width:180px;text-align:center;letter-spacing:4px;font-size:18px;margin:0 auto;}
+
+.spinner{width:15px;height:15px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .6s linear infinite;display:inline-block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:768px){
+  .sidebar{display:none;}.main{margin-left:0;}
+  .hbg{display:flex;}.tb-title{font-size:15px;}
+  .content{padding:20px 16px 60px;}
+  .form-row-2{grid-template-columns:1fr;}
+}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="kronr.js"></script>
+
+<script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
+</head>
+<body>
+<div class="app">
+
+<aside class="sidebar">
+  <a href="dashboard.html" class="sb-logo">Kronr<em>.</em></a>
+  <a href="dashboard.html" class="si" title="Dashboard"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg><span>Dashboard</span></a>
+  <a href="agenda.html" class="si" title="Agenda"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>Agenda</span></a>
+  <a href="klanten.html" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Klanten</span></a>
+  <a href="kassa.html" class="si" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Kassa</span></a>
+  <a href="medewerkers.html" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span>Medewerkers</span></a>
+  <a href="diensten.html" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span>Diensten</span></a>
+  <a href="rapportages.html" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Rapportages</span></a>
+  <a href="instellingen.html" class="si on" title="Instellingen"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Instellingen</span></a>
+  <div class="sb-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
+</aside>
+
+<div class="ov" id="ov" onclick="closeSB()"></div>
+<div class="sb-mob" id="sb">
+  <div class="mob-logo">Kronr<em>.</em><button class="mob-x" onclick="closeSB()">✕</button></div>
+  <a href="dashboard.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>Dashboard</a>
+  <a href="agenda.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</a>
+  <a href="klanten.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Klanten</a>
+  <a href="kassa.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
+  <a href="medewerkers.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
+  <a href="diensten.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Diensten</a>
+  <a href="rapportages.html" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
+  <a href="instellingen.html" class="mob-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>Instellingen</a>
+  <div class="mob-foot" onclick="uitloggen()"><div class="sb-av salon-init">??</div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
+</div>
+
+<div class="main">
+  <div class="topbar">
+    <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="tb-logo">Kronr<em>.</em></div>
+    <div class="tb-title">Instellingen</div>
+  </div>
+
+  <div class="content">
+    <div class="pg-title">Instellingen</div>
+    <div class="pg-sub">Beheer je salonprofiel, account en beveiliging.</div>
+
+    <!-- SALON PROFIEL -->
+    <div class="section">
+      <div class="sec-title">Salonprofiel</div>
+      <div class="sec-sub">Deze gegevens zijn zichtbaar voor klanten in je Kronr-omgeving en boekingswidget.</div>
+
+      <div class="logo-row">
+        <div class="logo-preview" id="logo-preview">??</div>
+        <div class="logo-actions">
+          <label class="btn-upload">
+            <span id="upload-label">Logo uploaden</span>
+            <input type="file" id="logo-input" accept="image/*" style="display:none;" onchange="uploadLogo(this)">
+          </label>
+          <div class="logo-hint">PNG of JPG, max 2MB</div>
+        </div>
+      </div>
+
+      <div class="fr">
+        <label class="fl">Salonnaam</label>
+        <input class="fi" id="s-naam" type="text" placeholder="Kapsalon Jasmijn">
+      </div>
+      <div class="fr">
+        <label class="fl">Type bedrijf</label>
+        <select class="fi" id="s-type">
+          <option>Kapper</option><option>Barbier</option><option>Nagelstudio</option>
+          <option>Schoonheidssalon</option><option>Massagesalon</option><option>Wellness</option>
+          <option>Overig</option>
+        </select>
+      </div>
+      <button class="btn-sv" id="btn-profiel" onclick="slaProfielOp()">Profiel opslaan</button>
+      <div class="msg" id="msg-profiel"></div>
+    </div>
+
+    <!-- ACCOUNT -->
+    <div class="section">
+      <div class="sec-title">Account</div>
+      <div class="sec-sub">Je inloggegevens voor Kronr.</div>
+
+      <div class="fr">
+        <label class="fl">E-mailadres</label>
+        <input class="fi" id="s-email" type="email" disabled>
+      </div>
+
+      <div class="form-row-2">
+        <div class="fr">
+          <label class="fl">Nieuw wachtwoord</label>
+          <input class="fi" id="s-pass1" type="password" placeholder="••••••••" autocomplete="new-password">
+        </div>
+        <div class="fr">
+          <label class="fl">Bevestig wachtwoord</label>
+          <input class="fi" id="s-pass2" type="password" placeholder="••••••••" autocomplete="new-password">
+        </div>
+      </div>
+      <button class="btn-sv" id="btn-pass" onclick="wijzigWachtwoord()">Wachtwoord wijzigen</button>
+      <div class="msg" id="msg-pass"></div>
+    </div>
+
+    <!-- 2FA -->
+    <div class="section">
+      <div class="sec-title">Tweestapsverificatie (2FA)</div>
+      <div class="sec-sub">Extra beveiliging: naast je wachtwoord moet je ook een code uit een authenticator-app (zoals Google Authenticator of Authy) invoeren.</div>
+
+      <div class="mfa-status">
+        <div class="mfa-status-left">
+          <div class="mfa-dot off" id="mfa-dot"></div>
+          <div>
+            <div class="mfa-label" id="mfa-label">2FA is uitgeschakeld</div>
+            <div class="mfa-sub" id="mfa-sub">Je account is alleen beveiligd met een wachtwoord</div>
+          </div>
+        </div>
+        <button class="btn-danger" id="btn-mfa-uit" style="display:none;" onclick="verwijderMFA()">Uitschakelen</button>
+      </div>
+
+      <div id="mfa-setup-wrap" style="display:none;">
+        <button class="btn-sec" id="btn-mfa-start" onclick="startMFA()">2FA instellen</button>
+      </div>
+
+      <div class="mfa-enroll" id="mfa-enroll" style="display:none;">
+        <div style="font-size:13px;margin-bottom:14px;">Scan deze QR-code met je authenticator-app:</div>
+        <div class="mfa-qr"><img id="mfa-qr-img" src="" alt="QR code"></div>
+        <div class="mfa-secret" id="mfa-secret"></div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:14px;">Kun je niet scannen? Voer bovenstaande code handmatig in je app in.</div>
+        <div class="fr">
+          <input class="fi mfa-code-input" id="mfa-code" type="text" inputmode="numeric" maxlength="6" placeholder="000000">
+        </div>
+        <button class="btn-sv" id="btn-mfa-verify" onclick="verifieerMFA()">Bevestigen</button>
+        <button class="btn-sec" onclick="annuleerMFA()">Annuleren</button>
+      </div>
+      <div class="msg" id="msg-mfa"></div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+let LOGO_URL = null;
+let MFA_FACTOR_ID = null;
+let MFA_PENDING_FACTOR_ID = null;
+
+function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');}
+function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');}
+
+function showMsg(elId, tekst, type){
+  const el=document.getElementById(elId);
+  el.textContent=tekst;
+  el.className='msg '+(type==='ok'?'ok':'err');
+}
+
+async function loadData(){
+  document.getElementById('s-naam').value = SALON.naam || '';
+  document.getElementById('s-type').value = SALON.type_bedrijf || 'Kapper';
+  document.getElementById('s-email').value = SESSION_USER.email || '';
+
+  if(SALON.logo_url){
+    LOGO_URL = SALON.logo_url;
+    document.getElementById('logo-preview').innerHTML = `<img src="${SALON.logo_url}" alt="Logo">`;
+  } else {
+    document.getElementById('logo-preview').textContent = (SALON.naam||'??').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  }
+
+  await checkMFAStatus();
+}
+
+// ── SALON PROFIEL ──
+async function slaProfielOp(){
+  const naam = document.getElementById('s-naam').value.trim();
+  const type = document.getElementById('s-type').value;
+  if(!naam){ showMsg('msg-profiel','Vul een salonnaam in.'); return; }
+
+  const btn=document.getElementById('btn-profiel');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+
+  const{error} = await sb.from('salons').update({naam, type_bedrijf:type, logo_url:LOGO_URL}).eq('id', SALON_ID);
+
+  btn.disabled=false; btn.textContent='Profiel opslaan';
+
+  if(error){ showMsg('msg-profiel','Fout bij opslaan: '+error.message); return; }
+  showMsg('msg-profiel','Profiel opgeslagen.','ok');
+  document.querySelectorAll('.salon-naam').forEach(el=>el.textContent=naam);
+  const init=naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  document.querySelectorAll('.salon-init').forEach(el=>{ if(!LOGO_URL) el.textContent=init; });
+}
+
+// ── LOGO UPLOAD ──
+async function uploadLogo(input){
+  const file = input.files[0];
+  if(!file) return;
+  if(file.size > 2*1024*1024){ showMsg('msg-profiel','Bestand is groter dan 2MB.'); return; }
+
+  document.getElementById('upload-label').innerHTML='<span class="spinner" style="border-top-color:var(--ink);border-color:rgba(0,0,0,.2);"></span>';
+
+  const ext = file.name.split('.').pop();
+  const path = `${SALON_ID}/logo.${ext}`;
+
+  const{error:upErr} = await sb.storage.from('salon-logos').upload(path, file, {upsert:true, cacheControl:'3600'});
+
+  if(upErr){
+    document.getElementById('upload-label').textContent='Logo uploaden';
+    showMsg('msg-profiel','Upload mislukt: '+upErr.message+'. Is de "salon-logos" storage bucket aangemaakt?');
+    return;
+  }
+
+  const{data} = sb.storage.from('salon-logos').getPublicUrl(path);
+  LOGO_URL = data.publicUrl + '?t=' + Date.now();
+
+  document.getElementById('logo-preview').innerHTML = `<img src="${LOGO_URL}" alt="Logo">`;
+  document.getElementById('upload-label').textContent='Logo wijzigen';
+  showMsg('msg-profiel','Logo geüpload. Klik op "Profiel opslaan" om te bevestigen.','ok');
+}
+
+// ── WACHTWOORD WIJZIGEN ──
+async function wijzigWachtwoord(){
+  const p1 = document.getElementById('s-pass1').value;
+  const p2 = document.getElementById('s-pass2').value;
+
+  if(!p1 || !p2){ showMsg('msg-pass','Vul beide velden in.'); return; }
+  if(p1.length < 8){ showMsg('msg-pass','Wachtwoord moet minimaal 8 tekens zijn.'); return; }
+  if(p1 !== p2){ showMsg('msg-pass','Wachtwoorden komen niet overeen.'); return; }
+
+  const btn=document.getElementById('btn-pass');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+
+  const{error} = await sb.auth.updateUser({password:p1});
+
+  btn.disabled=false; btn.textContent='Wachtwoord wijzigen';
+
+  if(error){ showMsg('msg-pass','Fout: '+error.message); return; }
+  showMsg('msg-pass','Wachtwoord succesvol gewijzigd.','ok');
+  document.getElementById('s-pass1').value='';
+  document.getElementById('s-pass2').value='';
+}
+
+// ── 2FA ──
+async function checkMFAStatus(){
+  const{data,error} = await sb.auth.mfa.listFactors();
+  if(error){ return; }
+  const verified = (data.totp||[]).find(f=>f.status==='verified');
+
+  if(verified){
+    MFA_FACTOR_ID = verified.id;
+    document.getElementById('mfa-dot').className='mfa-dot on';
+    document.getElementById('mfa-label').textContent='2FA is ingeschakeld';
+    document.getElementById('mfa-sub').textContent='Je account is extra beveiligd';
+    document.getElementById('btn-mfa-uit').style.display='inline-block';
+    document.getElementById('mfa-setup-wrap').style.display='none';
+  } else {
+    MFA_FACTOR_ID = null;
+    document.getElementById('mfa-dot').className='mfa-dot off';
+    document.getElementById('mfa-label').textContent='2FA is uitgeschakeld';
+    document.getElementById('mfa-sub').textContent='Je account is alleen beveiligd met een wachtwoord';
+    document.getElementById('btn-mfa-uit').style.display='none';
+    document.getElementById('mfa-setup-wrap').style.display='block';
+  }
+}
+
+async function startMFA(){
+  const btn=document.getElementById('btn-mfa-start');
+  btn.disabled=true; btn.innerHTML='<span class="spinner" style="border-top-color:var(--ink);border-color:rgba(0,0,0,.2);"></span>';
+
+  const{data,error} = await sb.auth.mfa.enroll({factorType:'totp', friendlyName:'Kronr 2FA'});
+
+  btn.disabled=false; btn.textContent='2FA instellen';
+
+  if(error){ showMsg('msg-mfa','Fout bij starten: '+error.message); return; }
+
+  MFA_PENDING_FACTOR_ID = data.id;
+  document.getElementById('mfa-qr-img').src = data.totp.qr_code;
+  document.getElementById('mfa-secret').textContent = data.totp.secret;
+  document.getElementById('mfa-enroll').style.display='block';
+  document.getElementById('mfa-setup-wrap').style.display='none';
+}
+
+async function verifieerMFA(){
+  const code = document.getElementById('mfa-code').value.trim();
+  if(!/^\d{6}$/.test(code)){ showMsg('msg-mfa','Vul een geldige 6-cijferige code in.'); return; }
+
+  const btn=document.getElementById('btn-mfa-verify');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+
+  const{data:challenge, error:challErr} = await sb.auth.mfa.challenge({factorId:MFA_PENDING_FACTOR_ID});
+  if(challErr){ btn.disabled=false; btn.textContent='Bevestigen'; showMsg('msg-mfa','Fout: '+challErr.message); return; }
+
+  const{error:verifyErr} = await sb.auth.mfa.verify({factorId:MFA_PENDING_FACTOR_ID, challengeId:challenge.id, code});
+
+  btn.disabled=false; btn.textContent='Bevestigen';
+
+  if(verifyErr){ showMsg('msg-mfa','Verkeerde code, probeer opnieuw.'); return; }
+
+  showMsg('msg-mfa','2FA is succesvol ingeschakeld.','ok');
+  document.getElementById('mfa-enroll').style.display='none';
+  document.getElementById('mfa-code').value='';
+  MFA_PENDING_FACTOR_ID=null;
+  await checkMFAStatus();
+}
+
+async function annuleerMFA(){
+  if(MFA_PENDING_FACTOR_ID){
+    await sb.auth.mfa.unenroll({factorId:MFA_PENDING_FACTOR_ID});
+    MFA_PENDING_FACTOR_ID=null;
+  }
+  document.getElementById('mfa-enroll').style.display='none';
+  document.getElementById('mfa-setup-wrap').style.display='block';
+  document.getElementById('mfa-code').value='';
+}
+
+async function verwijderMFA(){
+  if(!MFA_FACTOR_ID) return;
+  if(!confirm('Weet je zeker dat je 2FA wilt uitschakelen? Je account is dan alleen nog beveiligd met je wachtwoord.')) return;
+
+  const btn=document.getElementById('btn-mfa-uit');
+  btn.disabled=true; btn.innerHTML='<span class="spinner" style="border-top-color:var(--red);border-color:rgba(192,57,43,.2);"></span>';
+
+  const{error} = await sb.auth.mfa.unenroll({factorId:MFA_FACTOR_ID});
+
+  btn.disabled=false; btn.textContent='Uitschakelen';
+
+  if(error){ showMsg('msg-mfa','Fout bij uitschakelen: '+error.message); return; }
+  showMsg('msg-mfa','2FA is uitgeschakeld.','ok');
+  await checkMFAStatus();
+}
+
+if(typeof kronrInit==='function') kronrInit(loadData);
+else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData):(document.documentElement.style.opacity='1')});
+</script>
+</body>
+</html>
