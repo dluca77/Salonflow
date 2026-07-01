@@ -1044,8 +1044,8 @@ function closeSB(){document.getElementById('sb').classList.remove('on');document
 setInterval(()=>{const n=new Date();document.querySelectorAll('.now-line').forEach(nl=>{nl.style.top=((n.getHours()-SH)*60+n.getMinutes())/15*RH+'px';});},30000);
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
-if(typeof planrInit==='function') planrInit(loadData);
-else window.addEventListener('load',()=>{typeof planrInit==='function'?planrInit(loadData):(document.documentElement.style.opacity='1',render());});
+if(typeof kronrInit==='function') kronrInit(loadData);
+else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData):(document.documentElement.style.opacity='1',render());});
 </script>
 </body>
 </html>
