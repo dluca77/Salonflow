@@ -94,7 +94,13 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 .kcard{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--bd);cursor:pointer;transition:background 0.1s;}
 .kcard:hover .kname{color:var(--gd);}
-.kav{width:40px;height:40px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gd);flex-shrink:0;}
+.kav{width:40px;height:40px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gd);flex-shrink:0;overflow:hidden;}
+.kav img{width:100%;height:100%;object-fit:cover;}
+.foto-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
+.foto-preview{width:56px;height:56px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);flex-shrink:0;overflow:hidden;}
+.foto-preview img{width:100%;height:100%;object-fit:cover;}
+.btn-foto{padding:8px 16px;background:var(--wh);color:var(--ink);border:1px solid var(--bd2);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;display:inline-block;}
+.btn-foto:hover{border-color:var(--ink);}
 .kinfo{flex:1;min-width:0;}
 .kname{font-size:14px;font-weight:500;margin-bottom:2px;transition:color 0.15s;}
 .kmeta{font-size:11px;color:var(--mu2);}
@@ -127,7 +133,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 /* Detail modal */
 .detail-head{display:flex;align-items:center;gap:16px;margin-bottom:20px;}
-.detail-av{width:52px;height:52px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);flex-shrink:0;}
+.detail-av{width:52px;height:52px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);flex-shrink:0;overflow:hidden;}
+.detail-av img{width:100%;height:100%;object-fit:cover;}
 .dr{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--bd);}
 .dr:last-child{border-bottom:none;}
 .dr-l{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
@@ -233,6 +240,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="mt" id="m-new-title">Nieuwe klant</div>
     <div class="msub">Voeg een klant toe aan het systeem</div>
     <div id="m-new-msg" style="display:none;padding:10px 14px;border-left:3px solid;font-size:13px;margin-bottom:14px;"></div>
+    <div class="foto-row">
+      <div class="foto-preview" id="foto-preview">?</div>
+      <div>
+        <label class="btn-foto">
+          <span id="foto-upload-label">Foto toevoegen</span>
+          <input type="file" id="foto-input" accept="image/*" style="display:none;" onchange="uploadKlantFoto(this)">
+        </label>
+        <div style="font-size:11px;color:var(--mu2);margin-top:6px;">PNG of JPG, max 2MB</div>
+      </div>
+    </div>
     <div class="fg">
       <div class="fr"><label class="fl">Voornaam</label><input class="fi" id="k-voor" type="text" placeholder="Jasmijn"></div>
       <div class="fr"><label class="fl">Achternaam</label><input class="fi" id="k-achter" type="text" placeholder="de Vries"></div>
@@ -280,15 +297,50 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 </div>
 
 <script>
-let KLANTEN=[], activeF='alle', activeQ='', activeG='alle', activeSort='naam-az', editingId=null, currentDetailId=null;
+let KLANTEN=[], activeF='alle', activeQ='', activeG='alle', activeSort='naam-az', editingId=null, currentDetailId=null, FOTO_URL=null;
+
+let AFSPRAAK_STATS={}; // key: email of naam (lowercase) -> {bezoeken, omzet, laatste, favoriet}
 
 async function loadData(){
-  const {data,error}=await sb.from('klanten').select('*').eq('salon_id',SALON_ID).order('naam');
+  const [{data,error},{data:aData}]=await Promise.all([
+    sb.from('klanten').select('*').eq('salon_id',SALON_ID).order('naam'),
+    sb.from('afspraken').select('klant_naam,klant_email,datum_tijd,status,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','afgerond')
+  ]);
   KLANTEN=data||[];
+  AFSPRAAK_STATS=bouwAfspraakStats(aData||[]);
   // Sidebar initials
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
   render();
+}
+
+function bouwAfspraakStats(afspraken){
+  const stats={};
+  for(const a of afspraken){
+    const keys=[a.klant_email?.toLowerCase(), a.klant_naam?.toLowerCase()].filter(Boolean);
+    for(const key of keys){
+      if(!stats[key]) stats[key]={bezoeken:0,omzet:0,laatste:null,diensten:{}};
+      stats[key].bezoeken++;
+      stats[key].omzet+=a.diensten?.prijs||0;
+      if(!stats[key].laatste||new Date(a.datum_tijd)>new Date(stats[key].laatste)) stats[key].laatste=a.datum_tijd;
+      if(a.diensten?.naam){
+        stats[key].diensten[a.diensten.naam]=(stats[key].diensten[a.diensten.naam]||0)+1;
+      }
+    }
+  }
+  return stats;
+}
+
+function vindStats(k){
+  const byEmail=k.email&&AFSPRAAK_STATS[k.email.toLowerCase()];
+  const byNaam=AFSPRAAK_STATS[k.naam.toLowerCase()];
+  const s=byEmail||byNaam;
+  if(!s) return {bezoeken:0,omzet:0,laatste:null,favoriet:null};
+  let favoriet=null,max=0;
+  for(const [naamDienst,cnt] of Object.entries(s.diensten)){
+    if(cnt>max){max=cnt;favoriet=naamDienst;}
+  }
+  return {bezoeken:s.bezoeken,omzet:s.omzet,laatste:s.laatste,favoriet};
 }
 
 function getInit(naam){return naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
@@ -327,15 +379,17 @@ function render(){
     const init=getInit(k.naam);
     const since=new Date(k.created_at).toLocaleDateString('nl-NL',{month:'short',year:'numeric'});
     const gb=k.geslacht?`<span class="gbadge ${k.geslacht}"></span>`:'';
+    const s=vindStats(k);
+    const av=k.foto_url?`<img src="${k.foto_url}" alt="${k.naam}">`:init;
     return `<div class="kcard" onclick="showK('${k.id}')">
-      <div class="kav">${init}</div>
+      <div class="kav">${av}</div>
       <div class="kinfo">
         <div class="kname">${gb}${k.naam}</div>
         <div class="kmeta">${k.email||k.telefoon||'Geen contactgegevens'} · Klant sinds ${since}</div>
       </div>
       <div class="kright">
-        <div class="kval">—</div>
-        <div class="kvis">0 bezoeken</div>
+        <div class="kval">${s.omzet?'€'+s.omzet:'—'}</div>
+        <div class="kvis">${s.bezoeken} bezoek${s.bezoeken!==1?'en':''}</div>
       </div>
     </div>`;
   }).join('');
@@ -346,15 +400,16 @@ function showK(id){
   currentDetailId=id;
   const init=getInit(k.naam);
   const since=new Date(k.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('d-av').textContent=init;
+  document.getElementById('d-av').innerHTML=k.foto_url?`<img src="${k.foto_url}" alt="${k.naam}">`:init;
   document.getElementById('d-naam').textContent=k.naam;
   document.getElementById('d-sub').textContent=(k.email||'')+(k.telefoon?' · '+k.telefoon:'');
-  document.getElementById('d-omzet').textContent='€0';
+  const s=vindStats(k);
+  document.getElementById('d-omzet').textContent=s.omzet?'€'+s.omzet:'€0';
   document.getElementById('d-geslacht').textContent=k.geslacht?k.geslacht.charAt(0).toUpperCase()+k.geslacht.slice(1):'—';
-  document.getElementById('d-bz').textContent='0';
-  document.getElementById('d-gem').textContent='—';
-  document.getElementById('d-last').textContent='—';
-  document.getElementById('d-sv').textContent='—';
+  document.getElementById('d-bz').textContent=s.bezoeken;
+  document.getElementById('d-gem').textContent=s.bezoeken?'€'+Math.round(s.omzet/s.bezoeken):'—';
+  document.getElementById('d-last').textContent=s.laatste?new Date(s.laatste).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}):'Nog geen bezoek';
+  document.getElementById('d-sv').textContent=s.favoriet||'—';
   document.getElementById('d-notitie').textContent=k.notities||'—';
   openM('m-detail');
 }
@@ -371,6 +426,10 @@ function editK(){
   document.getElementById('k-email').value=k.email||'';
   document.getElementById('k-geslacht').value=k.geslacht||'';
   document.getElementById('k-notitie').value=k.notities||'';
+  FOTO_URL=k.foto_url||null;
+  const prev=document.getElementById('foto-preview');
+  if(FOTO_URL){ prev.innerHTML=`<img src="${FOTO_URL}" alt="Foto">`; }
+  else{ prev.textContent=getInit(k.naam); }
   closeM('m-detail');
   openM('m-new');
 }
@@ -378,9 +437,37 @@ function editK(){
 function resetKlantForm(){
   ['k-voor','k-achter','k-tel','k-email','k-notitie'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('k-geslacht').value='';
+  document.getElementById('foto-preview').innerHTML='?';
+  document.getElementById('foto-upload-label').textContent='Foto toevoegen';
+  FOTO_URL=null;
   editingId=null;
   document.getElementById('m-new-title').textContent='Nieuwe klant';
   document.getElementById('btn-klant-opslaan').textContent='Klant opslaan';
+}
+
+async function uploadKlantFoto(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(file.size>2*1024*1024){ alert('Bestand is groter dan 2MB.'); return; }
+
+  document.getElementById('foto-upload-label').innerHTML='<span class="spinner-inline"></span>';
+
+  const ext=file.name.split('.').pop();
+  const path=`${SALON_ID}/${Date.now()}.${ext}`;
+
+  const{error:upErr}=await sb.storage.from('klant-fotos').upload(path,file,{upsert:true,cacheControl:'3600'});
+
+  if(upErr){
+    document.getElementById('foto-upload-label').textContent='Foto toevoegen';
+    alert('Upload mislukt: '+upErr.message+'. Is de "klant-fotos" storage bucket aangemaakt?');
+    return;
+  }
+
+  const{data}=sb.storage.from('klant-fotos').getPublicUrl(path);
+  FOTO_URL=data.publicUrl+'?t='+Date.now();
+
+  document.getElementById('foto-preview').innerHTML=`<img src="${FOTO_URL}" alt="Foto">`;
+  document.getElementById('foto-upload-label').textContent='Foto wijzigen';
 }
 
 async function slaKlantOp(){
@@ -403,7 +490,7 @@ async function slaKlantOp(){
   btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
 
   const naam=voor+(achter?' '+achter:'');
-  const payload={naam,email:email||null,telefoon:tel||null,notities:notitie||null,geslacht};
+  const payload={naam,email:email||null,telefoon:tel||null,notities:notitie||null,geslacht,foto_url:FOTO_URL};
   let error;
   if(editingId){
     ({error}=await sb.from('klanten').update(payload).eq('id',editingId));
