@@ -298,7 +298,7 @@ async function loadData(){
   const we=new Date(ws);we.setDate(ws.getDate()+7);
 
   // Laad alles parallel
-  const maandStart=new Date(now.getFullYear(),now.getMonth(),1);
+  const maandStart=new Date();maandStart.setDate(1);maandStart.setHours(0,0,0,0);
   const[aR,mR,kR,kNieuwR,boeR]=await Promise.all([
     sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',ws.toISOString()).lte('datum_tijd',we.toISOString()).order('datum_tijd'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
