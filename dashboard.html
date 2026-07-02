@@ -390,20 +390,63 @@ async function loadData(){
     }).join('');
   }
 
-  // Inzichten
-  const ins=[];
-  if(!vandaag.length) ins.push('Nog geen afspraken vandaag. Deel je boekingslink om nieuwe klanten aan te trekken.');
-  else if(vandaag.length>=5) ins.push(`Je hebt ${vandaag.length} afspraken vandaag — een drukke dag. Zorg voor pauzes.`);
-  else ins.push(`Je hebt ${vandaag.length} afspraak${vandaag.length!==1?'en':''} vandaag. Er is nog ruimte voor nieuwe boekingen.`);
-  if(all.length) ins.push(`Deze week staan er ${all.length} afspraken gepland.`);
-  if(meds.length) ins.push(`Je hebt ${meds.length} actieve medewerker${meds.length!==1?'s':''}.`);
-  ['ins1','ins2','ins3'].forEach((id,i)=>{
-    const el=document.getElementById(id);
-    if(ins[i]){el.textContent=ins[i];el.style.display='';}
-    else el.style.display='none';
-  });
+  // Inzichten — echte AI-analyse via Kronr AI Worker, gecached per dag
+  laadInzichten({vandaag, all, meds, omzet, noshow, bezetting, klantenTotaal:kR.count||0, klantenNieuw:kNieuwR.count||0, boekingen});
 
   setGreeting();
+}
+
+async function laadInzichten(d){
+  const cacheKey='kronr_ai_'+SALON_ID+'_'+dk(new Date());
+  const toon=(lijst)=>{
+    ['ins1','ins2','ins3'].forEach((id,i)=>{
+      const el=document.getElementById(id);
+      if(lijst[i]){el.textContent=lijst[i];el.style.display='';}
+      else el.style.display='none';
+    });
+  };
+  const regelGebaseerd=()=>{
+    const ins=[];
+    if(!d.vandaag.length) ins.push('Nog geen afspraken vandaag. Deel je boekingslink om nieuwe klanten aan te trekken.');
+    else if(d.vandaag.length>=5) ins.push(`Je hebt ${d.vandaag.length} afspraken vandaag — een drukke dag. Zorg voor pauzes.`);
+    else ins.push(`Je hebt ${d.vandaag.length} afspraak${d.vandaag.length!==1?'en':''} vandaag. Er is nog ruimte voor nieuwe boekingen.`);
+    if(d.all.length) ins.push(`Deze week staan er ${d.all.length} afspraken gepland.`);
+    if(d.meds.length) ins.push(`Je hebt ${d.meds.length} actieve medewerker${d.meds.length!==1?'s':''}.`);
+    return ins;
+  };
+
+  // Gecached vandaag? Toon meteen, geen nieuwe AI-call nodig
+  try{
+    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
+    if(cached?.insights?.length){ toon(cached.insights); return; }
+  }catch(e){}
+
+  try{
+    const res=await fetch('https://kronr-ai.isaak-elia.workers.dev', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        salon_naam: SALON?.naam,
+        vandaag_count: d.vandaag.length,
+        week_count: d.all.length,
+        omzet: d.omzet,
+        noshow: d.noshow,
+        bezetting: d.bezetting,
+        klanten_totaal: d.klantenTotaal,
+        klanten_nieuw: d.klantenNieuw,
+        medewerkers_count: d.meds.length,
+        boekingen_openstaand: d.boekingen.length
+      })
+    });
+    if(!res.ok) throw new Error('AI-call mislukt');
+    const data=await res.json();
+    if(!data.insights?.length) throw new Error('Geen inzichten ontvangen');
+    toon(data.insights);
+    localStorage.setItem(cacheKey, JSON.stringify({insights:data.insights, ts:Date.now()}));
+  }catch(e){
+    console.warn('AI-inzichten niet beschikbaar, terugval op basis-inzichten:', e);
+    toon(regelGebaseerd());
+  }
 }
 
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
