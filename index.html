@@ -232,6 +232,13 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .testi-featured-text::after{content:'"';}
 .testi-featured-name{font-size:15px;font-weight:600;color:var(--ink);}
 .testi-featured-role{font-size:13px;color:var(--mu);}
+.early-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+.early-card{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:32px 28px;transition:all .2s;}
+.early-card:hover{border-color:var(--gd);transform:translateY(-4px);box-shadow:0 16px 40px rgba(140,109,63,.08);}
+.early-icon{width:44px;height:44px;background:var(--gd-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--gd);}
+.early-icon svg{width:20px;height:20px;}
+.early-title{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;}
+.early-desc{font-size:13.5px;color:var(--mu);line-height:1.6;}
 
 /* ── FOTO SECTIE ── */
 .photo-section{padding:100px 24px;background:var(--white);}
@@ -364,7 +371,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-label">⭐ 500+ salons vertrouwen op Kronr</div>
+  <div class="hero-label">✨ Nieuw: AI-assistent inbegrepen</div>
   <h1 class="hero-title">Besteed minder tijd<br>aan administratie. <em>Meer</em> tijd aan je klanten.</h1>
   <p class="hero-sub">Van online boekingen tot betalingen en AI. Alles wat je nodig hebt om je salon soepel te laten draaien.</p>
   <div class="hero-btns">
@@ -444,12 +451,11 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <!-- STATS -->
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat-item"><div class="stat-num">2.400<span>+</span></div><div class="stat-lbl">Actieve salons</div></div>
-    <div class="stat-item"><div class="stat-num">98<span>%</span></div><div class="stat-lbl">Klanttevredenheid</div></div>
-    <div class="stat-item"><div class="stat-num">15<span>min</span></div><div class="stat-lbl">Binnen 15 min ingericht</div></div>
-    <div class="stat-item"><div class="stat-num">€340<span>+</span></div><div class="stat-lbl">Gem. extra omzet per maand</div></div>
+    <div class="stat-item"><div class="stat-num">0<span>%</span></div><div class="stat-lbl">Commissie op boekingen</div></div>
+    <div class="stat-item"><div class="stat-num">1<span></span></div><div class="stat-lbl">Platform voor alles</div></div>
+    <div class="stat-item"><div class="stat-num">AI<span></span></div><div class="stat-lbl">Ingebouwde assistent</div></div>
+    <div class="stat-item"><div class="stat-num">€0<span></span></div><div class="stat-lbl">Opstartkosten</div></div>
   </div>
-  <div style="text-align:center;padding-top:24px;font-size:13px;color:rgba(255,255,255,.4);">Gekozen door salons door heel Nederland.</div>
 </div>
 
 <!-- VOOR WIE -->
@@ -732,41 +738,24 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <!-- TESTIMONIALS -->
 <section class="testimonials">
   <div class="section-inner">
-    <div class="section-label">Wat salons zeggen</div>
-    <h2 class="section-title">Salons die groeien<br>met Kronr</h2>
-    <div class="testi-rating">
-      <span class="testi-rating-stars">★★★★★</span>
-      <span>Meer dan 500 beautyondernemers vertrouwen dagelijks op Kronr.</span>
-    </div>
-
-    <div class="testi-featured" data-aos>
-      <div class="testi-featured-av">JV</div>
-      <div>
-        <div class="testi-featured-stars">★★★★★</div>
-        <p class="testi-featured-text">Sinds we Kronr gebruiken besparen we iedere week uren administratie en boeken klanten veel makkelijker online.</p>
-        <div class="testi-featured-name">Jasmijn Vermeer</div>
-        <div class="testi-featured-role">Studio Jay, Amsterdam</div>
+    <div class="section-label">Nog vers</div>
+    <h2 class="section-title">Net gelanceerd.<br>Daarom krijg jij meer aandacht.</h2>
+    <p class="section-sub" style="margin-bottom:52px;">Kronr is een nieuw platform. Als vroege gebruiker praat je rechtstreeks met de ontwikkelaar — geen callcenter, geen wachtrij, geen ticket-systeem.</p>
+    <div class="early-grid">
+      <div class="early-card" data-aos>
+        <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
+        <div class="early-title">Directe lijn</div>
+        <div class="early-desc">Vraag of feedback? Je mailt of appt rechtstreeks met de bouwer van Kronr.</div>
       </div>
-    </div>
-
-    <div class="testi-grid">
-      <div class="testi-card" data-aos>
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">Eindelijk software die gewoon werkt op mijn telefoon. Ik beheer mijn hele salon in de trein.</p>
-        <div class="testi-author"><div class="testi-av">JV</div><div><div class="testi-name">Jasmijn Vermeer</div><div class="testi-role">Studio Jay, Amsterdam</div></div></div>
-        <div class="testi-result">Na twee maanden 6 uur/week bespaard</div>
+      <div class="early-card" data-aos>
+        <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <div class="early-title">Invloed op de roadmap</div>
+        <div class="early-desc">Jouw wensen bepalen mee welke features er als volgende gebouwd worden.</div>
       </div>
-      <div class="testi-card" data-aos>
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">De AI ziet lege plekken in mijn agenda en stelt zelf een actie voor. Dat heeft me al €800 extra opgeleverd in de eerste maand.</p>
-        <div class="testi-author"><div class="testi-av">MK</div><div><div class="testi-name">Marco Koster</div><div class="testi-role">Barbershop Kings, Rotterdam</div></div></div>
-        <div class="testi-result">+€800 omzet in maand 1</div>
-      </div>
-      <div class="testi-card" data-aos>
-        <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">Van 12 no-shows per maand naar 2. Die WhatsApp herinneringen zijn goud waard. Setup duurde letterlijk 15 minuten.</p>
-        <div class="testi-author"><div class="testi-av">SB</div><div><div class="testi-name">Sara Bakker</div><div class="testi-role">Nail Lounge Sara, Utrecht</div></div></div>
-        <div class="testi-result">12 → 2 no-shows per maand</div>
+      <div class="early-card" data-aos>
+        <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="early-title">Eerlijke prijs, altijd</div>
+        <div class="early-desc">Als vroege gebruiker houd je je instaptarief — ook als de prijzen later stijgen.</div>
       </div>
     </div>
   </div>
@@ -777,7 +766,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <h2 class="cta-final-title">Besteed minder tijd aan administratie.<br>Meer tijd aan je klanten.</h2>
   <p class="cta-final-sub">Start vandaag nog gratis en ontdek hoe eenvoudig salonbeheer kan zijn.</p>
   <a href="login.html" class="btn-white">Probeer Kronr gratis →</a>
-  <p class="cta-final-note">Al meer dan 2.400 salons gingen je voor</p>
+  <p class="cta-final-note">Geen creditcard nodig · Opzegbaar per maand</p>
 </section>
 
 <!-- FOOTER -->
