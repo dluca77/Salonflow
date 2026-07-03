@@ -354,7 +354,11 @@ async function upgradePlan(plan){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({salon_id:SALON_ID, plan, email:SESSION_USER.email})
     });
-    if(!res.ok) throw new Error('Kon geen checkout-sessie starten');
+    if(!res.ok){
+      let detail='';
+      try{ const errData=await res.json(); detail=errData.error||JSON.stringify(errData); }catch(e2){ detail='HTTP '+res.status; }
+      throw new Error(detail);
+    }
     const data=await res.json();
     if(!data.url) throw new Error(data.error||'Onbekende fout');
     window.location.href=data.url;
@@ -376,7 +380,11 @@ async function openPortal(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({customer_id:SALON.stripe_customer_id})
     });
-    if(!res.ok) throw new Error('Kon portal-sessie niet starten');
+    if(!res.ok){
+      let detail='';
+      try{ const errData=await res.json(); detail=errData.error||JSON.stringify(errData); }catch(e2){ detail='HTTP '+res.status; }
+      throw new Error(detail);
+    }
     const data=await res.json();
     if(!data.url) throw new Error(data.error||'Onbekende fout');
     window.location.href=data.url;
