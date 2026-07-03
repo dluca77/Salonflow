@@ -680,6 +680,8 @@ const statsObs=new IntersectionObserver(entries=>{
   if(entries[0].isIntersecting){animateCounters();statsObs.disconnect();}
 },{threshold:.3});
 statsObs.observe(document.querySelector('.stats-bar'));
+
+idxSetPeriod('yearly');
 </script>
 
 <!-- Mobile menu -->
