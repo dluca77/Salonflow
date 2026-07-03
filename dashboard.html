@@ -43,6 +43,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 /* ── GREETING ── */
 .greeting{grid-column:1/-1;padding-bottom:16px;border-bottom:1px solid var(--bd);}
+.trial-banner{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;gap:16px;padding:14px 18px;border-radius:8px;margin-bottom:16px;}
+.trial-banner.soft{background:var(--iv);border:1px solid var(--bd2);}
+.trial-banner.urgent{background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.25);}
+.trial-banner-txt{font-size:13px;}
+.trial-banner.urgent .trial-banner-txt{color:#c0392b;font-weight:500;}
+.trial-banner-btn{padding:9px 18px;background:var(--ink);color:var(--iv);border:none;border-radius:6px;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;text-decoration:none;flex-shrink:0;}
 .greeting-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;letter-spacing:-.5px;color:var(--ink);}
 .greeting-title em{font-style:italic;color:var(--gd);}
 .greeting-sub{font-size:12px;color:var(--mu2);margin-top:6px;font-weight:300;}
@@ -193,6 +199,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="greeting-sub" id="greeting-sub"></div>
     </div>
 
+    <!-- Proefperiode / upgrade-banner -->
+    <div class="trial-banner" id="trial-banner" style="display:none;">
+      <div class="trial-banner-txt" id="trial-banner-txt"></div>
+      <a href="instellingen.html" class="trial-banner-btn">Bekijk pakketten</a>
+    </div>
+
     <!-- KPIs -->
     <div class="kpi-row">
       <div class="kpi"><div class="kpi-label">Afspraken vandaag</div><div class="kpi-val" id="kpi-apts">—</div><div class="kpi-sub">ingepland</div></div>
@@ -290,6 +302,28 @@ function setGreeting(){
   const d=new Date().toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('greeting-sub').textContent=d.charAt(0).toUpperCase()+d.slice(1);
   document.getElementById('tb-date').textContent=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
+  toonTrialBanner();
+}
+
+function toonTrialBanner(){
+  const banner=document.getElementById('trial-banner');
+  const plan=SALON.plan;
+  if(plan && plan!=='free'){ banner.style.display='none'; return; }
+
+  const created=SALON.created_at ? new Date(SALON.created_at) : new Date();
+  const dagenGeleden=Math.floor((new Date()-created)/(1000*60*60*24));
+  const dagenOver=14-dagenGeleden;
+
+  banner.style.display='flex';
+  const txt=document.getElementById('trial-banner-txt');
+
+  if(dagenOver>0){
+    banner.className='trial-banner soft';
+    txt.innerHTML=`🎉 Je proefperiode: nog ${dagenOver} dag${dagenOver!==1?'en':''} gratis. Bekijk de pakketten en kies wat bij je salon past.`;
+  } else {
+    banner.className='trial-banner urgent';
+    txt.innerHTML=`⚠️ Je proefperiode is verlopen. Kies een pakket om Kronr te blijven gebruiken.`;
+  }
 }
 
 async function loadData(){
