@@ -53,7 +53,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-usp svg{width:15px;height:15px;color:var(--green);flex-shrink:0;}
 
 /* App screenshot */
-.hero-screenshot{width:100%;max-width:1280px;margin:0 auto;position:relative;opacity:0;transform:translateY(32px);animation:heroRise 1s cubic-bezier(.2,.8,.2,1) .4s forwards;}
+.hero-screenshot{width:100%;max-width:1600px;margin:0 auto;position:relative;opacity:0;transform:translateY(32px);animation:heroRise 1s cubic-bezier(.2,.8,.2,1) .4s forwards;}
 @keyframes heroRise{to{opacity:1;transform:translateY(0);}}
 .screenshot-shadow{border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(15,13,11,.12),0 8px 24px rgba(15,13,11,.08);border:1px solid var(--bd);}
 .app-mockup{background:var(--iv);width:100%;aspect-ratio:16/9;display:flex;flex-direction:column;position:relative;overflow:hidden;}
@@ -116,6 +116,9 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-feat-num{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--gd);font-weight:700;letter-spacing:1px;margin-bottom:16px;}
 .hero-feat-title{font-family:'Playfair Display',serif;font-size:clamp(26px,3vw,38px);font-weight:700;color:var(--ink);margin-bottom:16px;letter-spacing:-.5px;line-height:1.15;}
 .hero-feat-desc{font-size:16px;color:var(--mu);line-height:1.7;max-width:420px;font-weight:300;}
+.hero-feat-bullets{list-style:none;display:flex;flex-direction:column;gap:10px;max-width:420px;}
+.hero-feat-bullets li{display:flex;align-items:flex-start;gap:9px;font-size:15px;color:var(--ink2);font-weight:400;line-height:1.4;}
+.hero-feat-bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:8px;}
 .hero-feat-visual{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:20px;min-height:260px;display:flex;align-items:center;justify-content:center;transition:transform .3s;}
 .hero-feat-visual:hover{transform:translateY(-4px);}
 
@@ -217,6 +220,23 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .testi-name{font-size:14.5px;font-weight:600;color:var(--ink);}
 .testi-role{font-size:12.5px;color:var(--mu);}
 .testi-result{display:inline-block;margin-top:16px;padding:6px 12px;background:rgba(26,122,64,.08);color:var(--green);font-size:12px;font-weight:600;border-radius:8px;}
+.testi-featured{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center;background:var(--iv);border:1px solid var(--bd);border-radius:20px;padding:44px 48px;margin-top:52px;}
+.testi-featured-av{width:88px;height:88px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--white);flex-shrink:0;}
+.testi-featured-stars{color:var(--gd);font-size:16px;letter-spacing:3px;margin-bottom:14px;}
+.testi-featured-text{font-family:'Playfair Display',serif;font-size:clamp(20px,2.4vw,26px);font-style:italic;color:var(--ink);line-height:1.4;margin-bottom:16px;}
+.testi-featured-text::before{content:'"';}
+.testi-featured-text::after{content:'"';}
+.testi-featured-name{font-size:15px;font-weight:600;color:var(--ink);}
+.testi-featured-role{font-size:13px;color:var(--mu);}
+
+/* ── FOTO SECTIE ── */
+.photo-section{padding:100px 24px;background:var(--white);}
+.photo-section-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center;}
+.photo-frame{aspect-ratio:4/5;border-radius:20px;background:linear-gradient(135deg,var(--gd-light) 0%,var(--iv) 60%,var(--wm) 100%);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.photo-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+.photo-frame-placeholder{display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--mu2);text-align:center;padding:32px;}
+.photo-frame-placeholder svg{width:40px;height:40px;opacity:.5;}
+.photo-frame-placeholder span{font-size:12px;max-width:220px;line-height:1.6;}
 
 /* ── CTA FINAL ── */
 .cta-final{background:var(--gd);padding:100px 24px;text-align:center;}
@@ -264,6 +284,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .ai-chat{display:none;}
   .footer-top{grid-template-columns:1fr 1fr;}
   .feat-compact-grid{grid-template-columns:1fr 1fr;}
+  .photo-section-inner{gap:40px;}
+  .hero-feat{gap:40px;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
@@ -272,22 +294,35 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .type-name{font-size:14px;}
   .type-desc{font-size:12px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
-  .hero{padding:80px 20px 48px;}
-  .hero-screenshot{display:none;}
+  .hero{padding:80px 16px 40px;}
+  .hero-screenshot{padding:0;}
+  .mock-content{grid-template-columns:1fr 1fr;}
+  .mock-kpi-v{font-size:16px;}
   .hero-feat{grid-template-columns:1fr;gap:28px;padding:36px 0;}
   .hero-feat.reverse .hero-feat-visual{order:0;}
   .hero-feat-desc{max-width:none;}
   .feat-compact-grid{grid-template-columns:1fr 1fr;}
   .pricing-grid{grid-template-columns:1fr;}
   .testi-grid{grid-template-columns:1fr;}
+  .testi-featured{grid-template-columns:1fr;text-align:center;padding:32px 24px;}
+  .testi-featured-av{margin:0 auto;}
   .footer-top{grid-template-columns:1fr;}
   .stats-inner{grid-template-columns:1fr 1fr;}
   .types-grid{grid-template-columns:1fr 1fr;}
+  .photo-section-inner{grid-template-columns:1fr;}
+  .hero-usps{gap:8px 14px;}
+  .pricing-benefits{gap:12px 20px;}
 }
 @media(max-width:480px){
   .hero-btns{flex-direction:column;align-items:stretch;}
   .btn-primary,.btn-secondary{text-align:center;justify-content:center;}
   .stats-inner{grid-template-columns:1fr 1fr;}
+  .mock-content{padding:10px;gap:6px;}
+  .mock-kpi{padding:8px;}
+  .mock-kpi-l{font-size:6px;}
+  .mock-kpi-v{font-size:14px;}
+  .mock-sidebar{width:36px;}
+  .type-card{padding:16px 12px;}
 }
 </style>
 </head>
@@ -315,7 +350,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="hero">
   <div class="hero-label">🇳🇱 Gemaakt in Nederland</div>
   <h1 class="hero-title">Meer tijd voor je klanten.<br>Minder tijd aan je <em>administratie</em>.</h1>
-  <p class="hero-sub">Online boekingen, agenda, betalingen, klantbeheer en AI in één overzichtelijke app — voor salons die geen tijd willen verliezen aan rompslomp.</p>
+  <p class="hero-sub">Beheer online boekingen, agenda, betalingen, klantgegevens en marketing vanuit één overzichtelijke app voor beautyprofessionals.</p>
   <div class="hero-btns">
     <a href="login.html" class="btn-primary">Gratis 30 dagen proberen →</a>
     <a href="#features" class="btn-secondary">Bekijk alle features</a>
@@ -323,11 +358,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <p class="hero-trust"><span>✓ Geen creditcard nodig</span> &nbsp;·&nbsp; Geen verborgen kosten &nbsp;·&nbsp; Opzegbaar per maand</p>
   <div class="hero-usps">
     <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Online boekingen</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Agenda</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Betalingen</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>CRM</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WhatsApp herinneringen</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
     <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>AI assistent</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WhatsApp herinneringen</div>
   </div>
 
   <!-- App mockup -->
@@ -421,6 +454,24 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   </div>
 </section>
 
+<!-- FOTO SECTIE — vervang .photo-frame met een echte foto zodra je die hebt -->
+<section class="photo-section">
+  <div class="photo-section-inner" data-aos>
+    <div class="photo-frame">
+      <!-- Vervang deze placeholder door: <img src="jouw-foto.jpg" alt="..."> -->
+      <div class="photo-frame-placeholder">
+        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
+        <span>Hier komt een echte foto van jou, je team of je salon</span>
+      </div>
+    </div>
+    <div>
+      <div class="section-label">Beauty is mensenwerk</div>
+      <h2 class="section-title">Software voor mensen<br>die mensen mooier maken</h2>
+      <p class="section-sub">Achter elke boeking, elk cijfer en elke afspraak in Kronr staat een vakmens die met passie werkt aan het beste resultaat voor hun klant. Daar is Kronr voor gebouwd.</p>
+    </div>
+  </div>
+</section>
+
 <!-- FEATURES -->
 <section class="section" id="features">
   <div class="section-inner">
@@ -432,7 +483,12 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div>
         <div class="hero-feat-num">01</div>
         <h3 class="hero-feat-title">Slimme agenda</h3>
-        <p class="hero-feat-desc">Plan sneller, voorkom dubbele boekingen en houd altijd overzicht. Dag, week, maand en medewerkerweergave — met drag & drop en automatische conflictdetectie.</p>
+        <p class="hero-feat-desc" style="margin-bottom:14px;">Plan sneller. Voorkom dubbele boekingen. Houd altijd overzicht.</p>
+        <ul class="hero-feat-bullets">
+          <li>Dag-, week- en maandweergave</li>
+          <li>Drag & drop plannen</li>
+          <li>Automatische conflictdetectie</li>
+        </ul>
       </div>
       <div class="hero-feat-visual">
         <div class="mini-agenda">
@@ -449,7 +505,12 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div>
         <div class="hero-feat-num">02</div>
         <h3 class="hero-feat-title">Online boeken 24/7</h3>
-        <p class="hero-feat-desc">Klanten plannen zelf hun afspraak terwijl jij gewoon doorwerkt. Via je eigen boekingspagina of een widget op je eigen website — met aanbetaling en annuleringsbeleid.</p>
+        <p class="hero-feat-desc" style="margin-bottom:14px;">Klanten plannen zelf. Jij werkt gewoon door.</p>
+        <ul class="hero-feat-bullets">
+          <li>Eigen boekingspagina of widget</li>
+          <li>Aanbetaling mogelijk</li>
+          <li>Automatisch annuleringsbeleid</li>
+        </ul>
       </div>
       <div class="hero-feat-visual">
         <div class="mini-widget">
@@ -466,7 +527,12 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div>
         <div class="hero-feat-num">03</div>
         <h3 class="hero-feat-title">AI assistent</h3>
-        <p class="hero-feat-desc">Laat AI helpen met klantvragen, marketing, planning en dagelijkse taken. Herinneringen, berichten en inzichten — automatisch, op de achtergrond.</p>
+        <p class="hero-feat-desc" style="margin-bottom:14px;">AI helpt met de taken die jij liever niet doet.</p>
+        <ul class="hero-feat-bullets">
+          <li>Beantwoordt klantvragen</li>
+          <li>Stuurt herinneringen</li>
+          <li>Geeft groeisuggesties</li>
+        </ul>
       </div>
       <div class="hero-feat-visual">
         <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
@@ -508,7 +574,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div>
       <div class="ai-label">Kronr AI</div>
       <h2 class="ai-title">Laat AI het werk doen<br>dat jij liever niet doet</h2>
-      <p class="ai-sub">Geen dashboards afstruinen, geen extra werk. Kronr AI draait op de achtergrond en bespaart je elke week uren.</p>
+      <p class="ai-sub">Terwijl jij behandelt, blijft Kronr op de achtergrond doorwerken. Geen dashboards afstruinen, geen extra werk — gewoon elke week uren bespaard.</p>
       <div class="ai-features">
         <div class="ai-feat">
           <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
@@ -559,7 +625,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="section-inner">
     <div class="section-label">Eerlijke prijzen</div>
     <h2 class="section-title">Geen verrassingen.<br>Nooit commissie.</h2>
-    <p class="section-sub" style="margin-bottom:24px;">Wij rekenen nooit commissie over jouw boekingen. Jouw klanten, jouw geld.</p>
+    <p class="section-sub" style="margin-bottom:24px;">Geen commissie. Geen verrassingen. Gewoon duidelijke prijzen.</p>
     <p style="font-size:15px;color:var(--mu);margin-bottom:8px;">Kies het pakket dat past bij jouw salon. Je kunt altijd later upgraden.</p>
     <div class="pricing-benefits">
       <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
@@ -633,6 +699,17 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <span class="testi-rating-stars">★★★★★</span>
       <span>Meer dan 500 beautyondernemers vertrouwen dagelijks op Kronr.</span>
     </div>
+
+    <div class="testi-featured" data-aos>
+      <div class="testi-featured-av">JV</div>
+      <div>
+        <div class="testi-featured-stars">★★★★★</div>
+        <p class="testi-featured-text">Sinds we Kronr gebruiken besparen we iedere week uren administratie.</p>
+        <div class="testi-featured-name">Jasmijn Vermeer</div>
+        <div class="testi-featured-role">Studio Jay, Amsterdam</div>
+      </div>
+    </div>
+
     <div class="testi-grid">
       <div class="testi-card" data-aos>
         <div class="testi-stars">★★★★★</div>
@@ -660,7 +737,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="cta-final">
   <h2 class="cta-final-title">Besteed minder tijd aan administratie.<br>Meer tijd aan je klanten.</h2>
   <p class="cta-final-sub">Start vandaag nog gratis en ontdek hoe eenvoudig salonbeheer kan zijn.</p>
-  <a href="login.html" class="btn-white">Start 30 dagen gratis →</a>
+  <a href="login.html" class="btn-white">Probeer Kronr gratis →</a>
   <p class="cta-final-note">Al meer dan 2.400 salons gingen je voor</p>
 </section>
 
