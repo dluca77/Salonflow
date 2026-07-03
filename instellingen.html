@@ -82,6 +82,25 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .logo-actions{display:flex;flex-direction:column;gap:6px;}
 .btn-upload{padding:8px 16px;background:var(--wh);color:var(--ink);border:1px solid var(--bd2);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;border-radius:6px;display:inline-block;width:fit-content;}
 .btn-upload:hover{border-color:var(--ink);}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;}
+.pc-card{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px 14px;position:relative;}
+.pc-card.popular{border:2px solid var(--gd);background:var(--ink);}
+.pc-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);padding:3px 12px;background:var(--gd);color:#fff;font-size:9px;font-weight:700;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;}
+.pc-name{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;}
+.pc-card.popular .pc-name{color:rgba(255,255,255,.5);}
+.pc-amount{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:2px;}
+.pc-card.popular .pc-amount{color:#fff;}
+.pc-amount sup{font-size:13px;font-weight:400;vertical-align:super;}
+.pc-per{font-size:10px;color:var(--mu);margin-bottom:12px;}
+.pc-card.popular .pc-per{color:rgba(255,255,255,.4);}
+.pc-features{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:14px;min-height:120px;}
+.pc-features li{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--mu);line-height:1.4;}
+.pc-card.popular .pc-features li{color:rgba(255,255,255,.65);}
+.pc-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;}
+.pc-card.popular .pc-features li::before{color:var(--gd);}
+.pc-btn{display:block;width:100%;text-align:center;padding:10px;background:var(--ink);color:#fff;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+.pc-card.popular .pc-btn{background:var(--gd);}
+.pc-btn.pc-current{opacity:.5;cursor:default;}
 .logo-hint{font-size:11px;color:var(--mu2);}
 
 /* Messages */
@@ -279,19 +298,49 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
             <span id="period-lbl-y" style="cursor:pointer;color:var(--gd);font-weight:600;" onclick="setPeriod('yearly')">Jaarlijks <span style="color:var(--gd);">— 2 maanden gratis</span></span>
           </div>
         </div>
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
-          <button class="btn-sec" id="btn-upg-starter" onclick="upgradePlan('starter')" style="text-align:left;padding:14px;">
-            <div style="font-weight:600;font-size:13px;">Starter</div>
-            <div style="font-size:11px;color:var(--mu);margin-top:2px;" id="prijs-starter">€19/maand</div>
-          </button>
-          <button class="btn-sec" id="btn-upg-pro" onclick="upgradePlan('pro')" style="text-align:left;padding:14px;">
-            <div style="font-weight:600;font-size:13px;">Pro</div>
-            <div style="font-size:11px;color:var(--mu);margin-top:2px;" id="prijs-pro">€39/maand</div>
-          </button>
-          <button class="btn-sec" id="btn-upg-business" onclick="upgradePlan('business')" style="text-align:left;padding:14px;">
-            <div style="font-weight:600;font-size:13px;">Business</div>
-            <div style="font-size:11px;color:var(--mu);margin-top:2px;" id="prijs-business">€69/maand</div>
-          </button>
+        <div class="pc-grid">
+          <div class="pc-card">
+            <div class="pc-name">Starter</div>
+            <div class="pc-amount"><sup>€</sup><span id="pc-amt-starter">19</span></div>
+            <div class="pc-per" id="pc-per-starter">per maand · 1 medewerker</div>
+            <ul class="pc-features">
+              <li>Agenda & online boeken</li>
+              <li>Kassa & betalingen</li>
+              <li>Klantenbeheer</li>
+              <li>Email herinneringen</li>
+              <li>Basis rapportages</li>
+            </ul>
+            <button class="pc-btn" id="btn-upg-starter" onclick="upgradePlan('starter')">Kies Starter</button>
+          </div>
+          <div class="pc-card popular">
+            <div class="pc-badge">⭐ Meest gekozen</div>
+            <div class="pc-name">Pro</div>
+            <div class="pc-amount"><sup>€</sup><span id="pc-amt-pro">39</span></div>
+            <div class="pc-per" id="pc-per-pro">per maand · t/m 5 medewerkers</div>
+            <ul class="pc-features">
+              <li>Alles van Starter</li>
+              <li>WhatsApp herinneringen</li>
+              <li>Cadeaubonnen</li>
+              <li>Uitgebreide rapportages</li>
+              <li>Kronr AI inzichten</li>
+              <li>Boekhoudkoppeling</li>
+            </ul>
+            <button class="pc-btn" id="btn-upg-pro" onclick="upgradePlan('pro')">Kies Pro</button>
+          </div>
+          <div class="pc-card">
+            <div class="pc-name">Business</div>
+            <div class="pc-amount"><sup>€</sup><span id="pc-amt-business">69</span></div>
+            <div class="pc-per" id="pc-per-business">per maand · onbeperkt</div>
+            <ul class="pc-features">
+              <li>Alles van Pro</li>
+              <li>Onbeperkt medewerkers</li>
+              <li>Kronr AI assistent</li>
+              <li>Marketing campagnes</li>
+              <li>Meerdere locaties</li>
+              <li>Prioriteit support</li>
+            </ul>
+            <button class="pc-btn" id="btn-upg-business" onclick="upgradePlan('business')">Kies Business</button>
+          </div>
         </div>
       </div>
       <div class="msg" id="msg-plan"></div>
@@ -333,8 +382,16 @@ async function loadData(){
 }
 
 const PLAN_NAAM= {starter:'Starter', pro:'Pro', business:'Business', free:'Gratis (nog geen abonnement)'};
-const PLAN_PRIJS_M = {starter:'€19/maand', pro:'€39/maand', business:'€69/maand', free:''};
-const PLAN_PRIJS_Y = {starter:'€190/jaar', pro:'€390/jaar', business:'€690/jaar', free:''};
+const PLAN_PRIJS_M = {
+  starter:{bedrag:19, per:'per maand · 1 medewerker'},
+  pro:{bedrag:39, per:'per maand · t/m 5 medewerkers'},
+  business:{bedrag:69, per:'per maand · onbeperkt'},
+};
+const PLAN_PRIJS_Y = {
+  starter:{bedrag:190, per:'per jaar · 1 medewerker'},
+  pro:{bedrag:390, per:'per jaar · t/m 5 medewerkers'},
+  business:{bedrag:690, per:'per jaar · onbeperkt'},
+};
 const KRONR_STRIPE_URL = 'https://kronr-stripe.isaak-elia.workers.dev';
 let ACTIEVE_PERIODE = 'yearly';
 
@@ -347,21 +404,31 @@ function setPeriod(p){
   document.getElementById('period-lbl-y').style.color = (p==='yearly') ? 'var(--gd)' : 'var(--mu)';
   document.getElementById('period-lbl-y').style.fontWeight = (p==='yearly') ? '600' : '400';
   const prijzen = p==='yearly' ? PLAN_PRIJS_Y : PLAN_PRIJS_M;
-  document.getElementById('prijs-starter').textContent = prijzen.starter;
-  document.getElementById('prijs-pro').textContent = prijzen.pro;
-  document.getElementById('prijs-business').textContent = prijzen.business;
+  ['starter','pro','business'].forEach(pl=>{
+    document.getElementById('pc-amt-'+pl).textContent = prijzen[pl].bedrag;
+    document.getElementById('pc-per-'+pl).textContent = prijzen[pl].per;
+  });
 }
 
 function toonPlan(){
   const plan = SALON.plan || 'free';
   document.getElementById('plan-label').textContent = PLAN_NAAM[plan] || 'Gratis';
-  document.getElementById('plan-sub').textContent = PLAN_PRIJS_M[plan] || 'Nog geen actief abonnement';
+  document.getElementById('plan-sub').textContent = plan==='free' ? 'Nog geen actief abonnement' : PLAN_PRIJS_M[plan].per;
   document.getElementById('plan-dot').className = plan==='free' ? 'mfa-dot off' : 'mfa-dot on';
   document.getElementById('btn-plan-portal').style.display = plan==='free' ? 'none' : 'inline-block';
   document.getElementById('plan-upgrade-wrap').style.display = plan==='business' ? 'none' : 'block';
   ['starter','pro','business'].forEach(p=>{
     const btn=document.getElementById('btn-upg-'+p);
-    if(btn) btn.style.opacity = (p===plan) ? '0.4' : '1';
+    if(!btn) return;
+    if(p===plan){
+      btn.textContent='Huidig pakket';
+      btn.classList.add('pc-current');
+      btn.disabled=true;
+    } else {
+      btn.textContent='Kies '+PLAN_NAAM[p];
+      btn.classList.remove('pc-current');
+      btn.disabled=false;
+    }
   });
   setPeriod('yearly');
 }

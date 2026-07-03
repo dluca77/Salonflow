@@ -9,10 +9,28 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
   --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
-  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--mu:#8a7d6e;--mu2:#c2b5a4;--green:#2d6a4f;
 }
 html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden;}
 .app{display:flex;height:100vh;}
+.pc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;grid-column:1/-1;}
+.pc-card{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px 14px;position:relative;}
+.pc-card.popular{border:2px solid var(--gd);background:var(--ink);}
+.pc-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);padding:3px 12px;background:var(--gd);color:#fff;font-size:9px;font-weight:700;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;}
+.pc-name{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;}
+.pc-card.popular .pc-name{color:rgba(255,255,255,.5);}
+.pc-amount{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:2px;}
+.pc-card.popular .pc-amount{color:#fff;}
+.pc-amount sup{font-size:13px;font-weight:400;vertical-align:super;}
+.pc-per{font-size:10px;color:var(--mu);margin-bottom:12px;}
+.pc-card.popular .pc-per{color:rgba(255,255,255,.4);}
+.pc-features{list-style:none;display:flex;flex-direction:column;gap:6px;margin-bottom:14px;min-height:120px;}
+.pc-features li{display:flex;align-items:flex-start;gap:6px;font-size:11px;color:var(--mu);line-height:1.4;}
+.pc-card.popular .pc-features li{color:rgba(255,255,255,.65);}
+.pc-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;}
+.pc-card.popular .pc-features li::before{color:var(--gd);}
+.pc-btn{display:block;width:100%;text-align:center;padding:10px;background:var(--ink);color:#fff;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:none;}
+.pc-card.popular .pc-btn{background:var(--gd);}
 
 /* ── SIDEBAR ── */
 .sidebar{width:212px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:20;padding:16px 12px;}
@@ -200,9 +218,53 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     </div>
 
     <!-- Proefperiode / upgrade-banner -->
-    <div class="trial-banner" id="trial-banner" style="display:none;">
-      <div class="trial-banner-txt" id="trial-banner-txt"></div>
-      <a href="instellingen.html" class="trial-banner-btn">Bekijk pakketten</a>
+    <div class="trial-banner" id="trial-banner" style="display:none;flex-direction:column;align-items:stretch;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:16px;">
+        <div class="trial-banner-txt" id="trial-banner-txt"></div>
+        <a href="instellingen.html#abonnement" class="trial-banner-btn">Bekijk pakketten</a>
+      </div>
+      <div class="pc-grid" id="dash-pc-grid" style="display:none;">
+        <div class="pc-card">
+          <div class="pc-name">Starter</div>
+          <div class="pc-amount"><sup>€</sup>19</div>
+          <div class="pc-per">per maand · 1 medewerker</div>
+          <ul class="pc-features">            <li>Agenda & online boeken</li>
+            <li>Kassa & betalingen</li>
+            <li>Klantenbeheer</li>
+            <li>Email herinneringen</li>
+            <li>Basis rapportages</li>
+          </ul>
+          <a href="instellingen.html#abonnement" class="pc-btn">Kies Starter</a>
+        </div>
+        <div class="pc-card popular">
+          <div class="pc-badge">⭐ Meest gekozen</div>
+          <div class="pc-name">Pro</div>
+          <div class="pc-amount"><sup>€</sup>39</div>
+          <div class="pc-per">per maand · t/m 5 medewerkers</div>
+          <ul class="pc-features">
+            <li>Alles van Starter</li>
+            <li>WhatsApp herinneringen</li>
+            <li>Cadeaubonnen</li>
+            <li>Uitgebreide rapportages</li>
+            <li>Kronr AI inzichten</li>
+            <li>Boekhoudkoppeling</li>
+          </ul>
+          <a href="instellingen.html#abonnement" class="pc-btn">Kies Pro</a>
+        </div>
+        <div class="pc-card">
+          <div class="pc-name">Business</div>
+          <div class="pc-amount"><sup>€</sup>69</div>
+          <div class="pc-per">per maand · onbeperkt</div>
+          <ul class="pc-features">            <li>Alles van Pro</li>
+            <li>Onbeperkt medewerkers</li>
+            <li>Kronr AI assistent</li>
+            <li>Marketing campagnes</li>
+            <li>Meerdere locaties</li>
+            <li>Prioriteit support</li>
+          </ul>
+          <a href="instellingen.html#abonnement" class="pc-btn">Kies Business</a>
+        </div>
+      </div>
     </div>
 
     <!-- KPIs -->
@@ -324,6 +386,8 @@ function toonTrialBanner(){
     banner.className='trial-banner urgent';
     txt.innerHTML=`⚠️ Je proefperiode is verlopen. Kies een pakket om Kronr te blijven gebruiken.`;
   }
+
+  document.getElementById('dash-pc-grid').style.display='grid';
 }
 
 async function loadData(){

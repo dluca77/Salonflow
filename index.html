@@ -467,12 +467,21 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="section-inner">
     <div class="section-label">Eerlijke prijzen</div>
     <h2 class="section-title">Geen verrassingen.<br>Nooit commissie.</h2>
-    <p class="section-sub" style="margin-bottom:0;">Anders dan Fresha betalen wij nooit commissie over jouw boekingen. Jouw klanten, jouw geld.</p>
+    <p class="section-sub" style="margin-bottom:24px;">Anders dan Fresha betalen wij nooit commissie over jouw boekingen. Jouw klanten, jouw geld.</p>
+    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px;font-size:14px;">
+      <span id="idx-period-lbl-m" style="cursor:pointer;color:var(--mu);" onclick="idxSetPeriod('monthly')">Maandelijks</span>
+      <label style="position:relative;display:inline-block;width:42px;height:24px;">
+        <input type="checkbox" id="idx-period-toggle" checked onchange="idxSetPeriod(this.checked?'yearly':'monthly')" style="opacity:0;width:100%;height:100%;margin:0;cursor:pointer;">
+        <span style="position:absolute;inset:0;background:var(--ink);border-radius:24px;pointer-events:none;transition:background .15s;"></span>
+        <span style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .15s;" id="idx-period-knob"></span>
+      </label>
+      <span id="idx-period-lbl-y" style="cursor:pointer;color:var(--gd);font-weight:700;" onclick="idxSetPeriod('yearly')">Jaarlijks <span style="color:var(--gd);">— 2 maanden gratis</span></span>
+    </div>
     <div class="pricing-grid">
       <div class="price-card" data-aos>
         <div class="price-name">Starter</div>
-        <div class="price-amount"><sup>€</sup>19</div>
-        <div class="price-per">per maand · 1 medewerker</div>
+        <div class="price-amount"><sup>€</sup><span id="idx-amt-starter">19</span></div>
+        <div class="price-per" id="idx-per-starter">per maand · 1 medewerker</div>
         <ul class="price-features">
           <li>Agenda & online boeken</li>
           <li>Kassa & betalingen</li>
@@ -485,8 +494,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div class="price-card popular">
         <div class="price-badge">⭐ Meest gekozen</div>
         <div class="price-name">Pro</div>
-        <div class="price-amount"><sup>€</sup>39</div>
-        <div class="price-per">per maand · t/m 5 medewerkers</div>
+        <div class="price-amount"><sup>€</sup><span id="idx-amt-pro">39</span></div>
+        <div class="price-per" id="idx-per-pro">per maand · t/m 5 medewerkers</div>
         <ul class="price-features">
           <li>Alles van Starter</li>
           <li>WhatsApp herinneringen</li>
@@ -499,8 +508,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       </div>
       <div class="price-card" data-aos>
         <div class="price-name">Business</div>
-        <div class="price-amount"><sup>€</sup>69</div>
-        <div class="price-per">per maand · onbeperkt</div>
+        <div class="price-amount"><sup>€</sup><span id="idx-amt-business">69</span></div>
+        <div class="price-per" id="idx-per-business">per maand · onbeperkt</div>
         <ul class="price-features">
           <li>Alles van Pro</li>
           <li>Onbeperkt medewerkers</li>
@@ -599,6 +608,23 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 window.addEventListener('scroll',()=>{
   document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
 });
+
+const IDX_PRIJS_M = {starter:{bedrag:19,per:'per maand · 1 medewerker'}, pro:{bedrag:39,per:'per maand · t/m 5 medewerkers'}, business:{bedrag:69,per:'per maand · onbeperkt'}};
+const IDX_PRIJS_Y = {starter:{bedrag:190,per:'per jaar · 1 medewerker'}, pro:{bedrag:390,per:'per jaar · t/m 5 medewerkers'}, business:{bedrag:690,per:'per jaar · onbeperkt'}};
+
+function idxSetPeriod(p){
+  document.getElementById('idx-period-toggle').checked = (p==='yearly');
+  document.getElementById('idx-period-knob').style.left = (p==='yearly') ? '21px' : '3px';
+  document.getElementById('idx-period-lbl-m').style.color = (p==='monthly') ? 'var(--ink)' : 'var(--mu)';
+  document.getElementById('idx-period-lbl-m').style.fontWeight = (p==='monthly') ? '700' : '400';
+  document.getElementById('idx-period-lbl-y').style.color = (p==='yearly') ? 'var(--gd)' : 'var(--mu)';
+  document.getElementById('idx-period-lbl-y').style.fontWeight = (p==='yearly') ? '700' : '400';
+  const prijzen = p==='yearly' ? IDX_PRIJS_Y : IDX_PRIJS_M;
+  ['starter','pro','business'].forEach(pl=>{
+    document.getElementById('idx-amt-'+pl).textContent=prijzen[pl].bedrag;
+    document.getElementById('idx-per-'+pl).textContent=prijzen[pl].per;
+  });
+}
 
 function toggleMob(){
   document.getElementById('mob-nav').classList.add('on');
