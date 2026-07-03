@@ -250,6 +250,42 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="msg" id="msg-mfa"></div>
     </div>
 
+    <!-- ABONNEMENT -->
+    <div class="section">
+      <div class="sec-title">Abonnement</div>
+      <div class="sec-sub">Je huidige Kronr-pakket en facturering.</div>
+
+      <div class="mfa-status">
+        <div class="mfa-status-left">
+          <div class="mfa-dot on" id="plan-dot"></div>
+          <div>
+            <div class="mfa-label" id="plan-label">Laden...</div>
+            <div class="mfa-sub" id="plan-sub"></div>
+          </div>
+        </div>
+        <button class="btn-sec" id="btn-plan-portal" style="display:none;" onclick="openPortal()">Abonnement beheren</button>
+      </div>
+
+      <div id="plan-upgrade-wrap" style="display:none;">
+        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:10px;">Upgraden naar</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
+          <button class="btn-sec" id="btn-upg-starter" onclick="upgradePlan('starter')" style="text-align:left;padding:14px;">
+            <div style="font-weight:600;font-size:13px;">Starter</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px;">€19/maand</div>
+          </button>
+          <button class="btn-sec" id="btn-upg-pro" onclick="upgradePlan('pro')" style="text-align:left;padding:14px;">
+            <div style="font-weight:600;font-size:13px;">Pro</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px;">€39/maand</div>
+          </button>
+          <button class="btn-sec" id="btn-upg-business" onclick="upgradePlan('business')" style="text-align:left;padding:14px;">
+            <div style="font-weight:600;font-size:13px;">Business</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px;">€69/maand</div>
+          </button>
+        </div>
+      </div>
+      <div class="msg" id="msg-plan"></div>
+    </div>
+
   </div>
 </div>
 </div>
@@ -281,6 +317,73 @@ async function loadData(){
   }
 
   await checkMFAStatus();
+  toonPlan();
+}
+
+const PLAN_NAAM= {starter:'Starter', pro:'Pro', business:'Business', free:'Gratis (nog geen abonnement)'};
+const PLAN_PRIJS = {starter:'€19/maand', pro:'€39/maand', business:'€69/maand', free:''};
+const KRONR_STRIPE_URL = 'https://kronr-stripe.isaak-elia.workers.dev';
+
+function toonPlan(){
+  const plan = SALON.plan || 'free';
+  document.getElementById('plan-label').textContent = PLAN_NAAM[plan] || 'Gratis';
+  document.getElementById('plan-sub').textContent = PLAN_PRIJS[plan] || 'Nog geen actief abonnement';
+  document.getElementById('plan-dot').className = plan==='free' ? 'mfa-dot off' : 'mfa-dot on';
+  document.getElementById('btn-plan-portal').style.display = plan==='free' ? 'none' : 'inline-block';
+  document.getElementById('plan-upgrade-wrap').style.display = plan==='business' ? 'none' : 'block';
+  ['starter','pro','business'].forEach(p=>{
+    const btn=document.getElementById('btn-upg-'+p);
+    if(btn) btn.style.opacity = (p===plan) ? '0.4' : '1';
+  });
+}
+
+function showPlanMsg(elId, tekst, type){
+  const el=document.getElementById(elId);
+  el.textContent=tekst;
+  el.className='msg '+(type==='ok'?'ok':'err');
+}
+
+async function upgradePlan(plan){
+  const btn=document.getElementById('btn-upg-'+plan);
+  const origLabel=btn.innerHTML;
+  btn.disabled=true; btn.innerHTML='<span class="spinner-inline"></span>';
+
+  try{
+    const res=await fetch(KRONR_STRIPE_URL+'/create-checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({salon_id:SALON_ID, plan, email:SESSION_USER.email})
+    });
+    if(!res.ok) throw new Error('Kon geen checkout-sessie starten');
+    const data=await res.json();
+    if(!data.url) throw new Error(data.error||'Onbekende fout');
+    window.location.href=data.url;
+  }catch(e){
+    btn.disabled=false; btn.innerHTML=origLabel;
+    showPlanMsg('msg-plan','Fout bij starten van upgrade: '+e.message);
+  }
+}
+
+async function openPortal(){
+  const btn=document.getElementById('btn-plan-portal');
+  const origLabel=btn.textContent;
+  btn.disabled=true; btn.innerHTML='<span class="spinner-inline"></span>';
+
+  try{
+    if(!SALON.stripe_customer_id) throw new Error('Nog geen Stripe-klant bekend voor deze salon');
+    const res=await fetch(KRONR_STRIPE_URL+'/portal',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({customer_id:SALON.stripe_customer_id})
+    });
+    if(!res.ok) throw new Error('Kon portal-sessie niet starten');
+    const data=await res.json();
+    if(!data.url) throw new Error(data.error||'Onbekende fout');
+    window.location.href=data.url;
+  }catch(e){
+    btn.disabled=false; btn.textContent=origLabel;
+    showPlanMsg('msg-plan','Fout bij openen van beheer: '+e.message);
+  }
 }
 
 // ── SALON PROFIEL ──
