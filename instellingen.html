@@ -267,24 +267,36 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </div>
 
       <div id="plan-upgrade-wrap" style="display:none;">
-        <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:10px;">Upgraden naar</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);">Upgraden naar</div>
+          <div class="period-toggle" style="display:flex;align-items:center;gap:8px;font-size:12px;">
+            <span id="period-lbl-m" style="cursor:pointer;color:var(--mu);" onclick="setPeriod('monthly')">Maandelijks</span>
+            <label style="position:relative;display:inline-block;width:36px;height:20px;">
+              <input type="checkbox" id="period-toggle" checked onchange="setPeriod(this.checked?'yearly':'monthly')" style="opacity:0;width:100%;height:100%;margin:0;cursor:pointer;">
+              <span style="position:absolute;inset:0;background:var(--ink);border-radius:20px;pointer-events:none;transition:background .15s;"></span>
+              <span style="position:absolute;top:2px;left:2px;width:16px;height:16px;background:#fff;border-radius:50%;transition:left .15s;pointer-events:none;" id="period-knob"></span>
+            </label>
+            <span id="period-lbl-y" style="cursor:pointer;color:var(--gd);font-weight:600;" onclick="setPeriod('yearly')">Jaarlijks <span style="color:var(--gd);">— 2 maanden gratis</span></span>
+          </div>
+        </div>
         <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;">
           <button class="btn-sec" id="btn-upg-starter" onclick="upgradePlan('starter')" style="text-align:left;padding:14px;">
             <div style="font-weight:600;font-size:13px;">Starter</div>
-            <div style="font-size:11px;color:var(--mu);margin-top:2px;">€19/maand</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px;" id="prijs-starter">€19/maand</div>
           </button>
           <button class="btn-sec" id="btn-upg-pro" onclick="upgradePlan('pro')" style="text-align:left;padding:14px;">
             <div style="font-weight:600;font-size:13px;">Pro</div>
-            <div style="font-size:11px;color:var(--mu);margin-top:2px;">€39/maand</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px;" id="prijs-pro">€39/maand</div>
           </button>
           <button class="btn-sec" id="btn-upg-business" onclick="upgradePlan('business')" style="text-align:left;padding:14px;">
             <div style="font-weight:600;font-size:13px;">Business</div>
-            <div style="font-size:11px;color:var(--mu);margin-top:2px;">€69/maand</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px;" id="prijs-business">€69/maand</div>
           </button>
         </div>
       </div>
       <div class="msg" id="msg-plan"></div>
     </div>
+
 
   </div>
 </div>
@@ -321,13 +333,29 @@ async function loadData(){
 }
 
 const PLAN_NAAM= {starter:'Starter', pro:'Pro', business:'Business', free:'Gratis (nog geen abonnement)'};
-const PLAN_PRIJS = {starter:'€19/maand', pro:'€39/maand', business:'€69/maand', free:''};
+const PLAN_PRIJS_M = {starter:'€19/maand', pro:'€39/maand', business:'€69/maand', free:''};
+const PLAN_PRIJS_Y = {starter:'€190/jaar', pro:'€390/jaar', business:'€690/jaar', free:''};
 const KRONR_STRIPE_URL = 'https://kronr-stripe.isaak-elia.workers.dev';
+let ACTIEVE_PERIODE = 'yearly';
+
+function setPeriod(p){
+  ACTIEVE_PERIODE = p;
+  document.getElementById('period-toggle').checked = (p==='yearly');
+  document.getElementById('period-knob').style.left = (p==='yearly') ? '18px' : '2px';
+  document.getElementById('period-lbl-m').style.color = (p==='monthly') ? 'var(--ink)' : 'var(--mu)';
+  document.getElementById('period-lbl-m').style.fontWeight = (p==='monthly') ? '600' : '400';
+  document.getElementById('period-lbl-y').style.color = (p==='yearly') ? 'var(--gd)' : 'var(--mu)';
+  document.getElementById('period-lbl-y').style.fontWeight = (p==='yearly') ? '600' : '400';
+  const prijzen = p==='yearly' ? PLAN_PRIJS_Y : PLAN_PRIJS_M;
+  document.getElementById('prijs-starter').textContent = prijzen.starter;
+  document.getElementById('prijs-pro').textContent = prijzen.pro;
+  document.getElementById('prijs-business').textContent = prijzen.business;
+}
 
 function toonPlan(){
   const plan = SALON.plan || 'free';
   document.getElementById('plan-label').textContent = PLAN_NAAM[plan] || 'Gratis';
-  document.getElementById('plan-sub').textContent = PLAN_PRIJS[plan] || 'Nog geen actief abonnement';
+  document.getElementById('plan-sub').textContent = PLAN_PRIJS_M[plan] || 'Nog geen actief abonnement';
   document.getElementById('plan-dot').className = plan==='free' ? 'mfa-dot off' : 'mfa-dot on';
   document.getElementById('btn-plan-portal').style.display = plan==='free' ? 'none' : 'inline-block';
   document.getElementById('plan-upgrade-wrap').style.display = plan==='business' ? 'none' : 'block';
@@ -335,6 +363,7 @@ function toonPlan(){
     const btn=document.getElementById('btn-upg-'+p);
     if(btn) btn.style.opacity = (p===plan) ? '0.4' : '1';
   });
+  setPeriod('yearly');
 }
 
 function showPlanMsg(elId, tekst, type){
@@ -352,7 +381,7 @@ async function upgradePlan(plan){
     const res=await fetch(KRONR_STRIPE_URL+'/create-checkout',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({salon_id:SALON_ID, plan, email:SESSION_USER.email})
+      body:JSON.stringify({salon_id:SALON_ID, plan, period:ACTIEVE_PERIODE, email:SESSION_USER.email})
     });
     if(!res.ok){
       let detail='';
