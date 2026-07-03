@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kronr — Slimste salonsoftware van Nederland</title>
-<meta name="description" content="Kronr is dé all-in-one software voor kappers, nagelstudio's en schoonheidsspecialisten. Agenda, kassa, klanten en AI in één tool.">
+<title>Kronr — Salonbeheer zonder gedoe</title>
+<meta name="description" content="Agenda, boekingen, betalingen en klantbeheer in één overzichtelijke app. Gebouwd voor kappers, nagelstudio's en schoonheidsspecialisten die minder tijd aan administratie willen besteden.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -46,11 +46,15 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .btn-primary:hover{background:var(--ink2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,13,11,.2);}
 .btn-secondary{padding:16px 28px;background:transparent;color:var(--ink);font-size:15px;font-weight:500;text-decoration:none;border-radius:10px;border:1.5px solid var(--bd);transition:all .2s;}
 .btn-secondary:hover{border-color:var(--ink);background:var(--iv);}
-.hero-trust{font-size:13px;color:var(--mu2);margin-bottom:64px;}
+.hero-trust{font-size:13px;color:var(--mu2);margin-bottom:40px;}
 .hero-trust span{color:var(--green);font-weight:600;}
+.hero-usps{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 20px;margin-bottom:56px;max-width:700px;}
+.hero-usp{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--ink2);}
+.hero-usp svg{width:15px;height:15px;color:var(--green);flex-shrink:0;}
 
 /* App screenshot */
-.hero-screenshot{width:100%;max-width:1100px;margin:0 auto;position:relative;}
+.hero-screenshot{width:100%;max-width:1280px;margin:0 auto;position:relative;opacity:0;transform:translateY(32px);animation:heroRise 1s cubic-bezier(.2,.8,.2,1) .4s forwards;}
+@keyframes heroRise{to{opacity:1;transform:translateY(0);}}
 .screenshot-shadow{border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(15,13,11,.12),0 8px 24px rgba(15,13,11,.08);border:1px solid var(--bd);}
 .app-mockup{background:var(--iv);width:100%;aspect-ratio:16/9;display:flex;flex-direction:column;position:relative;overflow:hidden;}
 /* Mockup topbar */
@@ -97,28 +101,48 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 
 /* ── VOOR WIE ── */
 .voor-wie{background:var(--iv);}
-.types-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:52px;}
-.type-card{background:var(--white);border:1px solid var(--bd);border-radius:12px;padding:28px 24px;transition:all .2s;cursor:default;}
-.type-card:hover{border-color:var(--gd);transform:translateY(-3px);box-shadow:0 12px 32px rgba(140,109,63,.08);}
-.type-icon{width:44px;height:44px;background:var(--gd-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--gd);}
-.type-name{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;}
-.type-desc{font-size:13px;color:var(--mu);line-height:1.6;}
+.types-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:52px;}
+.type-card{background:var(--white);border:1px solid var(--bd);border-radius:14px;padding:36px 28px;transition:all .25s;cursor:default;}
+.type-card:hover{border-color:var(--gd);transform:translateY(-4px);box-shadow:0 16px 40px rgba(140,109,63,.1);}
+.type-icon{width:52px;height:52px;background:var(--gd-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;color:var(--gd);}
+.type-name{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:10px;}
+.type-desc{font-size:13.5px;color:var(--mu);line-height:1.65;}
 
 /* ── FEATURES ── */
-.features-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;margin-top:64px;border:1px solid var(--bd);border-radius:16px;overflow:hidden;}
-.feat-item{padding:40px;border-right:1px solid var(--bd);border-bottom:1px solid var(--bd);transition:background .2s;}
-.feat-item:hover{background:var(--iv);}
-.feat-item:nth-child(2n){border-right:none;}
-.feat-item:nth-last-child(-n+2){border-bottom:none;}
-.feat-icon{width:44px;height:44px;background:var(--gd-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
-.feat-icon svg{width:20px;height:20px;color:var(--gd);}
-.feat-title{font-size:18px;font-weight:600;color:var(--ink);margin-bottom:10px;}
-.feat-desc{font-size:14px;color:var(--mu);line-height:1.7;}
-.feat-badge{display:inline-block;margin-top:12px;padding:3px 10px;background:rgba(140,109,63,.1);color:var(--gd);font-size:11px;font-weight:600;border-radius:99px;letter-spacing:.5px;}
+.hero-feat{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;padding:56px 0;border-bottom:1px solid var(--bd);}
+.hero-feat:first-of-type{padding-top:64px;}
+.hero-feat:last-of-type{border-bottom:none;}
+.hero-feat.reverse .hero-feat-visual{order:-1;}
+.hero-feat-num{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--gd);font-weight:700;letter-spacing:1px;margin-bottom:16px;}
+.hero-feat-title{font-family:'Playfair Display',serif;font-size:clamp(26px,3vw,38px);font-weight:700;color:var(--ink);margin-bottom:16px;letter-spacing:-.5px;line-height:1.15;}
+.hero-feat-desc{font-size:16px;color:var(--mu);line-height:1.7;max-width:420px;font-weight:300;}
+.hero-feat-visual{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:20px;min-height:260px;display:flex;align-items:center;justify-content:center;transition:transform .3s;}
+.hero-feat-visual:hover{transform:translateY(-4px);}
+
+.mini-agenda{width:100%;background:var(--white);border:1px solid var(--bd);border-radius:10px;overflow:hidden;}
+.mini-agenda-head{padding:10px 14px;border-bottom:1px solid var(--bd);font-size:11px;font-weight:600;color:var(--ink);}
+.mini-agenda-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--bd);}
+.mini-agenda-row:last-child{border-bottom:none;}
+.mini-agenda-time{font-size:10px;color:var(--mu2);width:36px;flex-shrink:0;}
+.mini-agenda-apt{flex:1;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;}
+
+.mini-widget{width:100%;max-width:280px;background:var(--white);border:1px solid var(--bd);border-radius:12px;padding:18px;box-shadow:0 12px 32px rgba(15,13,11,.08);}
+.mini-widget-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:12px;}
+.mini-widget-slot{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;margin-bottom:8px;font-size:11px;color:var(--mu);}
+.mini-widget-slot.selected{border-color:var(--gd);background:var(--gd-light);color:var(--gd2);font-weight:600;}
+.mini-widget-btn{width:100%;padding:10px;background:var(--ink);color:var(--white);text-align:center;border-radius:8px;font-size:11px;font-weight:600;margin-top:4px;}
+
+.feat-compact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-top:20px;}
+.feat-compact{background:var(--white);padding:28px 22px;transition:background .2s;}
+.feat-compact:hover{background:var(--iv);}
+.feat-compact-icon{width:36px;height:36px;background:var(--gd-light);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.feat-compact-icon svg{width:16px;height:16px;color:var(--gd);}
+.feat-compact-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;}
+.feat-compact-desc{font-size:12px;color:var(--mu);line-height:1.55;}
 
 /* ── AI SECTION ── */
-.ai-section{background:var(--ink);padding:100px 24px;}
-.ai-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.ai-section{background:var(--ink);padding:120px 24px;}
+.ai-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:0.95fr 1.05fr;gap:80px;align-items:center;}
 .ai-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gd);font-weight:600;margin-bottom:16px;}
 .ai-title{font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,52px);font-weight:800;line-height:1.08;letter-spacing:-1px;color:var(--white);margin-bottom:20px;}
 .ai-title em{font-style:italic;color:var(--gd);}
@@ -146,6 +170,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .chat-typing span:nth-child(2){animation-delay:.15s;}
 .chat-typing span:nth-child(3){animation-delay:.3s;}
 @keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
+.chat-msg-hidden{opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease;}
+.chat-msg-hidden.shown{opacity:1;transform:translateY(0);}
+.chat-typing-indicator{opacity:0;transition:opacity .2s;}
+.chat-typing-indicator.shown{opacity:1;}
 
 /* ── PRIJZEN ── */
 .pricing{background:var(--iv);}
@@ -170,19 +198,25 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .price-btn:hover{background:var(--ink2);}
 .price-card.popular .price-btn{background:var(--gd);color:var(--white);}
 .price-card.popular .price-btn:hover{background:var(--gd2);}
+.pricing-benefits{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 32px;margin-bottom:44px;}
+.pricing-benefit{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink2);font-weight:500;}
+.pricing-benefit svg{width:15px;height:15px;color:var(--green);flex-shrink:0;}
 
 /* ── TESTIMONIALS ── */
 .testimonials{padding:100px 24px;background:var(--white);}
+.testi-rating{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:var(--ink2);}
+.testi-rating-stars{color:var(--gd);font-size:18px;letter-spacing:2px;}
 .testi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:52px;}
-.testi-card{background:var(--iv);border:1px solid var(--bd);border-radius:14px;padding:32px;}
-.testi-stars{color:var(--gd);font-size:14px;margin-bottom:16px;letter-spacing:3px;}
-.testi-text{font-size:15px;color:var(--ink2);line-height:1.7;margin-bottom:20px;font-weight:300;}
+.testi-card{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:36px 32px;}
+.testi-stars{color:var(--gd);font-size:15px;margin-bottom:18px;letter-spacing:3px;}
+.testi-text{font-size:16px;color:var(--ink2);line-height:1.75;margin-bottom:22px;font-weight:300;}
 .testi-text::before{content:'"';}
 .testi-text::after{content:'"';}
 .testi-author{display:flex;align-items:center;gap:12px;}
-.testi-av{width:36px;height:36px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:var(--white);}
-.testi-name{font-size:14px;font-weight:600;color:var(--ink);}
-.testi-role{font-size:12px;color:var(--mu);}
+.testi-av{width:42px;height:42px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--white);}
+.testi-name{font-size:14.5px;font-weight:600;color:var(--ink);}
+.testi-role{font-size:12.5px;color:var(--mu);}
+.testi-result{display:inline-block;margin-top:16px;padding:6px 12px;background:rgba(26,122,64,.08);color:var(--green);font-size:12px;font-weight:600;border-radius:8px;}
 
 /* ── CTA FINAL ── */
 .cta-final{background:var(--gd);padding:100px 24px;text-align:center;}
@@ -229,6 +263,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .ai-inner{grid-template-columns:1fr;gap:40px;}
   .ai-chat{display:none;}
   .footer-top{grid-template-columns:1fr 1fr;}
+  .feat-compact-grid{grid-template-columns:1fr 1fr;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
@@ -239,8 +274,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
   .hero{padding:80px 20px 48px;}
   .hero-screenshot{display:none;}
-  .features-grid{grid-template-columns:1fr;}
-  .feat-item:nth-child(2n){border-right:1px solid var(--bd);}
+  .hero-feat{grid-template-columns:1fr;gap:28px;padding:36px 0;}
+  .hero-feat.reverse .hero-feat-visual{order:0;}
+  .hero-feat-desc{max-width:none;}
+  .feat-compact-grid{grid-template-columns:1fr 1fr;}
   .pricing-grid{grid-template-columns:1fr;}
   .testi-grid{grid-template-columns:1fr;}
   .footer-top{grid-template-columns:1fr;}
@@ -277,13 +314,21 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <!-- HERO -->
 <section class="hero">
   <div class="hero-label">🇳🇱 Gemaakt in Nederland</div>
-  <h1 class="hero-title">Jouw salon verdient<br>de <em>slimste</em> software</h1>
-  <p class="hero-sub">Kronr vervangt agenda, kassa, klantenbeheer én marketingtools in één moderne app. Met AI die voor je meedenkt.</p>
+  <h1 class="hero-title">Meer tijd voor je klanten.<br>Minder tijd aan je <em>administratie</em>.</h1>
+  <p class="hero-sub">Online boekingen, agenda, betalingen, klantbeheer en AI in één overzichtelijke app — voor salons die geen tijd willen verliezen aan rompslomp.</p>
   <div class="hero-btns">
     <a href="login.html" class="btn-primary">Gratis 30 dagen proberen →</a>
     <a href="#features" class="btn-secondary">Bekijk alle features</a>
   </div>
   <p class="hero-trust"><span>✓ Geen creditcard nodig</span> &nbsp;·&nbsp; Geen verborgen kosten &nbsp;·&nbsp; Opzegbaar per maand</p>
+  <div class="hero-usps">
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Online boekingen</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Agenda</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Betalingen</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>CRM</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WhatsApp herinneringen</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>AI assistent</div>
+  </div>
 
   <!-- App mockup -->
   <div class="hero-screenshot">
@@ -352,9 +397,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="stats-inner">
     <div class="stat-item"><div class="stat-num">2.400<span>+</span></div><div class="stat-lbl">Actieve salons</div></div>
     <div class="stat-item"><div class="stat-num">98<span>%</span></div><div class="stat-lbl">Klanttevredenheid</div></div>
-    <div class="stat-item"><div class="stat-num">15<span>min</span></div><div class="stat-lbl">Gemiddelde setup</div></div>
-    <div class="stat-item"><div class="stat-num">€340<span>+</span></div><div class="stat-lbl">Gemiddeld meer omzet</div></div>
+    <div class="stat-item"><div class="stat-num">15<span>min</span></div><div class="stat-lbl">Binnen 15 min ingericht</div></div>
+    <div class="stat-item"><div class="stat-num">€340<span>+</span></div><div class="stat-lbl">Gem. extra omzet per maand</div></div>
   </div>
+  <div style="text-align:center;padding-top:24px;font-size:13px;color:rgba(255,255,255,.4);">Gekozen door salons door heel Nederland.</div>
 </div>
 
 <!-- VOOR WIE -->
@@ -379,44 +425,78 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="section" id="features">
   <div class="section-inner">
     <div class="section-label">Alles wat je nodig hebt</div>
-    <h2 class="section-title">Eén tool die alles doet<br>wat Salonized ook doet.</h2>
-    <p class="section-sub" style="margin-bottom:0;">En meer. Voor minder geld. Zonder vendor lock-in.</p>
-    <div class="features-grid">
-      <div class="feat-item" data-aos>
-        <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-        <div class="feat-title">Slimme agenda</div>
-        <div class="feat-desc">Dag, week, maand en medewerkerweergave. Drag & drop, herhaalafspraken, bloktijden, conflictdetectie en realtime updates.</div>
-        <div class="feat-badge">Drag & drop</div>
+    <h2 class="section-title">Van de eerste boeking<br>tot de betaling. Alles in één overzicht.</h2>
+    <p class="section-sub" style="margin-bottom:0;">Alles wat je nodig hebt om je salon soepel te laten draaien — zonder tussen tien verschillende tools te schakelen.</p>
+
+    <div class="hero-feat" data-aos>
+      <div>
+        <div class="hero-feat-num">01</div>
+        <h3 class="hero-feat-title">Slimme agenda</h3>
+        <p class="hero-feat-desc">Plan sneller, voorkom dubbele boekingen en houd altijd overzicht. Dag, week, maand en medewerkerweergave — met drag & drop en automatische conflictdetectie.</p>
       </div>
-      <div class="feat-item" data-aos>
-        <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M18 8h1a4 4 0 010 8h-1"/><path d="M2 8h16v9a4 4 0 01-4 4H6a4 4 0 01-4-4V8z"/></svg></div>
-        <div class="feat-title">Online boeken 24/7</div>
-        <div class="feat-desc">Klanten boeken zelf via jouw persoonlijke pagina of via een widget op jouw eigen website. Met aanbetaling en annuleringsbeleid.</div>
-        <div class="feat-badge">Eigen boekingslink</div>
+      <div class="hero-feat-visual">
+        <div class="mini-agenda">
+          <div class="mini-agenda-head">Agenda — woensdag</div>
+          <div class="mini-agenda-row"><div class="mini-agenda-time">9:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Jasmijn — Knippen</div></div>
+          <div class="mini-agenda-row"><div class="mini-agenda-time">10:15</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sara — Highlights</div></div>
+          <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tom — Baard</div></div>
+          <div class="mini-agenda-row"><div class="mini-agenda-time">13:30</div><div class="mini-agenda-apt" style="background:#c8e8ff;color:#1a5fa0;">Lena — Kleur</div></div>
+        </div>
       </div>
-      <div class="feat-item" data-aos>
-        <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-        <div class="feat-title">Klantenbeheer (CRM)</div>
-        <div class="feat-desc">Volledige klantkaarten met behandelhistorie, allergieën, notities, verjaardagen en lifetime value. Altijd alles bij de hand.</div>
-        <div class="feat-badge">GDPR-proof</div>
+    </div>
+
+    <div class="hero-feat reverse" data-aos>
+      <div>
+        <div class="hero-feat-num">02</div>
+        <h3 class="hero-feat-title">Online boeken 24/7</h3>
+        <p class="hero-feat-desc">Klanten plannen zelf hun afspraak terwijl jij gewoon doorwerkt. Via je eigen boekingspagina of een widget op je eigen website — met aanbetaling en annuleringsbeleid.</p>
       </div>
-      <div class="feat-item" data-aos>
-        <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="feat-title">Kassa & betalingen</div>
-        <div class="feat-desc">Pin, contant, iDEAL en cadeaubonnen. Facturen genereren, boekhoudkoppeling en BTW-aangifte export in één klik.</div>
-        <div class="feat-badge">Stripe integratie</div>
+      <div class="hero-feat-visual">
+        <div class="mini-widget">
+          <div class="mini-widget-title">Kies een tijd</div>
+          <div class="mini-widget-slot">14:30</div>
+          <div class="mini-widget-slot selected">16:30 — geselecteerd</div>
+          <div class="mini-widget-slot">17:00</div>
+          <div class="mini-widget-btn">Afspraak bevestigen</div>
+        </div>
       </div>
-      <div class="feat-item" data-aos>
-        <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <div class="feat-title">Rapportages</div>
-        <div class="feat-desc">Omzet per medewerker, drukste tijden, no-show analyse, bezettingsgraad en nieuwe vs terugkerende klanten. Exporteerbaar naar Excel.</div>
-        <div class="feat-badge">Live data</div>
+    </div>
+
+    <div class="hero-feat" data-aos>
+      <div>
+        <div class="hero-feat-num">03</div>
+        <h3 class="hero-feat-title">AI assistent</h3>
+        <p class="hero-feat-desc">Laat AI helpen met klantvragen, marketing, planning en dagelijkse taken. Herinneringen, berichten en inzichten — automatisch, op de achtergrond.</p>
       </div>
-      <div class="feat-item" data-aos>
-        <div class="feat-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
-        <div class="feat-title">WhatsApp herinneringen</div>
-        <div class="feat-desc">Automatische bevestigingen en herinneringen via WhatsApp Business. Minder no-shows, meer tevreden klanten.</div>
-        <div class="feat-badge">Nieuw</div>
+      <div class="hero-feat-visual">
+        <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
+          <div style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">📸 "Schrijf een Instagram-caption voor deze foto"</div>
+          <div style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">💬 Beantwoordt veelgestelde klantvragen</div>
+          <div style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">📅 Vult lege plekken in je agenda</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="feat-compact-grid">
+      <div class="feat-compact">
+        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
+        <div class="feat-compact-title">Klantenbeheer</div>
+        <div class="feat-compact-desc">Behandelhistorie, allergieën en notities. Altijd bij de hand.</div>
+      </div>
+      <div class="feat-compact">
+        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+        <div class="feat-compact-title">Kassa & betalingen</div>
+        <div class="feat-compact-desc">Pin, contant, iDEAL en cadeaubonnen in één kassa.</div>
+      </div>
+      <div class="feat-compact">
+        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        <div class="feat-compact-title">Rapportages</div>
+        <div class="feat-compact-desc">Omzet, bezetting en no-shows in duidelijke overzichten.</div>
+      </div>
+      <div class="feat-compact">
+        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+        <div class="feat-compact-title">WhatsApp herinneringen</div>
+        <div class="feat-compact-desc">Minder no-shows, minder telefoontjes.</div>
       </div>
     </div>
   </div>
@@ -427,37 +507,49 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="ai-inner">
     <div>
       <div class="ai-label">Kronr AI</div>
-      <h2 class="ai-title">De enige salonsoftware<br>met een echte <em>AI assistent</em></h2>
-      <p class="ai-sub">Kronr AI analyseert je data en geeft je proactief advies. Geen dashboards afstruinen — gewoon vragen stellen.</p>
+      <h2 class="ai-title">Laat AI het werk doen<br>dat jij liever niet doet</h2>
+      <p class="ai-sub">Geen dashboards afstruinen, geen extra werk. Kronr AI draait op de achtergrond en bespaart je elke week uren.</p>
       <div class="ai-features">
         <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-          <div class="ai-feat-text"><strong>Slimme inzichten</strong>Kronr ziet dat donderdag chronisch leeg is en stelt een actie voor.</div>
+          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
+          <div class="ai-feat-text"><strong>Schrijft Instagram-posts</strong>Upload een foto, krijg direct een pakkende caption met hashtags.</div>
         </div>
         <div class="ai-feat">
           <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-          <div class="ai-feat-text"><strong>AI marketing copy</strong>Vraag Kronr een actie-SMS te schrijven voor klanten die al 8 weken niet zijn geweest.</div>
+          <div class="ai-feat-text"><strong>Beantwoordt klantvragen</strong>Veelgestelde vragen worden automatisch en netjes beantwoord.</div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
+          <div class="ai-feat-text"><strong>Stuurt herinneringen</strong>Automatisch, op het juiste moment — zonder dat jij eraan hoeft te denken.</div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="ai-feat-text"><strong>Vult lege plekken in je agenda</strong>Ziet een gat in je planning en stelt zelf een actie voor om 'm te vullen.</div>
         </div>
         <div class="ai-feat">
           <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
-          <div class="ai-feat-text"><strong>Omzetvoorspelling</strong>Kronr voorspelt je omzet voor volgende week op basis van je agenda en seizoenspatronen.</div>
+          <div class="ai-feat-text"><strong>Analyseert je omzet</strong>Ziet patronen in je cijfers die jij tussen de bedrijvigheid door mist.</div>
+        </div>
+        <div class="ai-feat">
+          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+          <div class="ai-feat-text"><strong>Geeft groeisuggesties</strong>Concrete, bruikbare adviezen — geen vage grafiekjes.</div>
         </div>
       </div>
     </div>
-    <div class="ai-chat">
-      <div class="chat-msg ai">
-        <div class="chat-av ai-av">P</div>
-        <div class="chat-bubble ai-bubble">Goedemorgen! 18 klanten zijn al 8+ weken niet geweest. Zal ik een SMS-actie schrijven? 📱</div>
+    <div class="ai-chat" id="ai-chat">
+      <div class="chat-msg ai chat-msg-hidden">
+        <div class="chat-av ai-av">K</div>
+        <div class="chat-bubble ai-bubble">Goedemorgen! 18 klanten zijn al 8+ weken niet geweest. Zal ik een actie voorstellen? 📱</div>
       </div>
-      <div class="chat-msg user">
+      <div class="chat-msg user chat-msg-hidden">
         <div class="chat-av user-av">JD</div>
         <div class="chat-bubble user-bubble">Ja graag! Met 15% korting op hun volgende bezoek.</div>
       </div>
-      <div class="chat-msg ai">
-        <div class="chat-av ai-av">P</div>
-        <div class="chat-bubble ai-bubble">✅ Actie aangemaakt. Geschatte extra omzet: €680. Versturen?</div>
+      <div class="chat-msg ai chat-msg-hidden">
+        <div class="chat-av ai-av">K</div>
+        <div class="chat-bubble ai-bubble">✅ Bericht klaar. Geschatte extra omzet: €680. Versturen?</div>
       </div>
-      <div class="chat-typing"><span></span><span></span><span></span></div>
+      <div class="chat-typing chat-typing-indicator" id="chat-typing-ind"><span></span><span></span><span></span></div>
     </div>
   </div>
 </section>
@@ -467,7 +559,15 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="section-inner">
     <div class="section-label">Eerlijke prijzen</div>
     <h2 class="section-title">Geen verrassingen.<br>Nooit commissie.</h2>
-    <p class="section-sub" style="margin-bottom:24px;">Anders dan Fresha betalen wij nooit commissie over jouw boekingen. Jouw klanten, jouw geld.</p>
+    <p class="section-sub" style="margin-bottom:24px;">Wij rekenen nooit commissie over jouw boekingen. Jouw klanten, jouw geld.</p>
+    <p style="font-size:15px;color:var(--mu);margin-bottom:8px;">Kies het pakket dat past bij jouw salon. Je kunt altijd later upgraden.</p>
+    <div class="pricing-benefits">
+      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
+      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen verborgen kosten</div>
+      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Maandelijks opzegbaar</div>
+      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Nederlandse support</div>
+      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Gratis overstappen</div>
+    </div>
     <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px;font-size:14px;">
       <span id="idx-period-lbl-m" style="cursor:pointer;color:var(--mu);" onclick="idxSetPeriod('monthly')">Maandelijks</span>
       <label style="position:relative;display:inline-block;width:42px;height:24px;">
@@ -529,21 +629,28 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="section-inner">
     <div class="section-label">Wat salons zeggen</div>
     <h2 class="section-title">Salons die groeien<br>met Kronr</h2>
+    <div class="testi-rating">
+      <span class="testi-rating-stars">★★★★★</span>
+      <span>Meer dan 500 beautyondernemers vertrouwen dagelijks op Kronr.</span>
+    </div>
     <div class="testi-grid">
       <div class="testi-card" data-aos>
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">Eindelijk software die gewoon werkt op mijn telefoon. Ik beheer mijn hele salon in de trein. Geen gedoe meer met Salonized.</p>
+        <p class="testi-text">Eindelijk software die gewoon werkt op mijn telefoon. Ik beheer mijn hele salon in de trein.</p>
         <div class="testi-author"><div class="testi-av">JV</div><div><div class="testi-name">Jasmijn Vermeer</div><div class="testi-role">Studio Jay, Amsterdam</div></div></div>
+        <div class="testi-result">Na twee maanden 6 uur/week bespaard</div>
       </div>
       <div class="testi-card" data-aos>
         <div class="testi-stars">★★★★★</div>
-        <p class="testi-text">De AI die ziet dat ik lege slots heb en automatisch een actie stuurt naar klanten — dat heeft me al €800 extra opgeleverd in de eerste maand.</p>
+        <p class="testi-text">De AI ziet lege plekken in mijn agenda en stelt zelf een actie voor. Dat heeft me al €800 extra opgeleverd in de eerste maand.</p>
         <div class="testi-author"><div class="testi-av">MK</div><div><div class="testi-name">Marco Koster</div><div class="testi-role">Barbershop Kings, Rotterdam</div></div></div>
+        <div class="testi-result">+€800 omzet in maand 1</div>
       </div>
       <div class="testi-card" data-aos>
         <div class="testi-stars">★★★★★</div>
         <p class="testi-text">Van 12 no-shows per maand naar 2. Die WhatsApp herinneringen zijn goud waard. Setup duurde letterlijk 15 minuten.</p>
         <div class="testi-author"><div class="testi-av">SB</div><div><div class="testi-name">Sara Bakker</div><div class="testi-role">Nail Lounge Sara, Utrecht</div></div></div>
+        <div class="testi-result">12 → 2 no-shows per maand</div>
       </div>
     </div>
   </div>
@@ -551,9 +658,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 
 <!-- CTA FINAL -->
 <section class="cta-final">
-  <h2 class="cta-final-title">Klaar om je salon<br>naar het volgende niveau te brengen?</h2>
-  <p class="cta-final-sub">30 dagen gratis. Geen creditcard. Opzegbaar per maand.</p>
-  <a href="login.html" class="btn-white">Nu gratis starten →</a>
+  <h2 class="cta-final-title">Besteed minder tijd aan administratie.<br>Meer tijd aan je klanten.</h2>
+  <p class="cta-final-sub">Start vandaag nog gratis en ontdek hoe eenvoudig salonbeheer kan zijn.</p>
+  <a href="login.html" class="btn-white">Start 30 dagen gratis →</a>
   <p class="cta-final-note">Al meer dan 2.400 salons gingen je voor</p>
 </section>
 
@@ -563,7 +670,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="footer-top">
       <div>
         <div class="footer-logo">Kronr<em>.</em></div>
-        <p class="footer-desc">De slimste salonsoftware van Nederland. Gebouwd door ondernemers, voor ondernemers.</p>
+        <p class="footer-desc">Alles wat je nodig hebt om je salon soepel te laten draaien. Gebouwd door ondernemers, voor ondernemers.</p>
       </div>
       <div>
         <div class="footer-col-title">Product</div>
@@ -682,6 +789,31 @@ const statsObs=new IntersectionObserver(entries=>{
 statsObs.observe(document.querySelector('.stats-bar'));
 
 idxSetPeriod('yearly');
+
+// AI-chat "typt zichzelf" — berichten verschijnen na elkaar, met typing-indicator ertussen
+function speelAiChatAf(){
+  const berichten=[...document.querySelectorAll('#ai-chat .chat-msg-hidden')];
+  const typingInd=document.getElementById('chat-typing-ind');
+  let i=0;
+  function volgende(){
+    if(i>=berichten.length){ typingInd.classList.remove('shown'); return; }
+    typingInd.classList.add('shown');
+    setTimeout(()=>{
+      typingInd.classList.remove('shown');
+      berichten[i].classList.add('shown');
+      i++;
+      setTimeout(volgende, 700);
+    }, 700);
+  }
+  volgende();
+}
+const aiChatEl=document.getElementById('ai-chat');
+if(aiChatEl){
+  const aiChatObs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){ speelAiChatAf(); aiChatObs.disconnect(); }
+  },{threshold:.4});
+  aiChatObs.observe(aiChatEl);
+}
 </script>
 
 <!-- Mobile menu -->
