@@ -158,7 +158,11 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .ai-feat-text strong{color:var(--white);display:block;margin-bottom:3px;}
 
 /* AI chat mockup */
-.ai-chat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px;}
+.ai-chat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:420px;justify-content:center;}
+.ai-chat-head{display:flex;align-items:center;gap:10px;padding-bottom:16px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.08);}
+.ai-chat-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 4px rgba(74,222,128,.15);flex-shrink:0;}
+.ai-chat-head-text{font-size:13px;font-weight:600;color:var(--white);display:flex;flex-direction:column;gap:2px;}
+.ai-chat-head-text span{font-size:11px;font-weight:400;color:rgba(255,255,255,.4);}
 .chat-msg{display:flex;gap:10px;align-items:flex-start;}
 .chat-msg.ai{flex-direction:row;}
 .chat-msg.user{flex-direction:row-reverse;}
@@ -220,10 +224,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .testi-name{font-size:14.5px;font-weight:600;color:var(--ink);}
 .testi-role{font-size:12.5px;color:var(--mu);}
 .testi-result{display:inline-block;margin-top:16px;padding:6px 12px;background:rgba(26,122,64,.08);color:var(--green);font-size:12px;font-weight:600;border-radius:8px;}
-.testi-featured{display:grid;grid-template-columns:auto 1fr;gap:32px;align-items:center;background:var(--iv);border:1px solid var(--bd);border-radius:20px;padding:44px 48px;margin-top:52px;}
-.testi-featured-av{width:88px;height:88px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--white);flex-shrink:0;}
-.testi-featured-stars{color:var(--gd);font-size:16px;letter-spacing:3px;margin-bottom:14px;}
-.testi-featured-text{font-family:'Playfair Display',serif;font-size:clamp(20px,2.4vw,26px);font-style:italic;color:var(--ink);line-height:1.4;margin-bottom:16px;}
+.testi-featured{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;background:var(--iv);border:1px solid var(--bd);border-radius:24px;padding:56px 60px;margin-top:52px;}
+.testi-featured-av{width:120px;height:120px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--white);flex-shrink:0;box-shadow:0 12px 32px rgba(140,109,63,.25);}
+.testi-featured-stars{color:var(--gd);font-size:18px;letter-spacing:3px;margin-bottom:16px;}
+.testi-featured-text{font-family:'Playfair Display',serif;font-size:clamp(22px,2.8vw,30px);font-style:italic;color:var(--ink);line-height:1.4;margin-bottom:20px;}
 .testi-featured-text::before{content:'"';}
 .testi-featured-text::after{content:'"';}
 .testi-featured-name{font-size:15px;font-weight:600;color:var(--ink);}
@@ -232,11 +236,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 /* ── FOTO SECTIE ── */
 .photo-section{padding:100px 24px;background:var(--white);}
 .photo-section-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center;}
-.photo-frame{aspect-ratio:4/5;border-radius:20px;background:linear-gradient(135deg,var(--gd-light) 0%,var(--iv) 60%,var(--wm) 100%);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative;}
+.photo-frame{aspect-ratio:4/5;border-radius:20px;background:var(--iv);border:1px solid var(--bd);overflow:hidden;position:relative;}
 .photo-frame img{width:100%;height:100%;object-fit:cover;display:block;}
-.photo-frame-placeholder{display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--mu2);text-align:center;padding:32px;}
-.photo-frame-placeholder svg{width:40px;height:40px;opacity:.5;}
-.photo-frame-placeholder span{font-size:12px;max-width:220px;line-height:1.6;}
+.photo-illustration{width:100%;height:100%;display:block;}
+.photo-frame-caption{position:absolute;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(0deg,rgba(15,13,11,.55) 0%,transparent 100%);color:#fff;font-size:11.5px;font-weight:500;text-align:center;}
 
 /* ── CTA FINAL ── */
 .cta-final{background:var(--gd);padding:100px 24px;text-align:center;}
@@ -286,6 +289,11 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .feat-compact-grid{grid-template-columns:1fr 1fr;}
   .photo-section-inner{gap:40px;}
   .hero-feat{gap:40px;}
+  .section{padding:72px 24px;}
+  .ai-section{padding:80px 24px;}
+  .testimonials{padding:72px 24px;}
+  .photo-section{padding:72px 24px;}
+  .cta-final{padding:80px 24px;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
@@ -294,22 +302,30 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .type-name{font-size:14px;}
   .type-desc{font-size:12px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
-  .hero{padding:80px 16px 40px;}
+  .hero{min-height:100svh;padding:76px 16px 36px;}
   .hero-screenshot{padding:0;}
   .mock-content{grid-template-columns:1fr 1fr;}
   .mock-kpi-v{font-size:16px;}
-  .hero-feat{grid-template-columns:1fr;gap:28px;padding:36px 0;}
+  .section{padding:56px 20px;}
+  .ai-section{padding:64px 20px;}
+  .testimonials{padding:56px 20px;}
+  .photo-section{padding:56px 20px;}
+  .cta-final{padding:64px 20px;}
+  .section-title{margin-bottom:14px;}
+  .hero-feat{grid-template-columns:1fr;gap:28px;padding:32px 0;}
+  .hero-feat:first-of-type{padding-top:40px;}
   .hero-feat.reverse .hero-feat-visual{order:0;}
   .hero-feat-desc{max-width:none;}
   .feat-compact-grid{grid-template-columns:1fr 1fr;}
   .pricing-grid{grid-template-columns:1fr;}
   .testi-grid{grid-template-columns:1fr;}
-  .testi-featured{grid-template-columns:1fr;text-align:center;padding:32px 24px;}
-  .testi-featured-av{margin:0 auto;}
+  .testi-featured{grid-template-columns:1fr;text-align:center;padding:32px 24px;gap:20px;}
+  .testi-featured-av{margin:0 auto;width:80px;height:80px;font-size:26px;}
   .footer-top{grid-template-columns:1fr;}
   .stats-inner{grid-template-columns:1fr 1fr;}
   .types-grid{grid-template-columns:1fr 1fr;}
-  .photo-section-inner{grid-template-columns:1fr;}
+  .photo-section-inner{grid-template-columns:1fr;gap:28px;}
+  .photo-frame{aspect-ratio:16/10;}
   .hero-usps{gap:8px 14px;}
   .pricing-benefits{gap:12px 20px;}
 }
@@ -338,7 +354,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <a href="#ai" class="nav-link">AI</a>
       <a href="#prijzen" class="nav-link">Prijzen</a>
       <a href="login.html" class="nav-login">Inloggen</a>
-      <a href="login.html" class="nav-cta">Gratis starten →</a>
+      <a href="login.html" class="nav-cta">Probeer Kronr gratis →</a>
     </div>
     <button class="mob-menu" id="mob-menu" onclick="toggleMob()">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -349,18 +365,18 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <!-- HERO -->
 <section class="hero">
   <div class="hero-label">🇳🇱 Gemaakt in Nederland</div>
-  <h1 class="hero-title">Meer tijd voor je klanten.<br>Minder tijd aan je <em>administratie</em>.</h1>
-  <p class="hero-sub">Beheer online boekingen, agenda, betalingen, klantgegevens en marketing vanuit één overzichtelijke app voor beautyprofessionals.</p>
+  <h1 class="hero-title">Besteed minder tijd<br>aan administratie. <em>Meer</em> tijd aan je klanten.</h1>
+  <p class="hero-sub">Van online boekingen tot betalingen en AI. Alles wat je nodig hebt om je salon soepel te laten draaien.</p>
   <div class="hero-btns">
-    <a href="login.html" class="btn-primary">Gratis 30 dagen proberen →</a>
+    <a href="login.html" class="btn-primary">Probeer Kronr gratis →</a>
     <a href="#features" class="btn-secondary">Bekijk alle features</a>
   </div>
-  <p class="hero-trust"><span>✓ Geen creditcard nodig</span> &nbsp;·&nbsp; Geen verborgen kosten &nbsp;·&nbsp; Opzegbaar per maand</p>
+  <p class="hero-trust"><span>✓ 14 dagen gratis</span> &nbsp;·&nbsp; Geen creditcard nodig &nbsp;·&nbsp; Opzegbaar per maand</p>
   <div class="hero-usps">
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Online boekingen</div>
     <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>AI assistent</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>WhatsApp herinneringen</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen creditcard</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Binnen 15 minuten ingericht</div>
+    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Nederlandse support</div>
   </div>
 
   <!-- App mockup -->
@@ -458,11 +474,26 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="photo-section">
   <div class="photo-section-inner" data-aos>
     <div class="photo-frame">
-      <!-- Vervang deze placeholder door: <img src="jouw-foto.jpg" alt="..."> -->
-      <div class="photo-frame-placeholder">
-        <svg fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M23 19a2 2 0 01-2 2H3a2 2 0 01-2-2V8a2 2 0 012-2h4l2-3h6l2 3h4a2 2 0 012 2z"/><circle cx="12" cy="13" r="4"/></svg>
-        <span>Hier komt een echte foto van jou, je team of je salon</span>
-      </div>
+      <!-- Vervang deze illustratie door: <img src="jouw-foto.jpg" alt="..."> voor een echte foto -->
+      <svg class="photo-illustration" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="500" fill="url(#pgrad)"/>
+        <defs>
+          <linearGradient id="pgrad" x1="0" y1="0" x2="400" y2="500" gradientUnits="userSpaceOnUse">
+            <stop stop-color="#f5ede0"/><stop offset="1" stop-color="#e2d9ce"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="200" cy="430" rx="140" ry="14" fill="#8c6d3f" opacity=".12"/>
+        <rect x="120" y="150" width="160" height="4" rx="2" fill="#8c6d3f" opacity=".5"/>
+        <rect x="150" y="80" width="100" height="130" rx="10" fill="#faf8f4" stroke="#8c6d3f" stroke-width="2" opacity=".7"/>
+        <rect x="165" y="95" width="70" height="100" rx="4" fill="#e2d9ce" opacity=".6"/>
+        <path d="M140 420 Q140 340 160 300 L240 300 Q260 340 260 420 Z" fill="#0f0d0b" opacity=".85"/>
+        <rect x="120" y="410" width="160" height="24" rx="10" fill="#0f0d0b"/>
+        <circle cx="130" cy="440" r="10" fill="#0f0d0b" opacity=".85"/>
+        <circle cx="270" cy="440" r="10" fill="#0f0d0b" opacity=".85"/>
+        <circle cx="200" cy="255" r="34" fill="#f5ede0" stroke="#8c6d3f" stroke-width="2"/>
+        <path d="M178 250c0-14 10-24 22-24s22 10 22 24" stroke="#8c6d3f" stroke-width="2" fill="none"/>
+      </svg>
+      <div class="photo-frame-caption">Vervang dit vak door een foto van jou, je team of je salon</div>
     </div>
     <div>
       <div class="section-label">Beauty is mensenwerk</div>
@@ -603,6 +634,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       </div>
     </div>
     <div class="ai-chat" id="ai-chat">
+      <div class="ai-chat-head">
+        <div class="ai-chat-dot"></div>
+        <div class="ai-chat-head-text">Kronr AI<span>Actief — verwerkt je data live</span></div>
+      </div>
       <div class="chat-msg ai chat-msg-hidden">
         <div class="chat-av ai-av">K</div>
         <div class="chat-bubble ai-bubble">Goedemorgen! 18 klanten zijn al 8+ weken niet geweest. Zal ik een actie voorstellen? 📱</div>
@@ -614,6 +649,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div class="chat-msg ai chat-msg-hidden">
         <div class="chat-av ai-av">K</div>
         <div class="chat-bubble ai-bubble">✅ Bericht klaar. Geschatte extra omzet: €680. Versturen?</div>
+      </div>
+      <div class="chat-msg user chat-msg-hidden">
+        <div class="chat-av user-av">JD</div>
+        <div class="chat-bubble user-bubble">Verstuur maar! 🙌</div>
       </div>
       <div class="chat-typing chat-typing-indicator" id="chat-typing-ind"><span></span><span></span><span></span></div>
     </div>
@@ -655,7 +694,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Email herinneringen</li>
           <li>Basis rapportages</li>
         </ul>
-        <a href="login.html" class="price-btn">Gratis proberen</a>
+        <a href="login.html" class="price-btn">Probeer Kronr gratis</a>
       </div>
       <div class="price-card popular">
         <div class="price-badge">⭐ Meest gekozen</div>
@@ -670,7 +709,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Kronr AI inzichten</li>
           <li>Boekhoudkoppeling</li>
         </ul>
-        <a href="login.html" class="price-btn">Gratis proberen</a>
+        <a href="login.html" class="price-btn">Probeer Kronr gratis</a>
       </div>
       <div class="price-card" data-aos>
         <div class="price-name">Business</div>
@@ -684,7 +723,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Meerdere locaties</li>
           <li>Prioriteit support</li>
         </ul>
-        <a href="login.html" class="price-btn">Gratis proberen</a>
+        <a href="login.html" class="price-btn">Probeer Kronr gratis</a>
       </div>
     </div>
   </div>
@@ -704,7 +743,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div class="testi-featured-av">JV</div>
       <div>
         <div class="testi-featured-stars">★★★★★</div>
-        <p class="testi-featured-text">Sinds we Kronr gebruiken besparen we iedere week uren administratie.</p>
+        <p class="testi-featured-text">Sinds we Kronr gebruiken besparen we iedere week uren administratie en boeken klanten veel makkelijker online.</p>
         <div class="testi-featured-name">Jasmijn Vermeer</div>
         <div class="testi-featured-role">Studio Jay, Amsterdam</div>
       </div>
@@ -907,7 +946,7 @@ if(aiChatEl){
   </div>
   <div class="mob-nav-foot">
     <a href="login.html" class="mob-btn-login">Inloggen</a>
-    <a href="login.html" class="mob-btn-start">Gratis starten →</a>
+    <a href="login.html" class="mob-btn-start">Probeer Kronr gratis →</a>
   </div>
 </div>
 </body>
