@@ -469,9 +469,11 @@ async function bevestigen(){
   // 10 cijfers beginnend met 0 (bijv. 0612345678), of internationaal met +31.
   let telSchoon=tel.replace(/[\s-]/g,'');
   if(telSchoon){
-    const telRegex=/^(0\d{9}|\+31\d{9})$/;
+    // 0-formaat = Nederlands lokaal nummer. +-formaat = elk internationaal nummer
+    // (Duitsland, België, etc. -- belangrijk voor klanten net over de grens).
+    const telRegex=/^(0\d{9}|\+\d{8,15})$/;
     if(!telRegex.test(telSchoon)){
-      errEl.textContent='Vul een geldig Nederlands telefoonnummer in (bijv. 0612345678 of +31612345678).';
+      errEl.textContent='Vul een geldig telefoonnummer in (bijv. 0612345678, of internationaal met landcode zoals +49... of +32...).';
       errEl.style.display='block';return;
     }
   }
