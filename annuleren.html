@@ -92,7 +92,7 @@ function toonDetails(a){
       <div class="detail-row"><span class="detail-label">Datum</span><span class="detail-value">${fmtDatum(a.datum_tijd)}</span></div>
     </div>
     <button class="btn btn-cancel" id="btn-annuleer">Ja, annuleer mijn afspraak</button>
-    <button class="btn btn-back" onclick="history.back()">Terug, ik wil de afspraak houden</button>
+    <p class="msg-center" style="margin-top:14px;">Niks doen? Dan blijft je afspraak gewoon staan. Je kunt dit venster nu sluiten.</p>
   `;
   document.getElementById('btn-annuleer').onclick=bevestigAnnulering;
 }
