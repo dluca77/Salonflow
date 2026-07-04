@@ -310,6 +310,7 @@ async function init(){
   // Salon info
   const salon=sRes.data;
   if(salon){
+    window.SALON_NAAM=salon.naam;
     const init=salon.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     if(!IS_EMBED) document.getElementById('brand-init').textContent=init;
     document.getElementById('brand-name').textContent=salon.naam;
@@ -485,7 +486,7 @@ async function bevestigen(){
   const dt=new Date(jaar,maandIdx,dag,parseInt(uur),parseInt(min));
 
   const naam=voor+(achter?' '+achter:'');
-  const{error}=await sb.from('afspraken').insert({
+  const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
     salon_id:SALON_ID||null,
     dienst_id:state.dienst_id||null,
     medewerker_id:state.med_id||null,
@@ -496,7 +497,7 @@ async function bevestigen(){
     klant_email:email,
     klant_telefoon:tel||null,
     notities:notitie||null
-  });
+  }).select('annuleer_token').single();
 
   btn.disabled=false;btn.textContent='Afspraak bevestigen';
 
@@ -504,6 +505,22 @@ async function bevestigen(){
     errEl.textContent='Er ging iets mis. Probeer het opnieuw.';
     errEl.style.display='block';return;
   }
+
+  // Bevestigingsmail versturen -- gebeurt op de achtergrond; als dit faalt
+  // (bijv. mailserver tijdelijk onbereikbaar) laten we de boeking gewoon staan,
+  // een klant zonder mail is beter dan een klant zonder afspraak.
+  fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      email,
+      klant_naam:naam,
+      salon_naam:window.SALON_NAAM||'',
+      dienst_naam:state.dienst,
+      datum_tijd:dt.toISOString(),
+      annuleer_token:nieuweAfspraak?.annuleer_token
+    })
+  }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
 
   // Toon bevestiging
   document.getElementById('cf-dienst').textContent=state.dienst;

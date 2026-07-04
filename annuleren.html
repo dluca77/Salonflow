@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Afspraak annuleren — Kronr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;}
+.wrap{max-width:440px;margin:0 auto;padding:60px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:36px;}
+.logo em{font-style:normal;color:var(--gd);}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;}
+.card-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+.card-sub{font-size:13px;color:var(--mu);margin-bottom:24px;line-height:1.6;}
+.detail-box{background:var(--iv);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;margin-bottom:24px;}
+.detail-row{display:flex;justify-content:space-between;font-size:13px;padding:4px 0;}
+.detail-label{color:var(--mu);}
+.detail-value{font-weight:600;text-align:right;}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn-cancel{background:var(--red);color:#fff;}
+.btn-cancel:hover:not(:disabled){opacity:.9;}
+.btn-back{background:transparent;color:var(--mu);margin-top:10px;text-decoration:underline;text-underline-offset:2px;}
+.state-icon{font-size:40px;text-align:center;margin-bottom:16px;}
+.msg-center{text-align:center;color:var(--mu);font-size:13px;line-height:1.6;}
+.spinner{width:20px;height:20px;border:2px solid var(--bd);border-top-color:var(--gd);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="card" id="card">
+    <div class="spinner"></div>
+    <p class="msg-center" style="margin-top:16px;">Afspraak opzoeken...</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+const params=new URLSearchParams(location.search);
+const token=params.get('token');
+const card=document.getElementById('card');
+
+async function init(){
+  if(!token){
+    toonFout('Ongeldige link. Controleer of je de volledige link uit de e-mail hebt geopend.');
+    return;
+  }
+
+  const{data,error}=await sb.rpc('get_afspraak_via_token',{p_token:token});
+  const afspraak=Array.isArray(data)?data[0]:data;
+
+  if(error||!afspraak){
+    toonFout('Deze afspraak kon niet gevonden worden. Mogelijk is de link verlopen.');
+    return;
+  }
+
+  if(afspraak.status==='geannuleerd'){
+    toonAlAnnuleerd();
+    return;
+  }
+
+  toonDetails(afspraak);
+}
+
+function fmtDatum(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})+' om '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+}
+
+function toonDetails(a){
+  card.innerHTML=`
+    <div class="card-title">Afspraak annuleren</div>
+    <p class="card-sub">Weet je zeker dat je deze afspraak wilt annuleren? Dit kan niet ongedaan worden gemaakt.</p>
+    <div class="detail-box">
+      <div class="detail-row"><span class="detail-label">Naam</span><span class="detail-value">${a.klant_naam||'-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Dienst</span><span class="detail-value">${a.dienst_naam||'-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Datum</span><span class="detail-value">${fmtDatum(a.datum_tijd)}</span></div>
+    </div>
+    <button class="btn btn-cancel" id="btn-annuleer">Ja, annuleer mijn afspraak</button>
+    <button class="btn btn-back" onclick="history.back()">Terug, ik wil de afspraak houden</button>
+  `;
+  document.getElementById('btn-annuleer').onclick=bevestigAnnulering;
+}
+
+async function bevestigAnnulering(){
+  const btn=document.getElementById('btn-annuleer');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{data,error}=await sb.rpc('annuleer_afspraak_via_token',{p_token:token});
+
+  if(error||!data){
+    toonFout('Annuleren is niet gelukt. Probeer het later opnieuw of neem contact op met de salon.');
+    return;
+  }
+
+  card.innerHTML=`
+    <div class="state-icon">✓</div>
+    <div class="card-title" style="text-align:center;">Afspraak geannuleerd</div>
+    <p class="msg-center">Je afspraak is geannuleerd. We hopen je snel weer te zien!</p>
+  `;
+}
+
+function toonAlAnnuleerd(){
+  card.innerHTML=`
+    <div class="state-icon">—</div>
+    <div class="card-title" style="text-align:center;">Al geannuleerd</div>
+    <p class="msg-center">Deze afspraak is al eerder geannuleerd.</p>
+  `;
+}
+
+function toonFout(tekst){
+  card.innerHTML=`
+    <div class="state-icon">⚠</div>
+    <div class="card-title" style="text-align:center;">Kon niet worden geladen</div>
+    <p class="msg-center">${tekst}</p>
+  `;
+}
+
+init();
+</script>
+</body>
+</html>
