@@ -536,5 +536,29 @@ async function bevestigen(){
 
 init();
 </script>
+<!-- TIJDELIJK: overflow-detectie, wordt later weer verwijderd -->
+<div id="overflow-debug" style="position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:#fff;font-family:monospace;font-size:11px;padding:8px;z-index:99999;display:none;word-break:break-all;"></div>
+<script>
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const docWidth = document.documentElement.clientWidth;
+    let boosdoener = null;
+    let maxRight = docWidth;
+    document.querySelectorAll('*').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.right > maxRight + 2) {
+        maxRight = rect.right;
+        boosdoener = el;
+      }
+    });
+    if (boosdoener) {
+      const info = `OVERFLOW: <${boosdoener.tagName.toLowerCase()} class="${boosdoener.className}" id="${boosdoener.id}"> steekt ${Math.round(maxRight - docWidth)}px uit. Viewport: ${docWidth}px, element rechterkant: ${Math.round(maxRight)}px.`;
+      const el = document.getElementById('overflow-debug');
+      el.textContent = info;
+      el.style.display = 'block';
+    }
+  }, 800);
+});
+</script>
 </body>
 </html>
