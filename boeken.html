@@ -456,6 +456,25 @@ async function bevestigen(){
     errEl.textContent='Vul je voornaam en e-mailadres in.';
     errEl.style.display='block';return;
   }
+
+  // E-mail: check op een geldig algemeen formaat (iets@iets.iets) --
+  // NIET beperkt tot specifieke providers, anders weiger je Gmail/Outlook/zakelijke adressen.
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if(!emailRegex.test(email)){
+    errEl.textContent='Vul een geldig e-mailadres in (bijv. naam@voorbeeld.nl).';
+    errEl.style.display='block';return;
+  }
+
+  // Telefoonnummer: optioneel, maar als ingevuld moet het een geldig NL-formaat zijn --
+  // 10 cijfers beginnend met 0 (bijv. 0612345678), of internationaal met +31.
+  let telSchoon=tel.replace(/[\s-]/g,'');
+  if(telSchoon){
+    const telRegex=/^(0\d{9}|\+31\d{9})$/;
+    if(!telRegex.test(telSchoon)){
+      errEl.textContent='Vul een geldig Nederlands telefoonnummer in (bijv. 0612345678 of +31612345678).';
+      errEl.style.display='block';return;
+    }
+  }
   errEl.style.display='none';
 
   const btn=document.getElementById('btn-confirm');
@@ -466,7 +485,7 @@ async function bevestigen(){
     const{data:geblokkeerd}=await sb.rpc('is_klant_geblokkeerd',{
       p_salon_id:SALON_ID,
       p_email:email||null,
-      p_telefoon:tel||null
+      p_telefoon:telSchoon||null
     });
     if(geblokkeerd){
       btn.disabled=false;btn.textContent='Afspraak bevestigen';
@@ -498,7 +517,7 @@ async function bevestigen(){
     status:'gepland',
     klant_naam:naam,
     klant_email:email,
-    klant_telefoon:tel||null,
+    klant_telefoon:telSchoon||null,
     notities:notitie||null
   }).select('annuleer_token').single();
 
