@@ -240,7 +240,13 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="form-row"><label class="form-label">Achternaam</label><input class="form-input" id="inp-achter" type="text" placeholder="de Vries"></div>
       </div>
       <div class="form-row"><label class="form-label">E-mailadres</label><input class="form-input" id="inp-email" type="email" placeholder="naam@email.nl"></div>
-      <div class="form-row"><label class="form-label">Telefoonnummer</label><input class="form-input" id="inp-tel" type="tel" placeholder="+31 6 12345678"></div>
+      <div class="form-row">
+        <label class="form-label">Telefoonnummer</label>
+        <div style="display:flex;gap:8px;">
+          <select class="form-input" id="inp-tel-code" style="flex:0 0 108px;padding-left:8px;padding-right:4px;"></select>
+          <input class="form-input" id="inp-tel" type="tel" placeholder="6 12345678" style="flex:1;">
+        </div>
+      </div>
       <div class="form-row"><label class="form-label">Opmerking (optioneel)</label><input class="form-input" id="inp-notitie" type="text" placeholder="Allergieën, wensen..."></div>
       <button class="btn-next" id="btn-confirm" onclick="bevestigen()">Afspraak bevestigen</button>
       <button class="btn-back" onclick="goStep(3)">← Terug</button>
@@ -298,7 +304,80 @@ const middag=['12:00','12:30','13:00','13:30','14:00','14:30'];
 const namiddag=['15:00','15:30','16:00','16:30','17:00','17:30'];
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
+// Landcodes -- Nederland staat vooraan en is standaard geselecteerd,
+// de rest alfabetisch op landnaam (typen op eerste letter werkt dan intuïtief).
+const LANDCODES=[
+  {land:'Nederland',code:'+31'},
+  {land:'België',code:'+32'},
+  {land:'Duitsland',code:'+49'},
+  {land:'Afghanistan',code:'+93'},{land:'Albanië',code:'+355'},{land:'Algerije',code:'+213'},
+  {land:'Andorra',code:'+376'},{land:'Angola',code:'+244'},{land:'Argentinië',code:'+54'},
+  {land:'Armenië',code:'+374'},{land:'Australië',code:'+61'},{land:'Oostenrijk',code:'+43'},
+  {land:'Azerbeidzjan',code:'+994'},{land:'Bahama\'s',code:'+1'},{land:'Bahrein',code:'+973'},
+  {land:'Bangladesh',code:'+880'},{land:'Barbados',code:'+1'},{land:'Wit-Rusland',code:'+375'},
+  {land:'Belize',code:'+501'},{land:'Benin',code:'+229'},{land:'Bhutan',code:'+975'},
+  {land:'Bolivia',code:'+591'},{land:'Bosnië en Herzegovina',code:'+387'},{land:'Botswana',code:'+267'},
+  {land:'Brazilië',code:'+55'},{land:'Brunei',code:'+673'},{land:'Bulgarije',code:'+359'},
+  {land:'Burkina Faso',code:'+226'},{land:'Burundi',code:'+257'},{land:'Cambodja',code:'+855'},
+  {land:'Kameroen',code:'+237'},{land:'Canada',code:'+1'},{land:'Kaapverdië',code:'+238'},
+  {land:'Centraal-Afrikaanse Republiek',code:'+236'},{land:'Tsjaad',code:'+235'},{land:'Chili',code:'+56'},
+  {land:'China',code:'+86'},{land:'Colombia',code:'+57'},{land:'Comoren',code:'+269'},
+  {land:'Congo',code:'+242'},{land:'Costa Rica',code:'+506'},{land:'Kroatië',code:'+385'},
+  {land:'Cuba',code:'+53'},{land:'Cyprus',code:'+357'},{land:'Tsjechië',code:'+420'},
+  {land:'Denemarken',code:'+45'},{land:'Djibouti',code:'+253'},{land:'Dominicaanse Republiek',code:'+1'},
+  {land:'Ecuador',code:'+593'},{land:'Egypte',code:'+20'},{land:'El Salvador',code:'+503'},
+  {land:'Equatoriaal-Guinea',code:'+240'},{land:'Eritrea',code:'+291'},{land:'Estland',code:'+372'},
+  {land:'Ethiopië',code:'+251'},{land:'Fiji',code:'+679'},{land:'Finland',code:'+358'},
+  {land:'Frankrijk',code:'+33'},{land:'Gabon',code:'+241'},{land:'Gambia',code:'+220'},
+  {land:'Georgië',code:'+995'},{land:'Ghana',code:'+233'},{land:'Griekenland',code:'+30'},
+  {land:'Guatemala',code:'+502'},{land:'Guinee',code:'+224'},{land:'Guyana',code:'+592'},
+  {land:'Haïti',code:'+509'},{land:'Honduras',code:'+504'},{land:'Hongkong',code:'+852'},
+  {land:'Hongarije',code:'+36'},{land:'IJsland',code:'+354'},{land:'India',code:'+91'},
+  {land:'Indonesië',code:'+62'},{land:'Iran',code:'+98'},{land:'Irak',code:'+964'},
+  {land:'Ierland',code:'+353'},{land:'Israël',code:'+972'},{land:'Italië',code:'+39'},
+  {land:'Ivoorkust',code:'+225'},{land:'Jamaica',code:'+1'},{land:'Japan',code:'+81'},
+  {land:'Jordanië',code:'+962'},{land:'Kazachstan',code:'+7'},{land:'Kenia',code:'+254'},
+  {land:'Koeweit',code:'+965'},{land:'Kirgizië',code:'+996'},{land:'Laos',code:'+856'},
+  {land:'Letland',code:'+371'},{land:'Libanon',code:'+961'},{land:'Lesotho',code:'+266'},
+  {land:'Liberia',code:'+231'},{land:'Libië',code:'+218'},{land:'Liechtenstein',code:'+423'},
+  {land:'Litouwen',code:'+370'},{land:'Luxemburg',code:'+352'},{land:'Macedonië',code:'+389'},
+  {land:'Madagaskar',code:'+261'},{land:'Malawi',code:'+265'},{land:'Malaysia',code:'+60'},
+  {land:'Maldiven',code:'+960'},{land:'Mali',code:'+223'},{land:'Malta',code:'+356'},
+  {land:'Mauritanië',code:'+222'},{land:'Mauritius',code:'+230'},{land:'Mexico',code:'+52'},
+  {land:'Moldavië',code:'+373'},{land:'Monaco',code:'+377'},{land:'Mongolië',code:'+976'},
+  {land:'Montenegro',code:'+382'},{land:'Marokko',code:'+212'},{land:'Mozambique',code:'+258'},
+  {land:'Myanmar',code:'+95'},{land:'Namibië',code:'+264'},{land:'Nepal',code:'+977'},
+  {land:'Nieuw-Zeeland',code:'+64'},{land:'Nicaragua',code:'+505'},{land:'Niger',code:'+227'},
+  {land:'Nigeria',code:'+234'},{land:'Noord-Korea',code:'+850'},{land:'Noorwegen',code:'+47'},
+  {land:'Oman',code:'+968'},{land:'Pakistan',code:'+92'},{land:'Panama',code:'+507'},
+  {land:'Papoea-Nieuw-Guinea',code:'+675'},{land:'Paraguay',code:'+595'},{land:'Peru',code:'+51'},
+  {land:'Filipijnen',code:'+63'},{land:'Polen',code:'+48'},{land:'Portugal',code:'+351'},
+  {land:'Qatar',code:'+974'},{land:'Roemenië',code:'+40'},{land:'Rusland',code:'+7'},
+  {land:'Rwanda',code:'+250'},{land:'Saoedi-Arabië',code:'+966'},{land:'Senegal',code:'+221'},
+  {land:'Servië',code:'+381'},{land:'Sierra Leone',code:'+232'},{land:'Singapore',code:'+65'},
+  {land:'Slowakije',code:'+421'},{land:'Slovenië',code:'+386'},{land:'Somalië',code:'+252'},
+  {land:'Zuid-Afrika',code:'+27'},{land:'Zuid-Korea',code:'+82'},{land:'Spanje',code:'+34'},
+  {land:'Sri Lanka',code:'+94'},{land:'Soedan',code:'+249'},{land:'Suriname',code:'+597'},
+  {land:'Zweden',code:'+46'},{land:'Zwitserland',code:'+41'},{land:'Syrië',code:'+963'},
+  {land:'Taiwan',code:'+886'},{land:'Tadzjikistan',code:'+992'},{land:'Tanzania',code:'+255'},
+  {land:'Thailand',code:'+66'},{land:'Togo',code:'+228'},{land:'Tunesië',code:'+216'},
+  {land:'Turkije',code:'+90'},{land:'Turkmenistan',code:'+993'},{land:'Uganda',code:'+256'},
+  {land:'Ukraine',code:'+380'},{land:'Verenigde Arabische Emiraten',code:'+971'},
+  {land:'Verenigd Koninkrijk',code:'+44'},{land:'Verenigde Staten',code:'+1'},
+  {land:'Uruguay',code:'+598'},{land:'Oezbekistan',code:'+998'},{land:'Venezuela',code:'+58'},
+  {land:'Vietnam',code:'+84'},{land:'Jemen',code:'+967'},{land:'Zambia',code:'+260'},
+  {land:'Zimbabwe',code:'+263'}
+];
+
+function vulLandcodeDropdown(){
+  const sel=document.getElementById('inp-tel-code');
+  sel.innerHTML=LANDCODES.map((l,i)=>
+    `<option value="${l.code}"${i===0?' selected':''}>${l.code} ${l.land}</option>`
+  ).join('');
+}
+
 async function init(){
+  vulLandcodeDropdown();
   if(!SALON_ID){
     document.getElementById('brand-name').textContent='Ongeldige link';
     return;
@@ -448,7 +527,12 @@ async function bevestigen(){
   const voor=document.getElementById('inp-voor').value.trim();
   const achter=document.getElementById('inp-achter').value.trim();
   const email=document.getElementById('inp-email').value.trim();
-  const tel=document.getElementById('inp-tel').value.trim();
+  const telLokaal=document.getElementById('inp-tel').value.trim();
+  const telCode=document.getElementById('inp-tel-code').value;
+  // Nummer opschonen: eventuele voorloop-0 uit het lokale deel halen
+  // (mensen typen soms "06 12345678" terwijl de landcode-dropdown al +31 heeft)
+  const telLokaalSchoon=telLokaal.replace(/^0+/,'').replace(/[\s-]/g,'');
+  const tel=telLokaal?(telCode+telLokaalSchoon):'';
   const notitie=document.getElementById('inp-notitie').value.trim();
   const errEl=document.getElementById('form-err');
 
@@ -465,15 +549,13 @@ async function bevestigen(){
     errEl.style.display='block';return;
   }
 
-  // Telefoonnummer: optioneel, maar als ingevuld moet het een geldig NL-formaat zijn --
-  // 10 cijfers beginnend met 0 (bijv. 0612345678), of internationaal met +31.
-  let telSchoon=tel.replace(/[\s-]/g,'');
-  if(telSchoon){
-    // 0-formaat = Nederlands lokaal nummer. +-formaat = elk internationaal nummer
-    // (Duitsland, België, etc. -- belangrijk voor klanten net over de grens).
-    const telRegex=/^(0\d{9}|\+\d{8,15})$/;
+  // Telefoonnummer: optioneel, maar als ingevuld moet het lokale deel
+  // minimaal een paar cijfers bevatten (de landcode komt al uit de dropdown).
+  let telSchoon=tel;
+  if(telLokaal){
+    const telRegex=/^\+\d{8,15}$/;
     if(!telRegex.test(telSchoon)){
-      errEl.textContent='Vul een geldig telefoonnummer in (bijv. 0612345678, of internationaal met landcode zoals +49... of +32...).';
+      errEl.textContent='Vul een geldig telefoonnummer in, bijv. 6 12345678.';
       errEl.style.display='block';return;
     }
   }
