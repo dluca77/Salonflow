@@ -141,6 +141,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .dr-v{font-size:13px;font-weight:500;}
 .dr-v-gold{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);}
 .btns-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
+.btn-blokkeer{width:100%;margin-top:10px;padding:9px;background:transparent;border:none;color:var(--mu2);font-size:11px;letter-spacing:0.5px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:2px;}
+.btn-blokkeer:hover{color:#c0392b;}
+.btn-blokkeer.actief{color:#c0392b;}
+.geblokkeerd-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--iv);border:1px solid var(--bd);border-radius:6px;font-size:12px;}
+.geblokkeerd-item-info{color:var(--ink);}
+.geblokkeerd-item-reden{color:var(--mu2);font-size:11px;margin-top:2px;}
+.btn-deblokkeer{padding:6px 12px;background:transparent;border:1px solid var(--bd2);border-radius:6px;font-size:10px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;color:var(--ink);font-family:'Inter',sans-serif;flex-shrink:0;}
+.btn-deblokkeer:hover{border-color:var(--ink);}
 .btn-sec{padding:13px;background:transparent;color:var(--mu);border:1px solid var(--bd);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-prim{padding:13px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
 
@@ -207,6 +215,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="tb-logo">Kronr<em>.</em></div>
     <div class="tb-title">Klanten</div>
     <div class="tb-spacer"></div>
+    <button class="hbg" onclick="openGeblokkeerdOverzicht()" title="Geblokkeerde klanten" style="margin-right:6px;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button>
     <button class="btn-add" onclick="openM('m-new')">+ Klant</button>
   </div>
 
@@ -289,9 +298,22 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="dr"><span class="dr-l">Favoriete dienst</span><span class="dr-v" id="d-sv">—</span></div>
       <div class="dr"><span class="dr-l">Notities</span><span class="dr-v" id="d-notitie" style="color:var(--mu);font-weight:300;">—</span></div>
     </div>
+    <div id="d-block-status" style="display:none;padding:10px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:6px;margin-bottom:12px;font-size:12px;color:#c0392b;"></div>
     <div class="btns-row">
       <button class="btn-sec" onclick="editK()">Bewerken</button>
       <button class="btn-prim" onclick="closeM('m-detail')">Afspraak plannen →</button>
+    </div>
+    <button id="btn-blokkeer" class="btn-blokkeer" onclick="toggleBlokkade()">Blokkeer deze klant</button>
+  </div>
+</div>
+
+<!-- Geblokkeerde klanten overzicht -->
+<div class="mbg" id="m-geblokkeerd" onclick="if(event.target===this)closeM('m-geblokkeerd')">
+  <div class="modal">
+    <div class="mh">Geblokkeerde klanten</div>
+    <div id="geblokkeerd-lijst" style="display:flex;flex-direction:column;gap:8px;max-height:400px;overflow-y:auto;"></div>
+    <div class="btns-row">
+      <button class="btn-sec" onclick="closeM('m-geblokkeerd')">Sluiten</button>
     </div>
   </div>
 </div>
@@ -344,6 +366,20 @@ function vindStats(k){
 }
 
 function getInit(naam){return naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
+
+function toast(msg){
+  let el=document.getElementById('toast-el');
+  if(!el){
+    el=document.createElement('div');
+    el.id='toast-el';
+    el.style.cssText='position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--wh);padding:10px 20px;border-radius:8px;font-size:12px;z-index:9999;opacity:0;transition:opacity .2s;';
+    document.body.appendChild(el);
+  }
+  el.textContent=msg;
+  el.style.opacity='1';
+  clearTimeout(el._t);
+  el._t=setTimeout(()=>{el.style.opacity='0';},2200);
+}
 
 function render(){
   const list=document.getElementById('klist');
@@ -411,7 +447,91 @@ function showK(id){
   document.getElementById('d-last').textContent=s.laatste?new Date(s.laatste).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}):'Nog geen bezoek';
   document.getElementById('d-sv').textContent=s.favoriet||'—';
   document.getElementById('d-notitie').textContent=k.notities||'—';
+  checkBlokkadeStatus(k);
   openM('m-detail');
+}
+
+let HUIDIGE_BLOKKADE=null; // bewaart het record-id als de huidige klant geblokkeerd is
+
+async function checkBlokkadeStatus(k){
+  const btn=document.getElementById('btn-blokkeer');
+  const statusEl=document.getElementById('d-block-status');
+  HUIDIGE_BLOKKADE=null;
+  btn.textContent='Controleren...';
+  btn.classList.remove('actief');
+  statusEl.style.display='none';
+
+  try{
+    let query=sb.from('geblokkeerde_klanten').select('id,reden').eq('salon_id',SALON_ID);
+    if(k.email) query=query.eq('email',k.email);
+    else if(k.telefoon) query=query.eq('telefoon',k.telefoon);
+    else{ btn.textContent='Blokkeer deze klant (geen e-mail/telefoon bekend)'; btn.disabled=true; return; }
+    btn.disabled=false;
+
+    const{data}=await query.maybeSingle();
+    if(data){
+      HUIDIGE_BLOKKADE=data.id;
+      btn.textContent='Deblokkeer deze klant';
+      btn.classList.add('actief');
+      statusEl.style.display='block';
+      statusEl.textContent='⛔ Deze klant is geblokkeerd'+(data.reden?': '+data.reden:'')+'. Nieuwe boekingen via de widget worden geweigerd.';
+    } else {
+      btn.textContent='Blokkeer deze klant';
+    }
+  }catch(e){
+    btn.textContent='Blokkeer deze klant';
+    console.warn('Kon blokkeerstatus niet ophalen:',e);
+  }
+}
+
+async function toggleBlokkade(){
+  const k=KLANTEN.find(x=>x.id===currentDetailId);if(!k)return;
+  if(!k.email&&!k.telefoon){ alert('Deze klant heeft geen e-mail of telefoonnummer, dus kan niet gekoppeld worden aan een blokkade.'); return; }
+
+  if(HUIDIGE_BLOKKADE){
+    if(!confirm(`Weet je zeker dat je ${k.naam} wil deblokkeren?`)) return;
+    await sb.from('geblokkeerde_klanten').delete().eq('id',HUIDIGE_BLOKKADE);
+    toast('Klant gedeblokkeerd');
+  } else {
+    if(!confirm(`Weet je zeker dat je ${k.naam} wil blokkeren? Nieuwe boekingen via de widget worden dan geweigerd.`)) return;
+    const reden=prompt('Reden voor blokkade (optioneel, alleen zichtbaar voor jou):')||null;
+    const{error}=await sb.from('geblokkeerde_klanten').insert({
+      salon_id:SALON_ID, email:k.email||null, telefoon:k.telefoon||null, reden
+    });
+    if(error){ alert('Blokkeren mislukt: '+error.message); return; }
+    toast('Klant geblokkeerd');
+  }
+  checkBlokkadeStatus(k);
+}
+
+async function openGeblokkeerdOverzicht(){
+  openM('m-geblokkeerd');
+  const lijstEl=document.getElementById('geblokkeerd-lijst');
+  lijstEl.innerHTML='<div style="text-align:center;color:var(--mu2);padding:20px;font-size:12px;">Laden...</div>';
+
+  const{data,error}=await sb.from('geblokkeerde_klanten').select('*').eq('salon_id',SALON_ID).order('created_at',{ascending:false});
+
+  if(error||!data||!data.length){
+    lijstEl.innerHTML='<div style="text-align:center;color:var(--mu2);padding:20px;font-size:12px;">Nog geen geblokkeerde klanten.</div>';
+    return;
+  }
+
+  lijstEl.innerHTML=data.map(item=>`
+    <div class="geblokkeerd-item">
+      <div>
+        <div class="geblokkeerd-item-info">${item.email||item.telefoon||'Onbekend'}</div>
+        ${item.reden?`<div class="geblokkeerd-item-reden">${item.reden}</div>`:''}
+      </div>
+      <button class="btn-deblokkeer" onclick="deblokkeerVanuitOverzicht('${item.id}')">Deblokkeer</button>
+    </div>
+  `).join('');
+}
+
+async function deblokkeerVanuitOverzicht(id){
+  if(!confirm('Deze klant deblokkeren?')) return;
+  await sb.from('geblokkeerde_klanten').delete().eq('id',id);
+  toast('Klant gedeblokkeerd');
+  openGeblokkeerdOverzicht();
 }
 
 function editK(){

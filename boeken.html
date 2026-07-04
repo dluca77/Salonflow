@@ -457,6 +457,25 @@ async function bevestigen(){
   const btn=document.getElementById('btn-confirm');
   btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span> Bezig...';
 
+  // Check of deze klant geblokkeerd is (via een veilige functie die alleen true/false teruggeeft)
+  try{
+    const{data:geblokkeerd}=await sb.rpc('is_klant_geblokkeerd',{
+      p_salon_id:SALON_ID,
+      p_email:email||null,
+      p_telefoon:tel||null
+    });
+    if(geblokkeerd){
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Het is helaas niet mogelijk om via dit formulier een afspraak te maken. Neem rechtstreeks contact op met de salon.';
+      errEl.style.display='block';
+      return;
+    }
+  }catch(e){
+    console.warn('Kon blokkeerstatus niet controleren, boeking gaat door:',e);
+    // Bewust: als de check zelf faalt (bijv. netwerkfout), blokkeren we de boeking niet --
+    // liever een enkele ongewenste boeking dan alle klanten onterecht weigeren.
+  }
+
   // Datum → ISO
   const parts=state.datum.split(' ');
   const dag=parseInt(parts[0]);
