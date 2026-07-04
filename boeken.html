@@ -95,6 +95,8 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .form-row{margin-bottom:14px;}
 .form-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
 .form-input{width:100%;background:var(--iv);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;}
+.form-input.geldig{border-color:var(--green);}
+.form-input.ongeldig{border-color:var(--red);}
 .form-input:focus{border-color:var(--gd);}
 .form-input::placeholder{color:var(--mu2);}
 .form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -376,8 +378,30 @@ function vulLandcodeDropdown(){
   ).join('');
 }
 
+const EMAIL_REGEX=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function zetLiveEmailValidatie(){
+  const el=document.getElementById('inp-email');
+
+  el.addEventListener('input',()=>{
+    const v=el.value.trim();
+    el.classList.remove('geldig','ongeldig');
+    if(v&&EMAIL_REGEX.test(v)) el.classList.add('geldig');
+    // Nog geen rood tijdens typen -- alleen groen zodra het geldig wordt,
+    // rood pas bij weg-klikken (blur), zodat het niet bestraffend aanvoelt.
+  });
+
+  el.addEventListener('blur',()=>{
+    const v=el.value.trim();
+    el.classList.remove('geldig','ongeldig');
+    if(!v) return; // leeg veld: geen kleur, dat vangt de submit-validatie al af
+    el.classList.add(EMAIL_REGEX.test(v)?'geldig':'ongeldig');
+  });
+}
+
 async function init(){
   vulLandcodeDropdown();
+  zetLiveEmailValidatie();
   if(!SALON_ID){
     document.getElementById('brand-name').textContent='Ongeldige link';
     return;
