@@ -102,10 +102,10 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 /* Step 5: Bevestiging */
 .confirm-icon{width:56px;height:56px;border-radius:50%;background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;}
 .confirm-rows{border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:24px;}
-.cr{display:flex;justify-content:space-between;padding:11px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
+.cr{display:flex;justify-content:space-between;gap:12px;padding:11px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
 .cr:last-child{border-bottom:none;}
-.cr-label{color:var(--mu);}
-.cr-val{font-weight:500;}
+.cr-label{color:var(--mu);flex-shrink:0;}
+.cr-val{font-weight:500;text-align:right;min-width:0;overflow-wrap:break-word;}
 
 /* Knoppen */
 .btn-next{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;border-radius:10px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;margin-top:8px;}
@@ -126,7 +126,8 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .sum-total-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);}
 .sum-total-price{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--iv);}
 .salon-info{margin-top:24px;border-top:1px solid var(--bd);padding-top:20px;}
-.salon-info-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu);margin-bottom:10px;}
+.salon-info-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--mu);margin-bottom:10px;overflow-wrap:break-word;min-width:0;}
+.salon-info-item svg{flex-shrink:0;margin-top:1px;}
 .salon-info-item svg{flex-shrink:0;color:var(--gd);}
 .powered{margin-top:24px;text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
 .powered a{color:var(--gd);text-decoration:none;}
