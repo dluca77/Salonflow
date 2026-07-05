@@ -469,7 +469,7 @@ const STATUS_LABELS={gepland:'Gepland',bevestigd:'Bevestigd',niet_bevestigd:'Nie
 const STATUS_COLORS={gepland:'#8a7d6e',bevestigd:'#2d6a4f',niet_bevestigd:'#e07020',gearriveerd:'#1a60a8',in_behandeling:'#7c4daa',afgerond:'#888',  'no-show':'#c02020',geannuleerd:'#c02020',verplaatst:'#d08020'};
 
 // ── STATE ───────────────────────────────────────────────────────────────────
-let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],firstLoad=true;
+let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],WACHTLIJST=[],firstLoad=true;
 let filterMed=null,modalTab='afspraak',geselecteerdeApt=null,pendingSave=null;
 let geselecteerdeDiensten=[];
 cur.setHours(0,0,0,0);
@@ -497,12 +497,13 @@ async function loadData(){
   const savedScroll=(!firstLoad&&calEl)?calEl.scrollTop:null;
   const s=new Date(cur);s.setDate(s.getDate()-60);
   const e=new Date(cur);e.setDate(e.getDate()+90);
-  const[aR,mR,dR]=await Promise.all([
+  const[aR,mR,dR,wR]=await Promise.all([
     sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs,duur_min)').eq('salon_id',SALON_ID).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
-    sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true)
+    sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true),
+    sb.from('wachtlijst').select('id,voorkeur_vanaf,voorkeur_tot').eq('salon_id',SALON_ID).eq('status','actief')
   ]);
-  APTS=aR.data||[];MEDS=mR.data||[];DIENSTEN=dR.data||[];
+  APTS=aR.data||[];MEDS=mR.data||[];DIENSTEN=dR.data||[];WACHTLIJST=wR.data||[];
   // Herhaalafspraken uitbreiden
   APTS=expandHerhaling(APTS);
   // Medewerker selects vullen
@@ -551,21 +552,20 @@ function expandHerhaling(apts){
 
 // ── RENDER ───────────────────────────────────────────────────────────────────
 function scrollNaarHuidigeTijd(){
-  const nu=new Date();
-  let uur=nu.getHours()+nu.getMinutes()/60;
-  if(uur<SH||uur>EH) uur=9; // buiten openingstijden: nuttige standaardwaarde
-  const targetTop=Math.max(0,(uur-SH)*4*RH-RH*2); // met wat ruimte erboven, niet exact bovenaan
   const cal=document.getElementById('cal');
-  cal.scrollTop=targetTop;
-
-  // Horizontaal ook naar de kolom van vandaag scrollen (belangrijk in de weekweergave
-  // op mobiel, waar niet alle 7 dagen tegelijk op het scherm passen).
-  // Zit vandaag niet in deze week (bijv. je hebt naar volgende/vorige week genavigeerd),
-  // dan begin je gewoon weer bij het begin van de week (maandag).
   const vandaagKolom=cal.querySelector('.day-col.tod');
+
   if(vandaagKolom){
+    // Vandaag zit in de huidige weergave: scroll naar de actuele tijd
+    const nu=new Date();
+    let uur=nu.getHours()+nu.getMinutes()/60;
+    if(uur<SH||uur>EH) uur=9; // buiten openingstijden: nuttige standaardwaarde
+    cal.scrollTop=Math.max(0,(uur-SH)*4*RH-RH*2); // met wat ruimte erboven
     cal.scrollLeft=Math.max(0,vandaagKolom.offsetLeft-40);
   } else {
+    // Vandaag zit NIET in beeld (bijv. andere week/dag bekeken):
+    // gewoon bovenaan (openingstijd) en bij het begin van de week beginnen
+    cal.scrollTop=0;
     cal.scrollLeft=0;
   }
 }
@@ -589,8 +589,9 @@ function renderGrid(){
   // Dag headers
   document.getElementById('cdh').innerHTML=days.map(d=>{
     const isToday=d.getTime()===today.getTime();
-    const cnt=getApts(d).length;
-    return`<div class="chd${isToday?' today':''}" onclick="clickDay('${dk(d)}')"><div class="dn">${DN[d.getDay()]}</div><div class="dd">${d.getDate()}</div><div class="dc">${cnt?cnt+'×':''}</div></div>`;
+    const cnt=getApts(d).filter(a=>a.status!=='geannuleerd').length;
+    const heeftWachtlijst=heeftWachtlijstOpDag(d);
+    return`<div class="chd${isToday?' today':''}" onclick="clickDay('${dk(d)}')"><div class="dn">${DN[d.getDay()]}</div><div class="dd">${d.getDate()}</div><div class="dc">${cnt?cnt+'×':''}${heeftWachtlijst?' <span title="Iemand op de wachtlijst voor deze dag" style="color:var(--gd,#8c6d3f);">🕐</span>':''}</div></div>`;
   }).join('');
 
   // Tijdkolom
@@ -647,6 +648,14 @@ function buildDayCol(d,slots,today,now,di){
   // dat gaf verwarrende overlap met eventuele nieuwe afspraak op dezelfde plek
   getApts(d).filter(a=>a.status!=='geannuleerd').forEach((a,i)=>{col.appendChild(buildAptCard(a,i));});
   return col;
+}
+
+function heeftWachtlijstOpDag(d){
+  const key=dk(d);
+  return WACHTLIJST.some(w=>{
+    if(!w.voorkeur_vanaf||!w.voorkeur_tot) return false; // "elke dag is goed" -- niet specifiek genoeg voor een indicator per dag
+    return key>=w.voorkeur_vanaf&&key<=w.voorkeur_tot;
+  });
 }
 
 function getApts(d){
