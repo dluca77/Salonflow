@@ -559,10 +559,14 @@ function scrollNaarHuidigeTijd(){
   cal.scrollTop=targetTop;
 
   // Horizontaal ook naar de kolom van vandaag scrollen (belangrijk in de weekweergave
-  // op mobiel, waar niet alle 7 dagen tegelijk op het scherm passen)
+  // op mobiel, waar niet alle 7 dagen tegelijk op het scherm passen).
+  // Zit vandaag niet in deze week (bijv. je hebt naar volgende/vorige week genavigeerd),
+  // dan begin je gewoon weer bij het begin van de week (maandag).
   const vandaagKolom=cal.querySelector('.day-col.tod');
   if(vandaagKolom){
     cal.scrollLeft=Math.max(0,vandaagKolom.offsetLeft-40);
+  } else {
+    cal.scrollLeft=0;
   }
 }
 
