@@ -682,10 +682,11 @@ function buildAptCard(a,i){
   card.addEventListener('dragend',()=>card.classList.remove('dragging'));
 
   // Touch drag & drop (mobiel)
-  let touchGhost=null, touchStartX=0, touchStartY=0;
+  let touchGhost=null, touchStartX=0, touchStartY=0, touchDragTimer=null;
 
   card.addEventListener('touchstart',e=>{
     if(a._herhaald) return;
+    if(touchDragTimer){clearTimeout(touchDragTimer);touchDragTimer=null;} // veiligheidsklep tegen resten van een vorige tik
     const touch=e.touches[0];
     touchStartX=touch.clientX;
     touchStartY=touch.clientY;
@@ -700,8 +701,9 @@ function buildAptCard(a,i){
     touchGhost.style.top=touch.clientY+'px';
     document.body.appendChild(touchGhost);
 
-    setTimeout(()=>{
+    touchDragTimer=setTimeout(()=>{
       card.classList.add('touch-dragging');
+      touchDragTimer=null;
     },150);
   },{passive:true});
 
@@ -721,6 +723,7 @@ function buildAptCard(a,i){
   },{passive:false});
 
   card.addEventListener('touchend',e=>{
+    if(touchDragTimer){clearTimeout(touchDragTimer);touchDragTimer=null;} // dit is de daadwerkelijke fix
     card.classList.remove('touch-dragging');
     document.querySelectorAll('.gl.touch-over').forEach(el=>el.classList.remove('touch-over'));
     if(!touchGhost){return;}
