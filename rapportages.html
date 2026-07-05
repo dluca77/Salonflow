@@ -194,6 +194,116 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 <script>
 let activePeriod='maand';
 
+// ── ISO-weeknummer, voor wekelijkse caching van het AI-prijsadvies ──
+function wk(d){
+  const date=new Date(d);
+  date.setHours(0,0,0,0);
+  date.setDate(date.getDate()+3-((date.getDay()+6)%7));
+  const week1=new Date(date.getFullYear(),0,4);
+  const weekNr=1+Math.round(((date-week1)/86400000-3+((week1.getDay()+6)%7))/7);
+  return date.getFullYear()+'-W'+String(weekNr).padStart(2,'0');
+}
+
+// Bezettingsdata per dienst en per tijdslot, uit ruwe afspraken van de
+// laatste 8 weken. Puur functie, los van DOM/Supabase, apart getest.
+const PRIJSADVIES_DAGEN=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+function berekenPrijsAdviesData(afspraken){
+  const relevant=afspraken.filter(a=>!['geannuleerd','no-show'].includes(a.status) && a.diensten?.naam);
+
+  const perDienst={};
+  relevant.forEach(a=>{
+    const naam=a.diensten.naam;
+    if(!perDienst[naam]) perDienst[naam]={naam, prijs:a.diensten.prijs||0, aantal:0};
+    perDienst[naam].aantal++;
+  });
+
+  const perSlot={};
+  relevant.forEach(a=>{
+    const d=new Date(a.datum_tijd);
+    const uur=d.getHours();
+    const dagdeel = uur<12?'ochtend':uur<17?'middag':'avond';
+    const key=PRIJSADVIES_DAGEN[d.getDay()]+' '+dagdeel;
+    perSlot[key]=(perSlot[key]||0)+1;
+  });
+
+  return{
+    diensten: Object.values(perDienst).sort((a,b)=>b.aantal-a.aantal),
+    tijdslots: Object.entries(perSlot).map(([slot,aantal])=>({slot,aantal})).sort((a,b)=>b.aantal-a.aantal),
+    totaalBoekingen: relevant.length
+  };
+}
+
+async function laadPrijsAdvies(){
+  const body=document.getElementById('prijsadvies-body');
+  if(!body) return;
+  const cacheKey='kronr_prijsadvies_'+SALON_ID+'_'+wk(new Date());
+
+  const toon=(suggesties)=>{
+    body.innerHTML=suggesties.slice(0,3).map(s=>`<div class="ai-insight">${s.tekst}</div>`).join('');
+  };
+
+  const regelGebaseerd=(data)=>{
+    const tips=[];
+    if(data.diensten.length){
+      const top=data.diensten[0];
+      tips.push({dienst:top.naam, tekst:`${top.naam} is je meest geboekte dienst (${top.aantal}x in 8 weken, €${top.prijs}). Bij structureel hoge vraag is een prijsverhoging vaak goed te verdedigen.`});
+    }
+    if(data.tijdslots.length){
+      const drukst=data.tijdslots[0];
+      tips.push({dienst:null, tekst:`Je drukste moment is ${drukst.slot} (${drukst.aantal} boekingen in 8 weken). Overweeg daar een piek-toeslag of reserveer dat slot voor je duurdere diensten.`});
+      if(data.tijdslots.length>1){
+        const rustigst=data.tijdslots[data.tijdslots.length-1];
+        tips.push({dienst:null, tekst:`${rustigst.slot} is juist je rustigste moment (${rustigst.aantal} boekingen). Een tijdelijke korting kan daar de bezetting verhogen.`});
+      }
+    }
+    if(!tips.length) tips.push({dienst:null, tekst:'Nog niet genoeg boekingen in de laatste 8 weken voor een betrouwbaar prijsadvies.'});
+    return tips;
+  };
+
+  try{
+    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
+    if(cached?.suggesties?.length){ toon(cached.suggesties); return; }
+  }catch(e){}
+
+  // Aparte, vaste 8-weken terugblik -- los van de periode-knoppen boven de
+  // pagina, want voor prijsadvies is 'deze maand' vaak te weinig data.
+  const nu=new Date();
+  const achtWekenGeleden=new Date(nu.getTime()-8*7*24*60*60*1000);
+  const{data:afspraken}=await sb.from('afspraken')
+    .select('status,datum_tijd,diensten(naam,prijs)')
+    .eq('salon_id',SALON_ID)
+    .gte('datum_tijd',achtWekenGeleden.toISOString())
+    .lte('datum_tijd',nu.toISOString());
+
+  const data=berekenPrijsAdviesData(afspraken||[]);
+
+  if(data.totaalBoekingen<5){
+    toon(regelGebaseerd(data));
+    return;
+  }
+
+  try{
+    const res=await fetch('https://kronr-ai.isaak-elia.workers.dev/prijsadvies',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        salon_naam: SALON?.naam,
+        diensten: data.diensten,
+        tijdslots: data.tijdslots,
+        totaal_boekingen: data.totaalBoekingen
+      })
+    });
+    if(!res.ok) throw new Error('AI-call mislukt');
+    const result=await res.json();
+    if(!result.suggesties?.length) throw new Error('Geen suggesties ontvangen');
+    toon(result.suggesties);
+    localStorage.setItem(cacheKey, JSON.stringify({suggesties:result.suggesties, ts:Date.now()}));
+  }catch(e){
+    console.warn('AI-prijsadvies niet beschikbaar, terugval op regelgebaseerd advies:', e);
+    toon(regelGebaseerd(data));
+  }
+}
+
 function getDateRange(period){
   const now=new Date();
   let start,end=new Date();
@@ -357,7 +467,21 @@ async function loadData(){
         ${insights.map(i=>`<div class="ai-insight">${i}</div>`).join('')}
       </div>
     </div>
+
+    <!-- AI prijsadvies -->
+    <div class="ai-card">
+      <div class="ai-head">
+        <svg width="13" height="13" fill="none" stroke="var(--gd)" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+        <div class="ai-title">AI Prijsadvies</div>
+        <span style="font-size:10px;color:var(--mu2);margin-left:auto;">gebaseerd op de laatste 8 weken · 1x per week vernieuwd</span>
+      </div>
+      <div class="ai-body" id="prijsadvies-body">
+        <div class="ai-insight">Advies wordt geladen...</div>
+      </div>
+    </div>
   `;
+
+  laadPrijsAdvies();
 }
 
 function setPeriod(p,btn){

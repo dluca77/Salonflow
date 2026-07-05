@@ -71,6 +71,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .dt-row:hover{background:var(--iv);}
 .dt-naam{font-size:13px;font-weight:500;}
 .dt-desc{font-size:11px;color:var(--mu2);margin-top:2px;}
+.dt-advies{font-size:11px;color:var(--gd);margin-top:5px;display:flex;align-items:flex-start;gap:5px;line-height:1.5;max-width:480px;}
+.dt-advies svg{flex-shrink:0;margin-top:2px;}
 .dt-prijs{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gd);}
 .dt-duur{font-size:12px;color:var(--mu);}
 .dt-cat{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
@@ -224,7 +226,96 @@ select.fi{cursor:pointer;}
 </div>
 
 <script>
-let DIENSTEN=[], activeTab='Alle';
+let DIENSTEN=[], activeTab='Alle', PRIJSADVIES_SUGGESTIES=null;
+
+// ── Zelfde logica als rapportages.html (bewust gedupliceerd, geen gedeeld
+// script-bestand) -- zelfde cache-key, dus als rapportages.html deze week
+// al gedraaid heeft, wordt die data hier gewoon herbruikt. ──
+function wk(d){
+  const date=new Date(d);
+  date.setHours(0,0,0,0);
+  date.setDate(date.getDate()+3-((date.getDay()+6)%7));
+  const week1=new Date(date.getFullYear(),0,4);
+  const weekNr=1+Math.round(((date-week1)/86400000-3+((week1.getDay()+6)%7))/7);
+  return date.getFullYear()+'-W'+String(weekNr).padStart(2,'0');
+}
+
+const PRIJSADVIES_DAGEN=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+function berekenPrijsAdviesData(afspraken){
+  const relevant=afspraken.filter(a=>!['geannuleerd','no-show'].includes(a.status) && a.diensten?.naam);
+  const perDienst={};
+  relevant.forEach(a=>{
+    const naam=a.diensten.naam;
+    if(!perDienst[naam]) perDienst[naam]={naam, prijs:a.diensten.prijs||0, aantal:0};
+    perDienst[naam].aantal++;
+  });
+  const perSlot={};
+  relevant.forEach(a=>{
+    const d=new Date(a.datum_tijd);
+    const uur=d.getHours();
+    const dagdeel = uur<12?'ochtend':uur<17?'middag':'avond';
+    const key=PRIJSADVIES_DAGEN[d.getDay()]+' '+dagdeel;
+    perSlot[key]=(perSlot[key]||0)+1;
+  });
+  return{
+    diensten: Object.values(perDienst).sort((a,b)=>b.aantal-a.aantal),
+    tijdslots: Object.entries(perSlot).map(([slot,aantal])=>({slot,aantal})).sort((a,b)=>b.aantal-a.aantal),
+    totaalBoekingen: relevant.length
+  };
+}
+
+function regelGebaseerdAdvies(data){
+  const tips=[];
+  if(data.diensten.length){
+    const top=data.diensten[0];
+    tips.push({dienst:top.naam, tekst:`${top.naam} is je meest geboekte dienst (${top.aantal}x in 8 weken, €${top.prijs}). Bij structureel hoge vraag is een prijsverhoging vaak goed te verdedigen.`});
+  }
+  if(data.tijdslots.length){
+    const drukst=data.tijdslots[0];
+    tips.push({dienst:null, tekst:`Je drukste moment is ${drukst.slot} (${drukst.aantal} boekingen in 8 weken). Overweeg daar een piek-toeslag.`});
+  }
+  return tips;
+}
+
+async function laadPrijsAdviesVoorDiensten(){
+  const cacheKey='kronr_prijsadvies_'+SALON_ID+'_'+wk(new Date());
+  try{
+    const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');
+    if(cached?.suggesties?.length){ PRIJSADVIES_SUGGESTIES=cached.suggesties; renderRows(); return; }
+  }catch(e){}
+
+  const nu=new Date();
+  const achtWekenGeleden=new Date(nu.getTime()-8*7*24*60*60*1000);
+  const{data:afspraken}=await sb.from('afspraken')
+    .select('status,datum_tijd,diensten(naam,prijs)')
+    .eq('salon_id',SALON_ID)
+    .gte('datum_tijd',achtWekenGeleden.toISOString())
+    .lte('datum_tijd',nu.toISOString());
+
+  const data=berekenPrijsAdviesData(afspraken||[]);
+  if(data.totaalBoekingen<5){
+    PRIJSADVIES_SUGGESTIES=regelGebaseerdAdvies(data);
+    renderRows();
+    return;
+  }
+
+  try{
+    const res=await fetch('https://kronr-ai.isaak-elia.workers.dev/prijsadvies',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({salon_naam:SALON?.naam, diensten:data.diensten, tijdslots:data.tijdslots, totaal_boekingen:data.totaalBoekingen})
+    });
+    if(!res.ok) throw new Error('AI-call mislukt');
+    const result=await res.json();
+    if(!result.suggesties?.length) throw new Error('Geen suggesties ontvangen');
+    PRIJSADVIES_SUGGESTIES=result.suggesties;
+    localStorage.setItem(cacheKey, JSON.stringify({suggesties:result.suggesties, ts:Date.now()}));
+  }catch(e){
+    console.warn('AI-prijsadvies niet beschikbaar, terugval op regelgebaseerd advies:', e);
+    PRIJSADVIES_SUGGESTIES=regelGebaseerdAdvies(data);
+  }
+  renderRows();
+}
 
 async function loadData(){
   const{data}=await sb.from('diensten').select('*').eq('salon_id',SALON_ID).order('categorie').order('naam');
@@ -233,6 +324,7 @@ async function loadData(){
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
   renderTabs();
   renderRows();
+  laadPrijsAdviesVoorDiensten();
 }
 
 function renderTabs(){
@@ -254,11 +346,14 @@ function renderRows(){
     return;
   }
 
-  rows.innerHTML=filtered.map(d=>`
+  rows.innerHTML=filtered.map(d=>{
+    const advies=PRIJSADVIES_SUGGESTIES?.find(s=>s.dienst && s.dienst.toLowerCase()===d.naam.toLowerCase());
+    return `
     <div class="dt-row" style="opacity:${d.actief?1:0.5}">
       <div>
         <div class="dt-naam">${d.naam}</div>
         ${d.beschrijving?`<div class="dt-desc">${d.beschrijving}</div>`:''}
+        ${advies?`<div class="dt-advies"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${advies.tekst}</div>`:''}
       </div>
       <div class="dt-prijs">€${d.prijs}</div>
       <div class="dt-duur">${d.duur_min?d.duur_min+' min':'—'}</div>
@@ -267,7 +362,8 @@ function renderRows(){
         <div class="toggle${d.actief?' on':''}"><div class="toggle-dot"></div></div>
         <span class="toggle-label">${d.actief?'Actief':'Inactief'}</span>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function toggleDienst(id, huidig){
