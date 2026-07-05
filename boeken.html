@@ -233,10 +233,18 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <button class="btn-wachtlijst" id="btn-wachtlijst-open" onclick="toonWachtlijstForm()" style="display:none;">Geen geschikt tijdstip? Zet me op de wachtlijst →</button>
 
       <div id="wachtlijst-form" style="display:none;margin-top:16px;padding:16px;background:var(--iv);border:1px solid var(--bd);border-radius:10px;">
-        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Zet me op de wachtlijst</div>
-        <p style="font-size:12px;color:var(--mu);margin-bottom:14px;">We mailen je zodra er een plek vrijkomt voor deze dienst.</p>
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Zet me op de wachtlijst</div>
+        <p style="font-size:12px;color:var(--mu);margin-bottom:14px;">Voor <strong id="wl-datum-label"></strong>. We mailen je zodra er een plek vrijkomt.</p>
         <div class="form-row"><label class="form-label">Naam</label><input class="form-input" id="wl-naam" type="text" placeholder="Jasmijn de Vries"></div>
         <div class="form-row"><label class="form-label">E-mailadres</label><input class="form-input" id="wl-email" type="email" placeholder="naam@email.nl"></div>
+        <div class="form-row">
+          <label class="form-label">Ik wil graag</label>
+          <select class="form-input" id="wl-flexibiliteit">
+            <option value="dag">Alleen deze specifieke dag</option>
+            <option value="week">Deze week (7 dagen rond deze datum)</option>
+            <option value="alles">Zo snel mogelijk, elke dag is goed</option>
+          </select>
+        </div>
         <div id="wl-err" style="display:none;padding:8px 12px;border-left:3px solid var(--red);font-size:12px;margin:10px 0;background:rgba(192,57,43,0.06);color:var(--red);"></div>
         <button class="btn-next" id="wl-btn" onclick="verstuurWachtlijst()" style="margin-top:6px;">Zet me op de wachtlijst</button>
       </div>
@@ -579,14 +587,32 @@ function prevMonth(){if(calMonth===0){calMonth=11;calYear--;}else calMonth--;ren
 function nextMonth(){if(calMonth===11){calMonth=0;calYear++;}else calMonth++;renderCal();}
 
 // ── BEVESTIGEN → SUPABASE ─────────────────────────────────────────────────────
+function parseStateDatum(){
+  // Hergebruikt dezelfde parse-logica als bevestigen(), voor consistentie
+  const parts=state.datum.split(' ');
+  const dag=parseInt(parts[0]);
+  const maandIdx=MN.indexOf(parts[1]);
+  const jaar=parseInt(parts[2]);
+  return new Date(jaar,maandIdx,dag);
+}
+
+function naarISODatum(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
 function toonWachtlijstForm(){
   const form=document.getElementById('wachtlijst-form');
-  form.style.display=form.style.display==='none'?'block':'none';
+  const wordtGetoond=form.style.display==='none';
+  form.style.display=wordtGetoond?'block':'none';
+  if(wordtGetoond&&state.datum){
+    document.getElementById('wl-datum-label').textContent=state.datum;
+  }
 }
 
 async function verstuurWachtlijst(){
   const naam=document.getElementById('wl-naam').value.trim();
   const email=document.getElementById('wl-email').value.trim();
+  const flexibiliteit=document.getElementById('wl-flexibiliteit').value;
   const errEl=document.getElementById('wl-err');
   const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
@@ -600,12 +626,29 @@ async function verstuurWachtlijst(){
   const btn=document.getElementById('wl-btn');
   btn.disabled=true;btn.textContent='Bezig...';
 
+  // Voorkeursdatum-range bepalen op basis van de gekozen flexibiliteit
+  let voorkeurVanaf=null,voorkeurTot=null;
+  if(state.datum&&flexibiliteit!=='alles'){
+    const gekozenDag=parseStateDatum();
+    if(flexibiliteit==='dag'){
+      voorkeurVanaf=naarISODatum(gekozenDag);
+      voorkeurTot=voorkeurVanaf;
+    } else if(flexibiliteit==='week'){
+      const vanaf=new Date(gekozenDag);vanaf.setDate(vanaf.getDate()-3);
+      const tot=new Date(gekozenDag);tot.setDate(tot.getDate()+3);
+      voorkeurVanaf=naarISODatum(vanaf);
+      voorkeurTot=naarISODatum(tot);
+    }
+  }
+
   const{error}=await sb.from('wachtlijst').insert({
     salon_id:SALON_ID,
     klant_naam:naam,
     klant_email:email,
     dienst_id:state.dienst_id||null,
-    medewerker_id:state.med_id||null
+    medewerker_id:state.med_id||null,
+    voorkeur_vanaf:voorkeurVanaf,
+    voorkeur_tot:voorkeurTot
   });
 
   btn.disabled=false;btn.textContent='Zet me op de wachtlijst';
