@@ -193,6 +193,41 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 <script>
 let activePeriod='maand';
+let COMMISSIE_ROWS=[]; // laatst berekende commissie-data, voor CSV-export
+
+// Identieke logica als in medewerkers.html -- bewust gedupliceerd i.p.v.
+// gedeeld bestand, zodat beide pagina's exact hetzelfde berekenen zonder
+// een extra script-afhankelijkheid toe te voegen.
+function berekenCommissieData(medewerkers, verkoopItems, afsprakenAfgerond, salonBasisDefault){
+  const result={};
+  medewerkers.forEach(m=>{
+    const basis = m.commissie_basis || salonBasisDefault || 'totaal';
+    const eigenItems = verkoopItems.filter(v=>v.medewerker_id===m.id);
+    const eigenAfspraken = afsprakenAfgerond.filter(a=>a.medewerker_id===m.id);
+
+    const omzetKassa = eigenItems.reduce((s,v)=>s+Number(v.totaal||0),0);
+    const omzetAfspraken = eigenAfspraken.reduce((s,a)=>s+Number(a.prijs||0),0);
+    const omzetTotaal = omzetKassa + omzetAfspraken;
+
+    const eligibleItems = basis==='dienst' ? eigenItems.filter(v=>v.type==='dienst') : eigenItems;
+    const eligibleOmzet = eligibleItems.reduce((s,v)=>s+Number(v.totaal||0),0) + omzetAfspraken;
+    const eligibleAantal = eligibleItems.reduce((s,v)=>s+Number(v.aantal||0),0) + eigenAfspraken.length;
+
+    let commissie=0;
+    if(m.commissie_type==='percentage' && m.commissie_percentage){
+      commissie = eligibleOmzet * (Number(m.commissie_percentage)/100);
+    } else if(m.commissie_type==='vast' && m.commissie_vast_bedrag){
+      commissie = eligibleAantal * Number(m.commissie_vast_bedrag);
+    }
+
+    result[m.id]={
+      omzet: Math.round(omzetTotaal*100)/100,
+      commissie: Math.round(commissie*100)/100,
+      basis, type:m.commissie_type||null
+    };
+  });
+  return result;
+}
 
 function getDateRange(period){
   const now=new Date();
@@ -219,15 +254,17 @@ async function loadData(){
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
 
-  const[betRes,aptRes,medRes]=await Promise.all([
+  const[betRes,aptRes,medRes,viRes]=await Promise.all([
     sb.from('betalingen').select('bedrag,methode,datum').eq('salon_id',SALON_ID).gte('datum',start.toISOString()).lte('datum',end.toISOString()),
     sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',start.toISOString()).lte('datum_tijd',end.toISOString()),
-    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true)
+    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
+    sb.from('verkoop_items').select('medewerker_id,type,totaal,aantal,created_at').eq('salon_id',SALON_ID).gte('created_at',start.toISOString()).lte('created_at',end.toISOString())
   ]);
 
   const betalingen=betRes.data||[];
   const afspraken=aptRes.data||[];
   const medewerkers=medRes.data||[];
+  const verkoopItems=viRes.data||[];
 
   const omzet=betalingen.reduce((s,b)=>s+parseFloat(b.bedrag||0),0);
   const apts=afspraken.length;
@@ -250,6 +287,21 @@ async function loadData(){
     const mOmzet=mApts.reduce((s,a)=>s+(a.diensten?.prijs||0),0);
     return{...m,apts:mApts.length,omzet:mOmzet};
   }).sort((a,b)=>b.omzet-a.omzet);
+
+  // Commissie -- alleen afgeronde afspraken tellen mee (geen 'gepland'/'no-show'/etc.)
+  const afsprakenAfgerond=afspraken.filter(a=>a.status==='afgerond').map(a=>({medewerker_id:a.medewerker_id,prijs:a.diensten?.prijs||0}));
+  const commData=berekenCommissieData(medewerkers, verkoopItems, afsprakenAfgerond, SALON?.commissie_basis_default||'totaal');
+  COMMISSIE_ROWS=medewerkers.map(m=>({
+    naam:m.naam,
+    omzet:(commData[m.id]||{}).omzet||0,
+    commissieType:(commData[m.id]||{}).type,
+    basis:(commData[m.id]||{}).basis,
+    commissie:(commData[m.id]||{}).commissie||0
+  })).sort((a,b)=>b.commissie-a.commissie);
+  const totaalCommissie=COMMISSIE_ROWS.reduce((s,r)=>s+r.commissie,0);
+
+  const BASIS_LABEL={dienst:'Dienst-prijs',totaal:'Volledige bon'};
+  const TYPE_LABEL={percentage:'Percentage',vast:'Vast bedrag'};
 
   // Top diensten
   const dienstCount={};
@@ -331,6 +383,30 @@ async function loadData(){
         </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Nog geen medewerkers</div>`}
     </div>
 
+    <!-- Commissies -->
+    <div class="card">
+      <div class="card-head">
+        <div class="card-title">Commissies</div>
+        <button class="card-sub" style="background:none;border:1px solid var(--bd);padding:5px 10px;cursor:pointer;font-family:'Inter',sans-serif;border-radius:6px;" onclick="exporteerCommissieCSV()">⬇ CSV</button>
+      </div>
+      ${COMMISSIE_ROWS.length?COMMISSIE_ROWS.map(r=>`
+        <div class="tc-row">
+          <div>
+            <div class="tc-name">${r.naam}</div>
+            <div class="tc-sub">${r.commissieType?TYPE_LABEL[r.commissieType]+' · '+(BASIS_LABEL[r.basis]||'Volledige bon'):'Geen commissie ingesteld'}</div>
+          </div>
+          <div>
+            <div class="tc-val">€${r.commissie.toFixed(2)}</div>
+            <div class="tc-meta">op €${r.omzet.toFixed(2)} omzet</div>
+          </div>
+        </div>`).join('')+`
+        <div class="tc-row" style="border-top:2px solid var(--bd);">
+          <div><div class="tc-name">Totaal</div></div>
+          <div><div class="tc-val" style="color:var(--gd)">€${totaalCommissie.toFixed(2)}</div></div>
+        </div>`
+      :`<div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Nog geen medewerkers</div>`}
+    </div>
+
     <!-- Top diensten -->
     <div class="card">
       <div class="card-head"><div class="card-title">Top diensten</div></div>
@@ -358,6 +434,38 @@ async function loadData(){
       </div>
     </div>
   `;
+}
+
+function exporteerCommissieCSV(){
+  if(!COMMISSIE_ROWS.length)return;
+  const TYPE_LABEL={percentage:'Percentage',vast:'Vast bedrag'};
+  const BASIS_LABEL={dienst:'Dienst-prijs',totaal:'Volledige bon'};
+  const esc=v=>{
+    const s=String(v??'');
+    return /[",;\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+  };
+  const header=['Medewerker','Omzet (€)','Commissie-type','Commissie-basis','Commissie (€)'];
+  const rows=COMMISSIE_ROWS.map(r=>[
+    r.naam,
+    r.omzet.toFixed(2),
+    r.commissieType?TYPE_LABEL[r.commissieType]:'Geen',
+    r.commissieType?(BASIS_LABEL[r.basis]||'Volledige bon'):'',
+    r.commissie.toFixed(2)
+  ]);
+  const totaal=COMMISSIE_ROWS.reduce((s,r)=>s+r.commissie,0);
+  rows.push(['Totaal','','','',totaal.toFixed(2)]);
+
+  const csv=[header,...rows].map(row=>row.map(esc).join(';')).join('\n');
+  const blob=new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  const datumStr=new Date().toISOString().slice(0,10);
+  a.href=url;
+  a.download=`commissies-${activePeriod}-${datumStr}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
 }
 
 function setPeriod(p,btn){

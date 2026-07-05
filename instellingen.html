@@ -193,6 +193,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <button class="settings-tab on" data-tab="profiel" onclick="setTab('profiel')">Profiel</button>
       <button class="settings-tab" data-tab="account" onclick="setTab('account')">Account</button>
       <button class="settings-tab" data-tab="beveiliging" onclick="setTab('beveiliging')">Beveiliging</button>
+      <button class="settings-tab" data-tab="kassa" onclick="setTab('kassa')">Kassa</button>
       <button class="settings-tab" data-tab="abonnement" onclick="setTab('abonnement')">Abonnement</button>
     </div>
 
@@ -302,6 +303,24 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="msg" id="msg-mfa"></div>
     </div>
 
+    <!-- KASSA -->
+    <div class="section" id="tab-kassa" data-tabpanel="kassa" style="display:none;">
+      <div class="sec-title">Commissie</div>
+      <div class="sec-sub">Standaardinstelling voor het berekenen van medewerkers-commissie. Dit geldt voor alle medewerkers, tenzij je bij een medewerker zelf een andere instelling kiest (via Medewerkers → klik op een medewerker).</div>
+
+      <div class="fr">
+        <label class="fl">Commissie berekenen over</label>
+        <select class="fi" id="s-commissie-basis">
+          <option value="dienst">Alleen dienst-prijs (excl. fooi/producten)</option>
+          <option value="totaal">Volledige bonbedrag (incl. fooi/producten)</option>
+        </select>
+        <div style="font-size:11px;color:var(--mu);margin-top:6px;">Geldt voor kassa-verkopen. Afgeronde afspraken tellen altijd volledig mee (die bestaan alleen uit een dienst).</div>
+      </div>
+
+      <button class="btn-sv" id="btn-kassa" onclick="slaKassaOp()">Opslaan</button>
+      <div class="msg" id="msg-kassa"></div>
+    </div>
+
     <!-- ABONNEMENT -->
     <div class="section" id="tab-abonnement" data-tabpanel="abonnement" style="display:none;">
       <div class="sec-title">Abonnement</div>
@@ -409,6 +428,7 @@ async function loadData(){
   document.getElementById('s-type').value = SALON.type_bedrijf || 'Kapper';
   document.getElementById('s-email').value = SESSION_USER.email || '';
   document.getElementById('s-slug').value = SALON.slug || '';
+  document.getElementById('s-commissie-basis').value = SALON.commissie_basis_default || 'totaal';
 
   if(SALON.plan==='business'){
     document.getElementById('slug-sectie-business').style.display='block';
@@ -534,6 +554,21 @@ async function openPortal(){
     btn.disabled=false; btn.textContent=origLabel;
     showPlanMsg('msg-plan','Fout bij openen van beheer: '+e.message);
   }
+}
+
+// ── KASSA / COMMISSIE ──
+async function slaKassaOp(){
+  const basis = document.getElementById('s-commissie-basis').value;
+  const btn=document.getElementById('btn-kassa');
+  btn.disabled=true; btn.innerHTML='<span class="spinner"></span>';
+
+  const{error} = await sb.from('salons').update({commissie_basis_default:basis}).eq('id', SALON_ID);
+
+  btn.disabled=false; btn.textContent='Opslaan';
+
+  if(error){ showMsg('msg-kassa','Fout bij opslaan: '+error.message); return; }
+  SALON.commissie_basis_default = basis;
+  showMsg('msg-kassa','Opgeslagen.','ok');
 }
 
 // ── SALON PROFIEL ──
@@ -722,7 +757,7 @@ async function verwijderMFA(){
 
 if(typeof kronrInit==='function') kronrInit(loadData).then(()=>{
   const hash=location.hash.replace('#','');
-  if(['profiel','account','beveiliging','abonnement'].includes(hash)) setTab(hash);
+  if(['profiel','account','beveiliging','kassa','abonnement'].includes(hash)) setTab(hash);
 });
 else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData):(document.documentElement.style.opacity='1')});
 </script>

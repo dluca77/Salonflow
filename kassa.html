@@ -52,6 +52,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .tb-spacer{flex:1;}
 .clock{font-size:13px;color:var(--mu);font-variant-numeric:tabular-nums;}
 
+/* ── MEDEWERKER-SELECTIE (voor commissie) ── */
+.med-select-wrap{margin-bottom:16px;}
+.med-select{width:100%;padding:11px 12px;border:1px solid var(--bd);background:var(--wh);font-size:13px;font-family:'Inter',sans-serif;color:var(--ink);cursor:pointer;}
+.med-select:invalid{color:var(--mu2);}
+.med-warn{font-size:11px;color:var(--red);margin-top:6px;display:none;}
+.bon-med-tag{font-size:9px;font-weight:700;color:var(--gd);background:var(--wm);border-radius:99px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.bon-med-tag.geen{color:var(--mu2);background:var(--iv);}
+
 /* ── KASSA BODY: split layout ── */
 .kassa-body{flex:1;display:grid;grid-template-columns:1fr 340px;overflow:hidden;gap:0;}
 
@@ -210,16 +218,23 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
     <!-- Diensten panel -->
     <div class="diensten-panel">
+      <div class="med-select-wrap">
+        <div class="panel-label">Medewerker</div>
+        <select class="med-select" id="med-select" onchange="setMedewerker()">
+          <option value="">Kies medewerker...</option>
+        </select>
+        <div class="med-warn" id="med-warn">Kies eerst een medewerker voordat je iets toevoegt (nodig voor commissie-berekening).</div>
+      </div>
       <div class="panel-label">Diensten</div>
       <div class="svc-grid" id="svc-grid">
         <div class="svc-loading">Laden...</div>
       </div>
       <div class="panel-label" style="margin-top:8px;">Overig</div>
       <div class="extra-grid">
-        <div class="ext" onclick="add('Fooi',5)">Fooi<strong>€5</strong></div>
-        <div class="ext" onclick="add('Fooi',10)">Fooi<strong>€10</strong></div>
-        <div class="ext" onclick="add('Product',15)">Product<strong>€15</strong></div>
-        <div class="ext" onclick="add('Product',25)">Product<strong>€25</strong></div>
+        <div class="ext" onclick="add('Fooi',5,'fooi')">Fooi<strong>€5</strong></div>
+        <div class="ext" onclick="add('Fooi',10,'fooi')">Fooi<strong>€10</strong></div>
+        <div class="ext" onclick="add('Product',15,'product')">Product<strong>€15</strong></div>
+        <div class="ext" onclick="add('Product',25,'product')">Product<strong>€25</strong></div>
       </div>
     </div>
 
@@ -269,15 +284,23 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 </div>
 
 <script>
-let bon=[], pm='pin', allDiensten=[];
+let bon=[], pm='pin', allDiensten=[], allMedewerkers=[], huidigeMedewerkerId='';
 
 async function loadData(){
-  const {data}=await sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('categorie').order('naam');
-  allDiensten=data||[];
+  const [dR,mR]=await Promise.all([
+    sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('categorie').order('naam'),
+    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
+  ]);
+  allDiensten=dR.data||[];
+  allMedewerkers=mR.data||[];
 
   // Sidebar initials
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+
+  const medSel=document.getElementById('med-select');
+  medSel.innerHTML='<option value="">Kies medewerker...</option>'+
+    allMedewerkers.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
 
   const grid=document.getElementById('svc-grid');
   if(!allDiensten.length){
@@ -285,16 +308,36 @@ async function loadData(){
     return;
   }
   grid.innerHTML=allDiensten.map(d=>`
-    <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs})">
+    <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs},'dienst')">
       <div class="svc-name">${d.naam}</div>
       <div class="svc-prijs">€${d.prijs}</div>
       <div class="svc-dur">${d.duur_min} min</div>
     </div>`).join('');
 }
 
-function add(naam,prijs){
-  const e=bon.find(i=>i.naam===naam);
-  if(e){e.qty++;e.total+=prijs;}else bon.push({naam,prijs,qty:1,total:prijs});
+function setMedewerker(){
+  huidigeMedewerkerId=document.getElementById('med-select').value;
+  document.getElementById('med-warn').style.display='none';
+}
+
+function medewerkerNaam(id){
+  const m=allMedewerkers.find(x=>x.id===id);
+  return m?m.naam:null;
+}
+function medewerkerInit(id){
+  const naam=medewerkerNaam(id);
+  return naam?naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase():'?';
+}
+
+function add(naam,prijs,type){
+  if(!huidigeMedewerkerId){
+    document.getElementById('med-warn').style.display='block';
+    document.getElementById('med-select').focus();
+    return;
+  }
+  const e=bon.find(i=>i.naam===naam && i.medewerker_id===huidigeMedewerkerId && i.type===type);
+  if(e){e.qty++;e.total+=prijs;}
+  else bon.push({naam,prijs,qty:1,total:prijs,type:type||'dienst',medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId)});
   renderBon();
 }
 
@@ -309,6 +352,7 @@ function renderBon(){
   list.innerHTML=bon.map((i,idx)=>`
     <div class="bon-item">
       <div class="bon-qty" onclick="addQty(${idx})">${i.qty}×</div>
+      <div class="bon-med-tag${i.medewerker_id?'':' geen'}" title="${i.medewerker_naam||'Geen medewerker'}">${i.medewerker_id?medewerkerInit(i.medewerker_id):'?'}</div>
       <div class="bon-name">${i.naam}</div>
       <div class="bon-price">€${i.total}</div>
       <div class="bon-del" onclick="del(${idx})">×</div>
@@ -342,9 +386,26 @@ async function betaal(){
   const btn=document.getElementById('btn-pay');
   btn.disabled=true;btn.textContent='Verwerken...';
 
-  await sb.from('betalingen').insert({
+  const {data:betaling,error:betErr}=await sb.from('betalingen').insert({
     salon_id:SALON_ID,bedrag:total,methode:pm,status:'betaald'
-  });
+  }).select().single();
+
+  if(!betErr && betaling){
+    const items=bon.map(i=>({
+      salon_id:SALON_ID,
+      betaling_id:betaling.id,
+      medewerker_id:i.medewerker_id||null,
+      naam:i.naam,
+      type:i.type||'dienst',
+      prijs:i.prijs,
+      aantal:i.qty,
+      totaal:i.total
+    }));
+    const{error:itemsErr}=await sb.from('verkoop_items').insert(items);
+    if(itemsErr) console.warn('Kon verkoop-regels niet opslaan (commissie klopt dan niet voor deze bon):',itemsErr);
+  } else if(betErr){
+    console.warn('Kon betaling niet opslaan:',betErr);
+  }
 
   btn.disabled=false;btn.textContent='Afrekenen';
 

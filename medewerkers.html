@@ -112,6 +112,15 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .dbtn-sec{background:transparent;color:var(--mu);border:1px solid var(--bd);}
 .dbtn-pri{background:var(--ink);color:var(--iv);border:none;}
 
+/* ── COMMISSIE ── */
+.comm-section{margin-top:18px;padding-top:18px;border-top:1px solid var(--bd);}
+.comm-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);margin-bottom:12px;}
+.comm-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.comm-verdiend{background:var(--wm);padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;}
+.comm-verdiend-lbl{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);}
+.comm-verdiend-val{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--gd);}
+.comm-hint{font-size:11px;color:var(--mu2);margin-top:-2px;margin-bottom:12px;}
+
 /* ── MOB OVERLAY ── */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:998;}
 .ov.on{display:block;}
@@ -229,6 +238,41 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="dr"><span class="drl">E-mail</span><span class="drv" id="d-email">—</span></div>
       <div class="dr"><span class="drl">Telefoon</span><span class="drv" id="d-tel">—</span></div>
     </div>
+
+    <div class="comm-section">
+      <div class="comm-title">Commissie</div>
+      <div class="comm-verdiend">
+        <span class="comm-verdiend-lbl">Verdiend deze maand</span>
+        <span class="comm-verdiend-val" id="d-comm-verdiend">€0</span>
+      </div>
+      <div class="fr"><label class="fl">Type</label>
+        <select class="fi" id="c-type" onchange="wisselCommTypeUI()">
+          <option value="">Geen commissie</option>
+          <option value="percentage">Percentage van omzet</option>
+          <option value="vast">Vast bedrag per verkoop</option>
+        </select>
+      </div>
+      <div class="fr" id="c-percentage-row" style="display:none;">
+        <label class="fl">Percentage</label>
+        <input class="fi" id="c-percentage" type="number" min="0" max="100" step="0.1" placeholder="40">
+      </div>
+      <div class="fr" id="c-vast-row" style="display:none;">
+        <label class="fl">Vast bedrag per verkocht item</label>
+        <input class="fi" id="c-vast" type="number" min="0" step="0.01" placeholder="10.00">
+      </div>
+      <div class="fr" id="c-basis-row" style="display:none;">
+        <label class="fl">Berekenen over</label>
+        <select class="fi" id="c-basis">
+          <option value="">Gebruik salon-instelling</option>
+          <option value="dienst">Alleen dienst-prijs (excl. fooi/producten)</option>
+          <option value="totaal">Volledige bonbedrag (incl. fooi/producten)</option>
+        </select>
+      </div>
+      <div class="comm-hint">Dit geldt voor kassa-verkopen én afgeronde afspraken vanaf het moment dat je dit instelt.</div>
+      <button class="btsv" id="btn-comm-opslaan" onclick="slaCommissieOp()">Commissie opslaan</button>
+      <div id="c-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-top:10px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+    </div>
+
     <div class="dbtns">
       <button class="dbtn dbtn-sec" onclick="closeM('m-detail')">Sluiten</button>
       <button class="dbtn dbtn-pri" onclick="closeM('m-detail')">Agenda bekijken →</button>
@@ -238,14 +282,66 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 <script>
 let TEAM=[];
+let COMM_DATA={}; // per medewerker_id: {omzet, afspraken, commissie}
 
 function getInit(naam){return naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();}
 
+// ── Commissie-berekening ────────────────────────────────────────────────
+// Puur functie, los van DOM/Supabase, zodat dit apart getest kan worden.
+function berekenCommissieData(medewerkers, verkoopItems, afspraken, salonBasisDefault){
+  const result={};
+  medewerkers.forEach(m=>{
+    const basis = m.commissie_basis || salonBasisDefault || 'totaal';
+
+    const eigenItems = verkoopItems.filter(v=>v.medewerker_id===m.id);
+    const eigenAfspraken = afspraken.filter(a=>a.medewerker_id===m.id);
+
+    // Omzet = alles wat aan deze medewerker is toegekend (los van commissie-basis)
+    const omzetKassa = eigenItems.reduce((s,v)=>s+Number(v.totaal||0),0);
+    const omzetAfspraken = eigenAfspraken.reduce((s,a)=>s+Number(a.prijs||0),0);
+    const omzetTotaal = omzetKassa + omzetAfspraken;
+
+    // Commissie-eligible subset: bij basis 'dienst' tellen alleen kassa-items
+    // van type 'dienst' mee (geen fooi/producten); afspraken tellen altijd
+    // mee (die zijn altijd een dienst).
+    const eligibleItems = basis==='dienst' ? eigenItems.filter(v=>v.type==='dienst') : eigenItems;
+    const eligibleOmzet = eligibleItems.reduce((s,v)=>s+Number(v.totaal||0),0) + omzetAfspraken;
+    const eligibleAantal = eligibleItems.reduce((s,v)=>s+Number(v.aantal||0),0) + eigenAfspraken.length;
+
+    let commissie=0;
+    if(m.commissie_type==='percentage' && m.commissie_percentage){
+      commissie = eligibleOmzet * (Number(m.commissie_percentage)/100);
+    } else if(m.commissie_type==='vast' && m.commissie_vast_bedrag){
+      commissie = eligibleAantal * Number(m.commissie_vast_bedrag);
+    }
+
+    result[m.id]={
+      omzet: Math.round(omzetTotaal*100)/100,
+      afspraken: eigenAfspraken.length,
+      commissie: Math.round(commissie*100)/100
+    };
+  });
+  return result;
+}
+
 async function loadData(){
-  const{data}=await sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).order('naam');
+  const {data}=await sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).order('naam');
   TEAM=data||[];
+
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+
+  // Deze maand, voor de commissie/omzet-berekening
+  const maandStart=new Date();maandStart.setDate(1);maandStart.setHours(0,0,0,0);
+  const [viR,afR]=await Promise.all([
+    sb.from('verkoop_items').select('medewerker_id,type,totaal,aantal').eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
+    sb.from('afspraken').select('medewerker_id,status,datum_tijd,diensten(prijs)').eq('salon_id',SALON_ID).eq('status','afgerond').gte('datum_tijd',maandStart.toISOString())
+  ]);
+  const verkoopItems=viR.data||[];
+  const afspraken=(afR.data||[]).map(a=>({medewerker_id:a.medewerker_id, prijs:a.diensten?.prijs||0}));
+
+  COMM_DATA=berekenCommissieData(TEAM, verkoopItems, afspraken, SALON?.commissie_basis_default||'totaal');
+
   render();
 }
 
@@ -264,6 +360,7 @@ function render(){
   grid.innerHTML=TEAM.map(m=>{
     const init=getInit(m.naam);
     const actief=m.actief!==false;
+    const c=COMM_DATA[m.id]||{omzet:0,afspraken:0,commissie:0};
     return `<div class="mcard" onclick="toonDetail('${m.id}')">
       <div class="mc-top">
         <div class="mc-av">${init}</div>
@@ -279,25 +376,79 @@ function render(){
         </div>
       </div>
       <div class="mc-stats">
-        <div class="mcs"><div class="mcs-val">€0</div><div class="mcs-lbl">Omzet</div></div>
-        <div class="mcs"><div class="mcs-val">0</div><div class="mcs-lbl">Afspraken</div></div>
-        <div class="mcs"><div class="mcs-val">—</div><div class="mcs-lbl">Score</div></div>
+        <div class="mcs"><div class="mcs-val">€${c.omzet}</div><div class="mcs-lbl">Omzet</div></div>
+        <div class="mcs"><div class="mcs-val">${c.afspraken}</div><div class="mcs-lbl">Afspraken</div></div>
+        <div class="mcs"><div class="mcs-val">€${c.commissie}</div><div class="mcs-lbl">Commissie</div></div>
       </div>
     </div>`;
   }).join('');
 }
 
+function wisselCommTypeUI(){
+  const type=document.getElementById('c-type').value;
+  document.getElementById('c-percentage-row').style.display = type==='percentage' ? 'block' : 'none';
+  document.getElementById('c-vast-row').style.display = type==='vast' ? 'block' : 'none';
+  document.getElementById('c-basis-row').style.display = type ? 'block' : 'none';
+}
+
+let huidigeDetailId=null;
+
 function toonDetail(id){
   const m=TEAM.find(x=>x.id===id);if(!m)return;
+  huidigeDetailId=id;
+  const c=COMM_DATA[id]||{omzet:0,afspraken:0,commissie:0};
   document.getElementById('d-av').textContent=getInit(m.naam);
   document.getElementById('d-naam').textContent=m.naam;
   document.getElementById('d-rol').textContent=m.rol;
-  document.getElementById('d-omzet').textContent='€0';
-  document.getElementById('d-apts').textContent='0';
+  document.getElementById('d-omzet').textContent='€'+c.omzet;
+  document.getElementById('d-apts').textContent=c.afspraken;
   document.getElementById('d-actief').textContent=m.actief!==false?'Actief':'Inactief';
   document.getElementById('d-email').textContent=m.email||'—';
   document.getElementById('d-tel').textContent=m.telefoon||'—';
+  document.getElementById('d-comm-verdiend').textContent='€'+c.commissie;
+
+  document.getElementById('c-type').value=m.commissie_type||'';
+  document.getElementById('c-percentage').value=m.commissie_percentage||'';
+  document.getElementById('c-vast').value=m.commissie_vast_bedrag||'';
+  document.getElementById('c-basis').value=m.commissie_basis||'';
+  document.getElementById('c-err').style.display='none';
+  wisselCommTypeUI();
+
   openM('m-detail');
+}
+
+async function slaCommissieOp(){
+  if(!huidigeDetailId)return;
+  const type=document.getElementById('c-type').value||null;
+  const percentage=document.getElementById('c-percentage').value;
+  const vast=document.getElementById('c-vast').value;
+  const basis=document.getElementById('c-basis').value||null;
+  const errEl=document.getElementById('c-err');
+
+  if(type==='percentage' && (percentage==='' || Number(percentage)<0 || Number(percentage)>100)){
+    errEl.textContent='Vul een percentage tussen 0 en 100 in.';errEl.style.display='block';return;
+  }
+  if(type==='vast' && (vast==='' || Number(vast)<0)){
+    errEl.textContent='Vul een geldig vast bedrag in.';errEl.style.display='block';return;
+  }
+  errEl.style.display='none';
+
+  const btn=document.getElementById('btn-comm-opslaan');
+  btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
+
+  const{error}=await sb.from('medewerkers').update({
+    commissie_type:type,
+    commissie_percentage:type==='percentage'?Number(percentage):null,
+    commissie_vast_bedrag:type==='vast'?Number(vast):null,
+    commissie_basis:basis
+  }).eq('id',huidigeDetailId);
+
+  btn.disabled=false;btn.textContent='Commissie opslaan';
+
+  if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
+
+  closeM('m-detail');
+  await loadData();
 }
 
 async function slaMedewerkOp(){
