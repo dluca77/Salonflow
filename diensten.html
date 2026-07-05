@@ -221,7 +221,38 @@ select.fi{cursor:pointer;}
       </select>
     </div>
     <div class="fr"><label class="fl">Omschrijving (optioneel)</label><input class="fi" id="d-omschr" type="text" placeholder="Korte omschrijving..."></div>
+    <div class="fr" id="d-aanbetaling-wrap" style="display:none;">
+      <label class="fl">Aanbetaling bij boeken</label>
+      <select class="fi" id="d-aanb-type" onchange="wisselAanbTypeUI('d-')">
+        <option value="">Geen aanbetaling vereist</option>
+        <option value="percentage">Percentage van de prijs</option>
+        <option value="vast">Vast bedrag</option>
+      </select>
+      <input class="fi" id="d-aanb-bedrag" type="number" min="0" step="0.5" placeholder="bv. 25" style="margin-top:8px;display:none;">
+    </div>
     <button class="btsv" id="btn-dienst-opslaan" onclick="slaDienstOp()">Dienst opslaan</button>
+  </div>
+</div>
+
+<div class="mbg" id="m-aanbetaling" onclick="if(event.target===this)closeM('m-aanbetaling')">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">Aanbetaling — <span id="ab-dienst-naam"></span></div>
+    <div class="msub">Stel in of klanten moeten aanbetalen bij het boeken van deze dienst.</div>
+    <div id="ab-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+    <div class="fr">
+      <label class="fl">Aanbetaling</label>
+      <select class="fi" id="ab-type" onchange="wisselAanbTypeUI('ab-')">
+        <option value="">Geen aanbetaling vereist</option>
+        <option value="percentage">Percentage van de prijs</option>
+        <option value="vast">Vast bedrag</option>
+      </select>
+    </div>
+    <div class="fr" id="ab-bedrag-wrap" style="display:none;">
+      <label class="fl" id="ab-bedrag-label">Bedrag</label>
+      <input class="fi" id="ab-bedrag" type="number" min="0" step="0.5">
+    </div>
+    <button class="btsv" id="btn-aanbetaling-opslaan" onclick="slaAanbetalingOp()">Opslaan</button>
   </div>
 </div>
 
@@ -322,6 +353,7 @@ async function loadData(){
   DIENSTEN=data||[];
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+  document.getElementById('d-aanbetaling-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
   renderTabs();
   renderRows();
   laadPrijsAdviesVoorDiensten();
@@ -346,14 +378,18 @@ function renderRows(){
     return;
   }
 
+  const magAanbetaling = SALON?.plan==='business' && SALON?.stripe_connect_status==='actief';
+
   rows.innerHTML=filtered.map(d=>{
     const advies=PRIJSADVIES_SUGGESTIES?.find(s=>s.dienst && s.dienst.toLowerCase()===d.naam.toLowerCase());
+    const aanbLabel = d.aanbetaling_type==='percentage' ? `${d.aanbetaling_bedrag}%` : d.aanbetaling_type==='vast' ? `€${d.aanbetaling_bedrag}` : 'Geen';
     return `
     <div class="dt-row" style="opacity:${d.actief?1:0.5}">
       <div>
         <div class="dt-naam">${d.naam}</div>
         ${d.beschrijving?`<div class="dt-desc">${d.beschrijving}</div>`:''}
         ${advies?`<div class="dt-advies"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${advies.tekst}</div>`:''}
+        ${magAanbetaling?`<div class="dt-advies" style="color:var(--mu);cursor:pointer;" onclick="openAanbetalingModal('${d.id}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Aanbetaling: ${aanbLabel} (wijzigen)</div>`:''}
       </div>
       <div class="dt-prijs">€${d.prijs}</div>
       <div class="dt-duur">${d.duur_min?d.duur_min+' min':'—'}</div>
@@ -387,6 +423,15 @@ async function slaDienstOp(){
   if(!naam){errEl.textContent='Vul een naam in.';errEl.style.display='block';return;}
   if(!prijs){errEl.textContent='Vul een prijs in.';errEl.style.display='block';return;}
   if(!duur){errEl.textContent='Vul een duur in (in minuten).';errEl.style.display='block';return;}
+
+  const aanbType=document.getElementById('d-aanb-type').value||null;
+  const aanbBedragRaw=document.getElementById('d-aanb-bedrag').value;
+  if(aanbType==='percentage' && (aanbBedragRaw==='' || Number(aanbBedragRaw)<0 || Number(aanbBedragRaw)>100)){
+    errEl.textContent='Vul een percentage tussen 0 en 100 in voor de aanbetaling.';errEl.style.display='block';return;
+  }
+  if(aanbType==='vast' && (aanbBedragRaw==='' || Number(aanbBedragRaw)<0)){
+    errEl.textContent='Vul een geldig aanbetalingsbedrag in.';errEl.style.display='block';return;
+  }
   errEl.style.display='none';
 
   const btn=document.getElementById('btn-dienst-opslaan');
@@ -394,15 +439,74 @@ async function slaDienstOp(){
 
   const{error}=await sb.from('diensten').insert({
     salon_id:SALON_ID,naam,prijs,duur_min:duur,
-    categorie:cat,beschrijving:omschr||null,actief:true
+    categorie:cat,beschrijving:omschr||null,actief:true,
+    aanbetaling_type:aanbType,
+    aanbetaling_bedrag:aanbType?Number(aanbBedragRaw):null
   });
 
   btn.disabled=false;btn.textContent='Dienst opslaan';
 
   if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
 
-  ['d-naam','d-prijs','d-duur','d-omschr'].forEach(id=>document.getElementById(id).value='');
+  ['d-naam','d-prijs','d-duur','d-omschr','d-aanb-bedrag'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('d-aanb-type').value='';
   closeM('m-new');
+  await loadData();
+}
+
+// ── AANBETALING (Stripe Connect, Business-only) ──
+function wisselAanbTypeUI(prefix){
+  const type=document.getElementById(prefix+'aanb-type')?.value ?? document.getElementById('ab-type').value;
+  if(prefix==='d-'){
+    const bedragEl=document.getElementById('d-aanb-bedrag');
+    bedragEl.style.display=type?'block':'none';
+    bedragEl.placeholder = type==='percentage' ? 'bv. 25 (%)' : 'bv. 15 (€)';
+  } else {
+    document.getElementById('ab-bedrag-wrap').style.display=type?'block':'none';
+    document.getElementById('ab-bedrag-label').textContent = type==='percentage' ? 'Percentage (%)' : 'Bedrag (€)';
+  }
+}
+
+let huidigAanbetalingDienstId=null;
+
+function openAanbetalingModal(id){
+  const d=DIENSTEN.find(x=>x.id===id);if(!d)return;
+  huidigAanbetalingDienstId=id;
+  document.getElementById('ab-dienst-naam').textContent=d.naam;
+  document.getElementById('ab-type').value=d.aanbetaling_type||'';
+  document.getElementById('ab-bedrag').value=d.aanbetaling_bedrag||'';
+  document.getElementById('ab-err').style.display='none';
+  wisselAanbTypeUI('ab-');
+  openM('m-aanbetaling');
+}
+
+async function slaAanbetalingOp(){
+  if(!huidigAanbetalingDienstId)return;
+  const type=document.getElementById('ab-type').value||null;
+  const bedragRaw=document.getElementById('ab-bedrag').value;
+  const errEl=document.getElementById('ab-err');
+
+  if(type==='percentage' && (bedragRaw==='' || Number(bedragRaw)<0 || Number(bedragRaw)>100)){
+    errEl.textContent='Vul een percentage tussen 0 en 100 in.';errEl.style.display='block';return;
+  }
+  if(type==='vast' && (bedragRaw==='' || Number(bedragRaw)<0)){
+    errEl.textContent='Vul een geldig bedrag in.';errEl.style.display='block';return;
+  }
+  errEl.style.display='none';
+
+  const btn=document.getElementById('btn-aanbetaling-opslaan');
+  btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
+
+  const{error}=await sb.from('diensten').update({
+    aanbetaling_type:type,
+    aanbetaling_bedrag:type?Number(bedragRaw):null
+  }).eq('id',huidigAanbetalingDienstId);
+
+  btn.disabled=false;btn.textContent='Opslaan';
+
+  if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
+
+  closeM('m-aanbetaling');
   await loadData();
 }
 

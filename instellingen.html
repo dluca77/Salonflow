@@ -377,6 +377,28 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
       <div class="msg" id="msg-plan"></div>
+
+      <div id="stripe-connect-sectie-business" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
+        <div class="sec-title">Aanbetaling bij boeken</div>
+        <div class="sec-sub">Koppel je eigen Stripe-account om aanbetalingen van klanten te kunnen ontvangen. Daarna kun je per dienst instellen of en hoeveel aanbetaling vereist is (via Diensten).</div>
+
+        <div class="mfa-status">
+          <div class="mfa-status-left">
+            <div class="mfa-dot" id="connect-dot"></div>
+            <div>
+              <div class="mfa-label" id="connect-label">Nog niet gekoppeld</div>
+              <div class="mfa-sub" id="connect-sub">Klanten kunnen (nog) geen aanbetaling doen bij het boeken.</div>
+            </div>
+          </div>
+          <button class="btn-sec" id="btn-connect" onclick="koppelStripeConnect()">Stripe koppelen</button>
+        </div>
+        <div class="msg" id="msg-connect"></div>
+      </div>
+
+      <div id="stripe-connect-sectie-upsell" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
+        <div class="sec-title">Aanbetaling bij boeken</div>
+        <div class="sec-sub">Klanten laten aanbetalen bij het boeken (via je eigen Stripe-account) is een Business-functie. <a href="#abonnement" onclick="setTab('abonnement')" style="color:var(--gd);">Upgrade naar Business</a> om dit te gebruiken.</div>
+      </div>
     </div>
 
 
@@ -412,8 +434,11 @@ async function loadData(){
 
   if(SALON.plan==='business'){
     document.getElementById('slug-sectie-business').style.display='block';
+    document.getElementById('stripe-connect-sectie-business').style.display='block';
+    toonConnectStatus();
   } else {
     document.getElementById('slug-sectie-upsell').style.display='block';
+    document.getElementById('stripe-connect-sectie-upsell').style.display='block';
   }
 
   if(SALON.logo_url){
@@ -533,6 +558,95 @@ async function openPortal(){
   }catch(e){
     btn.disabled=false; btn.textContent=origLabel;
     showPlanMsg('msg-plan','Fout bij openen van beheer: '+e.message);
+  }
+}
+
+// ── STRIPE CONNECT (aanbetaling) ──
+function toonConnectStatus(){
+  const status=SALON.stripe_connect_status||'niet_gekoppeld';
+  const dot=document.getElementById('connect-dot');
+  const label=document.getElementById('connect-label');
+  const sub=document.getElementById('connect-sub');
+  const btn=document.getElementById('btn-connect');
+
+  if(status==='actief'){
+    dot.classList.add('on');
+    label.textContent='Gekoppeld';
+    sub.textContent='Klanten kunnen aanbetalen bij het boeken. Stel per dienst in of dat vereist is via Diensten.';
+    btn.textContent='Opnieuw koppelen';
+  } else if(status==='in_behandeling'){
+    dot.classList.remove('on');
+    label.textContent='Koppeling wordt afgerond...';
+    sub.textContent='Even geduld, dit kan een paar seconden duren.';
+    btn.textContent='Stripe koppelen';
+  } else {
+    dot.classList.remove('on');
+    label.textContent='Nog niet gekoppeld';
+    sub.textContent='Klanten kunnen (nog) geen aanbetaling doen bij het boeken.';
+    btn.textContent='Stripe koppelen';
+  }
+}
+
+async function koppelStripeConnect(){
+  const btn=document.getElementById('btn-connect');
+  const origLabel=btn.textContent;
+  btn.disabled=true; btn.innerHTML='<span class="spinner-inline"></span>';
+
+  try{
+    const res=await fetch(KRONR_STRIPE_URL+'/create-connect-link',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        salon_id:SALON_ID,
+        return_url: window.location.origin+window.location.pathname+'?stripe_connect_return=1#abonnement'
+      })
+    });
+    if(!res.ok){
+      let detail='';
+      try{ const errData=await res.json(); detail=errData.error||JSON.stringify(errData); }catch(e2){ detail='HTTP '+res.status; }
+      throw new Error(detail);
+    }
+    const data=await res.json();
+    if(!data.url) throw new Error(data.error||'Onbekende fout');
+    window.location.href=data.url;
+  }catch(e){
+    btn.disabled=false; btn.textContent=origLabel;
+    showMsg('msg-connect','Fout bij koppelen: '+e.message);
+  }
+}
+
+// Stripe Connect stuurt de gebruiker terug met ?code=... (OAuth) -- die
+// code moet omgewisseld worden voor een account-id. Dat gebeurt via de
+// Worker, niet hier: de code mag nooit clientside naar Stripe zelf.
+async function verwerkStripeConnectReturn(){
+  const params=new URLSearchParams(window.location.search);
+  const code=params.get('code');
+  if(!params.get('stripe_connect_return') && !code) return;
+
+  history.replaceState(null,'',window.location.pathname+'#abonnement');
+  setTab('abonnement');
+
+  if(!code){
+    // Gebruiker is teruggekomen zonder code -- waarschijnlijk geannuleerd
+    return;
+  }
+
+  try{
+    const res=await fetch(KRONR_STRIPE_URL+'/exchange-connect-code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({salon_id:SALON_ID, code})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.account_id) throw new Error(data.error||'Geen account-id ontvangen');
+
+    SALON.stripe_connect_account_id=data.account_id;
+    SALON.stripe_connect_status='actief';
+    toonConnectStatus();
+    showMsg('msg-connect','Stripe-account gekoppeld.','ok');
+  }catch(e){
+    showMsg('msg-connect','Koppelen mislukt: '+e.message);
   }
 }
 
@@ -723,6 +837,7 @@ async function verwijderMFA(){
 if(typeof kronrInit==='function') kronrInit(loadData).then(()=>{
   const hash=location.hash.replace('#','');
   if(['profiel','account','beveiliging','abonnement'].includes(hash)) setTab(hash);
+  verwerkStripeConnectReturn();
 });
 else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData):(document.documentElement.style.opacity='1')});
 </script>
