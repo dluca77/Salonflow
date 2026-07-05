@@ -555,7 +555,15 @@ function scrollNaarHuidigeTijd(){
   let uur=nu.getHours()+nu.getMinutes()/60;
   if(uur<SH||uur>EH) uur=9; // buiten openingstijden: nuttige standaardwaarde
   const targetTop=Math.max(0,(uur-SH)*4*RH-RH*2); // met wat ruimte erboven, niet exact bovenaan
-  document.getElementById('cal').scrollTop=targetTop;
+  const cal=document.getElementById('cal');
+  cal.scrollTop=targetTop;
+
+  // Horizontaal ook naar de kolom van vandaag scrollen (belangrijk in de weekweergave
+  // op mobiel, waar niet alle 7 dagen tegelijk op het scherm passen)
+  const vandaagKolom=cal.querySelector('.day-col.tod');
+  if(vandaagKolom){
+    cal.scrollLeft=Math.max(0,vandaagKolom.offsetLeft-40);
+  }
 }
 
 function render(){
