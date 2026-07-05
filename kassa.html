@@ -151,9 +151,10 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   .tb-title{display:none;}
   
   .topbar{padding:0 14px;}
-  .kassa-body{grid-template-columns:1fr;overflow-y:auto;}
+  .kassa-body{grid-template-columns:1fr;overflow-y:auto;-webkit-overflow-scrolling:touch;}
   .diensten-panel{overflow:visible;}
-  .bon-panel{border-left:none;border-top:1px solid var(--bd);}
+  .bon-panel{border-left:none;border-top:1px solid var(--bd);height:auto;}
+  .bon-list{flex:none;overflow-y:visible;}
   .svc-grid{grid-template-columns:1fr 1fr;}
 }
 @media(max-width:480px){

@@ -26,7 +26,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .info-item svg{width:14px;height:14px;color:var(--gd);flex-shrink:0;}
 
 .widget-wrap{max-width:900px;margin:0 auto;padding:0 16px 48px;}
-.widget-frame{width:100%;height:820px;border:none;border-radius:16px;box-shadow:0 20px 60px rgba(15,13,11,.08);background:var(--white);}
+.widget-frame{width:100%;min-height:600px;border:none;border-radius:16px;box-shadow:0 20px 60px rgba(15,13,11,.08);background:var(--white);display:block;}
 
 .footer-tag{text-align:center;padding:20px;font-size:11px;color:var(--mu2);}
 .footer-tag a{color:var(--gd);text-decoration:none;font-weight:600;}
@@ -38,7 +38,6 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 @media(max-width:600px){
   .hero{padding:32px 16px 24px;}
   .salon-naam{font-size:24px;}
-  .widget-frame{height:900px;}
 }
 </style>
 </head>
@@ -132,6 +131,16 @@ function toonFout(){
   document.getElementById('laden-state').style.display='none';
   document.getElementById('fout-state').style.display='flex';
 }
+
+// Iframe laat automatisch meegroeien met zijn echte inhoud (geen vaste
+// hoogte meer) -- voorkomt dat er twee losse scroll-containers ontstaan
+// wanneer de boekingsflow hoger is dan een vast aantal pixels.
+window.addEventListener('message', (e)=>{
+  if(e.data && e.data.type==='kronr:hoogte' && typeof e.data.height==='number'){
+    const frame=document.getElementById('booking-frame');
+    if(frame) frame.style.height=Math.max(600, e.data.height)+'px';
+  }
+});
 
 init();
 </script>

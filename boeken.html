@@ -784,6 +784,38 @@ async function bevestigen(){
 }
 
 init();
+
+// ── Hoogte doorgeven aan de omliggende pagina (bv. s.html) ─────────────────
+// Zodra dit document in een iframe zit, melden we onze werkelijke inhoud-
+// hoogte aan de parent zodat die de iframe kan laten meegroeien in plaats
+// van een vaste hoogte te gebruiken. Dat voorkomt twee losse scroll-lagen
+// (dubbele/rare scroll) wanneer de boekingsflow hoger is dan de iframe.
+if(window.parent !== window){
+  // .layout gebruikt elders min-height:calc(100vh - 60px) voor een mooie
+  // volledige-hoogte weergave bij een directe (niet-ingesloten) bezoeker.
+  // In een iframe die zichzelf op inhoud laat meegroeien (zie hieronder)
+  // zou dat een oneindige groei-loop geven: iframe groter -> 100vh binnen
+  // de iframe groter -> .layout groter -> iframe nog groter, enzovoort.
+  // Daarom breken we die vh-afhankelijkheid hier expliciet.
+  const layoutEl=document.querySelector('.layout');
+  if(layoutEl) layoutEl.style.minHeight='0';
+
+  let laatsteHoogte=0;
+  function meldHoogte(){
+    const h=document.documentElement.scrollHeight;
+    if(Math.abs(h-laatsteHoogte)<2) return;
+    laatsteHoogte=h;
+    window.parent.postMessage({type:'kronr:hoogte', height:h}, '*');
+  }
+  window.addEventListener('load', meldHoogte);
+  window.addEventListener('resize', meldHoogte);
+  if(window.ResizeObserver){
+    new ResizeObserver(meldHoogte).observe(document.body);
+  } else {
+    setInterval(meldHoogte, 500);
+  }
+  meldHoogte();
+}
 </script>
 <!-- TIJDELIJK: overflow-detectie, wordt later weer verwijderd -->
 <div id="overflow-debug" style="position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:#fff;font-family:monospace;font-size:11px;padding:8px;z-index:99999;display:none;word-break:break-all;"></div>
