@@ -12,7 +12,7 @@
   --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--mu:#8a7d6e;--mu2:#c2b5a4;--green:#2d6a4f;
 }
 html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;font-size:14px;-webkit-font-smoothing:antialiased;overflow:hidden;}
-.app{display:flex;height:100vh;}
+.app{display:flex;height:100vh;height:100dvh;}
 .pc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;grid-column:1/-1;}
 .pc-card{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px 14px;position:relative;}
 .pc-card.popular{border:2px solid var(--gd);background:var(--ink);}
@@ -33,7 +33,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .pc-card.popular .pc-btn{background:var(--gd);}
 
 /* ── SIDEBAR ── */
-.sidebar{width:212px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;position:fixed;left:0;top:0;z-index:20;padding:16px 12px;}
+.sidebar{width:212px;flex-shrink:0;background:var(--ink);display:flex;flex-direction:column;height:100vh;height:100dvh;position:fixed;left:0;top:0;z-index:20;padding:16px 12px;}
 .sb-logo{font-family:'Playfair Display',serif;font-size:18px;color:#fff;margin-bottom:24px;text-decoration:none;padding:0 10px;display:block;}
 .sb-logo em{color:var(--gd);font-style:normal;}
 .si{display:flex;align-items:center;gap:10px;padding:10px;color:rgba(255,255,255,.45);font-size:13px;cursor:pointer;border-radius:8px;margin-bottom:2px;text-decoration:none;border-left:2px solid transparent;transition:all .15s;}
