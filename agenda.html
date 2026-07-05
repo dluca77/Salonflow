@@ -63,7 +63,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 .td{font-size:12px;font-weight:500;padding:0 6px;min-width:70px;text-align:center;white-space:nowrap;}
 
 /* Filter */
-.fw{position:relative;flex-shrink:0;}
+.fw{position:relative;flex-shrink:0;display:flex;align-items:center;gap:6px;}
 .fb{width:34px;height:34px;border:1px solid var(--bd2);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;flex-shrink:0;}
 .fb:hover{background:var(--iv);}
 .fb.actief{background:var(--ink);color:#fff;border-color:var(--ink);}
@@ -311,8 +311,9 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
       <button class="ta" onclick="next()">›</button>
     </div>
     <div class="fw" id="fw">
-      <button class="fb" onclick="openWachtlijstOverzicht()" title="Wachtlijst" style="margin-right:6px;">
+      <button class="fb" onclick="openWachtlijstOverzicht()" title="Wachtlijst" style="position:relative;">
         <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span id="wachtlijst-badge" style="display:none;position:absolute;top:-5px;right:-5px;background:var(--red,#c0392b);color:#fff;font-size:9px;font-weight:700;min-width:15px;height:15px;border-radius:8px;align-items:center;justify-content:center;padding:0 3px;line-height:1;"></span>
       </button>
       <button class="fb" onclick="toggleFD()" id="filter-btn" title="Filter op medewerker">
 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0019 4H5a1 1 0 00-.75 1.61z"/></svg>
@@ -516,6 +517,18 @@ async function loadData(){
     if(c)c.scrollTop=savedScroll;
   }
   firstLoad=false;
+  updateWachtlijstBadge();
+}
+
+async function updateWachtlijstBadge(){
+  const{count}=await sb.from('wachtlijst').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID).eq('status','actief');
+  const badge=document.getElementById('wachtlijst-badge');
+  if(count>0){
+    badge.textContent=count>9?'9+':count;
+    badge.style.display='flex';
+  } else {
+    badge.style.display='none';
+  }
 }
 
 // Herhaalafspraken expanderen voor render periode
@@ -977,13 +990,24 @@ async function openWachtlijstOverzicht(){
     return;
   }
 
-  lijstEl.innerHTML=data.map(item=>`
+  lijstEl.innerHTML=data.map(item=>{
+    let datumTekst;
+    if(item.voorkeur_vanaf&&item.voorkeur_tot&&item.voorkeur_vanaf===item.voorkeur_tot){
+      datumTekst='Alleen '+new Date(item.voorkeur_vanaf).toLocaleDateString('nl-NL',{day:'numeric',month:'long'});
+    } else if(item.voorkeur_vanaf&&item.voorkeur_tot){
+      datumTekst=new Date(item.voorkeur_vanaf).toLocaleDateString('nl-NL',{day:'numeric',month:'short'})+' t/m '+new Date(item.voorkeur_tot).toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
+    } else {
+      datumTekst='Elke dag is goed';
+    }
+    return `
     <div style="padding:10px 14px;background:var(--iv,#faf8f4);border:1px solid var(--bd,#e2d9ce);border-radius:8px;font-size:12px;">
       <div style="font-weight:600;">${item.klant_naam}</div>
       <div style="color:var(--mu);margin-top:2px;">${item.diensten?.naam||'Onbekende dienst'} · ${item.klant_email}</div>
+      <div style="color:var(--ink);margin-top:4px;font-weight:500;">📅 ${datumTekst}</div>
       ${item.voorgestelde_datum_tijd?`<div style="color:var(--gd,#8c6d3f);margin-top:4px;">✨ Plek aangeboden, wacht op reactie</div>`:''}
     </div>
-  `).join('');
+  `;
+  }).join('');
 }
 
 async function updateStatus(val){
