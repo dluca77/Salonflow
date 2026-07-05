@@ -311,6 +311,9 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
       <button class="ta" onclick="next()">›</button>
     </div>
     <div class="fw" id="fw">
+      <button class="fb" onclick="openWachtlijstOverzicht()" title="Wachtlijst" style="margin-right:6px;">
+        <svg width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </button>
       <button class="fb" onclick="toggleFD()" id="filter-btn" title="Filter op medewerker">
 <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M4.25 5.61C6.27 8.2 10 13 10 13v6c0 .55.45 1 1 1h2c.55 0 1-.45 1-1v-6s3.72-4.8 5.74-7.39A.998.998 0 0019 4H5a1 1 0 00-.75 1.61z"/></svg>
         <span id="fl" style="display:none;"></span>
@@ -369,6 +372,15 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 </div>
 
 <!-- Nieuwe afspraak modal -->
+<!-- Wachtlijst overzicht -->
+<div class="modal-bg" id="modal-wachtlijst" onclick="if(event.target===this)closeModal('modal-wachtlijst')">
+  <div class="modal">
+    <div class="modal-title">Wachtlijst</div>
+    <div id="wachtlijst-lijst" style="display:flex;flex-direction:column;gap:8px;max-height:420px;overflow-y:auto;margin-bottom:14px;"></div>
+    <button class="mo-btn-sec" onclick="closeModal('modal-wachtlijst')">Sluiten</button>
+  </div>
+</div>
+
 <div class="modal-bg" id="modal-apt" onclick="if(event.target===this)closeModal('modal-apt')">
   <div class="modal">
     <div class="modal-title" id="modal-apt-title">Nieuwe afspraak</div>
@@ -949,13 +961,74 @@ async function toonKlantBriefing(){
   }
 }
 
+async function openWachtlijstOverzicht(){
+  openModal('modal-wachtlijst');
+  const lijstEl=document.getElementById('wachtlijst-lijst');
+  lijstEl.innerHTML='<div style="text-align:center;color:var(--mu);padding:20px;font-size:12px;">Laden...</div>';
+
+  const{data,error}=await sb.from('wachtlijst')
+    .select('*,diensten(naam)')
+    .eq('salon_id',SALON_ID)
+    .eq('status','actief')
+    .order('created_at',{ascending:true});
+
+  if(error||!data||!data.length){
+    lijstEl.innerHTML='<div style="text-align:center;color:var(--mu);padding:20px;font-size:12px;">Nog niemand op de wachtlijst.</div>';
+    return;
+  }
+
+  lijstEl.innerHTML=data.map(item=>`
+    <div style="padding:10px 14px;background:var(--iv,#faf8f4);border:1px solid var(--bd,#e2d9ce);border-radius:8px;font-size:12px;">
+      <div style="font-weight:600;">${item.klant_naam}</div>
+      <div style="color:var(--mu);margin-top:2px;">${item.diensten?.naam||'Onbekende dienst'} · ${item.klant_email}</div>
+      ${item.voorgestelde_datum_tijd?`<div style="color:var(--gd,#8c6d3f);margin-top:4px;">✨ Plek aangeboden, wacht op reactie</div>`:''}
+    </div>
+  `).join('');
+}
+
 async function updateStatus(val){
   if(!geselecteerdeApt) return;
-  await sb.from('afspraken').update({status:val}).eq('id',geselecteerdeApt.id);
-  geselecteerdeApt.status=val;
+  const a=geselecteerdeApt;
+  await sb.from('afspraken').update({status:val}).eq('id',a.id);
+  a.status=val;
   toast('Status bijgewerkt: '+STATUS_LABELS[val]);
   closePop();
   await loadData();
+
+  // Bij annuleren: check of er iemand op de wachtlijst staat voor deze plek
+  if(val==='geannuleerd' && a.dienst_id){
+    checkWachtlijstMatch(a);
+  }
+}
+
+async function checkWachtlijstMatch(afspraak){
+  try{
+    const{data}=await sb.rpc('vind_wachtlijst_match',{
+      p_salon_id:SALON_ID,
+      p_dienst_id:afspraak.dienst_id,
+      p_datum_tijd:afspraak.datum_tijd
+    });
+    if(!data?.gevonden) return;
+
+    // Dienstnaam ophalen voor een nettere mail
+    const{data:dienstData}=await sb.from('diensten').select('naam').eq('id',afspraak.dienst_id).maybeSingle();
+
+    await fetch('https://kronr-mail.isaak-elia.workers.dev/wachtlijst-plek',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email:data.klant_email,
+        klant_naam:data.klant_naam,
+        salon_naam:SALON?.naam||'',
+        dienst_naam:dienstData?.naam||'',
+        datum_tijd:afspraak.datum_tijd,
+        claim_token:data.claim_token
+      })
+    });
+    toast('Wachtlijst-plek aangeboden aan '+data.klant_naam);
+  }catch(e){
+    console.warn('Wachtlijst-match kon niet worden gecontroleerd:',e);
+  }
 }
 
 async function verwijderHuidige(){

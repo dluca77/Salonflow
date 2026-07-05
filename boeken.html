@@ -114,6 +114,8 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .btn-next:hover{background:var(--ink2);}
 .btn-next:disabled{opacity:0.3;cursor:not-allowed;}
 .btn-back{background:transparent;border:none;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);cursor:pointer;font-family:'Inter',sans-serif;margin-top:12px;padding:8px 0;}
+.btn-wachtlijst{width:100%;background:transparent;border:1px dashed var(--bd2);border-radius:10px;padding:12px;font-size:12px;color:var(--gd2);cursor:pointer;font-family:'Inter',sans-serif;margin-top:16px;transition:all 0.15s;}
+.btn-wachtlijst:hover{border-color:var(--gd);background:var(--gd-light,#f5ede0);}
 .spinner-inline{display:inline-block;width:14px;height:14px;border:2px solid rgba(250,248,244,0.3);border-top-color:var(--iv);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
@@ -228,6 +230,17 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       </div>
       <div class="cal-grid" id="cal-grid"></div>
       <div id="time-slots-wrap"></div>
+      <button class="btn-wachtlijst" id="btn-wachtlijst-open" onclick="toonWachtlijstForm()" style="display:none;">Geen geschikt tijdstip? Zet me op de wachtlijst →</button>
+
+      <div id="wachtlijst-form" style="display:none;margin-top:16px;padding:16px;background:var(--iv);border:1px solid var(--bd);border-radius:10px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:10px;">Zet me op de wachtlijst</div>
+        <p style="font-size:12px;color:var(--mu);margin-bottom:14px;">We mailen je zodra er een plek vrijkomt voor deze dienst.</p>
+        <div class="form-row"><label class="form-label">Naam</label><input class="form-input" id="wl-naam" type="text" placeholder="Jasmijn de Vries"></div>
+        <div class="form-row"><label class="form-label">E-mailadres</label><input class="form-input" id="wl-email" type="email" placeholder="naam@email.nl"></div>
+        <div id="wl-err" style="display:none;padding:8px 12px;border-left:3px solid var(--red);font-size:12px;margin:10px 0;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+        <button class="btn-next" id="wl-btn" onclick="verstuurWachtlijst()" style="margin-top:6px;">Zet me op de wachtlijst</button>
+      </div>
+
       <button class="btn-next" id="btn3" onclick="goStep(4)" disabled>Volgende →</button>
       <button class="btn-back" onclick="goStep(2)">← Terug</button>
     </div>
@@ -538,6 +551,7 @@ function pickDay(d){
   state.tijd=null;
   document.getElementById('sum-datum').textContent=state.datum;
   document.getElementById('btn3').disabled=true;
+  document.getElementById('btn-wachtlijst-open').style.display='block';
   renderCal();
   document.getElementById('time-slots-wrap').innerHTML=`
     <div class="time-section-label">Ochtend</div>
@@ -565,6 +579,51 @@ function prevMonth(){if(calMonth===0){calMonth=11;calYear--;}else calMonth--;ren
 function nextMonth(){if(calMonth===11){calMonth=0;calYear++;}else calMonth++;renderCal();}
 
 // ── BEVESTIGEN → SUPABASE ─────────────────────────────────────────────────────
+function toonWachtlijstForm(){
+  const form=document.getElementById('wachtlijst-form');
+  form.style.display=form.style.display==='none'?'block':'none';
+}
+
+async function verstuurWachtlijst(){
+  const naam=document.getElementById('wl-naam').value.trim();
+  const email=document.getElementById('wl-email').value.trim();
+  const errEl=document.getElementById('wl-err');
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  if(!naam||!emailRegex.test(email)){
+    errEl.textContent='Vul je naam en een geldig e-mailadres in.';
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+
+  const btn=document.getElementById('wl-btn');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{error}=await sb.from('wachtlijst').insert({
+    salon_id:SALON_ID,
+    klant_naam:naam,
+    klant_email:email,
+    dienst_id:state.dienst_id||null,
+    medewerker_id:state.med_id||null
+  });
+
+  btn.disabled=false;btn.textContent='Zet me op de wachtlijst';
+
+  if(error){
+    errEl.textContent='Er ging iets mis. Probeer het opnieuw.';
+    errEl.style.display='block';
+    return;
+  }
+
+  document.getElementById('wachtlijst-form').innerHTML=`
+    <div style="text-align:center;padding:8px 0;">
+      <div style="font-size:20px;margin-bottom:8px;">✓</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Je staat op de wachtlijst!</div>
+      <div style="font-size:12px;color:var(--mu);">We mailen je zodra er een plek vrijkomt.</div>
+    </div>`;
+}
+
 async function bevestigen(){
   const voor=document.getElementById('inp-voor').value.trim();
   const achter=document.getElementById('inp-achter').value.trim();
