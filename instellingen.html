@@ -254,6 +254,26 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
 
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+        <div class="fr">
+          <label class="fl" style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="s-stempel-actief" onchange="wisselStempelUI()" style="width:16px;height:16px;">
+            Stempelkaart-programma
+          </label>
+          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klanten sparen stempels bij afgeronde afspraken en krijgen een beloning zodra de kaart vol is. Stel per dienst in of die meetelt via Diensten.</div>
+        </div>
+        <div id="stempel-instellingen" style="display:none;margin-top:14px;">
+          <div class="fr">
+            <label class="fl">Aantal stempels voor een beloning</label>
+            <input class="fi" id="s-stempel-aantal" type="number" min="1" max="50" placeholder="5">
+          </div>
+          <div class="fr">
+            <label class="fl">Beloning</label>
+            <input class="fi" id="s-stempel-beloning" type="text" placeholder="bv. Gratis knippen">
+          </div>
+        </div>
+      </div>
+
       <button class="btn-sv" id="btn-profiel" onclick="slaProfielOp()">Profiel opslaan</button>
       <div class="msg" id="msg-profiel"></div>
     </div>
@@ -446,6 +466,10 @@ async function loadData(){
   document.getElementById('s-email').value = SESSION_USER.email || '';
   document.getElementById('s-slug').value = SALON.slug || '';
   document.getElementById('s-annuleer-cutoff').value = SALON.annuleer_cutoff_uren ?? 24;
+  document.getElementById('s-stempel-actief').checked = SALON.stempelkaart_actief || false;
+  document.getElementById('s-stempel-aantal').value = SALON.stempel_aantal_nodig ?? 5;
+  document.getElementById('s-stempel-beloning').value = SALON.stempel_beloning || '';
+  wisselStempelUI();
 
   if(SALON.plan==='business'){
     document.getElementById('slug-sectie-business').style.display='block';
@@ -666,12 +690,31 @@ async function verwerkStripeConnectReturn(){
 }
 
 // ── SALON PROFIEL ──
+function wisselStempelUI(){
+  document.getElementById('stempel-instellingen').style.display =
+    document.getElementById('s-stempel-actief').checked ? 'block' : 'none';
+}
+
 async function slaProfielOp(){
   const naam = document.getElementById('s-naam').value.trim();
   const type = document.getElementById('s-type').value;
   if(!naam){ showMsg('msg-profiel','Vul een salonnaam in.'); return; }
 
-  const payload = {naam, type_bedrijf:type, logo_url:LOGO_URL, annuleer_cutoff_uren:parseInt(document.getElementById('s-annuleer-cutoff').value)||0};
+  const stempelActief = document.getElementById('s-stempel-actief').checked;
+  const stempelAantal = parseInt(document.getElementById('s-stempel-aantal').value)||5;
+  const stempelBeloning = document.getElementById('s-stempel-beloning').value.trim();
+  if(stempelActief && !stempelBeloning){
+    showMsg('msg-profiel','Vul een beloning in voor de stempelkaart, of schakel het programma uit.');
+    return;
+  }
+
+  const payload = {
+    naam, type_bedrijf:type, logo_url:LOGO_URL,
+    annuleer_cutoff_uren:parseInt(document.getElementById('s-annuleer-cutoff').value)||0,
+    stempelkaart_actief:stempelActief,
+    stempel_aantal_nodig:stempelAantal,
+    stempel_beloning:stempelBeloning||null
+  };
 
   // Slug alleen opslaan/valideren als het Business-veld daadwerkelijk zichtbaar is
   if(SALON.plan==='business'){

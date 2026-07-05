@@ -299,6 +299,17 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="dr"><span class="dr-l">Notities</span><span class="dr-v" id="d-notitie" style="color:var(--mu);font-weight:300;">—</span></div>
     </div>
     <div id="d-block-status" style="display:none;padding:10px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:6px;margin-bottom:12px;font-size:12px;color:#c0392b;"></div>
+
+    <div id="d-stempel-sectie" style="display:none;margin-bottom:14px;padding:14px 16px;background:var(--wm);border-radius:8px;">
+      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;">Stempelkaart</div>
+      <div id="d-stempel-voortgang" style="font-size:14px;font-weight:600;margin-bottom:4px;">—</div>
+      <div id="d-stempel-vol-melding" style="display:none;margin-top:8px;padding:10px 12px;background:var(--gd);border-radius:6px;color:var(--iv);">
+        <div style="font-size:12px;">🎉 Heeft <span id="d-stempel-beloning-tekst"></span> tegoed</div>
+        <div style="font-family:monospace;font-size:18px;font-weight:700;letter-spacing:2px;margin-top:4px;" id="d-stempel-code"></div>
+        <button class="btn-sec" style="background:var(--iv);color:var(--gd2);margin-top:8px;width:100%;" onclick="wisselStempelInVoorKlant()">Inwisselen (klant heeft 't gehad)</button>
+      </div>
+    </div>
+
     <div class="btns-row">
       <button class="btn-sec" onclick="editK()">Bewerken</button>
       <button class="btn-prim" onclick="closeM('m-detail')">Afspraak plannen →</button>
@@ -448,7 +459,49 @@ function showK(id){
   document.getElementById('d-sv').textContent=s.favoriet||'—';
   document.getElementById('d-notitie').textContent=k.notities||'—';
   checkBlokkadeStatus(k);
+  toonStempelkaart(k);
   openM('m-detail');
+}
+
+let HUIDIGE_STEMPEL_CODE=null;
+
+async function toonStempelkaart(k){
+  const sectie=document.getElementById('d-stempel-sectie');
+  if(!SALON?.stempelkaart_actief || !k.email){
+    sectie.style.display='none';
+    return;
+  }
+  sectie.style.display='block';
+  document.getElementById('d-stempel-voortgang').textContent='Laden...';
+  document.getElementById('d-stempel-vol-melding').style.display='none';
+  HUIDIGE_STEMPEL_CODE=null;
+
+  const{data,error}=await sb.rpc('get_stempelkaart',{p_salon_id:SALON_ID,p_email:k.email});
+  const info=Array.isArray(data)?data[0]:data;
+  if(error||!info){
+    document.getElementById('d-stempel-voortgang').textContent='Kon niet geladen worden.';
+    return;
+  }
+
+  document.getElementById('d-stempel-voortgang').textContent=`${info.stempels_huidig} / ${info.stempels_nodig} stempels`;
+  if(info.vol && info.open_code){
+    HUIDIGE_STEMPEL_CODE=info.open_code;
+    document.getElementById('d-stempel-beloning-tekst').textContent=info.beloning||'een beloning';
+    document.getElementById('d-stempel-code').textContent=info.open_code;
+    document.getElementById('d-stempel-vol-melding').style.display='block';
+  }
+}
+
+async function wisselStempelInVoorKlant(){
+  if(!HUIDIGE_STEMPEL_CODE)return;
+  const{data,error}=await sb.rpc('wissel_stempel_code_in',{p_code:HUIDIGE_STEMPEL_CODE});
+  if(error||!data){
+    toast('Inwisselen mislukt. Probeer het opnieuw.');
+    return;
+  }
+  toast('Beloning ingewisseld.');
+  const k=KLANTEN.find(x=>x.id===currentDetailId);
+  if(k) toonStempelkaart(k);
 }
 
 let HUIDIGE_BLOKKADE=null; // bewaart het record-id als de huidige klant geblokkeerd is

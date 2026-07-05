@@ -291,6 +291,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="cr" id="cf-aanbetaling-row" style="display:none;"><span class="cr-label">Aanbetaling</span><span class="cr-val" id="cf-aanbetaling"></span></div>
       </div>
       <p style="font-size:13px;color:var(--mu);line-height:1.7;font-weight:300;">Wil je de afspraak wijzigen of annuleren? Dat kan tot 24 uur van tevoren via de link in je bevestigingsmail.</p>
+      <a id="cf-stempel-link" href="#" style="display:none;font-size:12px;color:var(--gd);text-decoration:none;font-weight:600;">✦ Bekijk je stempelkaart →</a>
       <button class="btn-next" id="btn-embed-close" style="display:none;margin-top:20px;" onclick="parent.postMessage('kronr:close','*')">Sluiten</button>
     </div>
   </div>
@@ -457,7 +458,7 @@ async function init(){
   }
 
   const[sRes,dRes,mRes]=await Promise.all([
-    sb.from('salons').select('naam,type_bedrijf,telefoon,adres,stad,stripe_connect_status').eq('id',SALON_ID).single(),
+    sb.from('salons').select('naam,type_bedrijf,telefoon,adres,stad,stripe_connect_status,stempelkaart_actief').eq('id',SALON_ID).single(),
     sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
   ]);
@@ -467,6 +468,7 @@ async function init(){
   if(salon){
     window.SALON_NAAM=salon.naam;
     window.SALON_STRIPE_ACTIEF=salon.stripe_connect_status==='actief';
+    window.SALON_STEMPEL_ACTIEF=!!salon.stempelkaart_actief;
     const init=salon.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     if(!IS_EMBED) document.getElementById('brand-init').textContent=init;
     document.getElementById('brand-name').textContent=salon.naam;
@@ -695,6 +697,16 @@ async function verstuurWachtlijst(){
     </div>`;
 }
 
+function zetStempelLink(email){
+  const el=document.getElementById('cf-stempel-link');
+  if(window.SALON_STEMPEL_ACTIEF && email){
+    el.href='stempelkaart.html?salon='+SALON_ID;
+    el.style.display='inline-block';
+  } else {
+    el.style.display='none';
+  }
+}
+
 async function verwerkAanbetalingReturn(){
   const resultaat=params.get('aanbetaling');
   const afspraakId=params.get('afspraak');
@@ -718,6 +730,7 @@ async function verwerkAanbetalingReturn(){
   document.getElementById('cf-datum').textContent=dt.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
   document.getElementById('cf-tijd').textContent=dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('cf-prijs').textContent='€'+(a.diensten?.prijs??'—');
+  zetStempelLink(a.klant_email);
 
   const titelEl=document.querySelector('#step5 .step-title');
   const subEl=document.querySelector('#step5 .step-sub');
@@ -897,6 +910,7 @@ async function bevestigen(){
   document.getElementById('cf-datum').textContent=state.datum;
   document.getElementById('cf-tijd').textContent=state.tijd;
   document.getElementById('cf-prijs').textContent='€'+state.prijs;
+  zetStempelLink(email);
   document.getElementById('progress-bar').style.display='none';
   if(IS_EMBED) document.getElementById('btn-embed-close').style.display='block';
   goStep(5);

@@ -230,6 +230,12 @@ select.fi{cursor:pointer;}
       </select>
       <input class="fi" id="d-aanb-bedrag" type="number" min="0" step="0.5" placeholder="bv. 25" style="margin-top:8px;display:none;">
     </div>
+    <div class="fr" id="d-stempel-wrap" style="display:none;">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="d-stempel" style="width:16px;height:16px;">
+        Telt mee voor de stempelkaart
+      </label>
+    </div>
     <button class="btsv" id="btn-dienst-opslaan" onclick="slaDienstOp()">Dienst opslaan</button>
   </div>
 </div>
@@ -237,8 +243,8 @@ select.fi{cursor:pointer;}
 <div class="mbg" id="m-aanbetaling" onclick="if(event.target===this)closeM('m-aanbetaling')">
   <div class="modal">
     <div class="mh"></div>
-    <div class="mt">Aanbetaling — <span id="ab-dienst-naam"></span></div>
-    <div class="msub">Stel in of klanten moeten aanbetalen bij het boeken van deze dienst.</div>
+    <div class="mt">Instellingen — <span id="ab-dienst-naam"></span></div>
+    <div class="msub">Aanbetaling en stempelkaart voor deze dienst.</div>
     <div id="ab-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
     <div class="fr">
       <label class="fl">Aanbetaling</label>
@@ -251,6 +257,12 @@ select.fi{cursor:pointer;}
     <div class="fr" id="ab-bedrag-wrap" style="display:none;">
       <label class="fl" id="ab-bedrag-label">Bedrag</label>
       <input class="fi" id="ab-bedrag" type="number" min="0" step="0.5">
+    </div>
+    <div class="fr" id="ab-stempel-wrap" style="display:none;">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="ab-stempel" style="width:16px;height:16px;">
+        Telt mee voor de stempelkaart
+      </label>
     </div>
     <button class="btsv" id="btn-aanbetaling-opslaan" onclick="slaAanbetalingOp()">Opslaan</button>
   </div>
@@ -354,6 +366,7 @@ async function loadData(){
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
   document.getElementById('d-aanbetaling-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
+  document.getElementById('d-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
   renderTabs();
   renderRows();
   laadPrijsAdviesVoorDiensten();
@@ -379,17 +392,22 @@ function renderRows(){
   }
 
   const magAanbetaling = SALON?.plan==='business' && SALON?.stripe_connect_status==='actief';
+  const magStempel = SALON?.stempelkaart_actief;
+  const magDienstInstellingen = magAanbetaling || magStempel;
 
   rows.innerHTML=filtered.map(d=>{
     const advies=PRIJSADVIES_SUGGESTIES?.find(s=>s.dienst && s.dienst.toLowerCase()===d.naam.toLowerCase());
     const aanbLabel = d.aanbetaling_type==='percentage' ? `${d.aanbetaling_bedrag}%` : d.aanbetaling_type==='vast' ? `€${d.aanbetaling_bedrag}` : 'Geen';
+    const labelDelen=[];
+    if(magAanbetaling) labelDelen.push('Aanbetaling: '+aanbLabel);
+    if(magStempel) labelDelen.push(d.telt_voor_stempel?'Telt voor stempelkaart':'Telt niet voor stempelkaart');
     return `
     <div class="dt-row" style="opacity:${d.actief?1:0.5}">
       <div>
         <div class="dt-naam">${d.naam}</div>
         ${d.beschrijving?`<div class="dt-desc">${d.beschrijving}</div>`:''}
         ${advies?`<div class="dt-advies"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${advies.tekst}</div>`:''}
-        ${magAanbetaling?`<div class="dt-advies" style="color:var(--mu);cursor:pointer;" onclick="openAanbetalingModal('${d.id}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>Aanbetaling: ${aanbLabel} (wijzigen)</div>`:''}
+        ${magDienstInstellingen?`<div class="dt-advies" style="color:var(--mu);cursor:pointer;" onclick="openAanbetalingModal('${d.id}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>${labelDelen.join(' · ')} (wijzigen)</div>`:''}
       </div>
       <div class="dt-prijs">€${d.prijs}</div>
       <div class="dt-duur">${d.duur_min?d.duur_min+' min':'—'}</div>
@@ -441,7 +459,8 @@ async function slaDienstOp(){
     salon_id:SALON_ID,naam,prijs,duur_min:duur,
     categorie:cat,beschrijving:omschr||null,actief:true,
     aanbetaling_type:aanbType,
-    aanbetaling_bedrag:aanbType?Number(aanbBedragRaw):null
+    aanbetaling_bedrag:aanbType?Number(aanbBedragRaw):null,
+    telt_voor_stempel:document.getElementById('d-stempel').checked
   });
 
   btn.disabled=false;btn.textContent='Dienst opslaan';
@@ -449,6 +468,7 @@ async function slaDienstOp(){
   if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
 
   ['d-naam','d-prijs','d-duur','d-omschr','d-aanb-bedrag'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('d-stempel').checked=false;
   document.getElementById('d-aanb-type').value='';
   closeM('m-new');
   await loadData();
@@ -475,6 +495,8 @@ function openAanbetalingModal(id){
   document.getElementById('ab-dienst-naam').textContent=d.naam;
   document.getElementById('ab-type').value=d.aanbetaling_type||'';
   document.getElementById('ab-bedrag').value=d.aanbetaling_bedrag||'';
+  document.getElementById('ab-stempel').checked=d.telt_voor_stempel||false;
+  document.getElementById('ab-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
   document.getElementById('ab-err').style.display='none';
   wisselAanbTypeUI('ab-');
   openM('m-aanbetaling');
@@ -484,6 +506,7 @@ async function slaAanbetalingOp(){
   if(!huidigAanbetalingDienstId)return;
   const type=document.getElementById('ab-type').value||null;
   const bedragRaw=document.getElementById('ab-bedrag').value;
+  const telStempel=document.getElementById('ab-stempel').checked;
   const errEl=document.getElementById('ab-err');
 
   if(type==='percentage' && (bedragRaw==='' || Number(bedragRaw)<0 || Number(bedragRaw)>100)){
@@ -499,7 +522,8 @@ async function slaAanbetalingOp(){
 
   const{error}=await sb.from('diensten').update({
     aanbetaling_type:type,
-    aanbetaling_bedrag:type?Number(bedragRaw):null
+    aanbetaling_bedrag:type?Number(bedragRaw):null,
+    telt_voor_stempel:telStempel
   }).eq('id',huidigAanbetalingDienstId);
 
   btn.disabled=false;btn.textContent='Opslaan';
