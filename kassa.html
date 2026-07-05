@@ -128,6 +128,17 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* ── MODALS ── */
 .mbg{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.7);z-index:60;align-items:center;justify-content:center;}
 .mbg.on{display:flex;}
+.modal{background:var(--wh);width:100%;max-width:420px;padding:24px 20px 32px;border-top:2px solid var(--gd);border-radius:4px;margin:20px;}
+.mt{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:6px;}
+.msub{font-size:12px;color:var(--mu);margin-bottom:16px;line-height:1.5;}
+.fi{width:100%;padding:11px 12px;border:1px solid var(--bd);background:var(--wh);font-size:13px;font-family:'Inter',sans-serif;margin-bottom:10px;}
+.btsv{width:100%;padding:12px;background:var(--ink);color:var(--iv);border:none;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+.cb-bedrag-opties{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
+.cb-bedrag-btn{padding:12px 4px;text-align:center;border:1px solid var(--bd);cursor:pointer;font-size:13px;font-weight:600;background:var(--wh);}
+.cb-bedrag-btn.on{background:var(--ink);color:var(--iv);border-color:var(--ink);}
+.cb-err{color:var(--red);font-size:12px;margin-top:6px;display:none;}
+.cb-saldo-box{background:var(--wm);border-radius:6px;padding:14px;text-align:center;margin:12px 0;display:none;}
+.cb-saldo-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--gd);}
 .modal-success{background:var(--wh);width:100%;max-width:380px;padding:40px 32px;text-align:center;border-top:3px solid var(--gd);}
 .success-icon{width:56px;height:56px;background:rgba(45,106,79,0.1);border:1px solid rgba(45,106,79,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:var(--green);}
 .success-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:6px;}
@@ -243,6 +254,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         <div class="ext" onclick="add('Product',15,'product')">Product<strong>€15</strong></div>
         <div class="ext" onclick="add('Product',25,'product')">Product<strong>€25</strong></div>
       </div>
+      <div class="ext" style="margin-top:6px;" onclick="openM('m-cb-verkopen')">🎁 Cadeaubon verkopen</div>
     </div>
 
     <!-- Bon panel -->
@@ -265,7 +277,11 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
           <button class="pm on" onclick="setPM('pin',this)">Pin</button>
           <button class="pm" onclick="setPM('cash',this)">Contant</button>
           <button class="pm" onclick="setPM('ideal',this)">iDEAL</button>
-          <button class="pm" onclick="setPM('gift',this)">Bon</button>
+          <button class="pm" onclick="openM('m-cb-inwisselen')">Cadeaubon</button>
+        </div>
+        <div id="cb-actief-balk" style="display:none;margin-top:10px;padding:10px 12px;background:var(--wm);border-radius:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+          <span id="cb-actief-tekst"></span>
+          <span onclick="verwijderCadeaubon()" style="cursor:pointer;color:var(--mu);font-weight:700;">×</span>
         </div>
       </div>
       <div class="bon-actions">
@@ -287,6 +303,42 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="success-sub" id="suc-sub">Pin · €0</div>
     <div class="receipt" id="suc-receipt"></div>
     <button class="btn-new" onclick="newBon()">Nieuwe bon</button>
+  </div>
+</div>
+
+<!-- Cadeaubon verkopen -->
+<div class="mbg" id="m-cb-verkopen" onclick="if(event.target===this)closeM('m-cb-verkopen')">
+  <div class="modal">
+    <div class="mt">Cadeaubon verkopen</div>
+    <div class="msub">Kies een bedrag, of vul zelf een bedrag in. De cadeaubon wordt aangemaakt zodra de bon is afgerekend.</div>
+    <div class="cb-bedrag-opties">
+      <div class="cb-bedrag-btn" onclick="kiesCbBedrag(25,this)">€25</div>
+      <div class="cb-bedrag-btn" onclick="kiesCbBedrag(50,this)">€50</div>
+      <div class="cb-bedrag-btn" onclick="kiesCbBedrag(75,this)">€75</div>
+      <div class="cb-bedrag-btn" onclick="kiesCbBedrag(100,this)">€100</div>
+    </div>
+    <input class="fi" id="cb-bedrag-eigen" type="number" min="1" step="1" placeholder="Ander bedrag (€)">
+    <input class="fi" id="cb-koper-naam" type="text" placeholder="Naam koper (optioneel)">
+    <input class="fi" id="cb-koper-email" type="email" placeholder="E-mail koper (optioneel)">
+    <div class="cb-err" id="cb-verkoop-err"></div>
+    <button class="btsv" onclick="voegCadeaubonToeAanBon()">Toevoegen aan bon</button>
+  </div>
+</div>
+
+<!-- Cadeaubon inwisselen -->
+<div class="mbg" id="m-cb-inwisselen" onclick="if(event.target===this)closeM('m-cb-inwisselen')">
+  <div class="modal">
+    <div class="mt">Cadeaubon inwisselen</div>
+    <div class="msub">Vul de code van de cadeaubon in.</div>
+    <input class="fi" id="cb-code-input" type="text" placeholder="bv. A1B2C3D4" style="text-transform:uppercase;">
+    <div class="cb-err" id="cb-inwisselen-err"></div>
+    <div class="cb-saldo-box" id="cb-saldo-box">
+      <div style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;">Saldo</div>
+      <div class="cb-saldo-val" id="cb-saldo-val">€0</div>
+      <div id="cb-saldo-tekst" style="font-size:12px;color:var(--mu);margin-top:6px;"></div>
+    </div>
+    <button class="btsv" id="btn-cb-check" onclick="checkCadeaubon()">Controleren</button>
+    <button class="btsv" id="btn-cb-toepassen" style="display:none;background:var(--gd);" onclick="pasCadeaubonToe()">Toepassen</button>
   </div>
 </div>
 
@@ -369,6 +421,9 @@ function medewerkerInit(id){
   return naam?naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase():'?';
 }
 
+let cadeaubonActief=null; // {id, code, saldo, bedrag_te_gebruiken}
+let cbBedragGekozen=0;
+
 function add(naam,prijs,type){
   if(!huidigeMedewerkerId){
     document.getElementById('med-warn').style.display='block';
@@ -393,7 +448,7 @@ function renderBon(){
     <div class="bon-item">
       <div class="bon-qty" onclick="addQty(${idx})">${i.qty}×</div>
       <div class="bon-med-tag${i.medewerker_id?'':' geen'}" title="${i.medewerker_naam||'Geen medewerker'}">${i.medewerker_id?medewerkerInit(i.medewerker_id):'?'}</div>
-      <div class="bon-name">${i.naam}</div>
+      <div class="bon-name">${i.naam}${i.type==='cadeaubon_verkoop'?' <span style="color:var(--gd);font-size:10px;">(cadeaubon)</span>':''}</div>
       <div class="bon-price">€${i.total}</div>
       <div class="bon-del" onclick="del(${idx})">×</div>
     </div>`).join('');
@@ -404,31 +459,164 @@ function renderBon(){
 
 function del(i){bon.splice(i,1);renderBon();}
 function addQty(i){bon[i].qty++;bon[i].total+=bon[i].prijs;renderBon();}
-function clearBon(){bon=[];renderBon();}
+function clearBon(){bon=[];verwijderCadeaubon();renderBon();}
+
+function berekenTotalen(){
+  // Cadeaubon-VERKOOP is niet BTW-plichtig bij verkoop (dat gebeurt pas bij
+  // inwisselen voor een dienst/product) -- daarom apart van de rest houden.
+  const btwPlichtig=bon.filter(i=>i.type!=='cadeaubon_verkoop').reduce((s,i)=>s+i.total,0);
+  const cbVerkoop=bon.filter(i=>i.type==='cadeaubon_verkoop').reduce((s,i)=>s+i.total,0);
+  const btw=Math.round(btwPlichtig*0.21*100)/100;
+  const totaal=parseFloat((btwPlichtig+btw+cbVerkoop).toFixed(2));
+  const cbGebruikt=cadeaubonActief?Math.min(cadeaubonActief.saldo,totaal):0;
+  const teBetalen=parseFloat((totaal-cbGebruikt).toFixed(2));
+  return{sub:btwPlichtig+cbVerkoop, btw, totaal, cbGebruikt, teBetalen};
+}
 
 function updateTot(){
-  const sub=bon.reduce((s,i)=>s+i.total,0);
-  const btw=Math.round(sub*0.21*100)/100;
-  document.getElementById('sub').textContent='€'+sub;
-  document.getElementById('btw').textContent='€'+btw.toFixed(2);
-  document.getElementById('tot').textContent='€'+(sub+btw).toFixed(2);
+  const t=berekenTotalen();
+  document.getElementById('sub').textContent='€'+t.sub.toFixed(2);
+  document.getElementById('btw').textContent='€'+t.btw.toFixed(2);
+  document.getElementById('tot').textContent='€'+t.totaal.toFixed(2);
+
+  const balk=document.getElementById('cb-actief-balk');
+  if(cadeaubonActief){
+    balk.style.display='flex';
+    document.getElementById('cb-actief-tekst').textContent=
+      `Cadeaubon ${cadeaubonActief.code}: €${t.cbGebruikt.toFixed(2)} gebruikt`+
+      (t.teBetalen>0?` — nog €${t.teBetalen.toFixed(2)} te betalen`:' — volledig gedekt');
+  } else {
+    balk.style.display='none';
+  }
 }
 
 function setPM(m,btn){pm=m;document.querySelectorAll('.pm').forEach(b=>b.classList.remove('on'));btn.classList.add('on');}
 
+// ── CADEAUBON VERKOPEN ──
+function kiesCbBedrag(bedrag,el){
+  cbBedragGekozen=bedrag;
+  document.querySelectorAll('.cb-bedrag-btn').forEach(b=>b.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('cb-bedrag-eigen').value='';
+}
+
+function voegCadeaubonToeAanBon(){
+  const eigenBedrag=parseFloat(document.getElementById('cb-bedrag-eigen').value);
+  const bedrag=eigenBedrag>0?eigenBedrag:cbBedragGekozen;
+  const errEl=document.getElementById('cb-verkoop-err');
+
+  if(!bedrag||bedrag<=0){
+    errEl.textContent='Kies of vul een geldig bedrag in.';errEl.style.display='block';return;
+  }
+  if(!huidigeMedewerkerId){
+    errEl.textContent='Kies eerst een medewerker (linksboven).';errEl.style.display='block';return;
+  }
+  errEl.style.display='none';
+
+  bon.push({
+    naam:'Cadeaubon',prijs:bedrag,qty:1,total:bedrag,type:'cadeaubon_verkoop',
+    medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId),
+    cb_koper_naam:document.getElementById('cb-koper-naam').value.trim()||null,
+    cb_koper_email:document.getElementById('cb-koper-email').value.trim()||null
+  });
+  renderBon();
+
+  document.getElementById('cb-bedrag-eigen').value='';
+  document.getElementById('cb-koper-naam').value='';
+  document.getElementById('cb-koper-email').value='';
+  document.querySelectorAll('.cb-bedrag-btn').forEach(b=>b.classList.remove('on'));
+  cbBedragGekozen=0;
+  closeM('m-cb-verkopen');
+}
+
+// ── CADEAUBON INWISSELEN ──
+let cbCheckResultaat=null;
+
+async function checkCadeaubon(){
+  const code=document.getElementById('cb-code-input').value.trim().toUpperCase();
+  const errEl=document.getElementById('cb-inwisselen-err');
+  const saldoBox=document.getElementById('cb-saldo-box');
+  errEl.style.display='none';
+  saldoBox.style.display='none';
+  document.getElementById('btn-cb-toepassen').style.display='none';
+  cbCheckResultaat=null;
+
+  if(!code){errEl.textContent='Vul een code in.';errEl.style.display='block';return;}
+
+  const btn=document.getElementById('btn-cb-check');
+  btn.disabled=true;btn.textContent='Controleren...';
+
+  const{data,error}=await sb.from('cadeaubonnen').select('id,code,resterend_bedrag,status').eq('salon_id',SALON_ID).eq('code',code).maybeSingle();
+
+  btn.disabled=false;btn.textContent='Controleren';
+
+  if(error||!data){
+    errEl.textContent='Deze code is niet gevonden.';errEl.style.display='block';return;
+  }
+  if(data.status!=='actief'||data.resterend_bedrag<=0){
+    errEl.textContent='Deze cadeaubon is al volledig gebruikt.';errEl.style.display='block';return;
+  }
+
+  cbCheckResultaat=data;
+  document.getElementById('cb-saldo-val').textContent='€'+Number(data.resterend_bedrag).toFixed(2);
+  const t=berekenTotalen();
+  const gebruikt=Math.min(Number(data.resterend_bedrag),t.totaal);
+  document.getElementById('cb-saldo-tekst').textContent=
+    gebruikt>=t.totaal?'Dit dekt de hele bon.':`Dit dekt €${gebruikt.toFixed(2)} van de bon; de rest moet via een andere betaalmethode.`;
+  saldoBox.style.display='block';
+  document.getElementById('btn-cb-toepassen').style.display='block';
+}
+
+function pasCadeaubonToe(){
+  if(!cbCheckResultaat)return;
+  const t=berekenTotalen();
+  cadeaubonActief={
+    id:cbCheckResultaat.id,
+    code:cbCheckResultaat.code,
+    saldo:Number(cbCheckResultaat.resterend_bedrag),
+    bedrag_te_gebruiken:Math.min(Number(cbCheckResultaat.resterend_bedrag),t.totaal)
+  };
+  document.getElementById('cb-code-input').value='';
+  cbCheckResultaat=null;
+  closeM('m-cb-inwisselen');
+  updateTot();
+}
+
+function verwijderCadeaubon(){
+  cadeaubonActief=null;
+  updateTot();
+}
+
+function openM(id){ document.getElementById(id).classList.add('on'); }
+function closeM(id){ document.getElementById(id).classList.remove('on'); }
+
+function genereerCbCode(){
+  const chars='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; // zonder verwarrende tekens (0/O, 1/I)
+  let code='';
+  for(let i=0;i<8;i++) code+=chars[Math.floor(Math.random()*chars.length)];
+  return code;
+}
+
 async function betaal(){
   if(!bon.length)return;
-  const sub=bon.reduce((s,i)=>s+i.total,0);
-  const btw=Math.round(sub*0.21*100)/100;
-  const total=parseFloat((sub+btw).toFixed(2));
-  const pml={pin:'Pin',cash:'Contant',ideal:'iDEAL',gift:'Cadeaubon'};
+  const t=berekenTotalen();
+  const pml={pin:'Pin',cash:'Contant',ideal:'iDEAL'};
+  const methodeLabel=cadeaubonActief
+    ? (t.teBetalen>0 ? `Cadeaubon + ${pml[pm]||pm}` : 'Cadeaubon')
+    : (pml[pm]||pm);
+  const methodeOpslaan=cadeaubonActief && t.teBetalen<=0 ? 'cadeaubon' : pm;
 
   const btn=document.getElementById('btn-pay');
   btn.disabled=true;btn.textContent='Verwerken...';
 
   const {data:betaling,error:betErr}=await sb.from('betalingen').insert({
-    salon_id:SALON_ID,bedrag:total,methode:pm,status:'betaald',afspraak_id:huidigeAfspraakId||null
+    salon_id:SALON_ID,bedrag:t.totaal,methode:methodeOpslaan,status:'betaald',
+    afspraak_id:huidigeAfspraakId||null,
+    cadeaubon_code:cadeaubonActief?cadeaubonActief.code:null,
+    cadeaubon_bedrag_gebruikt:cadeaubonActief?t.cbGebruikt:null
   }).select().single();
+
+  const nieuweCadeaubonCodes=[];
 
   if(!betErr && betaling){
     const items=bon.map(i=>({
@@ -448,23 +636,57 @@ async function betaal(){
       const{error:aptErr}=await sb.from('afspraken').update({status:'afgerond'}).eq('id',huidigeAfspraakId);
       if(aptErr) console.warn('Kon afspraak niet op afgerond zetten:',aptErr);
     }
+
+    // Nieuwe cadeaubon(nen) aanmaken -- pas NA succesvolle betaling, zodat
+    // er nooit een onbetaalde cadeaubon actief kan worden.
+    const cbVerkopen=bon.filter(i=>i.type==='cadeaubon_verkoop');
+    for(const cb of cbVerkopen){
+      const code=genereerCbCode();
+      const{error:cbErr}=await sb.from('cadeaubonnen').insert({
+        salon_id:SALON_ID,code,bedrag_origineel:cb.total,resterend_bedrag:cb.total,
+        gekocht_door_naam:cb.cb_koper_naam||null,gekocht_door_email:cb.cb_koper_email||null
+      });
+      if(!cbErr) nieuweCadeaubonCodes.push({code,bedrag:cb.total});
+      else console.warn('Kon cadeaubon niet aanmaken:',cbErr);
+    }
+
+    // Gebruikte cadeaubon (inwisselen) afschrijven
+    if(cadeaubonActief){
+      const nieuwSaldo=Math.max(0,cadeaubonActief.saldo-t.cbGebruikt);
+      const{error:cbUpdateErr}=await sb.from('cadeaubonnen').update({
+        resterend_bedrag:nieuwSaldo,
+        status:nieuwSaldo<=0?'ingewisseld':'actief'
+      }).eq('id',cadeaubonActief.id);
+      if(cbUpdateErr) console.warn('Kon cadeaubon-saldo niet bijwerken:',cbUpdateErr);
+    }
   } else if(betErr){
     console.warn('Kon betaling niet opslaan:',betErr);
   }
 
   btn.disabled=false;btn.textContent='Afrekenen';
 
-  document.getElementById('suc-sub').textContent=pml[pm]+' · €'+total;
-  document.getElementById('suc-receipt').innerHTML=
-    bon.map(i=>`<div class="rrow"><span>${i.naam}</span><span>€${i.total}</span></div>`).join('')+
-    `<div class="rrow"><span>BTW 21%</span><span>€${btw.toFixed(2)}</span></div>`+
-    `<div class="rrow"><span>Totaal</span><span style="color:var(--gd)">€${total}</span></div>`;
+  document.getElementById('suc-sub').textContent=methodeLabel+' · €'+t.totaal.toFixed(2);
+  let receiptHtml=bon.map(i=>`<div class="rrow"><span>${i.naam}</span><span>€${i.total}</span></div>`).join('')+
+    `<div class="rrow"><span>BTW 21%</span><span>€${t.btw.toFixed(2)}</span></div>`;
+  if(cadeaubonActief){
+    receiptHtml+=`<div class="rrow"><span>Betaald met cadeaubon ${cadeaubonActief.code}</span><span>-€${t.cbGebruikt.toFixed(2)}</span></div>`;
+  }
+  receiptHtml+=`<div class="rrow"><span>Totaal</span><span style="color:var(--gd)">€${t.totaal.toFixed(2)}</span></div>`;
+  if(nieuweCadeaubonCodes.length){
+    receiptHtml+=nieuweCadeaubonCodes.map(c=>
+      `<div class="rrow" style="background:var(--wm);margin-top:8px;padding:10px;border-radius:6px;flex-direction:column;align-items:flex-start;">
+        <span style="font-size:11px;color:var(--mu);text-transform:uppercase;">Nieuwe cadeaubon (€${c.bedrag})</span>
+        <span style="font-family:monospace;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--gd2);">${c.code}</span>
+      </div>`
+    ).join('');
+  }
+  document.getElementById('suc-receipt').innerHTML=receiptHtml;
   document.getElementById('m-success').classList.add('on');
   document.body.style.overflow='hidden';
 }
 
 function newBon(){
-  bon=[];renderBon();
+  bon=[];cadeaubonActief=null;renderBon();
   ontkoppelAfspraak();
   document.getElementById('m-success').classList.remove('on');
   document.body.style.overflow='';
