@@ -240,6 +240,20 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         ✨ Nog geen eigen website? Met het <strong>Business</strong>-pakket krijg je een kant-en-klare Kronr-pagina met je eigen link, zonder dat je zelf iets hoeft te bouwen. <a href="instellingen.html#abonnement" style="color:var(--gd);font-weight:600;">Bekijk pakketten →</a>
       </div>
 
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+        <div class="fr">
+          <label class="fl">Annuleren toestaan tot</label>
+          <select class="fi" id="s-annuleer-cutoff">
+            <option value="0">Altijd (geen minimumtermijn)</option>
+            <option value="2">2 uur van tevoren</option>
+            <option value="12">12 uur van tevoren</option>
+            <option value="24">24 uur van tevoren</option>
+            <option value="48">48 uur van tevoren</option>
+          </select>
+          <div style="font-size:11px;color:var(--mu);margin-top:6px;">Klanten kunnen via de annuleerlink in hun bevestigingsmail niet meer annuleren binnen deze termijn -- ze zien dan een verzoek om rechtstreeks contact met je op te nemen.</div>
+        </div>
+      </div>
+
       <button class="btn-sv" id="btn-profiel" onclick="slaProfielOp()">Profiel opslaan</button>
       <div class="msg" id="msg-profiel"></div>
     </div>
@@ -431,6 +445,7 @@ async function loadData(){
   document.getElementById('s-type').value = SALON.type_bedrijf || 'Kapper';
   document.getElementById('s-email').value = SESSION_USER.email || '';
   document.getElementById('s-slug').value = SALON.slug || '';
+  document.getElementById('s-annuleer-cutoff').value = SALON.annuleer_cutoff_uren ?? 24;
 
   if(SALON.plan==='business'){
     document.getElementById('slug-sectie-business').style.display='block';
@@ -656,7 +671,7 @@ async function slaProfielOp(){
   const type = document.getElementById('s-type').value;
   if(!naam){ showMsg('msg-profiel','Vul een salonnaam in.'); return; }
 
-  const payload = {naam, type_bedrijf:type, logo_url:LOGO_URL};
+  const payload = {naam, type_bedrijf:type, logo_url:LOGO_URL, annuleer_cutoff_uren:parseInt(document.getElementById('s-annuleer-cutoff').value)||0};
 
   // Slug alleen opslaan/valideren als het Business-veld daadwerkelijk zichtbaar is
   if(SALON.plan==='business'){
