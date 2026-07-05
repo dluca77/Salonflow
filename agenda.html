@@ -550,6 +550,14 @@ function expandHerhaling(apts){
 }
 
 // ── RENDER ───────────────────────────────────────────────────────────────────
+function scrollNaarHuidigeTijd(){
+  const nu=new Date();
+  let uur=nu.getHours()+nu.getMinutes()/60;
+  if(uur<SH||uur>EH) uur=9; // buiten openingstijden: nuttige standaardwaarde
+  const targetTop=Math.max(0,(uur-SH)*4*RH-RH*2); // met wat ruimte erboven, niet exact bovenaan
+  document.getElementById('cal').scrollTop=targetTop;
+}
+
 function render(){
   if(view==='month'){renderMaand();return;}
   if(view==='medewerker'){renderMedewerker();return;}
@@ -592,7 +600,7 @@ function renderGrid(){
     dc.appendChild(col);
   });
 
-  document.getElementById('cal').scrollTop=((9-SH)*4)*RH;
+  scrollNaarHuidigeTijd();
 }
 
 function buildDayCol(d,slots,today,now,di){
@@ -623,8 +631,9 @@ function buildDayCol(d,slots,today,now,di){
     col.appendChild(nl);
   }
 
-  // Afspraken
-  getApts(d).forEach((a,i)=>{col.appendChild(buildAptCard(a,i));});
+  // Afspraken -- geannuleerde afspraken worden niet meer getoond in het rooster,
+  // dat gaf verwarrende overlap met eventuele nieuwe afspraak op dezelfde plek
+  getApts(d).filter(a=>a.status!=='geannuleerd').forEach((a,i)=>{col.appendChild(buildAptCard(a,i));});
   return col;
 }
 
@@ -817,7 +826,7 @@ function renderMedewerker(){
     dc.appendChild(col);
   });
 
-  document.getElementById('cal').scrollTop=((9-SH)*4)*RH;
+  scrollNaarHuidigeTijd();
 }
 
 // ── DRAG & DROP ──────────────────────────────────────────────────────────────

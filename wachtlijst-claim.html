@@ -112,6 +112,21 @@ async function bevestigClaim(){
     return;
   }
 
+  // Bevestigingsmail versturen -- dit was eerst alleen beloofd in de tekst,
+  // maar werd nooit daadwerkelijk verstuurd. Nu gebeurt het echt.
+  fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      email:data.klant_email,
+      klant_naam:data.klant_naam,
+      salon_naam:data.salon_naam,
+      dienst_naam:data.dienst_naam,
+      datum_tijd:data.datum_tijd,
+      annuleer_token:data.annuleer_token
+    })
+  }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
+
   card.innerHTML=`
     <div class="state-icon">✓</div>
     <div class="card-title" style="text-align:center;">Afspraak bevestigd!</div>
