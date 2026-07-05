@@ -444,11 +444,11 @@ async function loadData(){
     boeEl.innerHTML=boekingen.map(a=>{
       const dt=new Date(a.datum_tijd);
       return`<div class="apt-row">
-        <div class="apt-time">\${ft(dt.getHours(),dt.getMinutes())}</div>
+        <div class="apt-time">${ft(dt.getHours(),dt.getMinutes())}</div>
         <div class="apt-bar" style="background:#e07020;"></div>
         <div class="apt-info">
-          <div class="apt-naam">\${a.klant_naam||'Onbekend'}</div>
-          <div class="apt-svc">\${a.diensten?.naam||''} · \${dt.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</div>
+          <div class="apt-naam">${a.klant_naam||'Onbekend'}</div>
+          <div class="apt-svc">${a.diensten?.naam||''} · ${dt.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</div>
         </div>
         <div style="font-size:10px;padding:3px 8px;background:#fff3e0;color:#e07020;border-radius:99px;font-weight:600;">Nieuw</div>
       </div>`;
