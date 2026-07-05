@@ -274,6 +274,23 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
 
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+        <div class="fr">
+          <label class="fl" style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="s-review-actief" onchange="wisselReviewUI()" style="width:16px;height:16px;">
+            Automatisch om een review vragen
+          </label>
+          <div style="font-size:11px;color:var(--mu);margin-top:4px;">1 dag na een afgeronde afspraak krijgt de klant automatisch een mailtje met het verzoek om een Google-review te schrijven. Dezelfde klant wordt daarna minimaal 90 dagen niet opnieuw gevraagd.</div>
+        </div>
+        <div id="review-instellingen" style="display:none;margin-top:14px;">
+          <div class="fr">
+            <label class="fl">Jouw Google-reviewlink</label>
+            <input class="fi" id="s-review-link" type="url" placeholder="https://g.page/r/....../review">
+            <div style="font-size:11px;color:var(--mu);margin-top:6px;">Te vinden via Google Business Profiel → 'Reviews aanvragen' → link kopiëren.</div>
+          </div>
+        </div>
+      </div>
+
       <button class="btn-sv" id="btn-profiel" onclick="slaProfielOp()">Profiel opslaan</button>
       <div class="msg" id="msg-profiel"></div>
     </div>
@@ -470,6 +487,9 @@ async function loadData(){
   document.getElementById('s-stempel-aantal').value = SALON.stempel_aantal_nodig ?? 5;
   document.getElementById('s-stempel-beloning').value = SALON.stempel_beloning || '';
   wisselStempelUI();
+  document.getElementById('s-review-actief').checked = SALON.review_verzoek_actief || false;
+  document.getElementById('s-review-link').value = SALON.google_review_link || '';
+  wisselReviewUI();
 
   if(SALON.plan==='business'){
     document.getElementById('slug-sectie-business').style.display='block';
@@ -695,6 +715,11 @@ function wisselStempelUI(){
     document.getElementById('s-stempel-actief').checked ? 'block' : 'none';
 }
 
+function wisselReviewUI(){
+  document.getElementById('review-instellingen').style.display =
+    document.getElementById('s-review-actief').checked ? 'block' : 'none';
+}
+
 async function slaProfielOp(){
   const naam = document.getElementById('s-naam').value.trim();
   const type = document.getElementById('s-type').value;
@@ -708,12 +733,21 @@ async function slaProfielOp(){
     return;
   }
 
+  const reviewActief = document.getElementById('s-review-actief').checked;
+  const reviewLink = document.getElementById('s-review-link').value.trim();
+  if(reviewActief && !reviewLink){
+    showMsg('msg-profiel','Vul je Google-reviewlink in, of schakel review-verzoeken uit.');
+    return;
+  }
+
   const payload = {
     naam, type_bedrijf:type, logo_url:LOGO_URL,
     annuleer_cutoff_uren:parseInt(document.getElementById('s-annuleer-cutoff').value)||0,
     stempelkaart_actief:stempelActief,
     stempel_aantal_nodig:stempelAantal,
-    stempel_beloning:stempelBeloning||null
+    stempel_beloning:stempelBeloning||null,
+    review_verzoek_actief:reviewActief,
+    google_review_link:reviewLink||null
   };
 
   // Slug alleen opslaan/valideren als het Business-veld daadwerkelijk zichtbaar is
