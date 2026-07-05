@@ -255,7 +255,7 @@ async function loadData(){
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
 
   const[betRes,aptRes,medRes,viRes]=await Promise.all([
-    sb.from('betalingen').select('bedrag,methode,datum').eq('salon_id',SALON_ID).gte('datum',start.toISOString()).lte('datum',end.toISOString()),
+    sb.from('betalingen').select('bedrag,methode,datum,afspraak_id').eq('salon_id',SALON_ID).gte('datum',start.toISOString()).lte('datum',end.toISOString()),
     sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',start.toISOString()).lte('datum_tijd',end.toISOString()),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
     sb.from('verkoop_items').select('medewerker_id,type,totaal,aantal,created_at').eq('salon_id',SALON_ID).gte('created_at',start.toISOString()).lte('created_at',end.toISOString())
@@ -288,8 +288,11 @@ async function loadData(){
     return{...m,apts:mApts.length,omzet:mOmzet};
   }).sort((a,b)=>b.omzet-a.omzet);
 
-  // Commissie -- alleen afgeronde afspraken tellen mee (geen 'gepland'/'no-show'/etc.)
-  const afsprakenAfgerond=afspraken.filter(a=>a.status==='afgerond').map(a=>({medewerker_id:a.medewerker_id,prijs:a.diensten?.prijs||0}));
+  // Commissie -- alleen afgeronde afspraken tellen mee (geen 'gepland'/'no-show'/etc.),
+  // en niet als ze al via de kassa zijn afgerekend (die omzet komt dan al
+  // binnen via verkoop_items -- anders telt het dubbel).
+  const gekoppeldeAfspraakIds=new Set(betalingen.filter(b=>b.afspraak_id).map(b=>b.afspraak_id));
+  const afsprakenAfgerond=afspraken.filter(a=>a.status==='afgerond' && !gekoppeldeAfspraakIds.has(a.id)).map(a=>({medewerker_id:a.medewerker_id,prijs:a.diensten?.prijs||0}));
   const commData=berekenCommissieData(medewerkers, verkoopItems, afsprakenAfgerond, SALON?.commissie_basis_default||'totaal');
   COMMISSIE_ROWS=medewerkers.map(m=>({
     naam:m.naam,

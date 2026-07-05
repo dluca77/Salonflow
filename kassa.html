@@ -57,6 +57,9 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .med-select{width:100%;padding:11px 12px;border:1px solid var(--bd);background:var(--wh);font-size:13px;font-family:'Inter',sans-serif;color:var(--ink);cursor:pointer;}
 .med-select:invalid{color:var(--mu2);}
 .med-warn{font-size:11px;color:var(--red);margin-top:6px;display:none;}
+.apt-banner{background:var(--wm);border:1px solid var(--gd);border-radius:6px;padding:10px 12px;margin-bottom:16px;font-size:12px;display:none;}
+.apt-banner strong{color:var(--gd2);}
+.apt-banner-close{float:right;cursor:pointer;color:var(--mu);font-size:14px;}
 .bon-med-tag{font-size:9px;font-weight:700;color:var(--gd);background:var(--wm);border-radius:99px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
 .bon-med-tag.geen{color:var(--mu2);background:var(--iv);}
 
@@ -218,6 +221,10 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
     <!-- Diensten panel -->
     <div class="diensten-panel">
+      <div class="apt-banner" id="apt-banner">
+        <span class="apt-banner-close" onclick="ontkoppelAfspraak()" title="Loskoppelen">×</span>
+        Afrekenen voor <strong id="apt-banner-naam"></strong>
+      </div>
       <div class="med-select-wrap">
         <div class="panel-label">Medewerker</div>
         <select class="med-select" id="med-select" onchange="setMedewerker()">
@@ -284,7 +291,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 </div>
 
 <script>
-let bon=[], pm='pin', allDiensten=[], allMedewerkers=[], huidigeMedewerkerId='';
+let bon=[], pm='pin', allDiensten=[], allMedewerkers=[], huidigeMedewerkerId='', huidigeAfspraakId=null;
 
 async function loadData(){
   const [dR,mR]=await Promise.all([
@@ -305,14 +312,47 @@ async function loadData(){
   const grid=document.getElementById('svc-grid');
   if(!allDiensten.length){
     grid.innerHTML=`<div class="svc-loading">Nog geen diensten.<br><a href="diensten.html" style="color:var(--gd);text-decoration:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Diensten toevoegen →</a></div>`;
+  } else {
+    grid.innerHTML=allDiensten.map(d=>`
+      <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs},'dienst')">
+        <div class="svc-name">${d.naam}</div>
+        <div class="svc-prijs">€${d.prijs}</div>
+        <div class="svc-dur">${d.duur_min} min</div>
+      </div>`).join('');
+  }
+
+  // Vanuit de agenda aangekomen om een specifieke afspraak af te rekenen?
+  const params=new URLSearchParams(window.location.search);
+  const afspraakId=params.get('afspraak');
+  if(afspraakId){
+    await koppelAfspraak(afspraakId);
+  }
+}
+
+async function koppelAfspraak(afspraakId){
+  const{data:a,error}=await sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('id',afspraakId).single();
+  if(error||!a){
+    console.warn('Kon gekoppelde afspraak niet laden:',error);
     return;
   }
-  grid.innerHTML=allDiensten.map(d=>`
-    <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs},'dienst')">
-      <div class="svc-name">${d.naam}</div>
-      <div class="svc-prijs">€${d.prijs}</div>
-      <div class="svc-dur">${d.duur_min} min</div>
-    </div>`).join('');
+  huidigeAfspraakId=a.id;
+  document.getElementById('apt-banner').style.display='block';
+  document.getElementById('apt-banner-naam').textContent=a.klant_naam||'klant';
+
+  if(a.medewerker_id && allMedewerkers.some(m=>m.id===a.medewerker_id)){
+    huidigeMedewerkerId=a.medewerker_id;
+    document.getElementById('med-select').value=a.medewerker_id;
+  }
+
+  if(a.diensten?.naam && typeof a.diensten.prijs==='number'){
+    add(a.diensten.naam, a.diensten.prijs, 'dienst');
+  }
+}
+
+function ontkoppelAfspraak(){
+  huidigeAfspraakId=null;
+  document.getElementById('apt-banner').style.display='none';
+  history.replaceState(null,'','kassa.html');
 }
 
 function setMedewerker(){
@@ -387,7 +427,7 @@ async function betaal(){
   btn.disabled=true;btn.textContent='Verwerken...';
 
   const {data:betaling,error:betErr}=await sb.from('betalingen').insert({
-    salon_id:SALON_ID,bedrag:total,methode:pm,status:'betaald'
+    salon_id:SALON_ID,bedrag:total,methode:pm,status:'betaald',afspraak_id:huidigeAfspraakId||null
   }).select().single();
 
   if(!betErr && betaling){
@@ -403,6 +443,11 @@ async function betaal(){
     }));
     const{error:itemsErr}=await sb.from('verkoop_items').insert(items);
     if(itemsErr) console.warn('Kon verkoop-regels niet opslaan (commissie klopt dan niet voor deze bon):',itemsErr);
+
+    if(huidigeAfspraakId){
+      const{error:aptErr}=await sb.from('afspraken').update({status:'afgerond'}).eq('id',huidigeAfspraakId);
+      if(aptErr) console.warn('Kon afspraak niet op afgerond zetten:',aptErr);
+    }
   } else if(betErr){
     console.warn('Kon betaling niet opslaan:',betErr);
   }
@@ -420,6 +465,7 @@ async function betaal(){
 
 function newBon(){
   bon=[];renderBon();
+  ontkoppelAfspraak();
   document.getElementById('m-success').classList.remove('on');
   document.body.style.overflow='';
 }

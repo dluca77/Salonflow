@@ -333,12 +333,19 @@ async function loadData(){
 
   // Deze maand, voor de commissie/omzet-berekening
   const maandStart=new Date();maandStart.setDate(1);maandStart.setHours(0,0,0,0);
-  const [viR,afR]=await Promise.all([
+  const [viR,afR,linkR]=await Promise.all([
     sb.from('verkoop_items').select('medewerker_id,type,totaal,aantal').eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
-    sb.from('afspraken').select('medewerker_id,status,datum_tijd,diensten(prijs)').eq('salon_id',SALON_ID).eq('status','afgerond').gte('datum_tijd',maandStart.toISOString())
+    sb.from('afspraken').select('id,medewerker_id,status,datum_tijd,diensten(prijs)').eq('salon_id',SALON_ID).eq('status','afgerond').gte('datum_tijd',maandStart.toISOString()),
+    sb.from('betalingen').select('afspraak_id').eq('salon_id',SALON_ID).not('afspraak_id','is',null).gte('datum',maandStart.toISOString())
   ]);
   const verkoopItems=viR.data||[];
-  const afspraken=(afR.data||[]).map(a=>({medewerker_id:a.medewerker_id, prijs:a.diensten?.prijs||0}));
+  // Afspraken die al via de kassa zijn afgerekend (afrekenen-vanuit-agenda)
+  // tellen hier niet apart mee -- die omzet komt al binnen via verkoop_items,
+  // anders zou het dubbel meetellen voor de commissie.
+  const gekoppeldeAfspraakIds=new Set((linkR.data||[]).map(b=>b.afspraak_id));
+  const afspraken=(afR.data||[])
+    .filter(a=>!gekoppeldeAfspraakIds.has(a.id))
+    .map(a=>({medewerker_id:a.medewerker_id, prijs:a.diensten?.prijs||0}));
 
   COMM_DATA=berekenCommissieData(TEAM, verkoopItems, afspraken, SALON?.commissie_basis_default||'totaal');
 
