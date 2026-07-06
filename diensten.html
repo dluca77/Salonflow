@@ -277,6 +277,27 @@ select.fi{cursor:pointer;}
       </label>
       <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant legt bij het boeken een kaart vast (geen afschrijving). Bij een no-show kun je het ingestelde bedrag alsnog incasseren.</div>
     </div>
+    <div class="fr" id="ab-abo-wrap" style="display:none;">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="ab-abo-actief" onchange="wisselAboUI()" style="width:16px;height:16px;">
+        Abonnement aanbieden voor deze dienst
+      </label>
+      <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klanten kunnen zich abonneren en krijgen elke maand automatisch tegoed voor deze dienst.</div>
+    </div>
+    <div id="ab-abo-velden" style="display:none;">
+      <label class="fl">Naam abonnement</label>
+      <input class="fi" id="ab-abo-naam" type="text" placeholder="bv. Knip-abonnement">
+      <div class="fr" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label class="fl">Prijs per maand (€)</label>
+          <input class="fi" id="ab-abo-prijs" type="number" min="0" step="0.5">
+        </div>
+        <div>
+          <label class="fl">Beurten per maand</label>
+          <input class="fi" id="ab-abo-credits" type="number" min="1" step="1" value="1">
+        </div>
+      </div>
+    </div>
     <button class="btsv" id="btn-aanbetaling-opslaan" onclick="slaAanbetalingOp()">Opslaan</button>
   </div>
 </div>
@@ -373,9 +394,17 @@ async function laadPrijsAdviesVoorDiensten(){
   renderRows();
 }
 
+let ABO_PLANNEN={}; // per dienst_id: het plan-record (of undefined als er geen is)
+
 async function loadData(){
-  const{data}=await sb.from('diensten').select('*').eq('salon_id',SALON_ID).order('categorie').order('naam');
-  DIENSTEN=data||[];
+  const[dR,aR]=await Promise.all([
+    sb.from('diensten').select('*').eq('salon_id',SALON_ID).order('categorie').order('naam'),
+    sb.from('abonnement_plannen').select('*').eq('salon_id',SALON_ID)
+  ]);
+  DIENSTEN=dR.data||[];
+  ABO_PLANNEN={};
+  (aR.data||[]).forEach(p=>{ ABO_PLANNEN[p.dienst_id]=p; });
+
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
   document.getElementById('d-aanbetaling-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
@@ -416,6 +445,8 @@ function renderRows(){
     if(magAanbetaling){
       labelDelen.push('Aanbetaling: '+aanbLabel);
       labelDelen.push(d.vereist_kaartgegevens?'Kaart verplicht':'Kaart niet verplicht');
+      const plan=ABO_PLANNEN[d.id];
+      if(plan?.actief) labelDelen.push('Abonnement: €'+plan.prijs_per_maand+'/mnd');
     }
     if(magStempel) labelDelen.push(d.telt_voor_stempel?'Telt voor stempelkaart':'Telt niet voor stempelkaart');
     return `
@@ -517,10 +548,25 @@ function openAanbetalingModal(id){
   document.getElementById('ab-stempel').checked=d.telt_voor_stempel||false;
   document.getElementById('ab-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
   document.getElementById('ab-kaart').checked=d.vereist_kaartgegevens||false;
-  document.getElementById('ab-kaart-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
+  const magStripeFeature = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief');
+  document.getElementById('ab-kaart-wrap').style.display = magStripeFeature ? 'block' : 'none';
+  document.getElementById('ab-abo-wrap').style.display = magStripeFeature ? 'block' : 'none';
+
+  const plan=ABO_PLANNEN[id];
+  document.getElementById('ab-abo-actief').checked=!!plan;
+  document.getElementById('ab-abo-naam').value=plan?.naam||('Abonnement '+d.naam);
+  document.getElementById('ab-abo-prijs').value=plan?.prijs_per_maand||'';
+  document.getElementById('ab-abo-credits').value=plan?.credits_per_maand||1;
+  wisselAboUI();
+
   document.getElementById('ab-err').style.display='none';
   wisselAanbTypeUI('ab-');
   openM('m-aanbetaling');
+}
+
+function wisselAboUI(){
+  document.getElementById('ab-abo-velden').style.display =
+    document.getElementById('ab-abo-actief').checked ? 'block' : 'none';
 }
 
 async function slaAanbetalingOp(){
@@ -537,6 +583,14 @@ async function slaAanbetalingOp(){
   if(type==='vast' && (bedragRaw==='' || Number(bedragRaw)<0)){
     errEl.textContent='Vul een geldig bedrag in.';errEl.style.display='block';return;
   }
+
+  const aboActief=document.getElementById('ab-abo-actief').checked;
+  const aboNaam=document.getElementById('ab-abo-naam').value.trim();
+  const aboPrijs=document.getElementById('ab-abo-prijs').value;
+  const aboCredits=document.getElementById('ab-abo-credits').value;
+  if(aboActief && (!aboNaam || !aboPrijs || Number(aboPrijs)<=0)){
+    errEl.textContent='Vul een naam en geldige prijs in voor het abonnement.';errEl.style.display='block';return;
+  }
   errEl.style.display='none';
 
   const btn=document.getElementById('btn-aanbetaling-opslaan');
@@ -549,10 +603,34 @@ async function slaAanbetalingOp(){
     vereist_kaartgegevens:vereistKaart
   }).eq('id',huidigAanbetalingDienstId);
 
+  if(error){
+    btn.disabled=false;btn.textContent='Opslaan';
+    errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;
+  }
+
+  // Abonnement-plan: aanmaken/bijwerken/uitschakelen
+  const bestaandPlan=ABO_PLANNEN[huidigAanbetalingDienstId];
+  if(aboActief){
+    const payload={
+      salon_id:SALON_ID, dienst_id:huidigAanbetalingDienstId,
+      naam:aboNaam, prijs_per_maand:Number(aboPrijs), credits_per_maand:Number(aboCredits)||1,
+      actief:true
+    };
+    const{error:aboErr}=bestaandPlan
+      ? await sb.from('abonnement_plannen').update(payload).eq('id',bestaandPlan.id)
+      : await sb.from('abonnement_plannen').insert(payload);
+    if(aboErr){
+      btn.disabled=false;btn.textContent='Opslaan';
+      errEl.textContent='Dienst opgeslagen, maar abonnement niet: '+aboErr.message;errEl.style.display='block';return;
+    }
+  } else if(bestaandPlan){
+    // Niet verwijderen (bestaande abonnees zouden dan een kapotte
+    // koppeling krijgen) -- gewoon uitschakelen zodat 'ie niet meer
+    // aangeboden wordt aan nieuwe klanten.
+    await sb.from('abonnement_plannen').update({actief:false}).eq('id',bestaandPlan.id);
+  }
+
   btn.disabled=false;btn.textContent='Opslaan';
-
-  if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
-
   closeM('m-aanbetaling');
   await loadData();
 }

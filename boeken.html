@@ -309,6 +309,28 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div class="sum-total-price" id="sum-prijs">€0</div>
     </div>
     <div class="sum-item" id="sum-aanbetaling" style="display:none;color:var(--gd);font-weight:600;"></div>
+    <div id="abo-panel" style="display:none;margin-top:14px;padding:14px;background:var(--wm);border-radius:8px;">
+      <div id="abo-panel-check">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Al een abonnement voor deze dienst?</div>
+        <input class="fi" id="abo-check-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
+        <button onclick="checkAbonnementTegoed()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Check tegoed</button>
+        <div id="abo-check-err" style="display:none;color:var(--red);font-size:11px;margin-top:6px;"></div>
+        <a href="#" id="abo-nieuw-link" onclick="return openAboAanmelden(event)" style="display:block;text-align:center;margin-top:10px;font-size:11px;color:var(--gd2);">Nog geen abonnement? Bekijk prijzen →</a>
+      </div>
+      <div id="abo-panel-gevonden" style="display:none;">
+        <div style="font-size:12px;color:var(--gd2);font-weight:600;">✓ Je hebt nog <span id="abo-credits-tekst"></span> tegoed! Deze afspraak wordt gratis geboekt met je abonnement.</div>
+        <button onclick="verwijderAbonnementGebruik()" style="background:none;border:none;color:var(--mu);font-size:11px;text-decoration:underline;cursor:pointer;margin-top:6px;padding:0;">Toch niet gebruiken</button>
+      </div>
+      <div id="abo-panel-nieuw" style="display:none;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:4px;" id="abo-nieuw-titel"></div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:10px;">Je wordt naar Stripe doorgestuurd om het abonnement te starten. Je eerste beurt is meteen beschikbaar zodra de betaling lukt.</div>
+        <input class="fi" id="abo-nieuw-naam" type="text" placeholder="Je naam" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
+        <input class="fi" id="abo-nieuw-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
+        <button onclick="startAbonnement()" style="width:100%;padding:9px;background:var(--gd);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Abonnement starten</button>
+        <div id="abo-nieuw-err" style="display:none;color:var(--red);font-size:11px;margin-top:6px;"></div>
+        <a href="#" onclick="return terugNaarAboCheck(event)" style="display:block;text-align:center;margin-top:8px;font-size:11px;color:var(--mu);">← Terug</a>
+      </div>
+    </div>
     <div class="salon-info" id="salon-info"></div>
     <div class="powered">Online boeken via <a href="index.html">Kronr<em style="font-style:normal;color:var(--gd)">.</em></a></div>
   </div>
@@ -324,7 +346,7 @@ const SALON_ID=params.get('salon');
 const IS_EMBED=params.get('embed')==='1';
 if(IS_EMBED) document.body.classList.add('embed');
 
-let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false};
+let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,gebruikt_abonnement_id:null};
 
 function berekenAanbetalingBedrag(prijs,type,bedrag){
   if(type==='percentage') return Math.round(prijs*bedrag/100*100)/100;
@@ -460,7 +482,7 @@ async function init(){
 
   const[sRes,dRes,mRes]=await Promise.all([
     sb.from('salons').select('naam,type_bedrijf,telefoon,adres,stad,stripe_connect_status,stempelkaart_actief').eq('id',SALON_ID).single(),
-    sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam'),
+    sb.from('diensten').select('*,abonnement_plannen(id,naam,prijs_per_maand,credits_per_maand,actief)').eq('salon_id',SALON_ID).eq('actief',true).order('naam'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
   ]);
 
@@ -483,11 +505,15 @@ async function init(){
 
   // Diensten
   const diensten=dRes.data||[];
+  window.DIENSTEN_MET_ABO={};
+  diensten.forEach(d=>{ const p=(d.abonnement_plannen||[]).find(x=>x.actief); if(p) window.DIENSTEN_MET_ABO[d.id]=p; });
+
   document.getElementById('dienst-grid').innerHTML=diensten.length
     ?diensten.map(d=>{
       const heeftAanbetaling = window.SALON_STRIPE_ACTIEF && d.aanbetaling_type;
       const aanbEuro = heeftAanbetaling ? berekenAanbetalingBedrag(d.prijs, d.aanbetaling_type, d.aanbetaling_bedrag) : 0;
       const vereistKaart = window.SALON_STRIPE_ACTIEF && d.vereist_kaartgegevens;
+      const abo = window.DIENSTEN_MET_ABO[d.id];
       return `
       <div class="dienst-card" onclick="selectDienst(this,'${d.naam.replace(/'/g,"\\'")}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart})">
         <div class="dc-naam">${d.naam}</div>
@@ -495,6 +521,7 @@ async function init(){
         <div class="dc-duur">${d.duur_min} min</div>
         ${heeftAanbetaling?`<div class="dc-aanbetaling">Aanbetaling vereist: €${aanbEuro}</div>`:''}
         ${vereistKaart?`<div class="dc-aanbetaling">Kaartgegevens verplicht bij boeken</div>`:''}
+        ${abo?`<div class="dc-aanbetaling" style="color:var(--gd2);">✦ Ook als abonnement: €${abo.prijs_per_maand}/maand</div>`:''}
       </div>`;
     }).join('')
     :`<div style="grid-column:1/-1;padding:32px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Geen diensten beschikbaar</div>`;
@@ -550,6 +577,7 @@ function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
   state.aanb_type = (window.SALON_STRIPE_ACTIEF && aanbType) ? aanbType : null;
   state.aanb_bedrag = state.aanb_type ? berekenAanbetalingBedrag(prijs,aanbType,aanbBedrag) : 0;
   state.vereist_kaart = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
+  state.gebruikt_abonnement_id = null;
   document.getElementById('sum-dienst').textContent=naam;
   document.getElementById('sum-prijs').textContent='€'+prijs;
   document.getElementById('sum-duur').textContent=duur+' min';
@@ -558,7 +586,104 @@ function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
     if(state.aanb_type){ aanbEl.textContent='Aanbetaling nu: €'+state.aanb_bedrag; aanbEl.style.display='block'; }
     else aanbEl.style.display='none';
   }
+
+  const aboPanel=document.getElementById('abo-panel');
+  const heeftAbo = window.DIENSTEN_MET_ABO && window.DIENSTEN_MET_ABO[id];
+  if(heeftAbo){
+    aboPanel.style.display='block';
+    document.getElementById('abo-panel-check').style.display='block';
+    document.getElementById('abo-panel-gevonden').style.display='none';
+    document.getElementById('abo-panel-nieuw').style.display='none';
+    document.getElementById('abo-check-email').value='';
+    document.getElementById('abo-check-err').style.display='none';
+  } else {
+    aboPanel.style.display='none';
+  }
+
   document.getElementById('btn1').disabled=false;
+}
+
+async function checkAbonnementTegoed(){
+  const email=document.getElementById('abo-check-email').value.trim();
+  const errEl=document.getElementById('abo-check-err');
+  errEl.style.display='none';
+  if(!email || !email.includes('@')){
+    errEl.textContent='Vul een geldig e-mailadres in.';errEl.style.display='block';return;
+  }
+
+  const{data,error}=await sb.rpc('get_abonnement_tegoed',{p_salon_id:SALON_ID,p_email:email,p_dienst_id:state.dienst_id});
+  const info=Array.isArray(data)?data[0]:data;
+
+  if(error||!info||!info.heeft_tegoed){
+    errEl.textContent='Geen (actief) abonnement met tegoed gevonden voor dit e-mailadres.';errEl.style.display='block';
+    return;
+  }
+
+  state.gebruikt_abonnement_id=info.abonnement_id;
+  document.getElementById('abo-panel-check').style.display='none';
+  document.getElementById('abo-panel-gevonden').style.display='block';
+  document.getElementById('abo-credits-tekst').textContent=info.credits_resterend+'x';
+
+  document.getElementById('sum-prijs').textContent='€0 (abonnement)';
+}
+
+function verwijderAbonnementGebruik(){
+  state.gebruikt_abonnement_id=null;
+  document.getElementById('abo-panel-check').style.display='block';
+  document.getElementById('abo-panel-gevonden').style.display='none';
+  document.getElementById('sum-prijs').textContent='€'+state.prijs;
+}
+
+function openAboAanmelden(e){
+  e.preventDefault();
+  const abo=window.DIENSTEN_MET_ABO[state.dienst_id];
+  if(!abo)return false;
+  document.getElementById('abo-panel-check').style.display='none';
+  document.getElementById('abo-panel-nieuw').style.display='block';
+  document.getElementById('abo-nieuw-titel').textContent=abo.naam+' — €'+abo.prijs_per_maand+'/maand ('+abo.credits_per_maand+'x per maand)';
+  return false;
+}
+
+function terugNaarAboCheck(e){
+  e.preventDefault();
+  document.getElementById('abo-panel-nieuw').style.display='none';
+  document.getElementById('abo-panel-check').style.display='block';
+  return false;
+}
+
+async function startAbonnement(){
+  const naam=document.getElementById('abo-nieuw-naam').value.trim();
+  const email=document.getElementById('abo-nieuw-email').value.trim();
+  const errEl=document.getElementById('abo-nieuw-err');
+  errEl.style.display='none';
+
+  if(!naam||!email||!email.includes('@')){
+    errEl.textContent='Vul je naam en een geldig e-mailadres in.';errEl.style.display='block';return;
+  }
+
+  const abo=window.DIENSTEN_MET_ABO[state.dienst_id];
+  if(!abo)return;
+
+  try{
+    const res=await fetch('https://kronr-stripe.isaak-elia.workers.dev/create-subscription-checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        salon_id:SALON_ID,
+        plan_id:abo.id,
+        klant_naam:naam,
+        email,
+        success_url:window.location.origin+window.location.pathname+'?abo_gestart=1&salon='+SALON_ID,
+        cancel_url:window.location.href
+      })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.url) throw new Error(data.error||'Onbekende fout');
+    window.location.href=data.url;
+  }catch(e){
+    errEl.textContent='Kon abonnement niet starten: '+e.message;errEl.style.display='block';
+  }
 }
 
 function selectMed(el,naam,id){
@@ -837,6 +962,20 @@ async function bevestigen(){
     // liever een enkele ongewenste boeking dan alle klanten onterecht weigeren.
   }
 
+  // Abonnement-tegoed? Dan EERST atomisch verbruiken (voorkomt dat 2
+  // gelijktijdige boekingen hetzelfde laatste tegoed dubbel gebruiken) --
+  // pas als dat lukt, de afspraak aanmaken met de koppeling erbij.
+  if(state.gebruikt_abonnement_id){
+    const{data:gelukt,error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id});
+    if(credErr || !gelukt){
+      state.gebruikt_abonnement_id=null;
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Je abonnementstegoed kon niet worden gebruikt (mogelijk net op door een andere boeking). Probeer het opnieuw, of boek zonder abonnement.';
+      errEl.style.display='block';
+      return;
+    }
+  }
+
   // Datum → ISO
   const parts=state.datum.split(' ');
   const dag=parseInt(parts[0]);
@@ -856,7 +995,8 @@ async function bevestigen(){
     klant_naam:naam,
     klant_email:email,
     klant_telefoon:telSchoon||null,
-    notities:notitie||null
+    notities:notitie||null,
+    gebruikt_abonnement_id:state.gebruikt_abonnement_id||null
   }).select('id,annuleer_token').single();
 
   btn.disabled=false;btn.textContent='Afspraak bevestigen';
@@ -877,8 +1017,8 @@ async function bevestigen(){
   // naar Stripe te sturen: /create-deposit-checkout ondersteunt dan een
   // save_card-vlag die de kaart ook meteen vastlegt voor latere no-show-
   // incasso (zie workers/kronr-stripe-noshow-routes.md).
-  const needsPayment = state.aanb_type && window.SALON_STRIPE_ACTIEF;
-  const needsCardOnFile = state.vereist_kaart;
+  const needsPayment = state.aanb_type && window.SALON_STRIPE_ACTIEF && !state.gebruikt_abonnement_id;
+  const needsCardOnFile = state.vereist_kaart && !state.gebruikt_abonnement_id;
 
   if((needsPayment || needsCardOnFile) && nieuweAfspraak){
     try{
