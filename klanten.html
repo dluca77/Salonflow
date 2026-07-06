@@ -216,6 +216,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="tb-title">Klanten</div>
     <div class="tb-spacer"></div>
     <button class="hbg" onclick="openGeblokkeerdOverzicht()" title="Geblokkeerde klanten" style="margin-right:6px;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button>
+    <button class="hbg" id="btn-campagnes" onclick="openCampagneModal()" title="Marketing campagne" style="display:none;margin-right:6px;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
     <button class="btn-add" onclick="openM('m-new')">+ Klant</button>
   </div>
 
@@ -274,6 +275,13 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </select>
     </div>
     <div class="fr"><label class="fl">Notitie</label><textarea class="fi" id="k-notitie" rows="2" placeholder="Allergieën, voorkeuren..."></textarea></div>
+    <div class="fr"><label class="fl">Geboortedatum (optioneel)</label><input class="fi" id="k-geboortedatum" type="date"></div>
+    <div class="fr">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="k-opt-out" style="width:16px;height:16px;">
+        Wil geen marketing-e-mails ontvangen
+      </label>
+    </div>
     <button class="btsv" id="btn-klant-opslaan" onclick="slaKlantOp()">Klant opslaan</button>
   </div>
 </div>
@@ -329,6 +337,35 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   </div>
 </div>
 
+<div class="mbg" id="m-campagne" onclick="if(event.target===this)closeM('m-campagne')">
+  <div class="modal">
+    <div class="mh">Marketing campagne</div>
+    <label class="fl">Doelgroep</label>
+    <select class="fi" id="camp-segment" onchange="berekenSegmentGrootte()">
+      <option value="alle_klanten">Alle klanten met e-mail</option>
+      <option value="inactief_60d">Niet geweest in 60+ dagen</option>
+      <option value="jarig_deze_maand">Jarig deze maand</option>
+    </select>
+    <div id="camp-segment-info" style="font-size:12px;color:var(--mu);margin:6px 0 14px;"></div>
+
+    <label class="fl">Onderwerp</label>
+    <input class="fi" id="camp-onderwerp" type="text" placeholder="bv. We missen je! 15% korting deze maand">
+
+    <label class="fl">Inhoud</label>
+    <textarea class="fi" id="camp-inhoud" rows="6" placeholder="Schrijf hier je bericht..."></textarea>
+
+    <div id="camp-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin:10px 0;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+
+    <button class="btsv" id="btn-camp-versturen" onclick="verstuurCampagne()">Campagne versturen</button>
+    <div class="msg" id="msg-campagne"></div>
+
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--bd);">
+      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px;">Eerder verstuurd</div>
+      <div id="camp-geschiedenis" style="font-size:12px;color:var(--mu);">Nog geen campagnes verstuurd.</div>
+    </div>
+  </div>
+</div>
+
 <script>
 let KLANTEN=[], activeF='alle', activeQ='', activeG='alle', activeSort='naam-az', editingId=null, currentDetailId=null, FOTO_URL=null;
 
@@ -344,7 +381,115 @@ async function loadData(){
   // Sidebar initials
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
+  document.getElementById('btn-campagnes').style.display = (SALON?.plan==='business'||SALON?.plan==='pro') ? 'flex' : 'none';
   render();
+}
+
+// ── MARKETING CAMPAGNES ──
+function bepaalSegmentKlanten(segmentType){
+  const nu=new Date();
+  return KLANTEN.filter(k=>{
+    if(!k.email || k.marketing_opt_out) return false;
+    if(segmentType==='alle_klanten') return true;
+    if(segmentType==='jarig_deze_maand'){
+      if(!k.geboortedatum) return false;
+      return new Date(k.geboortedatum).getMonth()===nu.getMonth();
+    }
+    if(segmentType==='inactief_60d'){
+      const stats=vindStats(k);
+      if(!stats.laatste) return true; // nog nooit geweest -- ook 'inactief'
+      const dagenGeleden=(nu-new Date(stats.laatste))/(1000*60*60*24);
+      return dagenGeleden>=60;
+    }
+    return false;
+  });
+}
+
+function berekenSegmentGrootte(){
+  const segment=document.getElementById('camp-segment').value;
+  const klanten=bepaalSegmentKlanten(segment);
+  document.getElementById('camp-segment-info').textContent=
+    `${klanten.length} klant${klanten.length!==1?'en':''} ontvangen deze campagne (uitgeschreven klanten en klanten zonder e-mailadres zijn al uitgesloten).`;
+}
+
+async function openCampagneModal(){
+  document.getElementById('camp-onderwerp').value='';
+  document.getElementById('camp-inhoud').value='';
+  document.getElementById('camp-err').style.display='none';
+  document.getElementById('msg-campagne').style.display='none';
+  document.getElementById('camp-segment').value='alle_klanten';
+  berekenSegmentGrootte();
+  await laadCampagneGeschiedenis();
+  openM('m-campagne');
+}
+
+async function laadCampagneGeschiedenis(){
+  const{data}=await sb.from('marketing_campagnes').select('*').eq('salon_id',SALON_ID).order('created_at',{ascending:false}).limit(10);
+  const el=document.getElementById('camp-geschiedenis');
+  if(!data||!data.length){ el.textContent='Nog geen campagnes verstuurd.'; return; }
+  const SEGMENT_LABELS={alle_klanten:'Alle klanten',inactief_60d:'Niet geweest in 60+ dagen',jarig_deze_maand:'Jarig deze maand'};
+  el.innerHTML=data.map(c=>`
+    <div style="padding:8px 0;border-bottom:1px solid var(--bd);">
+      <div style="font-weight:600;color:var(--ink);">${c.onderwerp}</div>
+      <div>${SEGMENT_LABELS[c.segment_type]||c.segment_type} · ${c.aantal_ontvangers} ontvangers · ${c.status==='verzonden'?'Verzonden':'Mislukt'} ${c.verzonden_op?'op '+new Date(c.verzonden_op).toLocaleDateString('nl-NL'):''}</div>
+    </div>`).join('');
+}
+
+async function verstuurCampagne(){
+  const segment=document.getElementById('camp-segment').value;
+  const onderwerp=document.getElementById('camp-onderwerp').value.trim();
+  const inhoud=document.getElementById('camp-inhoud').value.trim();
+  const errEl=document.getElementById('camp-err');
+  errEl.style.display='none';
+
+  if(!onderwerp||!inhoud){
+    errEl.textContent='Vul een onderwerp en inhoud in.';errEl.style.display='block';return;
+  }
+
+  const ontvangers=bepaalSegmentKlanten(segment);
+  if(!ontvangers.length){
+    errEl.textContent='Geen ontvangers gevonden voor deze doelgroep.';errEl.style.display='block';return;
+  }
+  if(!confirm(`Campagne versturen naar ${ontvangers.length} klant(en)? Dit kan niet ongedaan worden gemaakt.`)) return;
+
+  const btn=document.getElementById('btn-camp-versturen');
+  btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
+
+  const{data:campagne,error:insertErr}=await sb.from('marketing_campagnes').insert({
+    salon_id:SALON_ID, onderwerp, inhoud, segment_type:segment,
+    aantal_ontvangers:ontvangers.length, status:'concept'
+  }).select().single();
+
+  if(insertErr){
+    btn.disabled=false;btn.textContent='Campagne versturen';
+    errEl.textContent='Fout: '+insertErr.message;errEl.style.display='block';return;
+  }
+
+  try{
+    const res=await fetch('https://kronr-mail.isaak-elia.workers.dev/campagne',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        salon_naam:SALON?.naam||'',
+        onderwerp, inhoud,
+        ontvangers:ontvangers.map(k=>({naam:k.naam,email:k.email}))
+      })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+
+    await sb.from('marketing_campagnes').update({status:'verzonden',verzonden_op:new Date().toISOString()}).eq('id',campagne.id);
+    document.getElementById('msg-campagne').textContent='Campagne verstuurd naar '+ontvangers.length+' klant(en).';
+    document.getElementById('msg-campagne').style.color='var(--green)';
+    document.getElementById('msg-campagne').style.display='block';
+    document.getElementById('camp-onderwerp').value='';
+    document.getElementById('camp-inhoud').value='';
+  }catch(e){
+    await sb.from('marketing_campagnes').update({status:'mislukt'}).eq('id',campagne.id);
+    errEl.textContent='Versturen mislukt: '+e.message+'. Probeer het later opnieuw.';errEl.style.display='block';
+  }
+
+  btn.disabled=false;btn.textContent='Campagne versturen';
+  await laadCampagneGeschiedenis();
 }
 
 function bouwAfspraakStats(afspraken){
@@ -599,6 +744,8 @@ function editK(){
   document.getElementById('k-email').value=k.email||'';
   document.getElementById('k-geslacht').value=k.geslacht||'';
   document.getElementById('k-notitie').value=k.notities||'';
+  document.getElementById('k-geboortedatum').value=k.geboortedatum||'';
+  document.getElementById('k-opt-out').checked=k.marketing_opt_out||false;
   FOTO_URL=k.foto_url||null;
   const prev=document.getElementById('foto-preview');
   if(FOTO_URL){ prev.innerHTML=`<img src="${FOTO_URL}" alt="Foto">`; }
@@ -608,8 +755,9 @@ function editK(){
 }
 
 function resetKlantForm(){
-  ['k-voor','k-achter','k-tel','k-email','k-notitie'].forEach(id=>document.getElementById(id).value='');
+  ['k-voor','k-achter','k-tel','k-email','k-notitie','k-geboortedatum'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('k-geslacht').value='';
+  document.getElementById('k-opt-out').checked=false;
   document.getElementById('foto-preview').innerHTML='?';
   document.getElementById('foto-upload-label').textContent='Foto toevoegen';
   FOTO_URL=null;
@@ -663,7 +811,9 @@ async function slaKlantOp(){
   btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
 
   const naam=voor+(achter?' '+achter:'');
-  const payload={naam,email:email||null,telefoon:tel||null,notities:notitie||null,geslacht,foto_url:FOTO_URL};
+  const geboortedatum=document.getElementById('k-geboortedatum').value||null;
+  const optOut=document.getElementById('k-opt-out').checked;
+  const payload={naam,email:email||null,telefoon:tel||null,notities:notitie||null,geslacht,foto_url:FOTO_URL,geboortedatum,marketing_opt_out:optOut};
   let error;
   if(editingId){
     ({error}=await sb.from('klanten').update(payload).eq('id',editingId));
