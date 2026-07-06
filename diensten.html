@@ -398,7 +398,7 @@ let ABO_PLANNEN={}; // per dienst_id: het plan-record (of undefined als er geen 
 
 async function loadData(){
   const[dR,aR]=await Promise.all([
-    sb.from('diensten').select('*').eq('salon_id',SALON_ID).order('categorie').order('naam'),
+    metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).order('categorie').order('naam'),
     sb.from('abonnement_plannen').select('*').eq('salon_id',SALON_ID)
   ]);
   DIENSTEN=dR.data||[];
@@ -509,7 +509,8 @@ async function slaDienstOp(){
     aanbetaling_type:aanbType,
     aanbetaling_bedrag:aanbType?Number(aanbBedragRaw):null,
     telt_voor_stempel:document.getElementById('d-stempel').checked,
-    vereist_kaartgegevens:document.getElementById('d-kaart').checked
+    vereist_kaartgegevens:document.getElementById('d-kaart').checked,
+    locatie_id:HUIDIGE_LOCATIE_ID||null
   });
 
   btn.disabled=false;btn.textContent='Dienst opslaan';

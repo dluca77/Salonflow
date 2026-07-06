@@ -347,8 +347,8 @@ let bon=[], pm='pin', allDiensten=[], allMedewerkers=[], huidigeMedewerkerId='',
 
 async function loadData(){
   const [dR,mR]=await Promise.all([
-    sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('categorie').order('naam'),
-    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
+    metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).eq('actief',true).order('categorie').order('naam'),
+    metLocatie(sb.from('medewerkers').select('*').eq('salon_id',SALON_ID)).eq('actief',true).order('naam')
   ]);
   allDiensten=dR.data||[];
   allMedewerkers=mR.data||[];
@@ -613,7 +613,8 @@ async function betaal(){
     salon_id:SALON_ID,bedrag:t.totaal,methode:methodeOpslaan,status:'betaald',
     afspraak_id:huidigeAfspraakId||null,
     cadeaubon_code:cadeaubonActief?cadeaubonActief.code:null,
-    cadeaubon_bedrag_gebruikt:cadeaubonActief?t.cbGebruikt:null
+    cadeaubon_bedrag_gebruikt:cadeaubonActief?t.cbGebruikt:null,
+    locatie_id:HUIDIGE_LOCATIE_ID||null
   }).select().single();
 
   const nieuweCadeaubonCodes=[];
@@ -627,7 +628,8 @@ async function betaal(){
       type:i.type||'dienst',
       prijs:i.prijs,
       aantal:i.qty,
-      totaal:i.total
+      totaal:i.total,
+      locatie_id:HUIDIGE_LOCATIE_ID||null
     }));
     const{error:itemsErr}=await sb.from('verkoop_items').insert(items);
     if(itemsErr) console.warn('Kon verkoop-regels niet opslaan (commissie klopt dan niet voor deze bon):',itemsErr);

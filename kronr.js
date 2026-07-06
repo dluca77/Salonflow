@@ -27,9 +27,45 @@ const sb = window.supabase.createClient(SB_URL, SB_KEY, {
 let SALON_ID = null;
 let SESSION_USER = null;
 let SALON = null;
+let LOCATIES = [];
+let HUIDIGE_LOCATIE_ID = null;
 
 // Verberg pagina direct zodat er geen flits is
 document.documentElement.style.opacity = '0';
+
+function locatieStorageKey(salonId) { return 'kronr_locatie_' + salonId; }
+
+function wisselLocatie(id) {
+  try { localStorage.setItem(locatieStorageKey(SALON_ID), id); } catch (e) {}
+  window.location.reload();
+}
+
+function renderLocatieSwitcher() {
+  if (LOCATIES.length < 2) return; // geen switcher nodig voor 1 locatie -- geen UI-rommel voor de meeste salons
+
+  const huidige = LOCATIES.find(l => l.id === HUIDIGE_LOCATIE_ID);
+  const optiesHtml = LOCATIES.map(l =>
+    `<option value="${l.id}"${l.id === HUIDIGE_LOCATIE_ID ? ' selected' : ''}>${l.naam}</option>`
+  ).join('');
+
+  const switcherHtml = `
+    <div class="kronr-locatie-switcher" style="padding:12px 16px;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:5px;">Locatie</div>
+      <select onchange="wisselLocatie(this.value)" style="width:100%;padding:7px 8px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:6px;color:#fff;font-size:12px;font-family:'Inter',sans-serif;">
+        ${optiesHtml}
+      </select>
+    </div>`;
+
+  const sidebar = document.querySelector('aside.sidebar');
+  if (sidebar && !sidebar.querySelector('.kronr-locatie-switcher')) {
+    sidebar.insertAdjacentHTML('afterbegin', switcherHtml);
+  }
+  const mobSidebar = document.getElementById('sb');
+  if (mobSidebar && !mobSidebar.querySelector('.kronr-locatie-switcher')) {
+    const mobLogo = mobSidebar.querySelector('.mob-logo');
+    if (mobLogo) mobLogo.insertAdjacentHTML('afterend', switcherHtml);
+  }
+}
 
 async function kronrInit(callback) {
   try {
@@ -73,6 +109,15 @@ async function kronrInit(callback) {
     SALON_ID = salon.id;
     SALON = salon;
 
+    // Locaties ophalen en de huidige bepalen (uit localStorage, of de
+    // eerste actieve als er nog geen voorkeur is/de vorige niet meer bestaat)
+    const { data: locaties } = await sb.from('locaties').select('*').eq('salon_id', SALON_ID).eq('actief', true).order('naam');
+    LOCATIES = locaties || [];
+    let opgeslagenLocatieId = null;
+    try { opgeslagenLocatieId = localStorage.getItem(locatieStorageKey(SALON_ID)); } catch (e) {}
+    HUIDIGE_LOCATIE_ID = LOCATIES.find(l => l.id === opgeslagenLocatieId)?.id || LOCATIES[0]?.id || null;
+    renderLocatieSwitcher();
+
     // Update sidebar
     document.querySelectorAll('.salon-naam').forEach(el => el.textContent = salon.naam);
     document.querySelectorAll('.salon-plan').forEach(el => el.textContent = salon.plan === 'free' ? 'Gratis plan' : 'Pro plan');
@@ -97,4 +142,12 @@ async function kronrInit(callback) {
 async function uitloggen() {
   await sb.auth.signOut();
   window.location.href = 'login.html';
+}
+
+// Kleine helper: past het locatie-filter alleen toe als er daadwerkelijk
+// een huidige locatie bekend is (bv. nog niet zo als de migratie nog niet
+// gedraaid is voor deze salon) -- voorkomt dat een .eq('locatie_id', null)
+// per ongeluk alles wegfiltert.
+function metLocatie(query) {
+  return HUIDIGE_LOCATIE_ID ? query.eq('locatie_id', HUIDIGE_LOCATIE_ID) : query;
 }

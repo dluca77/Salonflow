@@ -189,6 +189,11 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
 <div class="layout">
   <div class="steps-main">
 
+    <div id="locatie-picker" style="display:none;margin-bottom:20px;padding:14px 16px;background:var(--wm);border-radius:8px;">
+      <label style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Kies een locatie</label>
+      <select id="locatie-select" onchange="wisselBoekLocatie(this.value)" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;background:var(--wh);"></select>
+    </div>
+
     <!-- Progress -->
     <div class="progress-bar" id="progress-bar">
       <div class="step-dot"><div class="step-num active" id="sn1">1</div><div class="step-label active" id="sl1">Dienst</div></div>
@@ -472,6 +477,13 @@ function zetLiveEmailValidatie(){
   });
 }
 
+let HUIDIGE_BOEK_LOCATIE_ID=null;
+
+function wisselBoekLocatie(id){
+  HUIDIGE_BOEK_LOCATIE_ID=id;
+  if(window.laadDienstenEnMedewerkers) window.laadDienstenEnMedewerkers();
+}
+
 async function init(){
   vulLandcodeDropdown();
   zetLiveEmailValidatie();
@@ -480,11 +492,24 @@ async function init(){
     return;
   }
 
-  const[sRes,dRes,mRes]=await Promise.all([
+  const[sRes,locRes]=await Promise.all([
     sb.from('salons').select('naam,type_bedrijf,telefoon,adres,stad,stripe_connect_status,stempelkaart_actief').eq('id',SALON_ID).single(),
-    sb.from('diensten').select('*,abonnement_plannen(id,naam,prijs_per_maand,credits_per_maand,actief)').eq('salon_id',SALON_ID).eq('actief',true).order('naam'),
-    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
+    sb.from('locaties').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
   ]);
+
+  const locaties=locRes.data||[];
+  if(locaties.length>1){
+    HUIDIGE_BOEK_LOCATIE_ID=locaties[0].id;
+    document.getElementById('locatie-picker').style.display='block';
+    document.getElementById('locatie-select').innerHTML=locaties.map(l=>`<option value="${l.id}">${l.naam}</option>`).join('');
+  } else if(locaties.length===1){
+    HUIDIGE_BOEK_LOCATIE_ID=locaties[0].id;
+  }
+  // 0 locaties (salon nog niet gemigreerd, of net aangemaakt): geen
+  // filter toepassen -- gewoon alle diensten/medewerkers van de salon
+  // tonen, zoals vóór deze feature.
+
+  await laadDienstenEnMedewerkers();
 
   // Salon info
   const salon=sRes.data;
@@ -504,7 +529,16 @@ async function init(){
   }
 
   // Diensten
-  const diensten=dRes.data||[];
+  async function laadDienstenEnMedewerkers(){
+    let dQuery=sb.from('diensten').select('*,abonnement_plannen(id,naam,prijs_per_maand,credits_per_maand,actief)').eq('salon_id',SALON_ID).eq('actief',true);
+    let mQuery=sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true);
+    if(HUIDIGE_BOEK_LOCATIE_ID){
+      dQuery=dQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
+      mQuery=mQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
+    }
+    const[dRes,mRes]=await Promise.all([dQuery.order('naam'), mQuery.order('naam')]);
+
+    const diensten=dRes.data||[];
   window.DIENSTEN_MET_ABO={};
   diensten.forEach(d=>{ const p=(d.abonnement_plannen||[]).find(x=>x.actief); if(p) window.DIENSTEN_MET_ABO[d.id]=p; });
 
@@ -543,6 +577,8 @@ async function init(){
       </div>`;
     }).join('')}
   `;
+  }
+  window.laadDienstenEnMedewerkers=laadDienstenEnMedewerkers;
 
   renderCal();
 

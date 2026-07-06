@@ -505,9 +505,9 @@ async function loadData(){
   const s=new Date(cur);s.setDate(s.getDate()-60);
   const e=new Date(cur);e.setDate(e.getDate()+90);
   const[aR,mR,dR,wR]=await Promise.all([
-    sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs,duur_min)').eq('salon_id',SALON_ID).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
-    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
-    sb.from('diensten').select('*').eq('salon_id',SALON_ID).eq('actief',true),
+    metLocatie(sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs,duur_min)').eq('salon_id',SALON_ID)).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
+    metLocatie(sb.from('medewerkers').select('*').eq('salon_id',SALON_ID)).eq('actief',true),
+    metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).eq('actief',true),
     sb.from('wachtlijst').select('id,voorkeur_vanaf,voorkeur_tot').eq('salon_id',SALON_ID).eq('status','actief')
   ]);
   APTS=aR.data||[];MEDS=mR.data||[];DIENSTEN=dR.data||[];WACHTLIJST=wR.data||[];
@@ -1264,7 +1264,7 @@ async function doSave({naam,datum,tijd,mId,status,herhaling,herhalingEinde,notit
     await sb.from('afspraken').update(payload).eq('id',geselecteerdeApt.id);
     toast('Afspraak bijgewerkt');
   } else {
-    const{error}=await sb.from('afspraken').insert(payload);
+    const{error}=await sb.from('afspraken').insert({...payload,locatie_id:HUIDIGE_LOCATIE_ID||null});
     if(error){toast('Fout: '+error.message);btn.disabled=false;btn.textContent='Opslaan';return;}
     toast('Afspraak aangemaakt');
   }
@@ -1282,7 +1282,7 @@ async function slaBlokOp(){
   const omschr=document.getElementById('iblok-omschr').value.trim();
   if(!datum){toast('Vul een datum in.');return;}
   const dt=new Date(datum+'T'+van);
-  await sb.from('afspraken').insert({salon_id:SALON_ID,klant_naam:type.charAt(0).toUpperCase()+type.slice(1),bloktijd_type:type,type:'bloktijd',medewerker_id:mId||null,datum_tijd:dt.toISOString(),duur_min:duur,notities:omschr||null,status:'bevestigd'});
+  await sb.from('afspraken').insert({salon_id:SALON_ID,klant_naam:type.charAt(0).toUpperCase()+type.slice(1),bloktijd_type:type,type:'bloktijd',medewerker_id:mId||null,datum_tijd:dt.toISOString(),duur_min:duur,notities:omschr||null,status:'bevestigd',locatie_id:HUIDIGE_LOCATIE_ID||null});
   closeModal('modal-apt');await loadData();toast('Bloktijd aangemaakt');
 }
 

@@ -276,7 +276,7 @@ function berekenOmzetData(medewerkers, verkoopItems, afspraken){
 }
 
 async function loadData(){
-  const {data}=await sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).order('naam');
+  const {data}=await metLocatie(sb.from('medewerkers').select('*').eq('salon_id',SALON_ID)).order('naam');
   TEAM=data||[];
 
   const nm=document.querySelector('.salon-naam')?.textContent||'';
@@ -285,9 +285,9 @@ async function loadData(){
   // Deze maand, voor de omzet-weergave
   const maandStart=new Date();maandStart.setDate(1);maandStart.setHours(0,0,0,0);
   const [viR,afR,linkR]=await Promise.all([
-    sb.from('verkoop_items').select('medewerker_id,type,totaal,aantal').eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
-    sb.from('afspraken').select('id,medewerker_id,status,datum_tijd,diensten(prijs)').eq('salon_id',SALON_ID).eq('status','afgerond').gte('datum_tijd',maandStart.toISOString()),
-    sb.from('betalingen').select('afspraak_id').eq('salon_id',SALON_ID).not('afspraak_id','is',null).gte('datum',maandStart.toISOString())
+    metLocatie(sb.from('verkoop_items').select('medewerker_id,type,totaal,aantal').eq('salon_id',SALON_ID)).gte('created_at',maandStart.toISOString()),
+    metLocatie(sb.from('afspraken').select('id,medewerker_id,status,datum_tijd,diensten(prijs)').eq('salon_id',SALON_ID)).eq('status','afgerond').gte('datum_tijd',maandStart.toISOString()),
+    metLocatie(sb.from('betalingen').select('afspraak_id').eq('salon_id',SALON_ID)).not('afspraak_id','is',null).gte('datum',maandStart.toISOString())
   ]);
   const verkoopItems=viR.data||[];
   const gekoppeldeAfspraakIds=new Set((linkR.data||[]).map(b=>b.afspraak_id));
@@ -472,7 +472,8 @@ async function slaMedewerkOp(){
   const naam=voor+(achter?' '+achter:'');
   const{error}=await sb.from('medewerkers').insert({
     salon_id:SALON_ID,naam,rol,
-    email:email||null,telefoon:tel||null,actief:true
+    email:email||null,telefoon:tel||null,actief:true,
+    locatie_id:HUIDIGE_LOCATIE_ID||null
   });
 
   btn.disabled=false;btn.textContent='Medewerker opslaan';

@@ -193,6 +193,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <button class="settings-tab on" data-tab="profiel" onclick="setTab('profiel')">Profiel</button>
       <button class="settings-tab" data-tab="account" onclick="setTab('account')">Account</button>
       <button class="settings-tab" data-tab="beveiliging" onclick="setTab('beveiliging')">Beveiliging</button>
+      <button class="settings-tab" data-tab="locaties" onclick="setTab('locaties')">Locaties</button>
       <button class="settings-tab" data-tab="abonnement" onclick="setTab('abonnement')">Abonnement</button>
     </div>
 
@@ -354,6 +355,31 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     </div>
 
     <!-- ABONNEMENT -->
+    <div class="section" id="tab-locaties" data-tabpanel="locaties" style="display:none;">
+      <div id="locaties-sectie-business" style="display:none;">
+        <div class="sec-title">Locaties</div>
+        <div class="sec-sub">Beheer je vestigingen. Elke locatie heeft een eigen team, dienstenmenu en agenda. Klanten en cadeaubonnen/abonnementen blijven salon-breed werken op elke locatie.</div>
+
+        <div id="locaties-lijst" style="margin:20px 0;"></div>
+
+        <div style="padding:16px;background:var(--iv);border:1px solid var(--bd);border-radius:8px;">
+          <div style="font-size:12px;font-weight:600;margin-bottom:10px;">Nieuwe locatie toevoegen</div>
+          <input class="fi" id="loc-naam" type="text" placeholder="Naam (bv. Vestiging Zuid)">
+          <input class="fi" id="loc-adres" type="text" placeholder="Adres (optioneel)">
+          <div class="fr" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <input class="fi" id="loc-stad" type="text" placeholder="Stad (optioneel)">
+            <input class="fi" id="loc-telefoon" type="text" placeholder="Telefoon (optioneel)">
+          </div>
+          <button class="btn-sv" onclick="voegLocatieToe()">Locatie toevoegen</button>
+          <div class="msg" id="msg-locatie"></div>
+        </div>
+      </div>
+      <div id="locaties-sectie-upsell" style="display:none;">
+        <div class="sec-title">Locaties</div>
+        <div class="sec-sub">Meerdere vestigingen beheren is een Business-functie. <a href="#abonnement" onclick="setTab('abonnement')" style="color:var(--gd);">Upgrade naar Business</a> om dit te gebruiken.</div>
+      </div>
+    </div>
+
     <div class="section" id="tab-abonnement" data-tabpanel="abonnement" style="display:none;">
       <div class="sec-title">Abonnement</div>
       <div class="sec-sub">Je huidige Kronr-pakket en facturering.</div>
@@ -529,9 +555,12 @@ async function loadData(){
     document.getElementById('stripe-connect-sectie-business').style.display='block';
     toonConnectStatus();
     document.getElementById('s-noshow-bedrag').value = SALON.noshow_fee_bedrag ?? '';
+    document.getElementById('locaties-sectie-business').style.display='block';
+    laadLocaties();
   } else {
     document.getElementById('slug-sectie-upsell').style.display='block';
     document.getElementById('stripe-connect-sectie-upsell').style.display='block';
+    document.getElementById('locaties-sectie-upsell').style.display='block';
   }
 
   if(SALON.plan==='business' || SALON.plan==='pro'){
@@ -753,6 +782,65 @@ async function verwerkMoneybirdReturn(){
   }catch(e){
     showMsg('msg-mb','Koppelen mislukt: '+e.message);
   }
+}
+
+// ── LOCATIES ──
+let ALLE_LOCATIES=[];
+
+async function laadLocaties(){
+  const{data}=await sb.from('locaties').select('*').eq('salon_id',SALON_ID).order('created_at');
+  ALLE_LOCATIES=data||[];
+  renderLocatiesLijst();
+}
+
+function renderLocatiesLijst(){
+  const lijst=document.getElementById('locaties-lijst');
+  if(!ALLE_LOCATIES.length){
+    lijst.innerHTML='<div style="font-size:12px;color:var(--mu);">Nog geen locaties.</div>';
+    return;
+  }
+  lijst.innerHTML=ALLE_LOCATIES.map(l=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd);">
+      <div>
+        <div style="font-size:13px;font-weight:600;">${l.naam}${l.actief===false?' <span style="color:var(--mu2);font-weight:400;">(inactief)</span>':''}</div>
+        <div style="font-size:11px;color:var(--mu);">${[l.adres,l.stad].filter(Boolean).join(', ')||'Geen adres opgegeven'}</div>
+      </div>
+      <button class="btn-sec" onclick="toggleLocatieActief('${l.id}',${l.actief!==false})">${l.actief!==false?'Deactiveren':'Activeren'}</button>
+    </div>`).join('');
+}
+
+async function voegLocatieToe(){
+  const naam=document.getElementById('loc-naam').value.trim();
+  const adres=document.getElementById('loc-adres').value.trim();
+  const stad=document.getElementById('loc-stad').value.trim();
+  const telefoon=document.getElementById('loc-telefoon').value.trim();
+
+  if(!naam){ showMsg('msg-locatie','Vul een naam in voor de locatie.'); return; }
+
+  const{error}=await sb.from('locaties').insert({
+    salon_id:SALON_ID, naam, adres:adres||null, stad:stad||null, telefoon:telefoon||null
+  });
+
+  if(error){ showMsg('msg-locatie','Fout: '+error.message); return; }
+
+  document.getElementById('loc-naam').value='';
+  document.getElementById('loc-adres').value='';
+  document.getElementById('loc-stad').value='';
+  document.getElementById('loc-telefoon').value='';
+  showMsg('msg-locatie','Locatie toegevoegd. Herlaad de pagina om de locatie-wisselaar te zien.','ok');
+  await laadLocaties();
+}
+
+async function toggleLocatieActief(id, huidigActief){
+  // Nooit de laatste actieve locatie kunnen deactiveren -- anders heeft
+  // de salon geen enkele werkende locatie meer.
+  const aantalActief=ALLE_LOCATIES.filter(l=>l.actief!==false).length;
+  if(huidigActief && aantalActief<=1){
+    showMsg('msg-locatie','Je kunt niet je laatste actieve locatie deactiveren.');
+    return;
+  }
+  await sb.from('locaties').update({actief:!huidigActief}).eq('id',id);
+  await laadLocaties();
 }
 
 function toonConnectStatus(){
@@ -1062,7 +1150,7 @@ async function verwijderMFA(){
 
 if(typeof kronrInit==='function') kronrInit(loadData).then(()=>{
   const hash=location.hash.replace('#','');
-  if(['profiel','account','beveiliging','abonnement'].includes(hash)) setTab(hash);
+  if(['profiel','account','beveiliging','locaties','abonnement'].includes(hash)) setTab(hash);
   verwerkStripeConnectReturn();
   verwerkMoneybirdReturn();
 });
