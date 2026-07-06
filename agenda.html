@@ -356,6 +356,10 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
     <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span id="p-med"></span></div>
     <div class="pop-row"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg><span id="p-dur"></span></div>
     <div class="pop-row" id="p-notitie-row" style="display:none;"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/></svg><span id="p-notitie"></span></div>
+    <div id="p-noshow-row" style="display:none;margin:10px 0;padding:12px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:8px;">
+      <div style="font-size:12px;color:#c0392b;margin-bottom:8px;" id="p-noshow-tekst"></div>
+      <button class="pop-btn-afrekenen" style="background:#c0392b;border-color:#c0392b;width:100%;justify-content:center;" id="p-noshow-btn" onclick="incasseerNoshowFee()">No-show-fee incasseren</button>
+    </div>
     <div class="pop-actions">
       <button class="pop-btn-afrekenen" id="p-afrekenen-btn" onclick="afrekenenHuidige()" style="display:none;" title="Afrekenen via de kassa"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Afrekenen</button>
       <button class="pop-btn" onclick="bewerkHuidige()" title="Bewerken"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
@@ -932,6 +936,19 @@ function showPop(a,card){
   const magAfrekenen = !!a.dienst_id && !['afgerond','geannuleerd','no-show'].includes(status);
   document.getElementById('p-afrekenen-btn').style.display = magAfrekenen ? 'inline-flex' : 'none';
 
+  const noshowRow=document.getElementById('p-noshow-row');
+  if(status==='no-show' && a.noshow_fee_status==='vastgelegd' && SALON?.noshow_fee_bedrag){
+    noshowRow.style.display='block';
+    document.getElementById('p-noshow-tekst').textContent=`Deze klant heeft kaartgegevens vastgelegd. Je kunt €${SALON.noshow_fee_bedrag} incasseren als no-show-fee.`;
+    document.getElementById('p-noshow-btn').style.display='block';
+  } else if(status==='no-show' && a.noshow_fee_status==='geincasseerd'){
+    noshowRow.style.display='block';
+    document.getElementById('p-noshow-tekst').textContent=`No-show-fee van €${SALON?.noshow_fee_bedrag||''} is al geïncasseerd.`;
+    document.getElementById('p-noshow-btn').style.display='none';
+  } else {
+    noshowRow.style.display='none';
+  }
+
   const badge=document.getElementById('p-status-badge');
   badge.textContent=STATUS_LABELS[status]||status;
   badge.style.background=STATUS_COLORS[status]+'22';
@@ -1047,6 +1064,31 @@ async function openWachtlijstOverzicht(){
     </div>
   `;
   }).join('');
+}
+
+async function incasseerNoshowFee(){
+  if(!geselecteerdeApt) return;
+  const btn=document.getElementById('p-noshow-btn');
+  const origLabel=btn.textContent;
+  btn.disabled=true;btn.textContent='Bezig met incasseren...';
+
+  try{
+    const res=await fetch('https://kronr-stripe.isaak-elia.workers.dev/charge-noshow-fee',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({salon_id:SALON_ID, afspraak_id:geselecteerdeApt.id})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.success) throw new Error(data.error||'Onbekende fout');
+
+    geselecteerdeApt.noshow_fee_status='geincasseerd';
+    document.getElementById('p-noshow-tekst').textContent=`No-show-fee van €${SALON?.noshow_fee_bedrag||''} is geïncasseerd.`;
+    btn.style.display='none';
+  }catch(e){
+    btn.disabled=false;btn.textContent=origLabel;
+    alert('Incasseren mislukt: '+e.message+'\n\nDit kan gebeuren als de kaart geweigerd wordt of verlopen is -- neem in dat geval rechtstreeks contact op met de klant.');
+  }
 }
 
 function afrekenenHuidige(){

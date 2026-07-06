@@ -236,6 +236,12 @@ select.fi{cursor:pointer;}
         Telt mee voor de stempelkaart
       </label>
     </div>
+    <div class="fr" id="d-kaart-wrap" style="display:none;">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="d-kaart" style="width:16px;height:16px;">
+        Kaartgegevens verplicht bij boeken (no-show-bescherming)
+      </label>
+    </div>
     <button class="btsv" id="btn-dienst-opslaan" onclick="slaDienstOp()">Dienst opslaan</button>
   </div>
 </div>
@@ -263,6 +269,13 @@ select.fi{cursor:pointer;}
         <input type="checkbox" id="ab-stempel" style="width:16px;height:16px;">
         Telt mee voor de stempelkaart
       </label>
+    </div>
+    <div class="fr" id="ab-kaart-wrap" style="display:none;">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="ab-kaart" style="width:16px;height:16px;">
+        Kaartgegevens verplicht bij boeken (no-show-bescherming)
+      </label>
+      <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant legt bij het boeken een kaart vast (geen afschrijving). Bij een no-show kun je het ingestelde bedrag alsnog incasseren.</div>
     </div>
     <button class="btsv" id="btn-aanbetaling-opslaan" onclick="slaAanbetalingOp()">Opslaan</button>
   </div>
@@ -367,6 +380,7 @@ async function loadData(){
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
   document.getElementById('d-aanbetaling-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
   document.getElementById('d-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
+  document.getElementById('d-kaart-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
   renderTabs();
   renderRows();
   laadPrijsAdviesVoorDiensten();
@@ -399,7 +413,10 @@ function renderRows(){
     const advies=PRIJSADVIES_SUGGESTIES?.find(s=>s.dienst && s.dienst.toLowerCase()===d.naam.toLowerCase());
     const aanbLabel = d.aanbetaling_type==='percentage' ? `${d.aanbetaling_bedrag}%` : d.aanbetaling_type==='vast' ? `€${d.aanbetaling_bedrag}` : 'Geen';
     const labelDelen=[];
-    if(magAanbetaling) labelDelen.push('Aanbetaling: '+aanbLabel);
+    if(magAanbetaling){
+      labelDelen.push('Aanbetaling: '+aanbLabel);
+      labelDelen.push(d.vereist_kaartgegevens?'Kaart verplicht':'Kaart niet verplicht');
+    }
     if(magStempel) labelDelen.push(d.telt_voor_stempel?'Telt voor stempelkaart':'Telt niet voor stempelkaart');
     return `
     <div class="dt-row" style="opacity:${d.actief?1:0.5}">
@@ -460,7 +477,8 @@ async function slaDienstOp(){
     categorie:cat,beschrijving:omschr||null,actief:true,
     aanbetaling_type:aanbType,
     aanbetaling_bedrag:aanbType?Number(aanbBedragRaw):null,
-    telt_voor_stempel:document.getElementById('d-stempel').checked
+    telt_voor_stempel:document.getElementById('d-stempel').checked,
+    vereist_kaartgegevens:document.getElementById('d-kaart').checked
   });
 
   btn.disabled=false;btn.textContent='Dienst opslaan';
@@ -469,6 +487,7 @@ async function slaDienstOp(){
 
   ['d-naam','d-prijs','d-duur','d-omschr','d-aanb-bedrag'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('d-stempel').checked=false;
+  document.getElementById('d-kaart').checked=false;
   document.getElementById('d-aanb-type').value='';
   closeM('m-new');
   await loadData();
@@ -497,6 +516,8 @@ function openAanbetalingModal(id){
   document.getElementById('ab-bedrag').value=d.aanbetaling_bedrag||'';
   document.getElementById('ab-stempel').checked=d.telt_voor_stempel||false;
   document.getElementById('ab-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
+  document.getElementById('ab-kaart').checked=d.vereist_kaartgegevens||false;
+  document.getElementById('ab-kaart-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
   document.getElementById('ab-err').style.display='none';
   wisselAanbTypeUI('ab-');
   openM('m-aanbetaling');
@@ -507,6 +528,7 @@ async function slaAanbetalingOp(){
   const type=document.getElementById('ab-type').value||null;
   const bedragRaw=document.getElementById('ab-bedrag').value;
   const telStempel=document.getElementById('ab-stempel').checked;
+  const vereistKaart=document.getElementById('ab-kaart').checked;
   const errEl=document.getElementById('ab-err');
 
   if(type==='percentage' && (bedragRaw==='' || Number(bedragRaw)<0 || Number(bedragRaw)>100)){
@@ -523,7 +545,8 @@ async function slaAanbetalingOp(){
   const{error}=await sb.from('diensten').update({
     aanbetaling_type:type,
     aanbetaling_bedrag:type?Number(bedragRaw):null,
-    telt_voor_stempel:telStempel
+    telt_voor_stempel:telStempel,
+    vereist_kaartgegevens:vereistKaart
   }).eq('id',huidigAanbetalingDienstId);
 
   btn.disabled=false;btn.textContent='Opslaan';

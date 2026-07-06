@@ -444,6 +444,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
           <button class="btn-sec" id="btn-connect" onclick="koppelStripeConnect()">Stripe koppelen</button>
         </div>
         <div class="msg" id="msg-connect"></div>
+
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--bd);">
+          <div class="fr">
+            <label class="fl">No-show-fee (vast bedrag)</label>
+            <input class="fi" id="s-noshow-bedrag" type="number" min="0" step="0.5" placeholder="bv. 15">
+            <div style="font-size:11px;color:var(--mu);margin-top:6px;">Bedrag dat je kunt incasseren als een klant niet op komt bij een dienst waarvoor kaartgegevens verplicht zijn (instelbaar per dienst via Diensten). Leeg = niet ingesteld, dan kun je geen fee incasseren.</div>
+          </div>
+          <button class="btn-sec" onclick="slaNoshowFeeOp()">Opslaan</button>
+          <div class="msg" id="msg-noshow"></div>
+        </div>
       </div>
 
       <div id="stripe-connect-sectie-upsell" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
@@ -495,6 +505,7 @@ async function loadData(){
     document.getElementById('slug-sectie-business').style.display='block';
     document.getElementById('stripe-connect-sectie-business').style.display='block';
     toonConnectStatus();
+    document.getElementById('s-noshow-bedrag').value = SALON.noshow_fee_bedrag ?? '';
   } else {
     document.getElementById('slug-sectie-upsell').style.display='block';
     document.getElementById('stripe-connect-sectie-upsell').style.display='block';
@@ -621,6 +632,18 @@ async function openPortal(){
 }
 
 // ── STRIPE CONNECT (aanbetaling) ──
+async function slaNoshowFeeOp(){
+  const raw=document.getElementById('s-noshow-bedrag').value;
+  if(raw!=='' && Number(raw)<0){
+    showMsg('msg-noshow','Vul een geldig bedrag in (0 of hoger).');
+    return;
+  }
+  const{error}=await sb.from('salons').update({noshow_fee_bedrag:raw===''?null:Number(raw)}).eq('id',SALON_ID);
+  if(error){ showMsg('msg-noshow','Fout bij opslaan: '+error.message); return; }
+  SALON.noshow_fee_bedrag = raw===''?null:Number(raw);
+  showMsg('msg-noshow','Opgeslagen.','ok');
+}
+
 function toonConnectStatus(){
   const status=SALON.stripe_connect_status||'niet_gekoppeld';
   const dot=document.getElementById('connect-dot');

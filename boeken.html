@@ -289,6 +289,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="cr"><span class="cr-label">Tijd</span><span class="cr-val" id="cf-tijd"></span></div>
         <div class="cr"><span class="cr-label">Prijs</span><span class="cr-val" id="cf-prijs" style="color:var(--gd)"></span></div>
         <div class="cr" id="cf-aanbetaling-row" style="display:none;"><span class="cr-label">Aanbetaling</span><span class="cr-val" id="cf-aanbetaling"></span></div>
+        <div class="cr" id="cf-kaart-row" style="display:none;"><span class="cr-label">Kaartgegevens</span><span class="cr-val" id="cf-kaart"></span></div>
       </div>
       <p style="font-size:13px;color:var(--mu);line-height:1.7;font-weight:300;">Wil je de afspraak wijzigen of annuleren? Dat kan tot 24 uur van tevoren via de link in je bevestigingsmail.</p>
       <a id="cf-stempel-link" href="#" style="display:none;font-size:12px;color:var(--gd);text-decoration:none;font-weight:600;">✦ Bekijk je stempelkaart →</a>
@@ -323,7 +324,7 @@ const SALON_ID=params.get('salon');
 const IS_EMBED=params.get('embed')==='1';
 if(IS_EMBED) document.body.classList.add('embed');
 
-let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0};
+let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false};
 
 function berekenAanbetalingBedrag(prijs,type,bedrag){
   if(type==='percentage') return Math.round(prijs*bedrag/100*100)/100;
@@ -486,12 +487,14 @@ async function init(){
     ?diensten.map(d=>{
       const heeftAanbetaling = window.SALON_STRIPE_ACTIEF && d.aanbetaling_type;
       const aanbEuro = heeftAanbetaling ? berekenAanbetalingBedrag(d.prijs, d.aanbetaling_type, d.aanbetaling_bedrag) : 0;
+      const vereistKaart = window.SALON_STRIPE_ACTIEF && d.vereist_kaartgegevens;
       return `
-      <div class="dienst-card" onclick="selectDienst(this,'${d.naam.replace(/'/g,"\\'")}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0})">
+      <div class="dienst-card" onclick="selectDienst(this,'${d.naam.replace(/'/g,"\\'")}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart})">
         <div class="dc-naam">${d.naam}</div>
         <div class="dc-prijs">€${d.prijs}</div>
         <div class="dc-duur">${d.duur_min} min</div>
         ${heeftAanbetaling?`<div class="dc-aanbetaling">Aanbetaling vereist: €${aanbEuro}</div>`:''}
+        ${vereistKaart?`<div class="dc-aanbetaling">Kaartgegevens verplicht bij boeken</div>`:''}
       </div>`;
     }).join('')
     :`<div style="grid-column:1/-1;padding:32px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Geen diensten beschikbaar</div>`;
@@ -540,12 +543,13 @@ function goStep(n){
 }
 
 // ── SELECTIES ─────────────────────────────────────────────────────────────────
-function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag){
+function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
   document.querySelectorAll('.dienst-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
   state.dienst=naam;state.prijs=prijs;state.duur=duur;state.dienst_id=id;
   state.aanb_type = (window.SALON_STRIPE_ACTIEF && aanbType) ? aanbType : null;
   state.aanb_bedrag = state.aanb_type ? berekenAanbetalingBedrag(prijs,aanbType,aanbBedrag) : 0;
+  state.vereist_kaart = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
   document.getElementById('sum-dienst').textContent=naam;
   document.getElementById('sum-prijs').textContent='€'+prijs;
   document.getElementById('sum-duur').textContent=duur+' min';
@@ -708,9 +712,10 @@ function zetStempelLink(email){
 }
 
 async function verwerkAanbetalingReturn(){
-  const resultaat=params.get('aanbetaling');
+  const aanbResultaat=params.get('aanbetaling');
+  const kaartResultaat=params.get('kaart');
   const afspraakId=params.get('afspraak');
-  if(!resultaat || !afspraakId) return;
+  if((!aanbResultaat && !kaartResultaat) || !afspraakId) return;
 
   history.replaceState(null,'',window.location.pathname);
 
@@ -735,19 +740,36 @@ async function verwerkAanbetalingReturn(){
   const titelEl=document.querySelector('#step5 .step-title');
   const subEl=document.querySelector('#step5 .step-sub');
   const aanbRow=document.getElementById('cf-aanbetaling-row');
+  const kaartRow=document.getElementById('cf-kaart-row');
 
-  if(resultaat==='succes'){
-    titelEl.textContent='Aanbetaling ontvangen!';
-    subEl.textContent='Je afspraak is bevestigd. Je ontvangt ook een bevestiging per e-mail.';
+  const alleGeslaagd = (aanbResultaat!=='geannuleerd') && (kaartResultaat!=='geannuleerd');
+
+  if(aanbResultaat==='succes'){
     aanbRow.style.display='flex';
     document.getElementById('cf-aanbetaling').textContent='€'+(a.aanbetaling_bedrag??'—')+' ontvangen ✓';
     document.getElementById('cf-aanbetaling').style.color='var(--gd)';
-  } else {
-    titelEl.textContent='Afspraak staat nog steeds gepland';
-    subEl.textContent='De aanbetaling is niet afgerond. Je afspraak blijft staan -- neem contact op met de salon om de aanbetaling alsnog te regelen, of probeer het opnieuw.';
+  } else if(aanbResultaat==='geannuleerd'){
     aanbRow.style.display='flex';
     document.getElementById('cf-aanbetaling').textContent='€'+(a.aanbetaling_bedrag??'—')+' nog niet ontvangen';
     document.getElementById('cf-aanbetaling').style.color='var(--red)';
+  }
+
+  if(kaartResultaat==='succes'){
+    kaartRow.style.display='flex';
+    document.getElementById('cf-kaart').textContent='Vastgelegd ✓';
+    document.getElementById('cf-kaart').style.color='var(--gd)';
+  } else if(kaartResultaat==='geannuleerd'){
+    kaartRow.style.display='flex';
+    document.getElementById('cf-kaart').textContent='Nog niet vastgelegd';
+    document.getElementById('cf-kaart').style.color='var(--red)';
+  }
+
+  if(alleGeslaagd){
+    titelEl.textContent='Afspraak bevestigd!';
+    subEl.textContent='Je ontvangt ook een bevestiging per e-mail.';
+  } else {
+    titelEl.textContent='Afspraak staat nog steeds gepland';
+    subEl.textContent='Niet alles is afgerond. Je afspraak blijft staan -- neem contact op met de salon, of probeer het opnieuw.';
   }
 
   document.getElementById('progress-bar').style.display='none';
@@ -844,28 +866,42 @@ async function bevestigen(){
     errEl.style.display='block';return;
   }
 
-  // Aanbetaling vereist? Dan eerst naar Stripe Checkout (op de eigen
-  // Stripe-account van de salon) voordat we de boeking als compleet tonen.
-  // De afspraak zelf staat al vast (status 'gepland') -- als de aanbetaling
-  // om wat voor reden dan ook niet lukt, blijft de boeking gewoon staan en
-  // valt het terug op 'aanbetaling ter plekke regelen'.
-  if(state.aanb_type && window.SALON_STRIPE_ACTIEF && nieuweAfspraak){
+  // Aanbetaling en/of verplichte kaartgegevens? Dan eerst naar Stripe
+  // Checkout (op de eigen Stripe-account van de salon) voordat we de
+  // boeking als compleet tonen. De afspraak zelf staat al vast (status
+  // 'gepland') -- als de Stripe-stap om wat voor reden dan ook niet lukt,
+  // blijft de boeking gewoon staan en valt het terug op 'ter plekke regelen'.
+  //
+  // Als een dienst ZOWEL een aanbetaling ALS verplichte kaartgegevens
+  // heeft, gebruiken we bewust 1 Stripe-sessie i.p.v. de klant twee keer
+  // naar Stripe te sturen: /create-deposit-checkout ondersteunt dan een
+  // save_card-vlag die de kaart ook meteen vastlegt voor latere no-show-
+  // incasso (zie workers/kronr-stripe-noshow-routes.md).
+  const needsPayment = state.aanb_type && window.SALON_STRIPE_ACTIEF;
+  const needsCardOnFile = state.vereist_kaart;
+
+  if((needsPayment || needsCardOnFile) && nieuweAfspraak){
     try{
       await sb.from('afspraken').update({
-        aanbetaling_status:'in_afwachting',
-        aanbetaling_bedrag:state.aanb_bedrag
+        ...(needsPayment ? {aanbetaling_status:'in_afwachting', aanbetaling_bedrag:state.aanb_bedrag} : {}),
+        ...(needsCardOnFile ? {noshow_fee_status:'in_afwachting'} : {})
       }).eq('id',nieuweAfspraak.id);
 
-      const checkoutRes=await fetch('https://kronr-stripe.isaak-elia.workers.dev/create-deposit-checkout',{
+      const successUrl=window.location.origin+window.location.pathname+'?aanbetaling='+(needsPayment?'succes':'geen')+'&kaart='+(needsCardOnFile?'succes':'geen')+'&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:'');
+      const cancelUrl=window.location.origin+window.location.pathname+'?aanbetaling='+(needsPayment?'geannuleerd':'geen')+'&kaart='+(needsCardOnFile?'geannuleerd':'geen')+'&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:'');
+
+      const route = needsPayment ? '/create-deposit-checkout' : '/create-setup-checkout';
+      const checkoutRes=await fetch('https://kronr-stripe.isaak-elia.workers.dev'+route,{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({
           salon_id:SALON_ID,
           afspraak_id:nieuweAfspraak.id,
-          bedrag:state.aanb_bedrag,
+          bedrag:needsPayment?state.aanb_bedrag:undefined,
+          save_card:needsCardOnFile,
           email,
-          success_url:window.location.origin+window.location.pathname+'?aanbetaling=succes&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:''),
-          cancel_url:window.location.origin+window.location.pathname+'?aanbetaling=geannuleerd&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:'')
+          success_url:successUrl,
+          cancel_url:cancelUrl
         })
       });
       if(!checkoutRes.ok) throw new Error('Checkout-aanroep mislukt');
@@ -882,9 +918,9 @@ async function bevestigen(){
       window.location.href=checkoutData.url;
       return;
     }catch(e){
-      console.warn('Aanbetaling kon niet gestart worden, boeking blijft staan zonder aanbetaling:',e);
+      console.warn('Stripe-stap kon niet gestart worden, boeking blijft staan zonder aanbetaling/kaartgegevens:',e);
       // Val gewoon door naar de normale bevestiging hieronder -- de klant
-      // regelt de aanbetaling dan ter plekke met de salon.
+      // regelt het dan ter plekke met de salon.
     }
   }
 
