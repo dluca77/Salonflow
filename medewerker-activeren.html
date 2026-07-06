@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Account activeren — Kronr</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;}
+.wrap{max-width:420px;margin:0 auto;padding:60px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:36px;}
+.logo em{font-style:normal;color:var(--gd);}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;}
+.card-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;text-align:center;}
+.card-sub{font-size:13px;color:var(--mu);margin-bottom:24px;line-height:1.6;text-align:center;}
+.fl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;}
+.fi{width:100%;padding:12px 14px;border:1px solid var(--bd);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;margin-bottom:14px;}
+.fi:focus{outline:none;border-color:var(--gd);}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn-prim{background:var(--ink);color:#fff;}
+.btn-prim:hover:not(:disabled){opacity:.9;}
+.state-icon{font-size:40px;text-align:center;margin-bottom:16px;}
+.msg-center{text-align:center;color:var(--mu);font-size:13px;line-height:1.6;}
+.err{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="card" id="card">
+    <div class="card-title">Laden...</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+const params=new URLSearchParams(location.search);
+const token=params.get('token');
+const card=document.getElementById('card');
+
+async function init(){
+  if(!token){
+    card.innerHTML=`<div class="card-title" style="text-align:center;">Ongeldige link</div><p class="msg-center">Vraag je werkgever om een nieuwe uitnodiging.</p>`;
+    return;
+  }
+
+  const{data,error}=await sb.rpc('get_medewerker_uitnodiging_info',{p_token:token});
+  const info=Array.isArray(data)?data[0]:data;
+
+  if(error||!info){
+    card.innerHTML=`<div class="card-title" style="text-align:center;">Uitnodiging niet gevonden</div><p class="msg-center">Deze uitnodiging is niet geldig meer, of al gebruikt. Vraag je werkgever om een nieuwe.</p>`;
+    return;
+  }
+
+  card.innerHTML=`
+    <div class="card-title">Welkom, ${info.naam.split(' ')[0]}!</div>
+    <p class="card-sub">Maak een wachtwoord aan om toegang te krijgen tot je eigen rooster en verlofaanvragen.</p>
+    <label class="fl">E-mail</label>
+    <input class="fi" id="inp-email" type="email" value="${info.email}" disabled style="background:var(--iv);color:var(--mu);">
+    <label class="fl">Wachtwoord</label>
+    <input class="fi" id="inp-ww" type="password" placeholder="Minimaal 8 tekens">
+    <label class="fl">Herhaal wachtwoord</label>
+    <input class="fi" id="inp-ww2" type="password" placeholder="Zelfde wachtwoord">
+    <button class="btn btn-prim" id="btn-activeer" onclick="activeer('${info.email}')">Account activeren</button>
+    <div class="err" id="err"></div>
+  `;
+}
+
+async function activeer(email){
+  const ww=document.getElementById('inp-ww').value;
+  const ww2=document.getElementById('inp-ww2').value;
+  const errEl=document.getElementById('err');
+  errEl.style.display='none';
+
+  if(ww.length<8){ errEl.textContent='Wachtwoord moet minimaal 8 tekens zijn.'; errEl.style.display='block'; return; }
+  if(ww!==ww2){ errEl.textContent='Wachtwoorden komen niet overeen.'; errEl.style.display='block'; return; }
+
+  const btn=document.getElementById('btn-activeer');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  // Account aanmaken en direct inloggen (signUp logt automatisch in als
+  // e-mailbevestiging uit staat; anders moet de medewerker eerst de
+  // bevestigingsmail van Supabase zelf openen voordat accepteer_medewerker_uitnodiging kan draaien)
+  const{data:signUpData,error:signUpErr}=await sb.auth.signUp({email,password:ww});
+
+  if(signUpErr){
+    btn.disabled=false;btn.textContent='Account activeren';
+    errEl.textContent='Fout: '+signUpErr.message;errEl.style.display='block';
+    return;
+  }
+
+  if(!signUpData.session){
+    // E-mailbevestiging staat aan bij dit Supabase-project -- de koppeling
+    // (accepteer_medewerker_uitnodiging) kan pas na de eerste succesvolle
+    // login, want die functie heeft auth.uid() nodig.
+    card.innerHTML=`
+      <div class="state-icon">✉️</div>
+      <div class="card-title" style="text-align:center;">Bevestig je e-mail</div>
+      <p class="msg-center">We hebben een bevestigingslink naar ${email} gestuurd. Klik daarop, log daarna in via <a href="medewerker-login.html" style="color:var(--gd);">medewerker-login.html</a> -- je account wordt dan automatisch gekoppeld.</p>
+    `;
+    try{ sessionStorage.setItem('kronr_pending_uitnodiging_token', token); }catch(e){}
+    return;
+  }
+
+  const{data:koppelResultaat,error:koppelErr}=await sb.rpc('accepteer_medewerker_uitnodiging',{p_token:token});
+
+  if(koppelErr || !koppelResultaat){
+    card.innerHTML=`
+      <div class="state-icon">⚠️</div>
+      <div class="card-title" style="text-align:center;">Account aangemaakt, koppelen mislukt</div>
+      <p class="msg-center">Je account is aangemaakt maar kon niet automatisch gekoppeld worden. Log in via <a href="medewerker-login.html" style="color:var(--gd);">medewerker-login.html</a> -- daar proberen we het opnieuw.</p>
+    `;
+    try{ sessionStorage.setItem('kronr_pending_uitnodiging_token', token); }catch(e){}
+    return;
+  }
+
+  window.location.href='medewerker-portal.html';
+}
+
+init();
+</script>
+</body>
+</html>

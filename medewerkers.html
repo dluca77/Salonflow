@@ -178,6 +178,10 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
   <div class="content">
     <div class="team-count" id="team-count">Laden...</div>
+    <div id="verlof-aanvragen-sectie" style="display:none;margin-bottom:24px;background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:18px;">
+      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:12px;">Openstaande verlofaanvragen</div>
+      <div id="verlof-aanvragen-lijst"></div>
+    </div>
     <div class="team-grid" id="team-grid"></div>
   </div>
 </div>
@@ -228,6 +232,13 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div style="border:1px solid var(--bd);">
       <div class="dr"><span class="drl">E-mail</span><span class="drv" id="d-email">—</span></div>
       <div class="dr"><span class="drl">Telefoon</span><span class="drv" id="d-tel">—</span></div>
+    </div>
+
+    <div style="margin-top:16px;padding:14px 16px;background:var(--wm);border-radius:8px;">
+      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;">Eigen inlog voor rooster & verlof</div>
+      <div id="d-uitnodiging-status" style="font-size:13px;margin-bottom:10px;">—</div>
+      <button class="btn-sec" id="btn-uitnodigen" style="width:100%;" onclick="verstuurUitnodiging()">Uitnodigen</button>
+      <div class="msg" id="msg-uitnodiging"></div>
     </div>
 
     <div class="dbtns">
@@ -287,6 +298,44 @@ async function loadData(){
   OMZET_DATA=berekenOmzetData(TEAM, verkoopItems, afspraken);
 
   render();
+  laadVerlofAanvragen();
+}
+
+async function laadVerlofAanvragen(){
+  const{data}=await sb.from('medewerker_verlof')
+    .select('*,medewerkers(naam)')
+    .eq('salon_id',SALON_ID)
+    .eq('status','aangevraagd')
+    .order('aangevraagd_op');
+
+  const sectie=document.getElementById('verlof-aanvragen-sectie');
+  const lijst=document.getElementById('verlof-aanvragen-lijst');
+  const aanvragen=data||[];
+
+  if(!aanvragen.length){ sectie.style.display='none'; return; }
+
+  sectie.style.display='block';
+  lijst.innerHTML=aanvragen.map(v=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);">
+      <div>
+        <div style="font-size:13px;font-weight:600;">${v.medewerkers?.naam||'Onbekend'} — ${v.type}</div>
+        <div style="font-size:11px;color:var(--mu);">${fmtVerlofDatum(v.van_datum)} — ${fmtVerlofDatum(v.tot_datum)}${v.notitie?' · '+v.notitie:''}</div>
+      </div>
+      <div style="display:flex;gap:6px;">
+        <button onclick="behandelVerlof('${v.id}','goedgekeurd')" style="padding:6px 12px;background:var(--green);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Goedkeuren</button>
+        <button onclick="behandelVerlof('${v.id}','afgewezen')" style="padding:6px 12px;background:none;border:1px solid var(--bd);color:var(--mu);border-radius:6px;font-size:11px;cursor:pointer;">Afwijzen</button>
+      </div>
+    </div>`).join('');
+}
+
+function fmtVerlofDatum(d){
+  return new Date(d).toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
+}
+
+async function behandelVerlof(id, status){
+  const{error}=await sb.from('medewerker_verlof').update({status, behandeld_op:new Date().toISOString()}).eq('id',id);
+  if(error){ alert('Fout: '+error.message); return; }
+  await laadVerlofAanvragen();
 }
 
 function render(){
@@ -327,8 +376,18 @@ function render(){
   }).join('');
 }
 
+let huidigDetailId=null;
+
+function showMsg(elId, tekst, type){
+  const el=document.getElementById(elId);
+  el.textContent=tekst;
+  el.style.color = type==='ok' ? 'var(--green)' : 'var(--red)';
+  el.style.display='block';
+}
+
 function toonDetail(id){
   const m=TEAM.find(x=>x.id===id);if(!m)return;
+  huidigDetailId=id;
   const c=OMZET_DATA[id]||{omzet:0,afspraken:0};
   document.getElementById('d-av').textContent=getInit(m.naam);
   document.getElementById('d-naam').textContent=m.naam;
@@ -339,7 +398,61 @@ function toonDetail(id){
   document.getElementById('d-email').textContent=m.email||'—';
   document.getElementById('d-tel').textContent=m.telefoon||'—';
 
+  const statusEl=document.getElementById('d-uitnodiging-status');
+  const btn=document.getElementById('btn-uitnodigen');
+  document.getElementById('msg-uitnodiging').style.display='none';
+  if(m.uitnodiging_status==='geactiveerd'){
+    statusEl.textContent='✓ Heeft een eigen inlog geactiveerd.';
+    statusEl.style.color='var(--green)';
+    btn.style.display='none';
+  } else if(m.uitnodiging_status==='uitgenodigd'){
+    statusEl.textContent='Uitnodiging verstuurd, nog niet geactiveerd.';
+    statusEl.style.color='var(--mu)';
+    btn.textContent='Opnieuw uitnodigen';
+    btn.style.display='block';
+  } else {
+    statusEl.textContent='Nog geen eigen inlog.';
+    statusEl.style.color='var(--mu)';
+    btn.textContent='Uitnodigen';
+    btn.style.display= m.email ? 'block' : 'none';
+    if(!m.email) statusEl.textContent='Nog geen eigen inlog. Vul eerst een e-mailadres in om uit te kunnen nodigen.';
+  }
+
   openM('m-detail');
+}
+
+async function verstuurUitnodiging(){
+  const m=TEAM.find(x=>x.id===huidigDetailId);if(!m)return;
+  const btn=document.getElementById('btn-uitnodigen');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{data:token,error}=await sb.rpc('maak_medewerker_uitnodiging',{p_medewerker_id:huidigDetailId});
+
+  if(error){
+    btn.disabled=false;
+    showMsg('msg-uitnodiging','Fout: '+error.message);
+    return;
+  }
+
+  try{
+    await fetch('https://kronr-mail.isaak-elia.workers.dev/medewerker-uitnodiging',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email:m.email,
+        naam:m.naam,
+        salon_naam:SALON?.naam||'',
+        activatie_link:window.location.origin+'/medewerker-activeren.html?token='+token
+      })
+    });
+  }catch(e){
+    console.warn('Uitnodigingsmail kon niet verstuurd worden:',e);
+  }
+
+  btn.disabled=false;
+  showMsg('msg-uitnodiging','Uitnodiging verstuurd naar '+m.email+'.','ok');
+  await loadData();
+  toonDetail(huidigDetailId);
 }
 
 async function slaMedewerkOp(){
