@@ -456,6 +456,29 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
 
+      <div id="boekhouding-sectie-business" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
+        <div class="sec-title">Boekhoudkoppeling</div>
+        <div class="sec-sub">Koppel Moneybird om elke kassa-betaling automatisch als factuur/mutatie te laten aanmaken.</div>
+
+        <div class="mfa-status">
+          <div class="mfa-status-left">
+            <div class="mfa-dot" id="mb-dot"></div>
+            <div>
+              <div class="mfa-label" id="mb-label">Nog niet gekoppeld</div>
+              <div class="mfa-sub" id="mb-sub">Kassa-betalingen worden (nog) niet automatisch geboekt.</div>
+            </div>
+          </div>
+          <button class="btn-sec" id="btn-mb-connect" onclick="koppelMoneybird()">Moneybird koppelen</button>
+        </div>
+        <div id="mb-fout-balk" style="display:none;margin-top:10px;padding:10px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:6px;font-size:12px;color:#c0392b;"></div>
+        <div class="msg" id="msg-mb"></div>
+      </div>
+
+      <div id="boekhouding-sectie-upsell" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
+        <div class="sec-title">Boekhoudkoppeling</div>
+        <div class="sec-sub">Automatisch boeken naar Moneybird is een Pro-functie. <a href="#abonnement" onclick="setTab('abonnement')" style="color:var(--gd);">Upgrade naar Pro</a> om dit te gebruiken.</div>
+      </div>
+
       <div id="stripe-connect-sectie-upsell" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
         <div class="sec-title">Aanbetaling bij boeken</div>
         <div class="sec-sub">Klanten laten aanbetalen bij het boeken (via je eigen Stripe-account) is een Business-functie. <a href="#abonnement" onclick="setTab('abonnement')" style="color:var(--gd);">Upgrade naar Business</a> om dit te gebruiken.</div>
@@ -509,6 +532,13 @@ async function loadData(){
   } else {
     document.getElementById('slug-sectie-upsell').style.display='block';
     document.getElementById('stripe-connect-sectie-upsell').style.display='block';
+  }
+
+  if(SALON.plan==='business' || SALON.plan==='pro'){
+    document.getElementById('boekhouding-sectie-business').style.display='block';
+    toonMoneybirdStatus();
+  } else {
+    document.getElementById('boekhouding-sectie-upsell').style.display='block';
   }
 
   if(SALON.logo_url){
@@ -644,6 +674,87 @@ async function slaNoshowFeeOp(){
   showMsg('msg-noshow','Opgeslagen.','ok');
 }
 
+// ── MONEYBIRD (boekhoudkoppeling) ──
+function toonMoneybirdStatus(){
+  const dot=document.getElementById('mb-dot');
+  const label=document.getElementById('mb-label');
+  const sub=document.getElementById('mb-sub');
+  const btn=document.getElementById('btn-mb-connect');
+  const foutBalk=document.getElementById('mb-fout-balk');
+
+  if(SALON.boekhouding_provider==='moneybird'){
+    dot.classList.add('on');
+    label.textContent='Gekoppeld met Moneybird';
+    sub.textContent='Kassa-betalingen worden automatisch geboekt.';
+    btn.textContent='Opnieuw koppelen';
+  } else {
+    dot.classList.remove('on');
+    label.textContent='Nog niet gekoppeld';
+    sub.textContent='Kassa-betalingen worden (nog) niet automatisch geboekt.';
+    btn.textContent='Moneybird koppelen';
+  }
+
+  if(SALON.boekhouding_laatste_sync_fout){
+    foutBalk.style.display='block';
+    foutBalk.textContent='Laatste synchronisatie mislukt: '+SALON.boekhouding_laatste_sync_fout;
+  } else {
+    foutBalk.style.display='none';
+  }
+}
+
+async function koppelMoneybird(){
+  const btn=document.getElementById('btn-mb-connect');
+  const origLabel=btn.textContent;
+  btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
+
+  try{
+    const res=await fetch('https://kronr-moneybird.isaak-elia.workers.dev/create-oauth-link',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        salon_id:SALON_ID,
+        return_url:window.location.origin+window.location.pathname+'?moneybird_return=1#abonnement'
+      })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.url) throw new Error(data.error||'Onbekende fout');
+    window.location.href=data.url;
+  }catch(e){
+    btn.disabled=false;btn.textContent=origLabel;
+    showMsg('msg-mb','Fout bij koppelen: '+e.message);
+  }
+}
+
+async function verwerkMoneybirdReturn(){
+  const params=new URLSearchParams(window.location.search);
+  if(!params.get('moneybird_return')) return;
+  const code=params.get('code');
+
+  history.replaceState(null,'',window.location.pathname+'#abonnement');
+  setTab('abonnement');
+
+  if(!code) return; // gebruiker geannuleerd
+
+  try{
+    const res=await fetch('https://kronr-moneybird.isaak-elia.workers.dev/exchange-oauth-code',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({salon_id:SALON_ID, code})
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.success) throw new Error(data.error||'Onbekende fout');
+
+    SALON.boekhouding_provider='moneybird';
+    SALON.moneybird_administration_id=data.administration_id;
+    toonMoneybirdStatus();
+    showMsg('msg-mb','Moneybird gekoppeld.','ok');
+  }catch(e){
+    showMsg('msg-mb','Koppelen mislukt: '+e.message);
+  }
+}
+
 function toonConnectStatus(){
   const status=SALON.stripe_connect_status||'niet_gekoppeld';
   const dot=document.getElementById('connect-dot');
@@ -702,8 +813,8 @@ async function koppelStripeConnect(){
 // Worker, niet hier: de code mag nooit clientside naar Stripe zelf.
 async function verwerkStripeConnectReturn(){
   const params=new URLSearchParams(window.location.search);
+  if(!params.get('stripe_connect_return')) return;
   const code=params.get('code');
-  if(!params.get('stripe_connect_return') && !code) return;
 
   history.replaceState(null,'',window.location.pathname+'#abonnement');
   setTab('abonnement');
@@ -953,6 +1064,7 @@ if(typeof kronrInit==='function') kronrInit(loadData).then(()=>{
   const hash=location.hash.replace('#','');
   if(['profiel','account','beveiliging','abonnement'].includes(hash)) setTab(hash);
   verwerkStripeConnectReturn();
+  verwerkMoneybirdReturn();
 });
 else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData):(document.documentElement.style.opacity='1')});
 </script>

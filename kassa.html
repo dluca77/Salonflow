@@ -637,6 +637,17 @@ async function betaal(){
       if(aptErr) console.warn('Kon afspraak niet op afgerond zetten:',aptErr);
     }
 
+    // Boekhoudkoppeling: op de achtergrond synchroniseren, blokkeert de
+    // kassa niet en laat de bon nooit mislukken als dit faalt -- eventuele
+    // fouten worden zichtbaar in instellingen.html (boekhouding_laatste_sync_fout).
+    if(SALON?.boekhouding_provider==='moneybird'){
+      fetch('https://kronr-moneybird.isaak-elia.workers.dev/sync-betaling',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({salon_id:SALON_ID, betaling_id:betaling.id})
+      }).catch(e=>console.warn('Moneybird-synchronisatie kon niet gestart worden:',e));
+    }
+
     // Nieuwe cadeaubon(nen) aanmaken -- pas NA succesvolle betaling, zodat
     // er nooit een onbetaalde cadeaubon actief kan worden.
     const cbVerkopen=bon.filter(i=>i.type==='cadeaubon_verkoop');
