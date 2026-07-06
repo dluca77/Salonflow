@@ -112,9 +112,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-ai-draft{background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;font-size:9px;line-height:1.45;color:var(--ink2);align-self:flex-start;max-width:92%;}
 .hero-ai-wa-btn{margin-top:6px;padding-top:6px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:9px;color:#25a35a;font-weight:700;cursor:default;}
 .hero-ai-wa-btn svg{width:11px;height:11px;flex-shrink:0;}
-@media(max-width:900px){.hero-float-toasts,.hero-ai-panel,.hero-plant{display:none;}}
+@media(max-width:900px){.hero-float-toasts,.hero-ai-panel{display:none;}}
 
-.hero-plant{position:absolute;right:32%;top:100%;margin-top:-18px;width:11%;min-width:70px;max-width:110px;z-index:2;opacity:0;animation:toastIn .6s ease 2s forwards;}
 
 /* ── HERO: onderste featurebalk ── */
 .hero-pills{max-width:1600px;margin:64px auto 0;width:100%;background:var(--white);border:1px solid var(--bd);border-radius:99px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;box-shadow:0 12px 32px rgba(15,13,11,.06);position:relative;z-index:2;}
@@ -237,9 +236,15 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .ai-chat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:420px;justify-content:center;position:relative;z-index:2;}
 .ai-chat-head{display:flex;align-items:center;gap:10px;padding-bottom:16px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.08);}
 .ai-chat-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 4px rgba(74,222,128,.15);flex-shrink:0;}
-.ai-chat-head-text{font-size:13px;font-weight:600;color:var(--white);display:flex;flex-direction:column;gap:2px;}
-.ai-chat-head-text span{font-size:11px;font-weight:400;color:rgba(255,255,255,.4);}
+.ai-chat-head-text{font-size:13px;font-weight:600;color:var(--white);display:flex;align-items:center;gap:8px;}
+.ai-chat-head-text .ai-chat-live{font-size:11px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.5px;}
+.ai-chat-head-sub{font-size:11px;font-weight:400;color:rgba(255,255,255,.4);margin-top:2px;}
 .chat-msg{display:flex;gap:10px;align-items:flex-start;}
+.chat-bubble-wrap{display:flex;flex-direction:column;gap:3px;}
+.chat-timestamp{font-size:10px;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:4px;}
+.chat-msg.user .chat-timestamp{justify-content:flex-end;}
+.chat-timestamp svg{width:11px;height:11px;color:#7cc4f5;}
+.chat-typing-label{font-size:12px;color:rgba(255,255,255,.4);}
 .chat-msg.ai{flex-direction:row;}
 .chat-msg.user{flex-direction:row-reverse;}
 .chat-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
@@ -248,7 +253,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .chat-bubble{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.55;max-width:260px;}
 .ai-bubble{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);border-radius:10px 10px 10px 2px;}
 .user-bubble{background:var(--gd);color:var(--white);border-radius:10px 10px 2px 10px;}
-.chat-typing{display:flex;gap:4px;padding:12px 14px;background:rgba(255,255,255,.06);border-radius:10px;width:fit-content;}
+.chat-typing{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.06);border-radius:10px;width:fit-content;}
+.chat-typing-dots{display:flex;gap:4px;}
 .chat-typing span{width:6px;height:6px;background:rgba(255,255,255,.3);border-radius:50%;animation:bounce .8s infinite;}
 .chat-typing span:nth-child(2){animation-delay:.15s;}
 .chat-typing span:nth-child(3){animation-delay:.3s;}
@@ -557,13 +563,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     </div>
 
     <!-- AI-chatpaneel, zoals in het dashboard -->
-    <!-- Decoratieve plant, zoals in het voorbeeld (gecodeerd, geen foto beschikbaar) -->
-    <svg class="hero-plant" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
-      <ellipse cx="60" cy="152" rx="46" ry="7" fill="#8c6d3f" opacity=".1"/>
-      <path d="M35 100h50l-7 46a6 6 0 01-6 5H48a6 6 0 01-6-5z" fill="#faf8f4" stroke="#c8bda0" stroke-width="1.5"/>
-      <path d="M60 100c-3-22-2-38 6-54M60 100c8-18 22-28 34-30M60 100c-10-16-26-22-40-20M60 100c6-14 4-30-4-42M60 100c-8-12-22-16-32-12" stroke="#4a7856" stroke-width="3.5" stroke-linecap="round" fill="none"/>
-      <path d="M60 100c-3-22-2-38 6-54" stroke="#5d8f68" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
-    </svg>
     <div class="hero-ai-panel">
       <div class="hero-ai-head">
         <div class="hero-ai-dot"></div>
@@ -768,31 +767,23 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div>
       <div class="ai-label">Kronr AI</div>
       <h2 class="ai-title">Laat AI het werk doen<br>dat jij liever niet doet</h2>
-      <p class="ai-sub">Terwijl jij behandelt, blijft Kronr op de achtergrond doorwerken. Geen dashboards afstruinen, geen extra werk — gewoon elke week uren bespaard.</p>
+      <p class="ai-sub">Terwijl jij je klanten helpt, regelt Kronr AI de rest. Geen dashboards afstruinen, geen extra werk — gewoon elke week uren bespaard.</p>
       <div class="ai-features">
         <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="4"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg></div>
-          <div class="ai-feat-text"><strong>Schrijft Instagram-posts</strong>Upload een foto, krijg direct een pakkende caption met hashtags.</div>
-        </div>
-        <div class="ai-feat">
           <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-          <div class="ai-feat-text"><strong>Beantwoordt klantvragen</strong>Veelgestelde vragen worden automatisch en netjes beantwoord.</div>
+          <div class="ai-feat-text"><strong>Schrijft berichten</strong>Voor WhatsApp, Instagram en meer.</div>
         </div>
         <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
-          <div class="ai-feat-text"><strong>Stuurt herinneringen</strong>Automatisch, op het juiste moment — zonder dat jij eraan hoeft te denken.</div>
+          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
+          <div class="ai-feat-text"><strong>Stuurt herinneringen</strong>Automatisch, op het juiste moment.</div>
         </div>
         <div class="ai-feat">
           <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-          <div class="ai-feat-text"><strong>Vult lege plekken in je agenda</strong>Ziet een gat in je planning en stelt zelf een actie voor om 'm te vullen.</div>
+          <div class="ai-feat-text"><strong>Vult lege plekken in je agenda</strong>AI stelt zelf acties voor om 'm te vullen.</div>
         </div>
         <div class="ai-feat">
           <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
-          <div class="ai-feat-text"><strong>Analyseert je omzet</strong>Ziet patronen in je cijfers die jij tussen de bedrijvigheid door mist.</div>
-        </div>
-        <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-          <div class="ai-feat-text"><strong>Geeft groeisuggesties</strong>Concrete, bruikbare adviezen — geen vage grafiekjes.</div>
+          <div class="ai-feat-text"><strong>Analyseert je omzet</strong>Ziet patronen en geeft slimme inzichten.</div>
         </div>
       </div>
     </div>
@@ -800,29 +791,52 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div class="ai-chat" id="ai-chat">
       <div class="ai-chat-head">
         <div class="ai-chat-dot"></div>
-        <div class="ai-chat-head-text">Kronr AI<span>Actief — verwerkt je data live</span></div>
+        <div>
+          <div class="ai-chat-head-text">Kronr AI <span class="ai-chat-live">● Live</span></div>
+          <div class="ai-chat-head-sub">Actief · Verwerkt je data realtime</div>
+        </div>
       </div>
       <div class="chat-msg ai chat-msg-hidden">
         <div class="chat-av ai-av">K</div>
-        <div class="chat-bubble ai-bubble">Goedemorgen! 18 klanten zijn al 8+ weken niet geweest. Zal ik een actie voorstellen? 📱</div>
+        <div class="chat-bubble-wrap">
+          <div class="chat-bubble ai-bubble">Goedemorgen! 👋<br>Ik zie dat 18 klanten al 8+ weken niet zijn geweest.<br>Zal ik een WhatsApp campagne voorstellen?</div>
+          <div class="chat-timestamp">09:41</div>
+        </div>
       </div>
       <div class="chat-msg user chat-msg-hidden">
-        <div class="chat-av user-av">JD</div>
-        <div class="chat-bubble user-bubble">Ja graag! Met 15% korting op hun volgende bezoek.</div>
+        <div class="chat-bubble-wrap" style="margin-left:auto;">
+          <div class="chat-bubble user-bubble">Ja, graag! Met 15% korting op hun volgende bezoek.</div>
+          <div class="chat-timestamp">09:41 <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
       </div>
       <div class="chat-msg ai chat-msg-hidden">
         <div class="chat-av ai-av">K</div>
-        <div class="chat-bubble ai-bubble">✅ Bericht klaar. Geschatte extra omzet: €680. Versturen?</div>
+        <div class="chat-bubble-wrap">
+          <div class="chat-bubble ai-bubble">Bericht klaar. Geschatte extra omzet: €680. Versturen?</div>
+          <div class="chat-timestamp">09:42</div>
+        </div>
       </div>
       <div class="chat-msg user chat-msg-hidden">
-        <div class="chat-av user-av">JD</div>
-        <div class="chat-bubble user-bubble">Verstuur maar! 🙌</div>
+        <div class="chat-bubble-wrap" style="margin-left:auto;">
+          <div class="chat-bubble user-bubble">Verstuur maar! 🙌</div>
+          <div class="chat-timestamp">09:42 <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        </div>
       </div>
-      <div class="chat-typing chat-typing-indicator" id="chat-typing-ind"><span></span><span></span><span></span></div>
-    </div>
-    <div class="ai-photo-caption">
-      <img src="images/salon-balie-ai.jpg" alt="Kronr AI in gebruik bij de balie">
-      <span>Zo werkt Kronr AI in de praktijk — direct bij de balie, geen extra scherm nodig.</span>
+      <div class="chat-msg ai chat-msg-hidden">
+        <div class="chat-av ai-av">K</div>
+        <div class="chat-bubble-wrap">
+          <div class="chat-bubble ai-bubble">✅ Campagne verstuurd! 18 berichten verzonden via WhatsApp.</div>
+          <div class="chat-timestamp">09:43</div>
+        </div>
+      </div>
+      <div class="chat-msg ai chat-msg-hidden">
+        <div class="chat-av ai-av">K</div>
+        <div class="chat-bubble-wrap">
+          <div class="chat-bubble ai-bubble">📈 Deze campagne levert naar schatting €680 extra omzet op.</div>
+          <div class="chat-timestamp">09:43</div>
+        </div>
+      </div>
+      <div class="chat-typing chat-typing-indicator" id="chat-typing-ind"><div class="chat-typing-dots"><span></span><span></span><span></span></div><span class="chat-typing-label">Kronr AI is aan het typen...</span></div>
     </div>
     </div>
   </div>
@@ -1072,8 +1086,8 @@ function speelAiChatAf(){
       typingInd.classList.remove('shown');
       berichten[i].classList.add('shown');
       i++;
-      setTimeout(volgende, 700);
-    }, 700);
+      setTimeout(volgende, 450);
+    }, 550);
   }
   volgende();
 }
