@@ -33,27 +33,27 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .mob-menu{display:none;width:36px;height:36px;border:none;background:transparent;cursor:pointer;margin-left:auto;}
 
 /* ── HERO ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 24px 60px;text-align:center;background:var(--white);position:relative;overflow:hidden;}
+.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 24px 60px;background:var(--white);position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:600px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(140,109,63,0.06) 0%,transparent 70%);pointer-events:none;}
+.hero-grid{max-width:1600px;width:100%;margin:0 auto;display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:center;}
+.hero-left{text-align:left;}
 .hero-label{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:var(--gd-light);border:1px solid rgba(140,109,63,0.2);border-radius:99px;font-size:12px;font-weight:600;color:var(--gd);letter-spacing:.5px;text-transform:uppercase;margin-bottom:28px;}
 .hero-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.hero-title{font-family:'Playfair Display',serif;font-size:clamp(44px,7vw,96px);font-weight:800;line-height:1.02;letter-spacing:-2px;color:var(--ink);margin-bottom:24px;max-width:900px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(38px,4.6vw,64px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:22px;}
 .hero-title em{font-style:italic;color:var(--gd);}
-.hero-sub{font-size:clamp(15px,1.8vw,18px);font-weight:400;color:var(--mu);line-height:1.75;max-width:520px;margin:0 auto 40px;}
-.hero-btns{display:flex;align-items:center;gap:16px;justify-content:center;flex-wrap:wrap;margin-bottom:16px;}
+.hero-sub{font-size:clamp(15px,1.3vw,17px);font-weight:400;color:var(--mu);line-height:1.7;max-width:480px;margin:0 0 36px;}
+.hero-btns{display:flex;align-items:center;gap:16px;justify-content:flex-start;flex-wrap:wrap;margin-bottom:28px;}
 .btn-primary{padding:16px 32px;background:var(--ink);color:var(--white);font-size:15px;font-weight:600;text-decoration:none;border-radius:10px;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
 .btn-primary:hover{background:var(--ink2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,13,11,.2);}
 .btn-secondary{padding:16px 28px;background:transparent;color:var(--ink);font-size:15px;font-weight:500;text-decoration:none;border-radius:10px;border:1.5px solid var(--bd);transition:all .2s;}
 .btn-secondary:hover{border-color:var(--ink);background:var(--iv);}
-.hero-trust{font-size:13px;color:var(--mu2);margin-bottom:40px;}
-.hero-trust span{color:var(--green);font-weight:600;}
-.hero-usps{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:10px 20px;margin-bottom:56px;max-width:700px;}
-.hero-usp{display:flex;align-items:center;gap:6px;font-size:13px;font-weight:500;color:var(--ink2);}
-.hero-usp svg{width:15px;height:15px;color:var(--green);flex-shrink:0;}
+.hero-usps{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;max-width:440px;}
+.hero-usp{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--ink2);}
+.hero-usp svg{width:16px;height:16px;color:var(--green);flex-shrink:0;}
 
 /* App screenshot */
-.hero-screenshot{width:100%;max-width:1600px;margin:0 auto;position:relative;opacity:0;transform:translateY(32px);animation:heroRise 1s cubic-bezier(.2,.8,.2,1) .4s forwards;}
+.hero-screenshot{width:100%;position:relative;opacity:0;transform:translateY(32px);animation:heroRise 1s cubic-bezier(.2,.8,.2,1) .4s forwards;}
 @keyframes heroRise{to{opacity:1;transform:translateY(0);}}
 .screenshot-shadow{border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(15,13,11,.12),0 8px 24px rgba(15,13,11,.08);border:1px solid var(--bd);}
 .app-mockup{background:var(--iv);width:100%;aspect-ratio:16/9;display:flex;flex-direction:column;position:relative;overflow:hidden;}
@@ -84,6 +84,52 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .mock-apt.c3{background:#c8e8ff;color:#1a5fa0;}
 .mock-time{background:var(--iv);padding:4px;font-size:5px;color:var(--mu2);text-align:right;display:flex;align-items:flex-end;justify-content:flex-end;}
 
+/* ── HERO: zwevende notificaties + AI-chatpaneel over de mockup ── */
+.hero-float-toasts{position:absolute;left:-2%;bottom:8%;display:flex;flex-direction:column;gap:10px;z-index:3;width:26%;min-width:220px;}
+.hero-toast{background:var(--white);border-radius:10px;box-shadow:0 12px 32px rgba(15,13,11,.14);padding:10px 14px;display:flex;align-items:flex-start;gap:10px;opacity:0;transform:translateY(14px);animation:toastIn .5s ease forwards;}
+.hero-toast:nth-child(1){animation-delay:1.1s;}
+.hero-toast:nth-child(2){animation-delay:1.6s;}
+.hero-toast:nth-child(3){animation-delay:2.1s;}
+@keyframes toastIn{to{opacity:1;transform:translateY(0);}}
+.hero-toast-icon{width:32px;height:32px;border-radius:50%;background:var(--iv);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
+.hero-toast-icon.wa{background:#e7f7ec;}
+.hero-toast-icon.eu{background:var(--iv);}
+.hero-toast-body{flex:1;min-width:0;}
+.hero-toast-title{font-size:11px;font-weight:700;color:var(--ink);display:flex;justify-content:space-between;gap:8px;}
+.hero-toast-title span{font-weight:400;color:var(--mu2);font-size:9px;}
+.hero-toast-sub{font-size:10px;color:var(--mu);margin-top:2px;line-height:1.4;}
+
+.hero-ai-panel{position:absolute;right:-2%;bottom:4%;width:34%;min-width:280px;max-width:360px;background:var(--white);border-radius:12px;box-shadow:0 24px 60px rgba(15,13,11,.18);border:1px solid var(--bd);z-index:4;opacity:0;transform:translateY(20px);animation:toastIn .6s ease 2.6s forwards;}
+.hero-ai-head{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--bd);}
+.hero-ai-dot{width:7px;height:7px;border-radius:50%;background:#2d6a4f;flex-shrink:0;}
+.hero-ai-head-text{font-size:12px;font-weight:700;color:var(--ink);}
+.hero-ai-head-text span{display:block;font-size:9px;font-weight:400;color:var(--mu2);margin-top:1px;}
+.hero-ai-body{padding:9px 12px;display:flex;flex-direction:column;gap:6px;}
+.hero-ai-msg{font-size:9.5px;line-height:1.4;padding:6px 9px;border-radius:8px;max-width:88%;}
+.hero-ai-msg.ai{background:var(--iv);color:var(--ink2);align-self:flex-start;}
+.hero-ai-msg.user{background:var(--ink);color:var(--iv);align-self:flex-end;}
+.hero-ai-input{margin:0 12px 10px;padding:7px 10px;border:1px solid var(--bd);border-radius:8px;font-size:9.5px;color:var(--mu2);}
+.hero-ai-draft{background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;font-size:9px;line-height:1.45;color:var(--ink2);align-self:flex-start;max-width:92%;}
+.hero-ai-checklist{margin-top:5px;padding-top:5px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:2px;font-size:8.5px;color:var(--green);font-weight:600;}
+@media(max-width:900px){.hero-float-toasts,.hero-ai-panel{display:none;}}
+
+/* ── HERO: onderste featurebalk ── */
+.hero-pills{max-width:1600px;margin:64px auto 0;width:100%;background:var(--white);border:1px solid var(--bd);border-radius:99px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;box-shadow:0 12px 32px rgba(15,13,11,.06);position:relative;z-index:2;}
+.hero-pill{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13px;font-weight:500;color:var(--ink2);white-space:nowrap;}
+.hero-pill svg{width:16px;height:16px;color:var(--gd);flex-shrink:0;}
+
+@media(max-width:1100px){
+  .hero-grid{grid-template-columns:1fr;gap:40px;}
+  .hero-left{text-align:center;}
+  .hero-sub{margin-left:auto;margin-right:auto;}
+  .hero-btns{justify-content:center;}
+  .hero-usps{margin:0 auto;}
+  .hero-pills{margin-top:40px;}
+}
+@media(max-width:640px){
+  .hero-pills{border-radius:16px;justify-content:flex-start;overflow-x:auto;}
+}
+
 /* ── STATS BAR ── */
 .stats-bar{background:var(--ink);padding:32px 24px;}
 .stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:rgba(255,255,255,.08);}
@@ -103,6 +149,15 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .voor-wie{background:var(--iv);}
 .types-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:52px;}
 .type-card{background:var(--white);border:1px solid var(--bd);border-radius:14px;padding:36px 28px;transition:all .25s;cursor:default;}
+
+/* ── ZO WERKT HET ── */
+.howit-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.howit-card{background:var(--white);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;position:relative;transition:all .25s;}
+.howit-card:hover{border-color:var(--gd);transform:translateY(-4px);box-shadow:0 16px 40px rgba(140,109,63,.1);}
+.howit-num{width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--white);font-family:'Playfair Display',serif;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
+.howit-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ink);margin-bottom:10px;}
+.howit-desc{font-size:14px;color:var(--mu);line-height:1.6;font-weight:300;}
+@media(max-width:900px){.howit-grid{grid-template-columns:1fr;}}
 .type-card:hover{border-color:var(--gd);transform:translateY(-4px);box-shadow:0 16px 40px rgba(140,109,63,.1);}
 .type-icon{width:52px;height:52px;background:var(--gd-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;color:var(--gd);}
 .type-name{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:10px;}
@@ -158,7 +213,9 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .ai-feat-text strong{color:var(--white);display:block;margin-bottom:3px;}
 
 /* AI chat mockup */
-.ai-chat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:420px;justify-content:center;}
+.ai-visual{position:relative;padding-left:60px;padding-bottom:40px;}
+.ai-visual-photo{position:absolute;left:0;bottom:0;width:70%;max-width:280px;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.35);opacity:.92;z-index:1;}
+.ai-chat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:420px;justify-content:center;position:relative;z-index:2;}
 .ai-chat-head{display:flex;align-items:center;gap:10px;padding-bottom:16px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.08);}
 .ai-chat-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 4px rgba(74,222,128,.15);flex-shrink:0;}
 .ai-chat-head-text{font-size:13px;font-weight:600;color:var(--white);display:flex;flex-direction:column;gap:2px;}
@@ -188,7 +245,9 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .price-card{background:var(--white);border:1px solid var(--bd);border-radius:16px;padding:36px 32px;position:relative;transition:all .2s;}
 .price-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(140,109,63,.1);}
 .price-card.popular{border:2px solid var(--gd);background:var(--ink);}
-.price-badge{position:absolute;top:-12px;left:50%;transform:translateX(-50%);padding:4px 16px;background:var(--gd);color:var(--white);font-size:11px;font-weight:700;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;}
+.price-badge{position:absolute;top:-16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:5px 18px 5px 5px;background:linear-gradient(135deg,var(--gd),#6e5230);color:var(--white);font-size:11px;font-weight:700;border-radius:99px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;box-shadow:0 8px 20px rgba(140,109,63,.3);}
+.price-badge-star{width:22px;height:22px;border-radius:50%;background:var(--gd);border:2px solid #d9a94a;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.price-badge-star svg{width:12px;height:12px;fill:#fff;}
 .price-name{font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:12px;}
 .price-card.popular .price-name{color:rgba(255,255,255,.5);}
 .price-amount{font-family:'Playfair Display',serif;font-size:52px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:4px;}
@@ -292,6 +351,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .types-grid{grid-template-columns:repeat(2,1fr);}
   .ai-inner{grid-template-columns:1fr;gap:40px;}
   .ai-chat{display:none;}
+  .ai-visual{padding:0;}
+  .ai-visual-photo{display:none;}
   .footer-top{grid-template-columns:1fr 1fr;}
   .feat-compact-grid{grid-template-columns:1fr 1fr;}
   .photo-section-inner{gap:40px;}
@@ -364,7 +425,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <a href="#ai" class="nav-link">AI</a>
       <a href="#prijzen" class="nav-link">Prijzen</a>
       <a href="login.html" class="nav-login">Inloggen</a>
-      <a href="login.html" class="nav-cta">Probeer Kronr gratis →</a>
+      <a href="login.html" class="nav-cta">Start gratis</a>
     </div>
     <button class="mob-menu" id="mob-menu" onclick="toggleMob()">
       <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -374,20 +435,22 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-label">✨ Nieuw: AI-assistent inbegrepen</div>
-  <h1 class="hero-title">Besteed minder tijd<br>aan administratie. <em>Meer</em> tijd aan je klanten.</h1>
-  <p class="hero-sub">Van online boekingen tot betalingen en AI. Alles wat je nodig hebt om je salon soepel te laten draaien.</p>
-  <div class="hero-btns">
-    <a href="login.html" class="btn-primary">Probeer Kronr gratis →</a>
-    <a href="#features" class="btn-secondary">Bekijk alle features</a>
-  </div>
-  <p class="hero-trust"><span>✓ 14 dagen gratis</span> &nbsp;·&nbsp; Geen creditcard nodig &nbsp;·&nbsp; Opzegbaar per maand</p>
-  <div class="hero-usps">
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen creditcard</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Binnen 15 minuten ingericht</div>
-    <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Nederlandse support</div>
-  </div>
+  <div class="hero-grid">
+    <div class="hero-left">
+      <div class="hero-label">✨ Nieuw: AI-assistent inbegrepen</div>
+      <h1 class="hero-title">Besteed minder tijd<br>aan administratie. <em>Meer</em> tijd aan je klanten.</h1>
+      <p class="hero-sub">Online boekingen, agenda, betalingen, klantbeheer en AI. Alles wat je salon nodig heeft in één overzichtelijke app.</p>
+      <div class="hero-btns">
+        <a href="login.html" class="btn-primary">Start 14 dagen gratis →</a>
+        <a href="#features" class="btn-secondary">Bekijk alle features</a>
+      </div>
+      <div class="hero-usps">
+        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>0% commissie</div>
+        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Binnen 15 minuten live</div>
+        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Nederlandse support</div>
+        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>14 dagen gratis proberen</div>
+      </div>
+    </div>
 
   <!-- App mockup -->
   <div class="hero-screenshot">
@@ -448,16 +511,74 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         </div>
       </div>
     </div>
+
+    <!-- Zwevende notificaties, zoals in het dashboard -->
+    <div class="hero-float-toasts">
+      <div class="hero-toast">
+        <div class="hero-toast-icon eu">📅</div>
+        <div class="hero-toast-body">
+          <div class="hero-toast-title">Nieuwe afspraak<span>Nu</span></div>
+          <div class="hero-toast-sub">Lisa Jansen heeft een afspraak geboekt op vrijdag 14:00</div>
+        </div>
+      </div>
+      <div class="hero-toast">
+        <div class="hero-toast-icon wa">💬</div>
+        <div class="hero-toast-body">
+          <div class="hero-toast-title">WhatsApp herinnering<span>Nu</span></div>
+          <div class="hero-toast-sub">Herinnering verstuurd naar 3 klanten</div>
+        </div>
+      </div>
+      <div class="hero-toast">
+        <div class="hero-toast-icon eu">€</div>
+        <div class="hero-toast-body">
+          <div class="hero-toast-title">Betaling ontvangen<span>Nu</span></div>
+          <div class="hero-toast-sub">€75,00 van Emma Bakker</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI-chatpaneel, zoals in het dashboard -->
+    <div class="hero-ai-panel">
+      <div class="hero-ai-head">
+        <div class="hero-ai-dot"></div>
+        <div class="hero-ai-head-text">Kronr AI<span>AI is online</span></div>
+      </div>
+      <div class="hero-ai-body">
+        <div class="hero-ai-msg ai">Goedemorgen! Waar kan ik je vandaag mee helpen?</div>
+        <div class="hero-ai-msg user">Schrijf een WhatsApp-herinnering voor Emma morgen om 14:00.</div>
+        <div class="hero-ai-msg ai">Natuurlijk! Hier is een vriendelijke herinnering die je zo kunt versturen.</div>
+        <div class="hero-ai-draft">
+          Hi Emma! 👋<br>Dit is een vriendelijke herinnering aan je afspraak morgen om 14:00 bij ons.<br>We kijken ernaar uit je weer te zien!<br>Tot dan! 🧡
+          <div class="hero-ai-checklist">
+            <div>✓ Bericht gegenereerd</div>
+            <div>✓ Verzonden naar Emma</div>
+            <div>✓ Afspraak bevestigd</div>
+          </div>
+        </div>
+      </div>
+      <div class="hero-ai-input">Stel een vraag...</div>
+    </div>
+    </div>
+  </div>
+
+  <!-- Onderste featurebalk -->
+  <div class="hero-pills">
+    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Online boekingen</div>
+    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</div>
+    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Betalingen</div>
+    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klantbeheer</div>
+    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg>AI assistent</div>
+    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp herinneringen</div>
   </div>
 </section>
 
 <!-- STATS -->
 <div class="stats-bar">
   <div class="stats-inner">
-    <div class="stat-item"><div class="stat-num">0<span>%</span></div><div class="stat-lbl">Commissie op boekingen</div></div>
-    <div class="stat-item"><div class="stat-num">1<span></span></div><div class="stat-lbl">Platform voor alles</div></div>
-    <div class="stat-item"><div class="stat-num">AI<span></span></div><div class="stat-lbl">Ingebouwde assistent</div></div>
-    <div class="stat-item"><div class="stat-num">€0<span></span></div><div class="stat-lbl">Opstartkosten</div></div>
+    <div class="stat-item"><div class="stat-num">0<span>%</span></div><div class="stat-lbl">Commissie</div></div>
+    <div class="stat-item"><div class="stat-num">15<span> min</span></div><div class="stat-lbl">Ingericht</div></div>
+    <div class="stat-item"><div class="stat-num">24<span>/7</span></div><div class="stat-lbl">Online boekingen</div></div>
+    <div class="stat-item"><div class="stat-num">AI<span></span></div><div class="stat-lbl">In elk pakket</div></div>
   </div>
 </div>
 
@@ -479,35 +600,42 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   </div>
 </section>
 
+<!-- ZO WERKT HET -->
+<section class="section" style="background:var(--iv);">
+  <div class="section-inner">
+    <div class="section-label">Zo werkt het</div>
+    <h2 class="section-title">Binnen 15 minuten<br>live met je salon</h2>
+    <p class="section-sub" style="margin-bottom:52px;">Geen ingewikkelde installatie, geen wekenlange onboarding. Zo simpel is het.</p>
+    <div class="howit-grid">
+      <div class="howit-card" data-aos>
+        <div class="howit-num">1</div>
+        <h3 class="howit-title">Account aanmaken</h3>
+        <p class="howit-desc">Vul je salonnaam in, kies je diensten en je bent klaar om te beginnen. Geen creditcard nodig.</p>
+      </div>
+      <div class="howit-card" data-aos>
+        <div class="howit-num">2</div>
+        <h3 class="howit-title">Klanten importeren</h3>
+        <p class="howit-desc">Breng je bestaande klanten en afspraken eenvoudig over, of begin gewoon vers.</p>
+      </div>
+      <div class="howit-card" data-aos>
+        <div class="howit-num">3</div>
+        <h3 class="howit-title">Direct online boekingen ontvangen</h3>
+        <p class="howit-desc">Deel je boekingslink en klanten kunnen meteen 24/7 zelf een afspraak inplannen.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
 <!-- FOTO SECTIE — vervang .photo-frame met een echte foto zodra je die hebt -->
 <section class="photo-section">
   <div class="photo-section-inner" data-aos>
     <div class="photo-frame">
-      <!-- Vervang deze illustratie door: <img src="jouw-foto.jpg" alt="..."> voor een echte foto -->
-      <svg class="photo-illustration" viewBox="0 0 400 500" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="400" height="500" fill="url(#pgrad)"/>
-        <defs>
-          <linearGradient id="pgrad" x1="0" y1="0" x2="400" y2="500" gradientUnits="userSpaceOnUse">
-            <stop stop-color="#f5ede0"/><stop offset="1" stop-color="#e2d9ce"/>
-          </linearGradient>
-        </defs>
-        <ellipse cx="200" cy="430" rx="140" ry="14" fill="#8c6d3f" opacity=".12"/>
-        <rect x="120" y="150" width="160" height="4" rx="2" fill="#8c6d3f" opacity=".5"/>
-        <rect x="150" y="80" width="100" height="130" rx="10" fill="#faf8f4" stroke="#8c6d3f" stroke-width="2" opacity=".7"/>
-        <rect x="165" y="95" width="70" height="100" rx="4" fill="#e2d9ce" opacity=".6"/>
-        <path d="M140 420 Q140 340 160 300 L240 300 Q260 340 260 420 Z" fill="#0f0d0b" opacity=".85"/>
-        <rect x="120" y="410" width="160" height="24" rx="10" fill="#0f0d0b"/>
-        <circle cx="130" cy="440" r="10" fill="#0f0d0b" opacity=".85"/>
-        <circle cx="270" cy="440" r="10" fill="#0f0d0b" opacity=".85"/>
-        <circle cx="200" cy="255" r="34" fill="#f5ede0" stroke="#8c6d3f" stroke-width="2"/>
-        <path d="M178 250c0-14 10-24 22-24s22 10 22 24" stroke="#8c6d3f" stroke-width="2" fill="none"/>
-      </svg>
-      <div class="photo-frame-caption">Vervang dit vak door een foto van jou, je team of je salon</div>
+      <img src="images/salon-professional.jpg" alt="Salonprofessional aan het werk" style="width:100%;height:100%;object-fit:cover;display:block;">
     </div>
     <div>
       <div class="section-label">Beauty is mensenwerk</div>
       <h2 class="section-title">Software voor mensen<br>die mensen mooier maken</h2>
-      <p class="section-sub">Achter elke boeking, elk cijfer en elke afspraak in Kronr staat een vakmens die met passie werkt aan het beste resultaat voor hun klant. Daar is Kronr voor gebouwd.</p>
+      <p class="section-sub">Achter elke afspraak staat een vakmens die het verschil maakt in iemands dag. Kronr regelt de rest, zodat jij je daar volledig op kunt richten.</p>
     </div>
   </div>
 </section>
@@ -642,7 +770,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         </div>
       </div>
     </div>
-    <div class="ai-chat" id="ai-chat">
+    <div class="ai-visual">
+      <img class="ai-visual-photo" src="images/salon-balie-ai.jpg" alt="Kronr AI in gebruik bij de balie">
+      <div class="ai-chat" id="ai-chat">
       <div class="ai-chat-head">
         <div class="ai-chat-dot"></div>
         <div class="ai-chat-head-text">Kronr AI<span>Actief — verwerkt je data live</span></div>
@@ -664,6 +794,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         <div class="chat-bubble user-bubble">Verstuur maar! 🙌</div>
       </div>
       <div class="chat-typing chat-typing-indicator" id="chat-typing-ind"><span></span><span></span><span></span></div>
+    </div>
     </div>
   </div>
 </section>
@@ -703,10 +834,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Email herinneringen</li>
           <li>Basis rapportages</li>
         </ul>
-        <a href="login.html" class="price-btn">Probeer Kronr gratis</a>
+        <a href="login.html" class="price-btn">Start 14 dagen gratis</a>
       </div>
       <div class="price-card popular">
-        <div class="price-badge">⭐ Meest gekozen</div>
+        <div class="price-badge"><div class="price-badge-star"><svg viewBox="0 0 24 24"><polygon points="12 2 14.9 9.3 22.5 9.3 16.3 13.9 18.5 21.2 12 16.8 5.5 21.2 7.7 13.9 1.5 9.3 9.1 9.3"/></svg></div>Meest gekozen</div>
         <div class="price-name">Pro</div>
         <div class="price-amount"><sup>€</sup><span id="idx-amt-pro">39</span></div>
         <div class="price-per" id="idx-per-pro">per maand · t/m 5 medewerkers</div>
@@ -718,7 +849,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Kronr AI inzichten</li>
           <li>Boekhoudkoppeling</li>
         </ul>
-        <a href="login.html" class="price-btn">Probeer Kronr gratis</a>
+        <a href="login.html" class="price-btn">Start 14 dagen gratis</a>
       </div>
       <div class="price-card" data-aos>
         <div class="price-name">Business</div>
@@ -732,7 +863,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Meerdere locaties</li>
           <li>Prioriteit support</li>
         </ul>
-        <a href="login.html" class="price-btn">Probeer Kronr gratis</a>
+        <a href="login.html" class="price-btn">Start 14 dagen gratis</a>
       </div>
     </div>
   </div>
@@ -768,8 +899,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="cta-final">
   <h2 class="cta-final-title">Besteed minder tijd aan administratie.<br>Meer tijd aan je klanten.</h2>
   <p class="cta-final-sub">Start vandaag nog gratis en ontdek hoe eenvoudig salonbeheer kan zijn.</p>
-  <a href="login.html" class="btn-white">Probeer Kronr gratis →</a>
+  <a href="login.html" class="btn-white">Start 14 dagen gratis →</a>
   <p class="cta-final-note">Geen creditcard nodig · Opzegbaar per maand</p>
+  <p class="cta-final-note" style="margin-top:4px;font-weight:600;color:rgba(255,255,255,.7);">Binnen 15 minuten aan de slag. Geen creditcard nodig.</p>
 </section>
 
 <!-- FOOTER -->
@@ -879,9 +1011,10 @@ revealEls.forEach(el => {
 function animateCounters(){
   document.querySelectorAll('.stat-num').forEach(el=>{
     const text=el.innerHTML;
-    const num=parseFloat(text.replace(/[^0-9.]/g,''));
-    if(!num) return;
-    const suffix=text.replace(/[0-9.]/g,'');
+    const match=text.match(/^([0-9.]+)/);
+    if(!match) return;
+    const num=parseFloat(match[1]);
+    const suffix=text.slice(match[1].length);
     let start=0;const dur=1500;const step=num/dur*16;
     const timer=setInterval(()=>{
       start=Math.min(start+step,num);
@@ -938,7 +1071,7 @@ if(aiChatEl){
   </div>
   <div class="mob-nav-foot">
     <a href="login.html" class="mob-btn-login">Inloggen</a>
-    <a href="login.html" class="mob-btn-start">Probeer Kronr gratis →</a>
+    <a href="login.html" class="mob-btn-start">Start 14 dagen gratis →</a>
   </div>
 </div>
 </body>
