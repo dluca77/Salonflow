@@ -188,7 +188,21 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .mini-widget-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:12px;}
 .mini-widget-slot{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;margin-bottom:8px;font-size:11px;color:var(--mu);}
 .mini-widget-slot.selected{border-color:var(--gd);background:var(--gd-light);color:var(--gd2);font-weight:600;}
-.mini-widget-btn{width:100%;padding:10px;background:var(--ink);color:var(--white);text-align:center;border-radius:8px;font-size:11px;font-weight:600;margin-top:4px;}
+.mini-widget-btn{width:100%;padding:10px;background:var(--ink);color:var(--white);text-align:center;border-radius:8px;font-size:11px;font-weight:600;margin-top:4px;transition:background .3s;}
+.mini-widget-btn.confirmed{background:var(--green);}
+
+/* ── Micro-animaties in de features-sectie ── */
+.mini-agenda-row{opacity:0;transform:translateX(-10px);transition:opacity .4s ease,transform .4s ease,box-shadow .3s ease;}
+.mini-agenda-row.shown{opacity:1;transform:translateX(0);}
+.mini-agenda-row.new-row{box-shadow:inset 0 0 0 2px var(--gd);border-radius:6px;}
+.mini-agenda-conflict-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;color:var(--green);font-weight:600;margin-left:6px;opacity:0;transition:opacity .3s ease .2s;white-space:nowrap;}
+.mini-agenda-conflict-badge.shown{opacity:1;}
+
+.feat-ai-bubble{opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease;}
+.feat-ai-bubble.shown{opacity:1;transform:translateY(0);}
+
+/* ── Parallax op de hero-mockup ── */
+.hero-screenshot{will-change:transform;}
 
 .feat-compact-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-top:20px;}
 .feat-compact{background:var(--white);padding:28px 22px;transition:background .2s;}
@@ -658,13 +672,14 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Automatische conflictdetectie</li>
         </ul>
       </div>
-      <div class="hero-feat-visual">
+      <div class="hero-feat-visual" id="feat-agenda-visual">
         <div class="mini-agenda">
           <div class="mini-agenda-head">Agenda — woensdag</div>
           <div class="mini-agenda-row"><div class="mini-agenda-time">9:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Jasmijn — Knippen</div></div>
           <div class="mini-agenda-row"><div class="mini-agenda-time">10:15</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sara — Highlights</div></div>
           <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tom — Baard</div></div>
           <div class="mini-agenda-row"><div class="mini-agenda-time">13:30</div><div class="mini-agenda-apt" style="background:#c8e8ff;color:#1a5fa0;">Lena — Kleur</div></div>
+          <div class="mini-agenda-row new-row"><div class="mini-agenda-time">14:15</div><div class="mini-agenda-apt" style="background:#f5ede0;color:#8c6d3f;">Emma — Föhnen</div><div class="mini-agenda-conflict-badge" id="feat-conflict-badge">✓ Geen dubbele boeking</div></div>
         </div>
       </div>
     </div>
@@ -680,13 +695,13 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Automatisch annuleringsbeleid</li>
         </ul>
       </div>
-      <div class="hero-feat-visual">
+      <div class="hero-feat-visual" id="feat-widget-visual">
         <div class="mini-widget">
           <div class="mini-widget-title">Kies een tijd</div>
-          <div class="mini-widget-slot">14:30</div>
-          <div class="mini-widget-slot selected">16:30 — geselecteerd</div>
-          <div class="mini-widget-slot">17:00</div>
-          <div class="mini-widget-btn">Afspraak bevestigen</div>
+          <div class="mini-widget-slot" id="feat-slot-1">14:30</div>
+          <div class="mini-widget-slot selected" id="feat-slot-2">16:30 — geselecteerd</div>
+          <div class="mini-widget-slot" id="feat-slot-3">17:00</div>
+          <div class="mini-widget-btn" id="feat-widget-btn">Afspraak bevestigen</div>
         </div>
       </div>
     </div>
@@ -702,11 +717,11 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li>Geeft groeisuggesties</li>
         </ul>
       </div>
-      <div class="hero-feat-visual">
+      <div class="hero-feat-visual" id="feat-ai-visual">
         <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
-          <div style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">📸 "Schrijf een Instagram-caption voor deze foto"</div>
-          <div style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">💬 Beantwoordt veelgestelde klantvragen</div>
-          <div style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">📅 Vult lege plekken in je agenda</div>
+          <div class="feat-ai-bubble" style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">📸 "Schrijf een Instagram-caption voor deze foto"</div>
+          <div class="feat-ai-bubble" style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">💬 Beantwoordt veelgestelde klantvragen</div>
+          <div class="feat-ai-bubble" style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">📅 Vult lege plekken in je agenda</div>
         </div>
       </div>
     </div>
@@ -1054,6 +1069,89 @@ if(aiChatEl){
     if(entries[0].isIntersecting){ speelAiChatAf(); aiChatObs.disconnect(); }
   },{threshold:.4});
   aiChatObs.observe(aiChatEl);
+}
+
+// ── Micro-animatie 1: agenda -- rijen verschijnen na elkaar, dan schuift
+// er een nieuwe afspraak in met een conflict-detectie-badge ──
+function speelAgendaAf(){
+  const rijen=[...document.querySelectorAll('#feat-agenda-visual .mini-agenda-row')];
+  const badge=document.getElementById('feat-conflict-badge');
+  rijen.forEach((rij,i)=>{
+    setTimeout(()=>{
+      rij.classList.add('shown');
+      if(rij.classList.contains('new-row')){
+        setTimeout(()=>badge.classList.add('shown'), 450);
+      }
+    }, i*220);
+  });
+}
+const agendaEl=document.getElementById('feat-agenda-visual');
+if(agendaEl){
+  const agendaObs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){ speelAgendaAf(); agendaObs.disconnect(); }
+  },{threshold:.4});
+  agendaObs.observe(agendaEl);
+}
+
+// ── Micro-animatie 2: boekingswidget -- selectie schuift naar een ander
+// tijdslot, daarna bevestigt de knop zichzelf ──
+function speelWidgetAf(){
+  const slot1=document.getElementById('feat-slot-1');
+  const slot2=document.getElementById('feat-slot-2');
+  const slot3=document.getElementById('feat-slot-3');
+  const btn=document.getElementById('feat-widget-btn');
+  setTimeout(()=>{
+    slot2.classList.remove('selected');
+    slot2.textContent='16:30';
+    slot3.classList.add('selected');
+    slot3.textContent='17:00 — geselecteerd';
+  }, 1400);
+  setTimeout(()=>{
+    btn.classList.add('confirmed');
+    btn.textContent='✓ Afspraak bevestigd';
+  }, 2600);
+  setTimeout(()=>{
+    // Terug naar de begintoestand, voor wie de sectie nogmaals bekijkt
+    slot3.classList.remove('selected');
+    slot3.textContent='17:00';
+    slot2.classList.add('selected');
+    slot2.textContent='16:30 — geselecteerd';
+    btn.classList.remove('confirmed');
+    btn.textContent='Afspraak bevestigen';
+  }, 5200);
+}
+const widgetEl=document.getElementById('feat-widget-visual');
+if(widgetEl){
+  const widgetObs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){ speelWidgetAf(); widgetObs.disconnect(); }
+  },{threshold:.4});
+  widgetObs.observe(widgetEl);
+}
+
+// ── Micro-animatie 3: AI-suggesties verschijnen na elkaar ──
+function speelAiBubblesAf(){
+  document.querySelectorAll('#feat-ai-visual .feat-ai-bubble').forEach((b,i)=>{
+    setTimeout(()=>b.classList.add('shown'), i*280);
+  });
+}
+const aiVisualEl=document.getElementById('feat-ai-visual');
+if(aiVisualEl){
+  const aiVisualObs=new IntersectionObserver(entries=>{
+    if(entries[0].isIntersecting){ speelAiBubblesAf(); aiVisualObs.disconnect(); }
+  },{threshold:.4});
+  aiVisualObs.observe(aiVisualEl);
+}
+
+// ── Parallax op de hero-mockup: beweegt lichtjes trager dan de scroll,
+// alleen zolang de hero zichtbaar is (voorkomt vreemde effecten verderop) ──
+const heroScreenshotEl=document.querySelector('.hero-screenshot');
+if(heroScreenshotEl){
+  window.addEventListener('scroll',()=>{
+    const rect=heroScreenshotEl.parentElement.getBoundingClientRect();
+    if(rect.bottom<0||rect.top>window.innerHeight) return; // buiten beeld, niks doen
+    const offset=Math.max(0,-rect.top)*0.08;
+    heroScreenshotEl.style.transform=`translateY(${offset}px)`;
+  },{passive:true});
 }
 </script>
 
