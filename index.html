@@ -48,7 +48,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .btn-primary:hover{background:var(--ink2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,13,11,.2);}
 .btn-secondary{padding:16px 28px;background:transparent;color:var(--ink);font-size:15px;font-weight:500;text-decoration:none;border-radius:10px;border:1.5px solid var(--bd);transition:all .2s;}
 .btn-secondary:hover{border-color:var(--ink);background:var(--iv);}
-.hero-usps{display:grid;grid-template-columns:1fr 1fr;gap:12px 28px;max-width:440px;}
+.hero-usps{display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px;max-width:600px;}
 .hero-usp{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--ink2);}
 .hero-usp svg{width:16px;height:16px;color:var(--green);flex-shrink:0;}
 
@@ -110,8 +110,11 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-ai-msg.user{background:var(--ink);color:var(--iv);align-self:flex-end;}
 .hero-ai-input{margin:0 12px 10px;padding:7px 10px;border:1px solid var(--bd);border-radius:8px;font-size:9.5px;color:var(--mu2);}
 .hero-ai-draft{background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;font-size:9px;line-height:1.45;color:var(--ink2);align-self:flex-start;max-width:92%;}
-.hero-ai-checklist{margin-top:5px;padding-top:5px;border-top:1px solid var(--bd);display:flex;flex-direction:column;gap:2px;font-size:8.5px;color:var(--green);font-weight:600;}
-@media(max-width:900px){.hero-float-toasts,.hero-ai-panel{display:none;}}
+.hero-ai-wa-btn{margin-top:6px;padding-top:6px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:9px;color:#25a35a;font-weight:700;cursor:default;}
+.hero-ai-wa-btn svg{width:11px;height:11px;flex-shrink:0;}
+@media(max-width:900px){.hero-float-toasts,.hero-ai-panel,.hero-plant{display:none;}}
+
+.hero-plant{position:absolute;right:32%;top:100%;margin-top:-18px;width:11%;min-width:70px;max-width:110px;z-index:2;opacity:0;animation:toastIn .6s ease 2s forwards;}
 
 /* ── HERO: onderste featurebalk ── */
 .hero-pills{max-width:1600px;margin:64px auto 0;width:100%;background:var(--white);border:1px solid var(--bd);border-radius:99px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;box-shadow:0 12px 32px rgba(15,13,11,.06);position:relative;z-index:2;}
@@ -461,10 +464,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         <a href="#features" class="btn-secondary">Bekijk alle features</a>
       </div>
       <div class="hero-usps">
-        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>0% commissie</div>
-        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Binnen 15 minuten live</div>
+        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen creditcard</div>
+        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
+        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Binnen 15 minuten klaar</div>
         <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Nederlandse support</div>
-        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>14 dagen gratis proberen</div>
       </div>
     </div>
 
@@ -554,6 +557,13 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     </div>
 
     <!-- AI-chatpaneel, zoals in het dashboard -->
+    <!-- Decoratieve plant, zoals in het voorbeeld (gecodeerd, geen foto beschikbaar) -->
+    <svg class="hero-plant" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg">
+      <ellipse cx="60" cy="152" rx="46" ry="7" fill="#8c6d3f" opacity=".1"/>
+      <path d="M35 100h50l-7 46a6 6 0 01-6 5H48a6 6 0 01-6-5z" fill="#faf8f4" stroke="#c8bda0" stroke-width="1.5"/>
+      <path d="M60 100c-3-22-2-38 6-54M60 100c8-18 22-28 34-30M60 100c-10-16-26-22-40-20M60 100c6-14 4-30-4-42M60 100c-8-12-22-16-32-12" stroke="#4a7856" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+      <path d="M60 100c-3-22-2-38 6-54" stroke="#5d8f68" stroke-width="5" stroke-linecap="round" fill="none" opacity=".7"/>
+    </svg>
     <div class="hero-ai-panel">
       <div class="hero-ai-head">
         <div class="hero-ai-dot"></div>
@@ -565,10 +575,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         <div class="hero-ai-msg ai">Natuurlijk! Hier is een vriendelijke herinnering die je zo kunt versturen.</div>
         <div class="hero-ai-draft">
           Hi Emma! 👋<br>Dit is een vriendelijke herinnering aan je afspraak morgen om 14:00 bij ons.<br>We kijken ernaar uit je weer te zien!<br>Tot dan! 🧡
-          <div class="hero-ai-checklist">
-            <div>✓ Bericht gegenereerd</div>
-            <div>✓ Verzonden naar Emma</div>
-            <div>✓ Afspraak bevestigd</div>
+          <div class="hero-ai-wa-btn">
+            <span style="display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.8-.11-.42-.13-.95-.31-1.63-.6-2.87-1.24-4.74-4.15-4.88-4.34-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1.01-2.4.26-.28.57-.35.76-.35.19 0 .38 0 .55.01.17.01.41-.07.64.49.24.58.81 2 .88 2.14.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.37-.42.49-.14.14-.28.28-.12.55.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.21 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.19-.28.37-.23.62-.14.26.09 1.64.77 1.92.91.28.14.47.21.53.33.07.12.07.68-.17 1.36z"/></svg>Verstuur via WhatsApp</span>
+            <span>→</span>
           </div>
         </div>
       </div>
