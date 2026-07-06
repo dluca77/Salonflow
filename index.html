@@ -33,14 +33,14 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .mob-menu{display:none;width:36px;height:36px;border:none;background:transparent;cursor:pointer;margin-left:auto;}
 
 /* ── HERO ── */
-.hero{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:100px 24px 60px;background:var(--white);position:relative;overflow:hidden;}
+.hero{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:130px 24px 60px;background:var(--white);position:relative;overflow:hidden;}
 .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:600px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(140,109,63,0.06) 0%,transparent 70%);pointer-events:none;}
 .hero-grid{max-width:1600px;width:100%;margin:0 auto;display:grid;grid-template-columns:0.85fr 1.15fr;gap:56px;align-items:center;}
 .hero-left{text-align:left;}
 .hero-label{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;background:var(--gd-light);border:1px solid rgba(140,109,63,0.2);border-radius:99px;font-size:12px;font-weight:600;color:var(--gd);letter-spacing:.5px;text-transform:uppercase;margin-bottom:28px;}
 .hero-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.hero-title{font-family:'Playfair Display',serif;font-size:clamp(38px,4.6vw,64px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:22px;}
+.hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5.4vw,80px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:22px;}
 .hero-title em{font-style:italic;color:var(--gd);}
 .hero-sub{font-size:clamp(15px,1.3vw,17px);font-weight:400;color:var(--mu);line-height:1.7;max-width:480px;margin:0 0 36px;}
 .hero-btns{display:flex;align-items:center;gap:16px;justify-content:flex-start;flex-wrap:wrap;margin-bottom:28px;}
@@ -227,8 +227,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .ai-feat-text strong{color:var(--white);display:block;margin-bottom:3px;}
 
 /* AI chat mockup */
-.ai-visual{position:relative;padding-left:60px;padding-bottom:40px;}
-.ai-visual-photo{position:absolute;left:0;bottom:0;width:70%;max-width:280px;border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.35);opacity:.92;z-index:1;}
+.ai-visual{display:flex;flex-direction:column;gap:16px;}
+.ai-photo-caption{display:flex;align-items:center;gap:12px;}
+.ai-photo-caption img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;}
+.ai-photo-caption span{font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.5;}
 .ai-chat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:420px;justify-content:center;position:relative;z-index:2;}
 .ai-chat-head{display:flex;align-items:center;gap:10px;padding-bottom:16px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.08);}
 .ai-chat-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 4px rgba(74,222,128,.15);flex-shrink:0;}
@@ -366,7 +368,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .ai-inner{grid-template-columns:1fr;gap:40px;}
   .ai-chat{display:none;}
   .ai-visual{padding:0;}
-  .ai-visual-photo{display:none;}
+  .ai-photo-caption{display:none;}
   .footer-top{grid-template-columns:1fr 1fr;}
   .feat-compact-grid{grid-template-columns:1fr 1fr;}
   .photo-section-inner{gap:40px;}
@@ -786,7 +788,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       </div>
     </div>
     <div class="ai-visual">
-      <img class="ai-visual-photo" src="images/salon-balie-ai.jpg" alt="Kronr AI in gebruik bij de balie">
       <div class="ai-chat" id="ai-chat">
       <div class="ai-chat-head">
         <div class="ai-chat-dot"></div>
@@ -809,6 +810,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         <div class="chat-bubble user-bubble">Verstuur maar! 🙌</div>
       </div>
       <div class="chat-typing chat-typing-indicator" id="chat-typing-ind"><span></span><span></span><span></span></div>
+    </div>
+    <div class="ai-photo-caption">
+      <img src="images/salon-balie-ai.jpg" alt="Kronr AI in gebruik bij de balie">
+      <span>Zo werkt Kronr AI in de praktijk — direct bij de balie, geen extra scherm nodig.</span>
     </div>
     </div>
   </div>
