@@ -896,38 +896,36 @@ async function koppelStripeConnect(){
   }
 }
 
-// Stripe Connect stuurt de gebruiker terug met ?code=... (OAuth) -- die
-// code moet omgewisseld worden voor een account-id. Dat gebeurt via de
-// Worker, niet hier: de code mag nooit clientside naar Stripe zelf.
+// Stripe stuurt de gebruiker na de Account Links-onboarding terug zonder
+// code (dat is alleen bij de klassieke OAuth-variant, die we niet gebruiken).
+// In plaats daarvan checken we bij Stripe zelf of het account klaar is.
 async function verwerkStripeConnectReturn(){
   const params=new URLSearchParams(window.location.search);
   if(!params.get('stripe_connect_return')) return;
-  const code=params.get('code');
 
   history.replaceState(null,'',window.location.pathname+'#abonnement');
   setTab('abonnement');
 
-  if(!code){
-    // Gebruiker is teruggekomen zonder code -- waarschijnlijk geannuleerd
-    return;
-  }
-
   try{
-    const res=await fetch(KRONR_STRIPE_URL+'/exchange-connect-code',{
+    const res=await fetch(KRONR_STRIPE_URL+'/connect-status',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({salon_id:SALON_ID, code})
+      body:JSON.stringify({salon_id:SALON_ID})
     });
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
-    if(!data.account_id) throw new Error(data.error||'Geen account-id ontvangen');
+    if(!data.status) throw new Error(data.error||'Geen status ontvangen');
 
-    SALON.stripe_connect_account_id=data.account_id;
-    SALON.stripe_connect_status='actief';
+    SALON.stripe_connect_status=data.status;
     toonConnectStatus();
-    showMsg('msg-connect','Stripe-account gekoppeld.','ok');
+
+    if(data.status==='actief'){
+      showMsg('msg-connect','Stripe-account gekoppeld.','ok');
+    }else{
+      showMsg('msg-connect','Onboarding nog niet volledig afgerond bij Stripe. Klik nogmaals op "Stripe koppelen" om verder te gaan.');
+    }
   }catch(e){
-    showMsg('msg-connect','Koppelen mislukt: '+e.message);
+    showMsg('msg-connect','Status ophalen mislukt: '+e.message);
   }
 }
 
