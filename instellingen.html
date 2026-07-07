@@ -743,7 +743,7 @@ async function koppelMoneybird(){
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
         salon_id:SALON_ID,
-        return_url:window.location.origin+window.location.pathname+'?moneybird_return=1#abonnement'
+        return_url:window.location.origin+window.location.pathname+'?moneybird_return=1'
       })
     });
     if(!res.ok) throw new Error('HTTP '+res.status);
