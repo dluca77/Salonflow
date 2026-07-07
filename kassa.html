@@ -367,7 +367,7 @@ async function loadData(){
     grid.innerHTML=`<div class="svc-loading">Nog geen diensten.<br><a href="diensten.html" style="color:var(--gd);text-decoration:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Diensten toevoegen →</a></div>`;
   } else {
     grid.innerHTML=allDiensten.map(d=>`
-      <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs},'dienst')">
+      <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs},'dienst',${d.prijs_incl_btw!==false})">
         <div class="svc-name">${d.naam}</div>
         <div class="svc-prijs">€${d.prijs}</div>
         <div class="svc-dur">${d.duur_min} min</div>
@@ -425,7 +425,7 @@ function medewerkerInit(id){
 let cadeaubonActief=null; // {id, code, saldo, bedrag_te_gebruiken}
 let cbBedragGekozen=0;
 
-function add(naam,prijs,type){
+function add(naam,prijs,type,inclBtw=true){
   if(!huidigeMedewerkerId){
     document.getElementById('med-warn').style.display='block';
     document.getElementById('med-select').focus();
@@ -433,7 +433,7 @@ function add(naam,prijs,type){
   }
   const e=bon.find(i=>i.naam===naam && i.medewerker_id===huidigeMedewerkerId && i.type===type);
   if(e){e.qty++;e.total+=prijs;}
-  else bon.push({naam,prijs,qty:1,total:prijs,type:type||'dienst',medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId)});
+  else bon.push({naam,prijs,qty:1,total:prijs,type:type||'dienst',inclBtw,medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId)});
   renderBon();
 }
 
@@ -465,13 +465,30 @@ function clearBon(){bon=[];verwijderCadeaubon();renderBon();}
 function berekenTotalen(){
   // Cadeaubon-VERKOOP is niet BTW-plichtig bij verkoop (dat gebeurt pas bij
   // inwisselen voor een dienst/product) -- daarom apart van de rest houden.
-  const btwPlichtig=bon.filter(i=>i.type!=='cadeaubon_verkoop').reduce((s,i)=>s+i.total,0);
+  const btwPlichtigeItems=bon.filter(i=>i.type!=='cadeaubon_verkoop');
   const cbVerkoop=bon.filter(i=>i.type==='cadeaubon_verkoop').reduce((s,i)=>s+i.total,0);
-  const btw=Math.round(btwPlichtig*0.21*100)/100;
-  const totaal=parseFloat((btwPlichtig+btw+cbVerkoop).toFixed(2));
+
+  // Items met inclBtw=true: het ingevulde bedrag IS het totaal, btw wordt
+  // eruit berekend (niet erbovenop). Items met inclBtw=false (uitgezet
+  // door de gebruiker): btw komt bovenop het ingevulde bedrag, zoals
+  // voorheen voor alles gold.
+  let btwUitInclusief=0, totaalInclusief=0, totaalExclusief=0, btwOverExclusief=0;
+  btwPlichtigeItems.forEach(i=>{
+    if(i.inclBtw===false){
+      totaalExclusief+=i.total;
+      btwOverExclusief+=Math.round(i.total*0.21*100)/100;
+    } else {
+      totaalInclusief+=i.total;
+      btwUitInclusief+=Math.round((i.total-i.total/1.21)*100)/100;
+    }
+  });
+
+  const btw=parseFloat((btwUitInclusief+btwOverExclusief).toFixed(2));
+  const totaal=parseFloat((totaalInclusief+totaalExclusief+btwOverExclusief+cbVerkoop).toFixed(2));
+  const sub=parseFloat((totaal-btw-cbVerkoop).toFixed(2));
   const cbGebruikt=cadeaubonActief?Math.min(cadeaubonActief.saldo,totaal):0;
   const teBetalen=parseFloat((totaal-cbGebruikt).toFixed(2));
-  return{sub:btwPlichtig+cbVerkoop, btw, totaal, cbGebruikt, teBetalen};
+  return{sub, btw, totaal, cbGebruikt, teBetalen};
 }
 
 function updateTot(){
