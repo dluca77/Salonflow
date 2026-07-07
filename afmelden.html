@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Afmelden — Kronr</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;}
+.wrap{max-width:440px;margin:0 auto;padding:60px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:36px;}
+.logo em{font-style:normal;color:var(--gd);}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;}
+.card-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;text-align:center;}
+.state-icon{font-size:40px;text-align:center;margin-bottom:16px;}
+.msg-center{text-align:center;color:var(--mu);font-size:13px;line-height:1.6;}
+.spinner{width:20px;height:20px;border:2px solid var(--bd);border-top-color:var(--gd);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="card" id="card">
+    <div class="spinner"></div>
+    <p class="msg-center" style="margin-top:16px;">Bezig met afmelden...</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+const params=new URLSearchParams(location.search);
+const token=params.get('token');
+const card=document.getElementById('card');
+
+async function init(){
+  if(!token){
+    toonFout('Ongeldige link. Controleer of je de volledige link uit de e-mail hebt geopend.');
+    return;
+  }
+
+  const{data,error}=await sb.rpc('meld_af_marketing',{p_token:token});
+  const resultaat=Array.isArray(data)?data[0]:data;
+
+  if(error){
+    toonFout('Afmelden is niet gelukt. Probeer het later opnieuw.');
+    return;
+  }
+
+  if(!resultaat){
+    toonFout('Deze afmeldlink is niet (meer) geldig.');
+    return;
+  }
+
+  card.innerHTML=`
+    <div class="state-icon">✓</div>
+    <div class="card-title">Je bent afgemeld</div>
+    <p class="msg-center">Je ontvangt geen marketing-e-mails meer van ${resultaat.salon_naam||'deze salon'}. Bevestigingsmails over je eigen afspraken blijf je gewoon ontvangen.</p>
+  `;
+}
+
+function toonFout(tekst){
+  card.innerHTML=`
+    <div class="state-icon">⚠</div>
+    <div class="card-title">Kon niet worden verwerkt</div>
+    <p class="msg-center">${tekst}</p>
+  `;
+}
+
+init();
+</script>
+</body>
+</html>

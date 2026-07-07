@@ -473,7 +473,7 @@ async function verstuurCampagne(){
       body:JSON.stringify({
         salon_naam:SALON?.naam||'',
         onderwerp, inhoud,
-        ontvangers:ontvangers.map(k=>({naam:k.naam,email:k.email}))
+        ontvangers:ontvangers.map(k=>({naam:k.naam,email:k.email,afmeld_token:k.afmeld_token}))
       })
     });
     if(!res.ok) throw new Error('HTTP '+res.status);
