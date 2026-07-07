@@ -15,7 +15,8 @@
 html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
 
 /* ── HEADER ── */
-.header{background:var(--wh);border-bottom:1px solid var(--bd);padding:0 5vw;display:flex;align-items:center;justify-content:space-between;height:60px;position:sticky;top:0;z-index:10;}
+.header{background:var(--wh);border-bottom:1px solid var(--bd);height:60px;position:sticky;top:0;z-index:10;}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 40px;height:100%;display:flex;align-items:center;justify-content:space-between;}
 .brand{display:flex;align-items:center;gap:12px;}
 .brand-logo{width:36px;height:36px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;color:var(--iv);font-size:14px;font-weight:700;flex-shrink:0;}
 .brand-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;letter-spacing:0.5px;}
@@ -23,7 +24,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .header-right{font-size:11px;color:var(--mu2);letter-spacing:1.5px;text-transform:uppercase;}
 
 /* ── LAYOUT ── */
-.layout{display:grid;grid-template-columns:1fr 340px;min-height:calc(100vh - 60px);max-width:1100px;margin:0 auto;min-width:0;}
+.layout{display:grid;grid-template-columns:1fr 380px;min-height:calc(100vh - 60px);max-width:1200px;margin:0 auto;min-width:0;}
 
 /* ── STEPS MAIN ── */
 .steps-main{padding:36px 40px;border-right:1px solid var(--bd);min-width:0;overflow-wrap:break-word;}
@@ -144,13 +145,14 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
   .summary-panel{border-top:1px solid var(--bd);border-right:none;}
   .steps-main{border-right:none;padding:24px 5vw;}
   .summary-panel{padding:24px 5vw;}
+  .header-inner{padding:0 5vw;}
 }
 @media(max-width:600px){
   .dienst-grid{grid-template-columns:1fr;}
   .med-grid{grid-template-columns:1fr 1fr;}
   .time-grid{grid-template-columns:repeat(4,1fr);}
   .form-row-2{grid-template-columns:1fr;}
-  .header{padding:0 4vw;}
+  .header-inner{padding:0 4vw;}
   .step-label{display:none;}
   .step-line{margin:0 4px;}
 }
@@ -158,7 +160,8 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 /* ── EMBED MODE (binnen de Kronr widget-iframe) ── */
 /* De widget zelf toont al de Kronr-merknaam bovenaan het paneel — hier dus
    geen tweede logo-blokje, alleen de naam van de salon als context. */
-body.embed .header{height:40px;padding:0 18px;border-bottom:1px solid var(--bd);}
+body.embed .header{height:40px;border-bottom:1px solid var(--bd);}
+body.embed .header-inner{padding:0 18px;max-width:none;}
 body.embed .brand-logo{width:22px;height:22px;font-size:10px;background:var(--gd);color:var(--iv);border-radius:6px;}
 body.embed .brand-name{font-size:13px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.2px;}
 body.embed .brand-sub{display:none;}
@@ -176,14 +179,16 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
 <body>
 
 <header class="header">
-  <div class="brand">
-    <div class="brand-logo" id="brand-init">K</div>
-    <div>
-      <div class="brand-name" id="brand-name">Laden...</div>
-      <div class="brand-sub" id="brand-type"></div>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo" id="brand-init">K</div>
+      <div>
+        <div class="brand-name" id="brand-name">Laden...</div>
+        <div class="brand-sub" id="brand-type"></div>
+      </div>
     </div>
+    <div class="header-right">Online boeken</div>
   </div>
-  <div class="header-right">Online boeken</div>
 </header>
 
 <div class="layout">
