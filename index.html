@@ -142,7 +142,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
   .hero-pills{margin-top:40px;}
 }
 @media(max-width:640px){
-  .hero-pills{border-radius:16px;justify-content:flex-start;overflow-x:auto;}
+  .hero-pills{display:grid;grid-template-columns:1fr 1fr;gap:16px 12px;border-radius:18px;padding:22px 20px;justify-content:initial;overflow:visible;}
+  .hero-pill{justify-content:flex-start;white-space:normal;}
 }
 
 /* ── STATS BAR ── */
@@ -410,7 +411,11 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .type-name{font-size:14px;}
   .type-desc{font-size:12px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
-  .hero{min-height:100dvh;padding:76px 16px 36px;}
+  .hero{min-height:100dvh;padding:100px 16px 48px;}
+  .hero-title{margin-bottom:20px;}
+  .hero-sub{margin-bottom:32px;}
+  .hero-btns{margin-bottom:36px;gap:14px;}
+  .hero-usps{gap:14px 20px;}
   .hero-screenshot{padding:0;}
   .mock-content{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
   .mock-kpi-v{font-size:16px;}
