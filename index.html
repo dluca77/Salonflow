@@ -1316,10 +1316,15 @@ idxSetPeriod('yearly');
     bezig = true;
 
     if(key === 'anders'){
-      // De witte paneel-container blijft volledig gesloten -- Kai
-      // vervolgt gewoon het gesprek links, als vervolgzin op zijn
-      // openingsvraag.
-      speelAndersReplyAf();
+      // Als er al een branche-paneel open staat, dat eerst soepel
+      // sluiten -- pas daarna begint Kai met typen.
+      const paneelStaatOpen = layoutEl.classList.contains('vw-visible');
+      if(paneelStaatOpen){
+        layoutEl.classList.remove('vw-visible');
+        setTimeout(() => speelAndersReplyAf(), 650);
+      } else {
+        speelAndersReplyAf();
+      }
       return;
     }
 
