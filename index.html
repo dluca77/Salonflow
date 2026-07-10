@@ -45,6 +45,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5.4vw,80px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:14px;}
+.hero-word-meer{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px;}
+.hero-je{color:var(--gd);}
 .hero-cycle-word{font-style:italic;font-weight:600;color:var(--gd);}
 .hero-cycle-cursor{display:inline-block;width:3px;height:0.85em;background:var(--gd);margin-left:3px;vertical-align:baseline;animation:heroCycleBlink .8s step-end infinite;}
 @keyframes heroCycleBlink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
@@ -504,7 +506,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="hero-grid">
     <div class="hero-left">
       <div class="hero-text-group">
-        <h1 class="hero-title">Besteed minder tijd aan administratie.<br>Meer tijd voor<br>je <span class="hero-cycle-wrap"><span id="heroCycleWord" class="hero-cycle-word"></span><span class="hero-cycle-cursor"></span></span>.</h1>
+        <h1 class="hero-title">Besteed minder tijd aan administratie.<br><span class="hero-word-meer">Meer</span> tijd voor<br><span class="hero-je">je</span><span id="heroJeSpace"> </span><span class="hero-cycle-wrap"><span id="heroCycleWord" class="hero-cycle-word"></span><span class="hero-cycle-cursor"></span></span>.</h1>
         <p class="hero-sub">Alles wat je salon nodig heeft. Eén platform. Eén abonnement. Eén overzicht. Zonder commissie.</p>
       </div>
       <div class="hero-btns">
@@ -1127,15 +1129,22 @@ idxSetPeriod('yearly');
 (function(){
   const woorden=['klanten','team','familie','zelf'];
   const el=document.getElementById('heroCycleWord');
+  const spatieEl=document.getElementById('heroJeSpace');
   if(!el) return;
+
+  function updateSpatie(idx){
+    if(spatieEl) spatieEl.style.display = woorden[idx]==='zelf' ? 'none' : 'inline';
+  }
 
   if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
     el.textContent=woorden[0];
+    updateSpatie(0);
     return;
   }
 
   let woordIdx=0, charIdx=0, aanHetWissen=false;
   const typSnelheid=65, wisSnelheid=35, pauzeNaTypen=1800, pauzeNaWissen=300;
+  updateSpatie(woordIdx);
 
   function tik(){
     const huidig=woorden[woordIdx];
@@ -1154,6 +1163,7 @@ idxSetPeriod('yearly');
       if(charIdx===0){
         aanHetWissen=false;
         woordIdx=(woordIdx+1)%woorden.length;
+        updateSpatie(woordIdx);
         setTimeout(tik,pauzeNaWissen);
         return;
       }
