@@ -182,13 +182,21 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .vw-panel-benefits{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
 .vw-panel-benefits li{font-size:14.5px;color:var(--ink2);display:flex;align-items:center;gap:10px;}
 .vw-panel-benefits li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);flex-shrink:0;}
-.vw-panel-visual{background:var(--iv);border:1px solid var(--bd);border-radius:12px;padding:20px;min-height:220px;display:flex;flex-direction:column;justify-content:center;}
+.vw-panel-visual{background:var(--iv);border:1px solid var(--bd);border-radius:12px;padding:24px;min-height:300px;display:flex;flex-direction:column;justify-content:center;gap:14px;}
+.vw-kai-bubble{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;background:var(--white);border:1px solid var(--bd);border-radius:10px;}
+.vw-kai-avatar{width:26px;height:26px;object-fit:contain;flex-shrink:0;margin-top:1px;}
+.vw-kai-text{font-size:13px;color:var(--ink2);line-height:1.55;}
+.vw-kai-text strong{color:var(--gd);}
+.vw-panel-text,.vw-panel-visual{transition:opacity .25s ease,transform .25s ease;}
+.vw-fade-out{opacity:0;transform:translateY(8px);}
+.vw-pain{font-size:14.5px;color:var(--ink2);font-weight:600;margin-bottom:6px;}
 @media(max-width:768px){
   .vw-layout{grid-template-columns:1fr;}
   .vw-tabs{flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--bd);}
   .vw-tab{border-left:none;border-bottom:3px solid transparent;white-space:nowrap;padding:14px 18px;}
   .vw-tab.active{border-left-color:transparent;border-bottom-color:var(--gd);}
   .vw-panel{grid-template-columns:1fr;padding:28px 22px;gap:24px;}
+  .vw-panel-visual{min-height:280px;padding:20px;}
 }
 
 /* ── ZO WERKT HET ── */
@@ -661,8 +669,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="section voor-wie" id="voor-wie">
   <div class="section-inner">
     <div class="section-label">Voor wie is Kronr?</div>
-    <h2 class="section-title">Kronr past zich aan<br>jouw salon aan.</h2>
-    <p class="section-sub" style="margin-bottom:40px;">Kies je branche. Wij laten zien wat Kronr voor jou doet.</p>
+    <h2 class="section-title">Ontdek hoe Kronr<br>jouw branche ondersteunt.</h2>
+    <p class="section-sub" style="margin-bottom:40px;">Hoe werk jij? Klik op je branche en zie het meteen.</p>
 
     <div class="vw-layout">
       <div class="vw-tabs" role="tablist">
@@ -1146,8 +1154,10 @@ idxSetPeriod('yearly');
   const data = {
     kappers: {
       title: 'Kappers & barbiers',
-      desc: 'Van solo-kapper tot drukke barbershop — plan sneller en voorkom lege stoelen.',
-      benefits: ['Geen gaten meer in je agenda', 'Minder no-shows door automatische herinneringen', 'Meer terugkerende klanten'],
+      pain: 'Een lege stoel kost geld — elke dag opnieuw.',
+      desc: 'Kronr houdt je agenda vol, zonder dat jij erover na hoeft te denken.',
+      benefits: ['Geen dubbele boekingen, ook niet als het druk is', 'Klanten die niet komen? Automatische herinneringen voorkomen het meeste', 'Lege plekken vullen zich vanzelf met terugkerende klanten'],
+      kai: 'Ik heb een lege plek om 14:00 automatisch opgevuld.',
       visual: `<div class="mini-agenda">
         <div class="mini-agenda-head">Agenda — woensdag</div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">9:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Jasmijn — Knippen</div></div>
@@ -1157,30 +1167,42 @@ idxSetPeriod('yearly');
     },
     nagels: {
       title: 'Nagelstudio\'s',
-      desc: 'Plan complete behandelingen in seconden en houd kleuren en producten automatisch bij.',
-      benefits: ['Kleurcodering per techniek', 'Meerdere behandelaren tegelijk plannen', 'Materiaal en kleur direct genoteerd bij de klant'],
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd1dc;color:#a3184f;">Gellak — Rood 42</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#d9e8ff;color:#1a4fa0;">Acryl — Frans</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">15:30</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Nail art</div></div>
+      pain: 'Welke kleur en techniek had ze ook alweer de vorige keer?',
+      desc: 'Kronr onthoudt het voor je, tot op de laatste kleurcode.',
+      benefits: ['Kleuren- en techniekgeschiedenis per klant, altijd bij de hand', 'Meerdere behandelaren tegelijk plannen, zonder verwarring', 'Materiaalgebruik automatisch bijgehouden'],
+      kai: 'Ik heb de vorige kleur van Sophie alvast klaargezet: Rood 42.',
+      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">KLANTKAART</div>
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:12px;">Sophie de Vries</div>
+        <div style="font-size:13px;color:var(--ink2);margin-bottom:8px;">Laatste kleur: <strong style="color:var(--gd);">Rood 42</strong> · Gellak</div>
+        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">Kleurgeschiedenis:</div>
+        <div style="display:flex;gap:6px;">
+          <div style="width:20px;height:20px;border-radius:50%;background:#c0392b;"></div>
+          <div style="width:20px;height:20px;border-radius:50%;background:#d9a441;"></div>
+          <div style="width:20px;height:20px;border-radius:50%;background:#a3184f;"></div>
+          <div style="width:20px;height:20px;border-radius:50%;background:#6b3fa0;"></div>
+        </div>
       </div>`
     },
     beauty: {
       title: 'Schoonheidsspecialisten',
-      desc: 'Klantkaarten met volledige behandelhistorie, allergieën en notities — nooit meer iets vergeten.',
-      benefits: ['Digitale behandelkaart per klant', 'Allergieën en notities direct zichtbaar', 'Herhaalafspraken automatisch voorgesteld'],
-      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:16px;">
+      pain: 'Bij honderden klanten vergeet je onvermijdelijk iets.',
+      desc: 'Kronr vergeet nooit een allergie, notitie of afspraak.',
+      benefits: ['Allergieën en notities springen meteen in het oog', 'Volledige behandelhistorie per klant', 'Herhaalafspraken worden automatisch voorgesteld'],
+      kai: 'Emma heeft een parfumallergie. Vergeet dit niet.',
+      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
         <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">KLANTKAART</div>
-        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:10px;">Emma Bakker</div>
-        <div style="font-size:12px;color:#c0392b;background:rgba(192,57,43,.08);border-radius:6px;padding:6px 10px;margin-bottom:8px;">⚠ Allergie: parfum</div>
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:12px;">Emma Bakker</div>
+        <div style="font-size:13px;color:#c0392b;background:rgba(192,57,43,.08);border-radius:6px;padding:8px 12px;margin-bottom:10px;">⚠ Allergie: parfum</div>
         <div style="font-size:12px;color:var(--mu);">Laatste behandeling: Gezichtsbehandeling — 3 weken geleden</div>
       </div>`
     },
     spa: {
       title: 'Spa & wellness',
-      desc: 'Kamer- en apparatuurplanning zonder puzzelen, plus cadeaubonnen en loyaliteitsprogramma.',
-      benefits: ['Kamerplanning zonder dubbele boekingen', 'Cadeaubonnen ingebouwd', 'Loyaliteitsprogramma voor terugkerende gasten'],
+      pain: 'Puzzelen met kamers en apparatuur kost tijd die je niet hebt.',
+      desc: 'Kronr regelt de planning, jij regelt de rust.',
+      benefits: ['Kamers en apparatuur nooit dubbel geboekt', 'Cadeaubonnen en pakketten ingebouwd', 'Terugkerende gasten automatisch herkend'],
+      kai: 'Er is nog een kamer vrij om 14:00 — zal ik die reserveren?',
       visual: `<div class="mini-agenda">
         <div class="mini-agenda-head">Behandelkamers</div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">Kamer 1</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Massage — bezet tot 15:00</div></div>
@@ -1190,12 +1212,14 @@ idxSetPeriod('yearly');
     },
     tattoo: {
       title: 'Tattoo & piercing',
-      desc: 'Verplicht een aanbetaling bij het boeken, en plan lange sessies moeiteloos in.',
+      pain: 'Geen uren meer kwijt aan klanten die niet komen opdagen.',
+      desc: 'Aanbetalingen worden automatisch geregeld bij het boeken.',
       benefits: ['Aanbetaling verplicht bij boeking', 'Lange sessies eenvoudig inplannen', 'Intake- en referentiefoto\'s veilig bewaard'],
-      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:16px;">
+      kai: 'Deze klant heeft nog geen aanbetaling gedaan — wil je een herinnering sturen?',
+      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
         <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">INTAKEFORMULIER</div>
-        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:10px;">Sessie — Sleeve, 4 uur</div>
-        <div style="font-size:12px;color:#1a7a40;background:rgba(26,122,64,.08);border-radius:6px;padding:6px 10px;margin-bottom:8px;">✓ Aanbetaling ontvangen — €75</div>
+        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:12px;">Sessie — Sleeve, 4 uur</div>
+        <div style="font-size:13px;color:#1a7a40;background:rgba(26,122,64,.08);border-radius:6px;padding:8px 12px;margin-bottom:10px;">✓ Aanbetaling ontvangen — €75</div>
         <div style="font-size:12px;color:var(--mu);">Referentiefoto's: 3 bijlagen toegevoegd</div>
       </div>`
     }
@@ -1206,15 +1230,15 @@ idxSetPeriod('yearly');
   const descEl = document.getElementById('vwDesc');
   const benefitsEl = document.getElementById('vwBenefits');
   const visualEl = document.getElementById('vwVisual');
+  const textWrapEl = document.querySelector('.vw-panel-text');
   if(!tabs.length || !titleEl) return;
 
-  function toonBranche(key){
+  function vulIn(key){
     const d = data[key];
-    if(!d) return;
-    titleEl.textContent = d.title;
+    titleEl.innerHTML = `<span class="vw-pain">${d.pain}</span>${d.title}`;
     descEl.textContent = d.desc;
     benefitsEl.innerHTML = d.benefits.map(b => `<li>${b}</li>`).join('');
-    visualEl.innerHTML = d.visual;
+    visualEl.innerHTML = d.visual + `<div class="vw-kai-bubble"><img src="images/kai-mascotte.png" alt="Kai" class="vw-kai-avatar"><div class="vw-kai-text"><strong>Kai</strong> "${d.kai}"</div></div>`;
     tabs.forEach(t => {
       const actief = t.dataset.industry === key;
       t.classList.toggle('active', actief);
@@ -1222,11 +1246,25 @@ idxSetPeriod('yearly');
     });
   }
 
+  let bezig = false;
+  function toonBranche(key){
+    if(!data[key] || bezig) return;
+    bezig = true;
+    textWrapEl.classList.add('vw-fade-out');
+    visualEl.classList.add('vw-fade-out');
+    setTimeout(() => {
+      vulIn(key);
+      textWrapEl.classList.remove('vw-fade-out');
+      visualEl.classList.remove('vw-fade-out');
+      bezig = false;
+    }, 180);
+  }
+
   tabs.forEach(tab => {
     tab.addEventListener('click', () => toonBranche(tab.dataset.industry));
   });
 
-  toonBranche('kappers');
+  vulIn('kappers');
 })();
 
 // Hero-titel: cyclisch "getypt" slotwoord (voor wie de tijd is)
