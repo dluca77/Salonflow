@@ -726,7 +726,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     </div>
 
     <div class="vw-pills" id="vwPills" role="tablist">
-      <button class="vw-pill active" data-industry="kappers" role="tab" aria-selected="true">Kappers</button>
+      <button class="vw-pill" data-industry="kappers" role="tab" aria-selected="false">Kappers</button>
       <button class="vw-pill" data-industry="nagels" role="tab" aria-selected="false">Nagels</button>
       <button class="vw-pill" data-industry="beauty" role="tab" aria-selected="false">Beauty</button>
       <button class="vw-pill" data-industry="spa" role="tab" aria-selected="false">Spa</button>
@@ -1340,7 +1340,15 @@ idxSetPeriod('yearly');
     if(!data[key] || bezig) return;
     bezig = true;
 
+    const eersteKeerOpenen = !layoutEl.classList.contains('vw-visible');
+
     if(key === 'anders'){
+      if(eersteKeerOpenen){
+        vulIn('kappers'); // vult de gesloten tekst-container alvast, blijft onzichtbaar tot een echte industrie geopend wordt
+        layoutEl.classList.add('vw-visible');
+        speelAndersAf();
+        return;
+      }
       textWrapEl.classList.add('vw-fade-out');
       visualEl.classList.add('vw-fade-out');
       speelAndersAf();
@@ -1349,6 +1357,13 @@ idxSetPeriod('yearly');
 
     const komtVanAnders = andersChatEl.classList.contains('vw-anders-show');
     if(komtVanAnders) verbergAndersChat();
+
+    if(eersteKeerOpenen){
+      vulIn(key);
+      layoutEl.classList.add('vw-visible');
+      bezig = false;
+      return;
+    }
 
     textWrapEl.classList.add('vw-fade-out');
     visualEl.classList.add('vw-fade-out');
@@ -1364,8 +1379,6 @@ idxSetPeriod('yearly');
     tab.addEventListener('click', () => toonBranche(tab.dataset.industry));
   });
 
-  vulIn('kappers');
-
   // Kai spreekt eerst ("Voor welke branche werk jij?"), daarna komen de
   // pil-knoppen en het paneel animerend in beeld -- eenmalig bij scroll.
   const kaiIntroEl = document.getElementById('vwKaiIntroText');
@@ -1379,7 +1392,6 @@ idxSetPeriod('yearly');
       kaiIntroEl.textContent = kaiZin;
       if(kaiCursorEl) kaiCursorEl.style.display = 'none';
       pillsEl.classList.add('vw-visible');
-      layoutEl.classList.add('vw-visible');
       return;
     }
     let i = 0;
@@ -1392,7 +1404,6 @@ idxSetPeriod('yearly');
         if(kaiCursorEl) kaiCursorEl.style.display = 'none';
         setTimeout(() => {
           pillsEl.classList.add('vw-visible');
-          setTimeout(() => layoutEl.classList.add('vw-visible'), 250);
         }, 300);
       }
     }
