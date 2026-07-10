@@ -171,8 +171,9 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 
 /* ── VOOR WIE ── */
 .voor-wie{background:var(--white);position:relative;overflow:hidden;}
-.voor-wie::before{content:'';position:absolute;top:-10%;left:-15%;width:50%;height:70%;background:radial-gradient(circle,rgba(140,109,63,0.10) 0%,transparent 70%);pointer-events:none;}
-.voor-wie::after{content:'';position:absolute;bottom:-10%;right:-15%;width:50%;height:70%;background:radial-gradient(circle,rgba(140,109,63,0.08) 0%,transparent 70%);pointer-events:none;}
+.voor-wie::before{content:'';position:absolute;top:-10%;left:-15%;width:50%;height:70%;background:radial-gradient(circle,rgba(140,109,63,0.10) 0%,transparent 70%);pointer-events:none;opacity:0;transition:opacity 1.1s ease;}
+.voor-wie::after{content:'';position:absolute;bottom:-10%;right:-15%;width:50%;height:70%;background:radial-gradient(circle,rgba(140,109,63,0.08) 0%,transparent 70%);pointer-events:none;opacity:0;transition:opacity 1.1s ease .15s;}
+.voor-wie.vw-glow-visible::before,.voor-wie.vw-glow-visible::after{opacity:1;}
 .voor-wie .section-inner{position:relative;z-index:1;}
 
 .vw-kai-intro{display:flex;align-items:flex-start;gap:16px;margin-top:40px;max-width:560px;}
@@ -196,6 +197,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .vw-panel-benefits li{font-size:14.5px;color:var(--ink2);display:flex;align-items:center;gap:10px;}
 .vw-panel-benefits li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);flex-shrink:0;}
 .vw-panel-visual{background:var(--iv);border:1px solid var(--bd);border-radius:12px;padding:24px;min-height:300px;display:flex;flex-direction:column;justify-content:center;gap:14px;}
+.vw-visual-shot{border-radius:10px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 10px 28px rgba(15,13,11,.10);background:var(--white);}
+.vw-visual-shot-bar{height:24px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px;padding:0 12px;}
+.vw-visual-shot-bar span{width:7px;height:7px;border-radius:50%;background:var(--bd);}
+.vw-visual-shot img{display:block;width:100%;height:auto;}
 .vw-kai-bubble{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;background:var(--white);border:1px solid var(--bd);border-radius:10px;}
 .vw-kai-avatar{width:26px;height:26px;object-fit:contain;flex-shrink:0;margin-top:1px;}
 .vw-kai-text{font-size:13px;color:var(--ink2);line-height:1.55;}
@@ -206,8 +211,9 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
   .vw-kai-intro{margin-top:32px;gap:12px;}
   .vw-kai-intro-avatar{width:38px;height:38px;}
   .vw-kai-intro-bubble{font-size:14px;padding:13px 16px;}
-  .vw-pills{gap:8px;margin-top:24px;}
-  .vw-pill{padding:10px 16px;font-size:13px;}
+  .vw-pills{gap:8px;margin-top:24px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;}
+  .vw-pills::-webkit-scrollbar{display:none;}
+  .vw-pill{padding:10px 16px;font-size:13px;flex-shrink:0;white-space:nowrap;}
   .vw-panel{grid-template-columns:1fr;padding:28px 22px;gap:24px;border-radius:14px;}
   .vw-panel-visual{min-height:280px;padding:20px;}
 }
@@ -1176,66 +1182,35 @@ idxSetPeriod('yearly');
       desc: 'Een lege stoel kost geld — Kronr houdt je agenda vol, zonder dat jij erover na hoeft te denken.',
       benefits: ['Geen dubbele boekingen, ook niet als het druk is', 'Klanten die niet komen? Automatische herinneringen voorkomen het meeste', 'Lege plekken vullen zich vanzelf met terugkerende klanten'],
       kai: 'Ik heb een lege plek om 14:00 automatisch opgevuld.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda — woensdag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">9:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Jasmijn — Knippen</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:15</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tom — Baard</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sara — Highlights</div></div>
-      </div>`
+      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-kappers.jpg" alt="Kronr agenda voor kappers en barbiers" loading="lazy"></div>`
     },
     nagels: {
       title: 'Nagelstudio\'s',
       desc: 'Welke kleur en techniek had ze ook alweer? Kronr onthoudt het voor je, tot op de laatste kleurcode.',
       benefits: ['Kleuren- en techniekgeschiedenis per klant, altijd bij de hand', 'Meerdere behandelaren tegelijk plannen, zonder verwarring', 'Materiaalgebruik automatisch bijgehouden'],
       kai: 'Ik heb de vorige kleur van Sophie alvast klaargezet: Rood 42.',
-      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
-        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">KLANTKAART</div>
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:12px;">Sophie de Vries</div>
-        <div style="font-size:13px;color:var(--ink2);margin-bottom:8px;">Laatste kleur: <strong style="color:var(--gd);">Rood 42</strong> · Gellak</div>
-        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">Kleurgeschiedenis:</div>
-        <div style="display:flex;gap:6px;">
-          <div style="width:20px;height:20px;border-radius:50%;background:#c0392b;"></div>
-          <div style="width:20px;height:20px;border-radius:50%;background:#d9a441;"></div>
-          <div style="width:20px;height:20px;border-radius:50%;background:#a3184f;"></div>
-          <div style="width:20px;height:20px;border-radius:50%;background:#6b3fa0;"></div>
-        </div>
-      </div>`
+      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-nagels.jpg" alt="Kronr klantkaart voor nagelstudio's" loading="lazy"></div>`
     },
     beauty: {
       title: 'Schoonheidsspecialisten',
       desc: 'Bij honderden klanten vergeet je onvermijdelijk iets — Kronr vergeet nooit een allergie, notitie of afspraak.',
       benefits: ['Allergieën en notities springen meteen in het oog', 'Volledige behandelhistorie per klant', 'Herhaalafspraken worden automatisch voorgesteld'],
       kai: 'Emma heeft een parfumallergie. Vergeet dit niet.',
-      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
-        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">KLANTKAART</div>
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:12px;">Emma Bakker</div>
-        <div style="font-size:13px;color:#c0392b;background:rgba(192,57,43,.08);border-radius:6px;padding:8px 12px;margin-bottom:10px;">⚠ Allergie: parfum</div>
-        <div style="font-size:12px;color:var(--mu);">Laatste behandeling: Gezichtsbehandeling — 3 weken geleden</div>
-      </div>`
+      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-beauty.jpg" alt="Kronr klantkaart voor schoonheidsspecialisten" loading="lazy"></div>`
     },
     spa: {
       title: 'Spa & wellness',
       desc: 'Puzzelen met kamers en apparatuur kost tijd die je niet hebt. Kronr regelt de planning, jij regelt de rust.',
       benefits: ['Kamers en apparatuur nooit dubbel geboekt', 'Cadeaubonnen en pakketten ingebouwd', 'Terugkerende gasten automatisch herkend'],
       kai: 'Er is nog een kamer vrij om 14:00 — zal ik die reserveren?',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Behandelkamers</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Kamer 1</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Massage — bezet tot 15:00</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Kamer 2</div><div class="mini-agenda-apt" style="background:#f5ede0;color:#8c6d3f;">Vrij</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Kamer 3</div><div class="mini-agenda-apt" style="background:#c8e8ff;color:#1a5fa0;">Sauna-sessie</div></div>
-      </div>`
+      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-spa.jpg" alt="Kronr agenda voor spa en wellness" loading="lazy"></div>`
     },
     tattoo: {
       title: 'Tattoo & piercing',
       desc: 'Geen uren meer kwijt aan klanten die niet komen opdagen — aanbetalingen worden automatisch geregeld.',
       benefits: ['Aanbetaling verplicht bij boeking', 'Lange sessies eenvoudig inplannen', 'Intake- en referentiefoto\'s veilig bewaard'],
       kai: 'Deze klant heeft nog geen aanbetaling gedaan — wil je een herinnering sturen?',
-      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
-        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">INTAKEFORMULIER</div>
-        <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin-bottom:12px;">Sessie — Sleeve, 4 uur</div>
-        <div style="font-size:13px;color:#1a7a40;background:rgba(26,122,64,.08);border-radius:6px;padding:8px 12px;margin-bottom:10px;">✓ Aanbetaling ontvangen — €75</div>
-        <div style="font-size:12px;color:var(--mu);">Referentiefoto's: 3 bijlagen toegevoegd</div>
-      </div>`
+      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-tattoo.jpg" alt="Kronr klantkaart voor tattoo en piercing" loading="lazy"></div>`
     }
   };
 
@@ -1317,6 +1292,7 @@ idxSetPeriod('yearly');
   if(vwSection){
     const vwObs = new IntersectionObserver(entries => {
       if(entries[0].isIntersecting){
+        vwSection.classList.add('vw-glow-visible');
         speelKaiIntroAf();
         vwObs.disconnect();
       }
