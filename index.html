@@ -416,10 +416,13 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .type-name{font-size:14px;}
   .type-desc{font-size:12px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
-  .hero{min-height:100dvh;padding:96px 16px 64px;}
-  .hero-label-wrap{margin-bottom:40px;}
-  .hero-sub{margin-bottom:32dvh;}
-  .hero-title{margin-bottom:28px;}
+  .hero{min-height:100dvh;padding:96px 16px 64px;display:flex;flex-direction:column;}
+  .hero-label-wrap{margin-bottom:0;}
+  .hero-grid{display:block;}
+  .hero-left{display:block;width:100%;}
+  .hero-text-group{padding:8dvh 0;display:flex;flex-direction:column;justify-content:center;gap:20px;}
+  .hero-title{margin-bottom:0;}
+  .hero-sub{margin-bottom:0;}
   .hero-btns{margin-bottom:44px;gap:14px;}
   .hero-usps{gap:16px 20px;}
   .hero-screenshot{padding:0;}
@@ -449,9 +452,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .pricing-benefits{gap:12px 20px;}
   .early-grid{grid-template-columns:1fr;gap:14px;}
   .early-card{padding:24px 22px;}
-}
-@media(max-width:768px) and (max-height:720px){
-  .hero-sub{margin-bottom:20dvh;}
 }
 @media(max-width:480px){
   .hero-btns{flex-direction:column;align-items:stretch;}
@@ -495,9 +495,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="hero-label-wrap"><div class="hero-label">✨ Nieuw: AI-assistent inbegrepen</div></div>
   <div class="hero-grid">
     <div class="hero-left">
-      <h1 class="hero-title">Run je salon.<br><em>Niet</em> je software.</h1>
-      <p class="hero-sub">Alles wat je salon nodig heeft. Eén platform. Eén abonnement. Eén overzicht. Zonder commissie.</p>
-      <p class="hero-sub-secondary">Besteed minder tijd aan administratie.<br>Meer tijd aan je klanten.</p>
+      <div class="hero-text-group">
+        <h1 class="hero-title">Besteed minder tijd<br>aan administratie. <em>Meer</em> tijd aan je klanten.</h1>
+        <p class="hero-sub">Alles wat je salon nodig heeft. Eén platform. Eén abonnement. Eén overzicht. Zonder commissie.</p>
+      </div>
       <div class="hero-btns">
         <a href="login.html" class="btn-primary">Start 14 dagen gratis →</a>
         <a href="#features" class="btn-secondary">Bekijk alle features</a>
