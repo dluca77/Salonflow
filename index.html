@@ -174,9 +174,15 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
   position:relative;
   overflow:hidden;
   background:
-    radial-gradient(circle at -5% 115%, rgba(140,109,63,0.16) 0%, transparent 40%),
-    radial-gradient(circle at 105% 115%, rgba(140,109,63,0.16) 0%, transparent 40%),
+    radial-gradient(circle at -5% 115%, rgba(140,109,63,0.24) 0%, transparent 45%),
+    radial-gradient(circle at 105% 115%, rgba(140,109,63,0.24) 0%, transparent 45%),
     var(--iv);
+}
+.vw-watermark-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Playfair Display',serif;font-weight:700;font-size:min(22vw,340px);color:var(--gd);opacity:0.05;white-space:nowrap;pointer-events:none;z-index:0;user-select:none;}
+.vw-watermark-kai{position:absolute;bottom:-8%;right:1%;width:340px;height:340px;object-fit:contain;opacity:0.08;pointer-events:none;z-index:0;max-width:30%;}
+@media(max-width:768px){
+  .vw-watermark-text{font-size:min(30vw,220px);}
+  .vw-watermark-kai{width:200px;height:200px;bottom:-6%;right:1%;max-width:45%;}
 }
 .voor-wie.vw-glow-visible::before,.voor-wie.vw-glow-visible::after{opacity:1;}
 .voor-wie .section-inner{position:relative;z-index:1;}
@@ -540,7 +546,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-label-wrap"><div class="hero-label">✨ Nieuw: AI-assistent inbegrepen</div></div>
+  <div class="hero-label-wrap"><div class="hero-label">✨ Nieuw: Kaissistent inbegrepen</div></div>
   <div class="hero-grid">
     <div class="hero-left">
       <div class="hero-text-group">
@@ -674,7 +680,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</div>
     <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Betalingen</div>
     <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klantbeheer</div>
-    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg>AI assistent</div>
+    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg>Kaissistent</div>
     <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp herinneringen</div>
   </div>
 </section>
@@ -691,6 +697,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 
 <!-- VOOR WIE -->
 <section class="section voor-wie" id="voor-wie">
+  <div class="vw-watermark-text">Kronr.</div>
+  <img src="images/kai-mascotte.png" alt="" class="vw-watermark-kai">
   <div class="section-inner">
     <div class="section-label">Voor wie is Kronr?</div>
     <h2 class="section-title">Ontdek hoe Kronr<br>jouw branche ondersteunt.</h2>
@@ -818,7 +826,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="hero-feat" data-aos>
       <div>
         <div class="hero-feat-num">03</div>
-        <h3 class="hero-feat-title">Kai, je AI-assistent</h3>
+        <h3 class="hero-feat-title">Kaissistent</h3>
         <p class="hero-feat-desc" style="margin-bottom:14px;">Kai helpt met de taken die jij liever niet doet.</p>
         <ul class="hero-feat-bullets">
           <li>Beantwoordt klantvragen</li>
@@ -866,7 +874,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div>
       <div class="ai-label-row">
         <img src="images/kai-mascotte.png" alt="Kai" class="ai-kai-avatar">
-        <div class="ai-label">Kai — je AI-assistent</div>
+        <div class="ai-label">Kaissistent</div>
       </div>
       <h2 class="ai-title">Kai doet het werk<br>dat jij liever niet doet</h2>
       <p class="ai-sub">Terwijl jij je klanten helpt, regelt Kai de rest. Geen dashboards afstruinen, geen extra werk — gewoon elke week uren bespaard.</p>
@@ -1006,7 +1014,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         <ul class="price-features">
           <li>Alles van Pro</li>
           <li>Onbeperkt medewerkers</li>
-          <li>Kai, je AI-assistent</li>
+          <li>Kaissistent</li>
           <li>Marketing campagnes</li>
           <li>Meerdere locaties</li>
           <li>Prioriteit support</li>
