@@ -171,12 +171,24 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 
 /* ── VOOR WIE ── */
 .voor-wie{background:var(--iv);}
-.vw-layout{margin-top:52px;display:grid;grid-template-columns:260px 1fr;gap:0;border:1px solid var(--bd);border-radius:16px;overflow:hidden;background:var(--white);min-height:420px;}
-.vw-tabs{display:flex;flex-direction:column;background:var(--iv);border-right:1px solid var(--bd);}
-.vw-tab{appearance:none;background:none;border:none;border-left:3px solid transparent;text-align:left;padding:18px 24px;font-family:inherit;font-size:15px;font-weight:600;color:var(--mu);cursor:pointer;transition:all .2s;}
-.vw-tab:hover{color:var(--ink);background:rgba(140,109,63,.06);}
-.vw-tab.active{color:var(--ink);border-left-color:var(--gd);background:var(--white);}
-.vw-panel{padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+.voor-wie{background:var(--ink);}
+.voor-wie .section-title{color:var(--white);}
+
+.vw-kai-intro{display:flex;align-items:flex-start;gap:16px;margin-top:40px;max-width:560px;}
+.vw-kai-intro-avatar{width:48px;height:48px;object-fit:contain;flex-shrink:0;}
+.vw-kai-intro-bubble{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:4px 16px 16px 16px;padding:16px 20px;font-size:16px;color:var(--white);line-height:1.5;min-height:26px;}
+.vw-kai-intro-cursor{display:inline-block;width:2px;height:1em;background:var(--gd);margin-left:2px;vertical-align:middle;animation:heroCycleBlink .8s step-end infinite;}
+
+.vw-pills{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
+.vw-pills.vw-visible{opacity:1;transform:translateY(0);}
+.vw-pill{appearance:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:12px 22px;font-family:inherit;font-size:14.5px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;opacity:0;transform:translateY(10px);}
+.vw-pills.vw-visible .vw-pill{opacity:1;transform:translateY(0);}
+.vw-pill:hover{border-color:var(--gd);color:var(--white);}
+.vw-pill.active{background:var(--gd);border-color:var(--gd);color:var(--white);}
+
+.vw-layout{margin-top:28px;opacity:0;transform:translateY(14px);transition:opacity .5s ease .15s,transform .5s ease .15s;}
+.vw-layout.vw-visible{opacity:1;transform:translateY(0);}
+.vw-panel{background:var(--white);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
 .vw-panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink);margin-bottom:14px;}
 .vw-panel-desc{font-size:15px;color:var(--mu);line-height:1.65;margin-bottom:20px;}
 .vw-panel-benefits{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
@@ -189,13 +201,14 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .vw-kai-text strong{color:var(--gd);}
 .vw-panel-text,.vw-panel-visual{transition:opacity .25s ease,transform .25s ease;}
 .vw-fade-out{opacity:0;transform:translateY(8px);}
-.vw-pain{font-size:14.5px;color:var(--ink2);font-weight:600;margin-bottom:6px;}
+.vw-pain{font-size:14.5px;color:var(--gd);font-weight:600;margin-bottom:6px;}
 @media(max-width:768px){
-  .vw-layout{grid-template-columns:1fr;}
-  .vw-tabs{flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--bd);}
-  .vw-tab{border-left:none;border-bottom:3px solid transparent;white-space:nowrap;padding:14px 18px;}
-  .vw-tab.active{border-left-color:transparent;border-bottom-color:var(--gd);}
-  .vw-panel{grid-template-columns:1fr;padding:28px 22px;gap:24px;}
+  .vw-kai-intro{margin-top:32px;gap:12px;}
+  .vw-kai-intro-avatar{width:38px;height:38px;}
+  .vw-kai-intro-bubble{font-size:14px;padding:13px 16px;}
+  .vw-pills{gap:8px;margin-top:24px;}
+  .vw-pill{padding:10px 16px;font-size:13px;}
+  .vw-panel{grid-template-columns:1fr;padding:28px 22px;gap:24px;border-radius:14px;}
   .vw-panel-visual{min-height:280px;padding:20px;}
 }
 
@@ -670,17 +683,23 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <div class="section-inner">
     <div class="section-label">Voor wie is Kronr?</div>
     <h2 class="section-title">Ontdek hoe Kronr<br>jouw branche ondersteunt.</h2>
-    <p class="section-sub" style="margin-bottom:40px;">Hoe werk jij? Klik op je branche en zie het meteen.</p>
 
-    <div class="vw-layout">
-      <div class="vw-tabs" role="tablist">
-        <button class="vw-tab active" data-industry="kappers" role="tab" aria-selected="true">Kappers</button>
-        <button class="vw-tab" data-industry="nagels" role="tab" aria-selected="false">Nagels</button>
-        <button class="vw-tab" data-industry="beauty" role="tab" aria-selected="false">Beauty</button>
-        <button class="vw-tab" data-industry="spa" role="tab" aria-selected="false">Spa</button>
-        <button class="vw-tab" data-industry="tattoo" role="tab" aria-selected="false">Tattoo</button>
+    <div class="vw-kai-intro">
+      <img src="images/kai-mascotte.png" alt="Kai" class="vw-kai-intro-avatar">
+      <div class="vw-kai-intro-bubble">
+        <span id="vwKaiIntroText"></span><span class="vw-kai-intro-cursor" id="vwKaiIntroCursor"></span>
       </div>
+    </div>
 
+    <div class="vw-pills" id="vwPills" role="tablist">
+      <button class="vw-pill active" data-industry="kappers" role="tab" aria-selected="true">✂️ Kappers</button>
+      <button class="vw-pill" data-industry="nagels" role="tab" aria-selected="false">💅 Nagels</button>
+      <button class="vw-pill" data-industry="beauty" role="tab" aria-selected="false">✨ Beauty</button>
+      <button class="vw-pill" data-industry="spa" role="tab" aria-selected="false">🧖 Spa</button>
+      <button class="vw-pill" data-industry="tattoo" role="tab" aria-selected="false">🖋️ Tattoo</button>
+    </div>
+
+    <div class="vw-layout" id="vwLayout">
       <div class="vw-panel">
         <div class="vw-panel-text">
           <h3 class="vw-panel-title" id="vwTitle"></h3>
@@ -1225,7 +1244,7 @@ idxSetPeriod('yearly');
     }
   };
 
-  const tabs = document.querySelectorAll('.vw-tab');
+  const tabs = document.querySelectorAll('.vw-pill');
   const titleEl = document.getElementById('vwTitle');
   const descEl = document.getElementById('vwDesc');
   const benefitsEl = document.getElementById('vwBenefits');
@@ -1265,6 +1284,50 @@ idxSetPeriod('yearly');
   });
 
   vulIn('kappers');
+
+  // Kai spreekt eerst ("Voor welke branche werk jij?"), daarna komen de
+  // pil-knoppen en het paneel animerend in beeld -- eenmalig bij scroll.
+  const kaiIntroEl = document.getElementById('vwKaiIntroText');
+  const kaiCursorEl = document.getElementById('vwKaiIntroCursor');
+  const pillsEl = document.getElementById('vwPills');
+  const layoutEl = document.getElementById('vwLayout');
+  const kaiZin = 'Voor welke branche werk jij?';
+
+  function speelKaiIntroAf(){
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      kaiIntroEl.textContent = kaiZin;
+      if(kaiCursorEl) kaiCursorEl.style.display = 'none';
+      pillsEl.classList.add('vw-visible');
+      layoutEl.classList.add('vw-visible');
+      return;
+    }
+    let i = 0;
+    function tikKai(){
+      i++;
+      kaiIntroEl.textContent = kaiZin.slice(0, i);
+      if(i < kaiZin.length){
+        setTimeout(tikKai, 45);
+      } else {
+        if(kaiCursorEl) kaiCursorEl.style.display = 'none';
+        setTimeout(() => {
+          pillsEl.classList.add('vw-visible');
+          setTimeout(() => layoutEl.classList.add('vw-visible'), 250);
+        }, 300);
+      }
+    }
+    tikKai();
+  }
+
+  const vwSection = document.getElementById('voor-wie');
+  if(vwSection){
+    const vwObs = new IntersectionObserver(entries => {
+      if(entries[0].isIntersecting){
+        speelKaiIntroAf();
+        vwObs.disconnect();
+      }
+    }, {threshold: .3});
+    vwObs.observe(vwSection);
+  }
 })();
 
 // Hero-titel: cyclisch "getypt" slotwoord (voor wie de tijd is)
