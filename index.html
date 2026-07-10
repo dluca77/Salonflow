@@ -230,7 +230,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 }
 
 /* ── ZO WERKT HET ── */
-.howit-timeline{position:relative;max-width:900px;margin:0 auto;padding-left:70px;}
+.howit-timeline{position:relative;max-width:900px;margin:0 auto;padding-left:70px;padding-bottom:44px;}
 .howit-line{position:absolute;left:23px;top:8px;bottom:8px;width:2px;background:var(--bd);}
 .howit-line-fill{position:absolute;top:0;left:0;width:100%;height:0%;background:var(--gd);transition:height .3s ease;}
 .howit-step{position:relative;padding-bottom:80px;opacity:.4;transform:scale(.96);transition:opacity .5s ease,transform .5s ease;}
@@ -243,7 +243,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .howit-step-desc{font-size:15px;color:var(--mu);line-height:1.7;}
 .howit-step-shot{border-radius:14px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.08);}
 .howit-step-shot img{width:100%;height:auto;display:block;}
-.howit-live-pill{position:relative;left:-70px;width:fit-content;display:flex;align-items:center;gap:8px;padding:8px 18px;background:var(--white);border:1px solid var(--bd);border-radius:99px;font-size:13px;font-weight:600;color:var(--ink2);box-shadow:0 8px 20px rgba(15,13,11,.06);}
+.howit-live-pill{position:absolute;left:24px;transform:translateX(-50%);bottom:0;width:fit-content;display:flex;align-items:center;gap:8px;padding:8px 18px;background:var(--white);border:1px solid var(--bd);border-radius:99px;font-size:13px;font-weight:600;color:var(--ink2);box-shadow:0 8px 20px rgba(15,13,11,.06);white-space:nowrap;}
 .howit-live-dot{width:8px;height:8px;border-radius:50%;background:#2d6a4f;box-shadow:0 0 0 3px rgba(45,106,79,.15);flex-shrink:0;animation:howitLivePulse 1.8s ease-in-out infinite;}
 @keyframes howitLivePulse{0%,100%{box-shadow:0 0 0 3px rgba(45,106,79,.15);}50%{box-shadow:0 0 0 6px rgba(45,106,79,.05);}}
 @media(max-width:900px){
@@ -253,6 +253,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
   .howit-timeline{padding-left:52px;}
   .howit-line{left:15px;}
   .howit-step-marker{left:-52px;width:36px;height:36px;font-size:15px;}
+  .howit-live-pill{left:20px;}
   .howit-step-body{grid-template-columns:1fr;gap:18px;}
   .howit-step-title{font-size:21px;}
   .howit-step{padding-bottom:56px;}
