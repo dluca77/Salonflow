@@ -170,25 +170,26 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .section-sub{font-size:17px;font-weight:300;color:var(--mu);line-height:1.7;max-width:560px;}
 
 /* ── VOOR WIE ── */
-.voor-wie{background:var(--iv);}
-.voor-wie{background:var(--ink);}
-.voor-wie .section-title{color:var(--white);}
+.voor-wie{background:var(--white);position:relative;overflow:hidden;}
+.voor-wie::before{content:'';position:absolute;top:-10%;left:-15%;width:50%;height:70%;background:radial-gradient(circle,rgba(140,109,63,0.10) 0%,transparent 70%);pointer-events:none;}
+.voor-wie::after{content:'';position:absolute;bottom:-10%;right:-15%;width:50%;height:70%;background:radial-gradient(circle,rgba(140,109,63,0.08) 0%,transparent 70%);pointer-events:none;}
+.voor-wie .section-inner{position:relative;z-index:1;}
 
 .vw-kai-intro{display:flex;align-items:flex-start;gap:16px;margin-top:40px;max-width:560px;}
 .vw-kai-intro-avatar{width:48px;height:48px;object-fit:contain;flex-shrink:0;}
-.vw-kai-intro-bubble{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);border-radius:4px 16px 16px 16px;padding:16px 20px;font-size:16px;color:var(--white);line-height:1.5;min-height:26px;}
+.vw-kai-intro-bubble{background:var(--iv);border:1px solid var(--bd);border-radius:4px 16px 16px 16px;padding:16px 20px;font-size:16px;color:var(--ink2);line-height:1.5;min-height:26px;}
 .vw-kai-intro-cursor{display:inline-block;width:2px;height:1em;background:var(--gd);margin-left:2px;vertical-align:middle;animation:heroCycleBlink .8s step-end infinite;}
 
 .vw-pills{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
 .vw-pills.vw-visible{opacity:1;transform:translateY(0);}
-.vw-pill{appearance:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.15);border-radius:99px;padding:12px 22px;font-family:inherit;font-size:14.5px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;transition:all .2s;opacity:0;transform:translateY(10px);}
+.vw-pill{appearance:none;background:var(--white);border:1px solid var(--bd);border-radius:99px;padding:12px 24px;font-family:inherit;font-size:14.5px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;opacity:0;transform:translateY(10px);}
 .vw-pills.vw-visible .vw-pill{opacity:1;transform:translateY(0);}
-.vw-pill:hover{border-color:var(--gd);color:var(--white);}
+.vw-pill:hover{border-color:var(--gd);color:var(--ink);}
 .vw-pill.active{background:var(--gd);border-color:var(--gd);color:var(--white);}
 
 .vw-layout{margin-top:28px;opacity:0;transform:translateY(14px);transition:opacity .5s ease .15s,transform .5s ease .15s;}
 .vw-layout.vw-visible{opacity:1;transform:translateY(0);}
-.vw-panel{background:var(--white);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+.vw-panel{background:var(--white);border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.06);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
 .vw-panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink);margin-bottom:14px;}
 .vw-panel-desc{font-size:15px;color:var(--mu);line-height:1.65;margin-bottom:20px;}
 .vw-panel-benefits{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
@@ -201,7 +202,6 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .vw-kai-text strong{color:var(--gd);}
 .vw-panel-text,.vw-panel-visual{transition:opacity .25s ease,transform .25s ease;}
 .vw-fade-out{opacity:0;transform:translateY(8px);}
-.vw-pain{font-size:14.5px;color:var(--gd);font-weight:600;margin-bottom:6px;}
 @media(max-width:768px){
   .vw-kai-intro{margin-top:32px;gap:12px;}
   .vw-kai-intro-avatar{width:38px;height:38px;}
@@ -692,11 +692,11 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     </div>
 
     <div class="vw-pills" id="vwPills" role="tablist">
-      <button class="vw-pill active" data-industry="kappers" role="tab" aria-selected="true">✂️ Kappers</button>
-      <button class="vw-pill" data-industry="nagels" role="tab" aria-selected="false">💅 Nagels</button>
-      <button class="vw-pill" data-industry="beauty" role="tab" aria-selected="false">✨ Beauty</button>
-      <button class="vw-pill" data-industry="spa" role="tab" aria-selected="false">🧖 Spa</button>
-      <button class="vw-pill" data-industry="tattoo" role="tab" aria-selected="false">🖋️ Tattoo</button>
+      <button class="vw-pill active" data-industry="kappers" role="tab" aria-selected="true">Kappers</button>
+      <button class="vw-pill" data-industry="nagels" role="tab" aria-selected="false">Nagels</button>
+      <button class="vw-pill" data-industry="beauty" role="tab" aria-selected="false">Beauty</button>
+      <button class="vw-pill" data-industry="spa" role="tab" aria-selected="false">Spa</button>
+      <button class="vw-pill" data-industry="tattoo" role="tab" aria-selected="false">Tattoo</button>
     </div>
 
     <div class="vw-layout" id="vwLayout">
@@ -1173,8 +1173,7 @@ idxSetPeriod('yearly');
   const data = {
     kappers: {
       title: 'Kappers & barbiers',
-      pain: 'Een lege stoel kost geld — elke dag opnieuw.',
-      desc: 'Kronr houdt je agenda vol, zonder dat jij erover na hoeft te denken.',
+      desc: 'Een lege stoel kost geld — Kronr houdt je agenda vol, zonder dat jij erover na hoeft te denken.',
       benefits: ['Geen dubbele boekingen, ook niet als het druk is', 'Klanten die niet komen? Automatische herinneringen voorkomen het meeste', 'Lege plekken vullen zich vanzelf met terugkerende klanten'],
       kai: 'Ik heb een lege plek om 14:00 automatisch opgevuld.',
       visual: `<div class="mini-agenda">
@@ -1186,8 +1185,7 @@ idxSetPeriod('yearly');
     },
     nagels: {
       title: 'Nagelstudio\'s',
-      pain: 'Welke kleur en techniek had ze ook alweer de vorige keer?',
-      desc: 'Kronr onthoudt het voor je, tot op de laatste kleurcode.',
+      desc: 'Welke kleur en techniek had ze ook alweer? Kronr onthoudt het voor je, tot op de laatste kleurcode.',
       benefits: ['Kleuren- en techniekgeschiedenis per klant, altijd bij de hand', 'Meerdere behandelaren tegelijk plannen, zonder verwarring', 'Materiaalgebruik automatisch bijgehouden'],
       kai: 'Ik heb de vorige kleur van Sophie alvast klaargezet: Rood 42.',
       visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
@@ -1205,8 +1203,7 @@ idxSetPeriod('yearly');
     },
     beauty: {
       title: 'Schoonheidsspecialisten',
-      pain: 'Bij honderden klanten vergeet je onvermijdelijk iets.',
-      desc: 'Kronr vergeet nooit een allergie, notitie of afspraak.',
+      desc: 'Bij honderden klanten vergeet je onvermijdelijk iets — Kronr vergeet nooit een allergie, notitie of afspraak.',
       benefits: ['Allergieën en notities springen meteen in het oog', 'Volledige behandelhistorie per klant', 'Herhaalafspraken worden automatisch voorgesteld'],
       kai: 'Emma heeft een parfumallergie. Vergeet dit niet.',
       visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
@@ -1218,8 +1215,7 @@ idxSetPeriod('yearly');
     },
     spa: {
       title: 'Spa & wellness',
-      pain: 'Puzzelen met kamers en apparatuur kost tijd die je niet hebt.',
-      desc: 'Kronr regelt de planning, jij regelt de rust.',
+      desc: 'Puzzelen met kamers en apparatuur kost tijd die je niet hebt. Kronr regelt de planning, jij regelt de rust.',
       benefits: ['Kamers en apparatuur nooit dubbel geboekt', 'Cadeaubonnen en pakketten ingebouwd', 'Terugkerende gasten automatisch herkend'],
       kai: 'Er is nog een kamer vrij om 14:00 — zal ik die reserveren?',
       visual: `<div class="mini-agenda">
@@ -1231,8 +1227,7 @@ idxSetPeriod('yearly');
     },
     tattoo: {
       title: 'Tattoo & piercing',
-      pain: 'Geen uren meer kwijt aan klanten die niet komen opdagen.',
-      desc: 'Aanbetalingen worden automatisch geregeld bij het boeken.',
+      desc: 'Geen uren meer kwijt aan klanten die niet komen opdagen — aanbetalingen worden automatisch geregeld.',
       benefits: ['Aanbetaling verplicht bij boeking', 'Lange sessies eenvoudig inplannen', 'Intake- en referentiefoto\'s veilig bewaard'],
       kai: 'Deze klant heeft nog geen aanbetaling gedaan — wil je een herinnering sturen?',
       visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px;">
@@ -1254,7 +1249,7 @@ idxSetPeriod('yearly');
 
   function vulIn(key){
     const d = data[key];
-    titleEl.innerHTML = `<span class="vw-pain">${d.pain}</span>${d.title}`;
+    titleEl.textContent = d.title;
     descEl.textContent = d.desc;
     benefitsEl.innerHTML = d.benefits.map(b => `<li>${b}</li>`).join('');
     visualEl.innerHTML = d.visual + `<div class="vw-kai-bubble"><img src="images/kai-mascotte.png" alt="Kai" class="vw-kai-avatar"><div class="vw-kai-text"><strong>Kai</strong> "${d.kai}"</div></div>`;
@@ -1291,7 +1286,7 @@ idxSetPeriod('yearly');
   const kaiCursorEl = document.getElementById('vwKaiIntroCursor');
   const pillsEl = document.getElementById('vwPills');
   const layoutEl = document.getElementById('vwLayout');
-  const kaiZin = 'Voor welke branche werk jij?';
+  const kaiZin = 'In welke branche zit jouw salon?';
 
   function speelKaiIntroAf(){
     if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
