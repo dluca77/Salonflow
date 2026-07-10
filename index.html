@@ -199,8 +199,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .vw-pill:hover{border-color:var(--gd);color:var(--ink);}
 .vw-pill.active{background:var(--gd);border-color:var(--gd);color:var(--white);}
 
-.vw-layout{margin-top:28px;opacity:0;transform:translateY(14px);transition:opacity .5s ease .15s,transform .5s ease .15s;display:none;}
-.vw-layout.vw-visible{opacity:1;transform:translateY(0);}
+.vw-layout{margin-top:0;max-height:0;overflow:hidden;opacity:0;transform:translateY(14px);transition:max-height .55s ease,opacity .45s ease,transform .45s ease,margin-top .55s ease;}
+.vw-layout.vw-visible{max-height:900px;opacity:1;transform:translateY(0);margin-top:28px;}
 .vw-panel{background:var(--white);border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.06);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:580px;position:relative;overflow:hidden;}
 .vw-panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink);margin-bottom:14px;}
 .vw-panel-desc{font-size:15px;color:var(--mu);line-height:1.65;margin-bottom:20px;}
@@ -1317,15 +1317,11 @@ idxSetPeriod('yearly');
 
     if(key === 'anders'){
       // Als er al een branche-paneel open staat, dat eerst soepel
-      // sluiten (en zijn ruimte pas daarna echt vrijgeven) -- pas
-      // daarna begint Kai met typen.
+      // sluiten (max-height-animatie) -- pas daarna begint Kai met typen.
       const paneelStaatOpen = layoutEl.classList.contains('vw-visible');
       if(paneelStaatOpen){
         layoutEl.classList.remove('vw-visible');
-        setTimeout(() => {
-          layoutEl.style.display = 'none';
-          speelAndersReplyAf();
-        }, 650);
+        setTimeout(() => speelAndersReplyAf(), 600);
       } else {
         speelAndersReplyAf();
       }
@@ -1338,8 +1334,7 @@ idxSetPeriod('yearly');
     const eersteKeerOpenen = !layoutEl.classList.contains('vw-visible');
     if(eersteKeerOpenen){
       vulIn(key);
-      layoutEl.style.display = 'block';
-      requestAnimationFrame(() => layoutEl.classList.add('vw-visible'));
+      layoutEl.classList.add('vw-visible');
       bezig = false;
       return;
     }
