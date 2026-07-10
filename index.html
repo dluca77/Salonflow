@@ -202,21 +202,6 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .vw-layout{margin-top:28px;opacity:0;transform:translateY(14px);transition:opacity .5s ease .15s,transform .5s ease .15s;}
 .vw-layout.vw-visible{opacity:1;transform:translateY(0);}
 .vw-panel{background:var(--white);border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.06);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:580px;position:relative;overflow:hidden;}
-.vw-anders-chat{position:absolute;inset:0;background:var(--white);display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;padding:44px;text-align:center;opacity:0;transform:scale(.96);transition:opacity .3s ease,transform .3s ease;}
-.vw-anders-chat.vw-anders-show{display:flex;}
-.vw-anders-chat.vw-anders-in{opacity:1;transform:scale(1);}
-.vw-anders-avatar{width:56px;height:56px;object-fit:contain;}
-.vw-anders-typing{display:flex;align-items:center;gap:10px;padding:12px 18px;background:var(--iv);border:1px solid var(--bd);border-radius:99px;font-size:13.5px;color:var(--mu);}
-.vw-anders-dots{display:flex;gap:4px;}
-.vw-anders-dots span{width:6px;height:6px;background:var(--gd);border-radius:50%;animation:heroCycleBounce .8s infinite;}
-.vw-anders-dots span:nth-child(2){animation-delay:.15s;}
-.vw-anders-dots span:nth-child(3){animation-delay:.3s;}
-@keyframes heroCycleBounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
-.vw-anders-message{font-family:'Playfair Display',serif;font-size:22px;font-weight:600;color:var(--ink);line-height:1.4;max-width:480px;min-height:32px;}
-@media(max-width:768px){
-  .vw-anders-message{font-size:18px;}
-  .vw-anders-avatar{width:44px;height:44px;}
-}
 .vw-panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink);margin-bottom:14px;}
 .vw-panel-desc{font-size:15px;color:var(--mu);line-height:1.65;margin-bottom:20px;}
 .vw-panel-benefits{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
@@ -725,6 +710,13 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       </div>
     </div>
 
+    <div class="vw-kai-intro" id="vwAndersReply" style="display:none;">
+      <img src="images/kai-mascotte.png" alt="Kai" class="vw-kai-intro-avatar">
+      <div class="vw-kai-intro-bubble" id="vwAndersReplyBubble">
+        <span id="vwAndersReplyText"></span><span class="vw-kai-intro-cursor" id="vwAndersReplyCursor"></span>
+      </div>
+    </div>
+
     <div class="vw-pills" id="vwPills" role="tablist">
       <button class="vw-pill" data-industry="kappers" role="tab" aria-selected="false">Kappers</button>
       <button class="vw-pill" data-industry="nagels" role="tab" aria-selected="false">Nagels</button>
@@ -742,14 +734,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <ul class="vw-panel-benefits" id="vwBenefits"></ul>
         </div>
         <div class="vw-panel-visual" id="vwVisual"></div>
-        <div class="vw-anders-chat" id="vwAndersChat">
-          <img src="images/kai-mascotte.png" alt="Kai" class="vw-anders-avatar">
-          <div class="vw-anders-typing" id="vwAndersTyping">
-            <div class="vw-anders-dots"><span></span><span></span><span></span></div>
-            <span>Kai is aan het typen...</span>
-          </div>
-          <div class="vw-anders-message" id="vwAndersMessage"></div>
-        </div>
       </div>
     </div>
   </div>
@@ -1269,9 +1253,9 @@ idxSetPeriod('yearly');
   const benefitsEl = document.getElementById('vwBenefits');
   const visualEl = document.getElementById('vwVisual');
   const textWrapEl = document.querySelector('.vw-panel-text');
-  const andersChatEl = document.getElementById('vwAndersChat');
-  const andersTypingEl = document.getElementById('vwAndersTyping');
-  const andersMessageEl = document.getElementById('vwAndersMessage');
+  const andersReplyEl = document.getElementById('vwAndersReply');
+  const andersReplyTextEl = document.getElementById('vwAndersReplyText');
+  const andersReplyCursorEl = document.getElementById('vwAndersReplyCursor');
   if(!tabs.length || !titleEl) return;
 
   function vulIn(key){
@@ -1287,15 +1271,13 @@ idxSetPeriod('yearly');
     });
   }
 
-  function verbergAndersChat(){
-    andersChatEl.classList.remove('vw-anders-in');
-    andersChatEl.classList.remove('vw-anders-show');
-    andersTypingEl.style.display = 'flex';
-    andersMessageEl.style.display = 'none';
-    andersMessageEl.textContent = '';
+  function verbergAndersReply(){
+    andersReplyEl.style.display = 'none';
+    andersReplyTextEl.textContent = '';
+    if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'inline-block';
   }
 
-  function speelAndersAf(){
+  function speelAndersReplyAf(){
     const d = data.anders;
     tabs.forEach(t => {
       const actief = t.dataset.industry === 'anders';
@@ -1303,36 +1285,29 @@ idxSetPeriod('yearly');
       t.setAttribute('aria-selected', actief ? 'true' : 'false');
     });
 
-    andersTypingEl.style.display = 'flex';
-    andersMessageEl.style.display = 'none';
-    andersMessageEl.textContent = '';
-    andersChatEl.classList.add('vw-anders-show');
-    requestAnimationFrame(() => andersChatEl.classList.add('vw-anders-in'));
+    andersReplyTextEl.textContent = '';
+    andersReplyEl.style.display = 'flex';
+    if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'inline-block';
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if(reduceMotion){
-      andersTypingEl.style.display = 'none';
-      andersMessageEl.style.display = 'block';
-      andersMessageEl.textContent = d.kai;
+    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+      andersReplyTextEl.textContent = d.kai;
+      if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'none';
       bezig = false;
       return;
     }
 
-    setTimeout(() => {
-      andersTypingEl.style.display = 'none';
-      andersMessageEl.style.display = 'block';
-      let i = 0;
-      function tikAnders(){
-        i++;
-        andersMessageEl.textContent = d.kai.slice(0, i);
-        if(i < d.kai.length){
-          setTimeout(tikAnders, 28);
-        } else {
-          bezig = false;
-        }
+    let i = 0;
+    function tikAnders(){
+      i++;
+      andersReplyTextEl.textContent = d.kai.slice(0, i);
+      if(i < d.kai.length){
+        setTimeout(tikAnders, 32);
+      } else {
+        if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'none';
+        bezig = false;
       }
-      tikAnders();
-    }, 1100);
+    }
+    tikAnders();
   }
 
   let bezig = false;
@@ -1340,24 +1315,18 @@ idxSetPeriod('yearly');
     if(!data[key] || bezig) return;
     bezig = true;
 
-    const eersteKeerOpenen = !layoutEl.classList.contains('vw-visible');
-
     if(key === 'anders'){
-      if(eersteKeerOpenen){
-        vulIn('kappers'); // vult de gesloten tekst-container alvast, blijft onzichtbaar tot een echte industrie geopend wordt
-        layoutEl.classList.add('vw-visible');
-        speelAndersAf();
-        return;
-      }
-      textWrapEl.classList.add('vw-fade-out');
-      visualEl.classList.add('vw-fade-out');
-      speelAndersAf();
+      // De witte paneel-container blijft volledig gesloten -- Kai
+      // vervolgt gewoon het gesprek links, als vervolgzin op zijn
+      // openingsvraag.
+      speelAndersReplyAf();
       return;
     }
 
-    const komtVanAnders = andersChatEl.classList.contains('vw-anders-show');
-    if(komtVanAnders) verbergAndersChat();
+    const komtVanAnders = andersReplyEl.style.display === 'flex';
+    if(komtVanAnders) verbergAndersReply();
 
+    const eersteKeerOpenen = !layoutEl.classList.contains('vw-visible');
     if(eersteKeerOpenen){
       vulIn(key);
       layoutEl.classList.add('vw-visible');
