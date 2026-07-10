@@ -201,7 +201,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 
 .vw-layout{margin-top:28px;opacity:0;transform:translateY(14px);transition:opacity .5s ease .15s,transform .5s ease .15s;}
 .vw-layout.vw-visible{opacity:1;transform:translateY(0);}
-.vw-panel{background:var(--white);border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.06);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+.vw-panel{background:var(--white);border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.06);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:580px;}
 .vw-panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink);margin-bottom:14px;}
 .vw-panel-desc{font-size:15px;color:var(--mu);line-height:1.65;margin-bottom:20px;}
 .vw-panel-benefits{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
@@ -716,6 +716,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <button class="vw-pill" data-industry="beauty" role="tab" aria-selected="false">Beauty</button>
       <button class="vw-pill" data-industry="spa" role="tab" aria-selected="false">Spa</button>
       <button class="vw-pill" data-industry="tattoo" role="tab" aria-selected="false">Tattoo</button>
+      <button class="vw-pill" data-industry="anders" role="tab" aria-selected="false">Anders</button>
     </div>
 
     <div class="vw-layout" id="vwLayout">
@@ -1224,6 +1225,18 @@ idxSetPeriod('yearly');
       benefits: ['Aanbetaling verplicht bij boeking', 'Lange sessies eenvoudig inplannen', 'Intake- en referentiefoto\'s veilig bewaard'],
       kai: 'Deze klant heeft nog geen aanbetaling gedaan — wil je een herinnering sturen?',
       visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-tattoo.jpg" alt="Kronr klantkaart voor tattoo en piercing" loading="lazy"></div>`
+    },
+    anders: {
+      title: 'Elke andere branche',
+      desc: 'Massagesalon, wenkbrauwstudio, medisch centrum — Kronr past zich aan wat jouw bedrijf nodig heeft, niet andersom.',
+      benefits: ['Online boekingen en agenda voor elk type afspraak', 'Facturatie en boekhoudkoppeling ingebouwd', 'Kai denkt met je mee, ongeacht je specialisatie'],
+      kai: 'Vertel me wat jouw salon nodig heeft — ik denk met je mee.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Afspraak</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:30</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Afspraak</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Afspraak</div></div>
+      </div>`
     }
   };
 
