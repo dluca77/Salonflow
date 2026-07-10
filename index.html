@@ -230,13 +230,27 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 }
 
 /* ── ZO WERKT HET ── */
-.howit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;}
-.howit-card{background:var(--white);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;position:relative;transition:all .25s;}
-.howit-card:hover{border-color:var(--gd);transform:translateY(-4px);box-shadow:0 16px 40px rgba(140,109,63,.1);}
-.howit-num{width:40px;height:40px;border-radius:50%;background:var(--ink);color:var(--white);font-family:'Playfair Display',serif;font-size:18px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:20px;}
-.howit-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ink);margin-bottom:10px;}
-.howit-desc{font-size:14px;color:var(--mu);line-height:1.6;font-weight:300;}
-@media(max-width:900px){.howit-grid{grid-template-columns:1fr;}}
+.howit-timeline{position:relative;max-width:900px;margin:0 auto;padding-left:70px;}
+.howit-line{position:absolute;left:23px;top:8px;bottom:8px;width:2px;background:var(--bd);}
+.howit-line-fill{position:absolute;top:0;left:0;width:100%;height:0%;background:var(--gd);transition:height .3s ease;}
+.howit-step{position:relative;padding-bottom:80px;opacity:.4;transform:scale(.96);transition:opacity .5s ease,transform .5s ease;}
+.howit-step:last-child{padding-bottom:0;}
+.howit-step.howit-active{opacity:1;transform:scale(1);}
+.howit-step-marker{position:absolute;left:-70px;top:0;width:48px;height:48px;border-radius:50%;background:var(--white);border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--mu);transition:all .4s ease;z-index:1;}
+.howit-step.howit-active .howit-step-marker{background:var(--gd);border-color:var(--gd);color:var(--white);transform:scale(1.1);}
+.howit-step-body{display:grid;grid-template-columns:0.9fr 1.1fr;gap:36px;align-items:center;}
+.howit-step-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ink);margin-bottom:14px;}
+.howit-step-desc{font-size:15px;color:var(--mu);line-height:1.7;}
+.howit-step-shot{border-radius:14px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.08);}
+.howit-step-shot img{width:100%;height:auto;display:block;}
+@media(max-width:900px){
+  .howit-timeline{padding-left:52px;}
+  .howit-line{left:15px;}
+  .howit-step-marker{left:-52px;width:36px;height:36px;font-size:15px;}
+  .howit-step-body{grid-template-columns:1fr;gap:18px;}
+  .howit-step-title{font-size:21px;}
+  .howit-step{padding-bottom:56px;}
+}
 
 /* ── FEATURES ── */
 .hero-feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center;padding:56px 0;border-bottom:1px solid var(--bd);}
@@ -740,26 +754,46 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 </section>
 
 <!-- ZO WERKT HET -->
-<section class="section" style="background:var(--iv);">
+<section class="section" style="background:var(--iv);" id="zowerkthet">
   <div class="section-inner">
     <div class="section-label">Zo werkt het</div>
     <h2 class="section-title">Binnen 15 minuten<br>live met je salon</h2>
     <p class="section-sub" style="margin-bottom:52px;">Geen ingewikkelde installatie, geen wekenlange onboarding. Zo simpel is het.</p>
-    <div class="howit-grid">
-      <div class="howit-card" data-aos>
-        <div class="howit-num">1</div>
-        <h3 class="howit-title">Account aanmaken</h3>
-        <p class="howit-desc">Vul je salonnaam in, kies je diensten en je bent klaar om te beginnen. Geen creditcard nodig.</p>
+
+    <div class="howit-timeline" id="howitTimeline">
+      <div class="howit-line"><div class="howit-line-fill" id="howitLineFill"></div></div>
+
+      <div class="howit-step howit-active" data-step="1">
+        <div class="howit-step-marker"><span>1</span></div>
+        <div class="howit-step-body">
+          <div class="howit-step-text">
+            <h3 class="howit-step-title">Account aanmaken</h3>
+            <p class="howit-step-desc">Vul je salonnaam in, kies je diensten en stel je openingstijden in. Binnen een paar minuten staat je basis klaar — geen creditcard nodig, geen ingewikkelde configuratie.</p>
+          </div>
+          <div class="howit-step-shot"><img src="images/stp1.png" alt="Account aanmaken in Kronr" loading="lazy"></div>
+        </div>
       </div>
-      <div class="howit-card" data-aos>
-        <div class="howit-num">2</div>
-        <h3 class="howit-title">Klanten importeren</h3>
-        <p class="howit-desc">Breng je bestaande klanten en afspraken eenvoudig over, of begin gewoon vers.</p>
+
+      <div class="howit-step" data-step="2">
+        <div class="howit-step-marker"><span>2</span></div>
+        <div class="howit-step-body">
+          <div class="howit-step-text">
+            <h3 class="howit-step-title">Klanten importeren</h3>
+            <p class="howit-step-desc">Importeer je bestaande klantenbestand in één keer, of begin gewoon fris. Namen, telefoonnummers en eerdere afspraken staan meteen klaar.</p>
+          </div>
+          <div class="howit-step-shot"><img src="images/stp2.png" alt="Klanten importeren in Kronr" loading="lazy"></div>
+        </div>
       </div>
-      <div class="howit-card" data-aos>
-        <div class="howit-num">3</div>
-        <h3 class="howit-title">Direct online boekingen ontvangen</h3>
-        <p class="howit-desc">Deel je boekingslink en klanten kunnen meteen 24/7 zelf een afspraak inplannen.</p>
+
+      <div class="howit-step" data-step="3">
+        <div class="howit-step-marker"><span>3</span></div>
+        <div class="howit-step-body">
+          <div class="howit-step-text">
+            <h3 class="howit-step-title">Direct online boekingen ontvangen</h3>
+            <p class="howit-step-desc">Deel je persoonlijke boekingslink via WhatsApp, Instagram of je website. Klanten boeken zelf, 24/7 — jij ziet meteen een volle agenda binnenkomen.</p>
+          </div>
+          <div class="howit-step-shot"><img src="images/stp3.png" alt="Online boekingen ontvangen met Kronr" loading="lazy"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1395,6 +1429,31 @@ idxSetPeriod('yearly');
     }, {threshold: .3});
     vwObs.observe(vwSection);
   }
+})();
+
+// 'Zo werkt het': tijdlijn die tijdens scrollen de actieve stap groter maakt
+(function(){
+  const stappen = document.querySelectorAll('.howit-step');
+  const lijnVulling = document.getElementById('howitLineFill');
+  if(!stappen.length) return;
+
+  const totaal = stappen.length;
+
+  function zetActief(idx){
+    stappen.forEach((s, i) => s.classList.toggle('howit-active', i === idx));
+    if(lijnVulling) lijnVulling.style.height = `${((idx + 1) / totaal) * 100}%`;
+  }
+
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        const idx = Array.from(stappen).indexOf(entry.target);
+        zetActief(idx);
+      }
+    });
+  }, { rootMargin: '-42% 0px -42% 0px', threshold: 0 });
+
+  stappen.forEach(s => obs.observe(s));
 })();
 
 // Hero-titel: cyclisch "getypt" slotwoord (voor wie de tijd is)
