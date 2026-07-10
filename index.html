@@ -171,8 +171,25 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 
 /* ── VOOR WIE ── */
 .voor-wie{background:var(--iv);}
-.types-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;margin-top:52px;}
-.type-card{background:var(--white);border:1px solid var(--bd);border-radius:14px;padding:36px 28px;transition:all .25s;cursor:default;}
+.vw-layout{margin-top:52px;display:grid;grid-template-columns:260px 1fr;gap:0;border:1px solid var(--bd);border-radius:16px;overflow:hidden;background:var(--white);min-height:420px;}
+.vw-tabs{display:flex;flex-direction:column;background:var(--iv);border-right:1px solid var(--bd);}
+.vw-tab{appearance:none;background:none;border:none;border-left:3px solid transparent;text-align:left;padding:18px 24px;font-family:inherit;font-size:15px;font-weight:600;color:var(--mu);cursor:pointer;transition:all .2s;}
+.vw-tab:hover{color:var(--ink);background:rgba(140,109,63,.06);}
+.vw-tab.active{color:var(--ink);border-left-color:var(--gd);background:var(--white);}
+.vw-panel{padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;}
+.vw-panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink);margin-bottom:14px;}
+.vw-panel-desc{font-size:15px;color:var(--mu);line-height:1.65;margin-bottom:20px;}
+.vw-panel-benefits{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
+.vw-panel-benefits li{font-size:14.5px;color:var(--ink2);display:flex;align-items:center;gap:10px;}
+.vw-panel-benefits li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);flex-shrink:0;}
+.vw-panel-visual{background:var(--iv);border:1px solid var(--bd);border-radius:12px;padding:20px;min-height:220px;display:flex;flex-direction:column;justify-content:center;}
+@media(max-width:768px){
+  .vw-layout{grid-template-columns:1fr;}
+  .vw-tabs{flex-direction:row;overflow-x:auto;border-right:none;border-bottom:1px solid var(--bd);}
+  .vw-tab{border-left:none;border-bottom:3px solid transparent;white-space:nowrap;padding:14px 18px;}
+  .vw-tab.active{border-left-color:transparent;border-bottom-color:var(--gd);}
+  .vw-panel{grid-template-columns:1fr;padding:28px 22px;gap:24px;}
+}
 
 /* ── ZO WERKT HET ── */
 .howit-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:28px;}
@@ -182,10 +199,6 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .howit-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--ink);margin-bottom:10px;}
 .howit-desc{font-size:14px;color:var(--mu);line-height:1.6;font-weight:300;}
 @media(max-width:900px){.howit-grid{grid-template-columns:1fr;}}
-.type-card:hover{border-color:var(--gd);transform:translateY(-4px);box-shadow:0 16px 40px rgba(140,109,63,.1);}
-.type-icon{width:52px;height:52px;background:var(--gd-light);border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:22px;color:var(--gd);}
-.type-name{font-size:17px;font-weight:600;color:var(--ink);margin-bottom:10px;}
-.type-desc{font-size:13.5px;color:var(--mu);line-height:1.65;}
 
 /* ── FEATURES ── */
 .hero-feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center;padding:56px 0;border-bottom:1px solid var(--bd);}
@@ -399,7 +412,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 .mob-btn-start{padding:14px;text-align:center;background:var(--gd);color:var(--white);font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;}
 /* ── RESPONSIVE ── */
 @media(max-width:1024px){
-  .types-grid{grid-template-columns:repeat(2,minmax(0,1fr));}
   .ai-inner{grid-template-columns:1fr;gap:40px;}
   .ai-chat{display:none;}
   .ai-visual{padding:0;}
@@ -418,10 +430,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 @media(max-width:768px){
   .nav-links{display:none;}
   .nav-login,.nav-cta{display:none;}
-  .types-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;}
-  .type-card{padding:20px 16px;}
-  .type-name{font-size:14px;}
-  .type-desc{font-size:12px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
   .hero{min-height:100dvh;padding:96px 16px 64px;display:flex;flex-direction:column;}
   .hero-label-wrap{margin-bottom:0;}
@@ -452,7 +460,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .testi-featured-av{margin:0 auto;width:80px;height:80px;font-size:26px;}
   .footer-top{grid-template-columns:1fr;}
   .stats-inner{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .types-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
   .photo-section-inner{grid-template-columns:1fr;gap:28px;}
   .photo-frame{aspect-ratio:16/10;}
   .hero-usps{gap:8px 14px;}
@@ -472,7 +479,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .mock-kpi-l{font-size:6px;}
   .mock-kpi-v{font-size:14px;}
   .mock-sidebar{width:36px;}
-  .type-card{padding:16px 12px;}
 }
 </style>
 </head>
@@ -655,16 +661,26 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="section voor-wie" id="voor-wie">
   <div class="section-inner">
     <div class="section-label">Voor wie is Kronr?</div>
-    <h2 class="section-title">Gebouwd voor elk<br>schoonheidsbedrijf</h2>
-    <div class="types-grid">
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M6 3a3 3 0 110 6 3 3 0 010-6zm12 12a3 3 0 110 6 3 3 0 010-6zM3.5 8.5l11 11M20.5 3.5L9 15"/></svg></div><div class="type-name">Kappers & Barbiers</div><div class="type-desc">Van solo-kapper tot drukke barbershop. Beheer je agenda en klanten in één oogopslag.</div></div>
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div><div class="type-name">Nagelstudio's</div><div class="type-desc">Meerdere behandelaren, kleurcodering per techniek, eenvoudig boeken voor je klanten.</div></div>
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div><div class="type-name">Schoonheidsspecialisten</div><div class="type-desc">Klantkaarten met behandelhistorie, allergieën en notities. Nooit meer vergeten.</div></div>
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M12 22s8-4.5 8-11.8A8 8 0 0012 2a8 8 0 00-8 8.2c0 7.3 8 11.8 8 11.8z"/></svg></div><div class="type-name">Spa & Wellness</div><div class="type-desc">Kamer- en apparatuurplanning, cadeaubonnen en loyaliteitsprogramma inbegrepen.</div></div>
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></div><div class="type-name">Wenkbrauw & Wimper</div><div class="type-desc">Snelle boekingen, automatische herinneringen, no-show bescherming.</div></div>
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/></svg></div><div class="type-name">Massagesalons</div><div class="type-desc">Online boeken 24/7, iDEAL betalingen, klant stuurt zichzelf een herinnering.</div></div>
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></div><div class="type-name">Tattoo & Piercing</div><div class="type-desc">Aanbetaling verplichten bij boeking, lange sessies plannen, klantenfoto's bewaren.</div></div>
-      <div class="type-card"><div class="type-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" width="22" height="22"><path d="M12 22s8-4.5 8-11.8V5l-8-3-8 3v5.2C4 17.5 12 22 12 22z"/></svg></div><div class="type-name">Medische schoonheid</div><div class="type-desc">GDPR-proof klantbeheer, facturen genereren, boekhoudkoppeling.</div></div>
+    <h2 class="section-title">Kronr past zich aan<br>jouw salon aan.</h2>
+    <p class="section-sub" style="margin-bottom:40px;">Kies je branche. Wij laten zien wat Kronr voor jou doet.</p>
+
+    <div class="vw-layout">
+      <div class="vw-tabs" role="tablist">
+        <button class="vw-tab active" data-industry="kappers" role="tab" aria-selected="true">Kappers</button>
+        <button class="vw-tab" data-industry="nagels" role="tab" aria-selected="false">Nagels</button>
+        <button class="vw-tab" data-industry="beauty" role="tab" aria-selected="false">Beauty</button>
+        <button class="vw-tab" data-industry="spa" role="tab" aria-selected="false">Spa</button>
+        <button class="vw-tab" data-industry="tattoo" role="tab" aria-selected="false">Tattoo</button>
+      </div>
+
+      <div class="vw-panel">
+        <div class="vw-panel-text">
+          <h3 class="vw-panel-title" id="vwTitle"></h3>
+          <p class="vw-panel-desc" id="vwDesc"></p>
+          <ul class="vw-panel-benefits" id="vwBenefits"></ul>
+        </div>
+        <div class="vw-panel-visual" id="vwVisual"></div>
+      </div>
     </div>
   </div>
 </section>
@@ -1124,6 +1140,94 @@ const statsObs=new IntersectionObserver(entries=>{
 statsObs.observe(document.querySelector('.stats-bar'));
 
 idxSetPeriod('yearly');
+
+// Voor-wie sectie: interactieve branche-tabs
+(function(){
+  const data = {
+    kappers: {
+      title: 'Kappers & barbiers',
+      desc: 'Van solo-kapper tot drukke barbershop — plan sneller en voorkom lege stoelen.',
+      benefits: ['Geen gaten meer in je agenda', 'Minder no-shows door automatische herinneringen', 'Meer terugkerende klanten'],
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda — woensdag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">9:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Jasmijn — Knippen</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:15</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tom — Baard</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sara — Highlights</div></div>
+      </div>`
+    },
+    nagels: {
+      title: 'Nagelstudio\'s',
+      desc: 'Plan complete behandelingen in seconden en houd kleuren en producten automatisch bij.',
+      benefits: ['Kleurcodering per techniek', 'Meerdere behandelaren tegelijk plannen', 'Materiaal en kleur direct genoteerd bij de klant'],
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd1dc;color:#a3184f;">Gellak — Rood 42</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#d9e8ff;color:#1a4fa0;">Acryl — Frans</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">15:30</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Nail art</div></div>
+      </div>`
+    },
+    beauty: {
+      title: 'Schoonheidsspecialisten',
+      desc: 'Klantkaarten met volledige behandelhistorie, allergieën en notities — nooit meer iets vergeten.',
+      benefits: ['Digitale behandelkaart per klant', 'Allergieën en notities direct zichtbaar', 'Herhaalafspraken automatisch voorgesteld'],
+      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:16px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">KLANTKAART</div>
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:10px;">Emma Bakker</div>
+        <div style="font-size:12px;color:#c0392b;background:rgba(192,57,43,.08);border-radius:6px;padding:6px 10px;margin-bottom:8px;">⚠ Allergie: parfum</div>
+        <div style="font-size:12px;color:var(--mu);">Laatste behandeling: Gezichtsbehandeling — 3 weken geleden</div>
+      </div>`
+    },
+    spa: {
+      title: 'Spa & wellness',
+      desc: 'Kamer- en apparatuurplanning zonder puzzelen, plus cadeaubonnen en loyaliteitsprogramma.',
+      benefits: ['Kamerplanning zonder dubbele boekingen', 'Cadeaubonnen ingebouwd', 'Loyaliteitsprogramma voor terugkerende gasten'],
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Behandelkamers</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Kamer 1</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Massage — bezet tot 15:00</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Kamer 2</div><div class="mini-agenda-apt" style="background:#f5ede0;color:#8c6d3f;">Vrij</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Kamer 3</div><div class="mini-agenda-apt" style="background:#c8e8ff;color:#1a5fa0;">Sauna-sessie</div></div>
+      </div>`
+    },
+    tattoo: {
+      title: 'Tattoo & piercing',
+      desc: 'Verplicht een aanbetaling bij het boeken, en plan lange sessies moeiteloos in.',
+      benefits: ['Aanbetaling verplicht bij boeking', 'Lange sessies eenvoudig inplannen', 'Intake- en referentiefoto\'s veilig bewaard'],
+      visual: `<div style="background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:16px;">
+        <div style="font-size:12px;color:var(--mu);margin-bottom:4px;">INTAKEFORMULIER</div>
+        <div style="font-family:'Playfair Display',serif;font-size:16px;font-weight:700;margin-bottom:10px;">Sessie — Sleeve, 4 uur</div>
+        <div style="font-size:12px;color:#1a7a40;background:rgba(26,122,64,.08);border-radius:6px;padding:6px 10px;margin-bottom:8px;">✓ Aanbetaling ontvangen — €75</div>
+        <div style="font-size:12px;color:var(--mu);">Referentiefoto's: 3 bijlagen toegevoegd</div>
+      </div>`
+    }
+  };
+
+  const tabs = document.querySelectorAll('.vw-tab');
+  const titleEl = document.getElementById('vwTitle');
+  const descEl = document.getElementById('vwDesc');
+  const benefitsEl = document.getElementById('vwBenefits');
+  const visualEl = document.getElementById('vwVisual');
+  if(!tabs.length || !titleEl) return;
+
+  function toonBranche(key){
+    const d = data[key];
+    if(!d) return;
+    titleEl.textContent = d.title;
+    descEl.textContent = d.desc;
+    benefitsEl.innerHTML = d.benefits.map(b => `<li>${b}</li>`).join('');
+    visualEl.innerHTML = d.visual;
+    tabs.forEach(t => {
+      const actief = t.dataset.industry === key;
+      t.classList.toggle('active', actief);
+      t.setAttribute('aria-selected', actief ? 'true' : 'false');
+    });
+  }
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => toonBranche(tab.dataset.industry));
+  });
+
+  toonBranche('kappers');
+})();
 
 // Hero-titel: cyclisch "getypt" slotwoord (voor wie de tijd is)
 (function(){
