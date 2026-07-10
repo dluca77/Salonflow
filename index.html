@@ -45,7 +45,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-label::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5.4vw,80px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:14px;}
-.hero-title em{font-style:italic;color:var(--gd);}
+.hero-title em{font-style:italic;font-weight:600;color:var(--gd);}
 .hero-sub{font-size:clamp(15px,1.3vw,17px);font-weight:400;color:var(--mu);line-height:1.7;max-width:480px;margin:0 0 36px;}
 .hero-btns{display:flex;align-items:center;gap:16px;justify-content:flex-start;flex-wrap:wrap;margin-bottom:28px;}
 .btn-primary{padding:16px 32px;background:var(--ink);color:var(--white);font-size:15px;font-weight:600;text-decoration:none;border-radius:10px;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
@@ -232,6 +232,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .ai-section{background:var(--ink);padding:120px 24px;}
 .ai-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:0.95fr 1.05fr;gap:80px;align-items:center;}
 .ai-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gd);font-weight:600;margin-bottom:16px;}
+.ai-label-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
+.ai-label-row .ai-label{margin-bottom:0;}
+.ai-kai-avatar{width:32px;height:32px;object-fit:contain;flex-shrink:0;}
+.ai-chat-avatar{width:22px;height:22px;object-fit:contain;flex-shrink:0;}
 .ai-title{font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,52px);font-weight:800;line-height:1.08;letter-spacing:-1px;color:var(--white);margin-bottom:20px;}
 .ai-title em{font-style:italic;color:var(--gd);}
 .ai-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:36px;}
@@ -411,9 +415,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .type-name{font-size:14px;}
   .type-desc{font-size:12px;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
-  .hero{min-height:100dvh;padding:180px 16px 64px;}
+  .hero{min-height:100dvh;padding:96px 16px 64px;}
+  .hero-label-wrap{margin-bottom:40px;}
+  .hero-sub{margin-bottom:42dvh;}
   .hero-title{margin-bottom:28px;}
-  .hero-sub{margin-bottom:44px;}
   .hero-btns{margin-bottom:44px;gap:14px;}
   .hero-usps{gap:16px 20px;}
   .hero-screenshot{padding:0;}
@@ -443,6 +448,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .pricing-benefits{gap:12px 20px;}
   .early-grid{grid-template-columns:1fr;gap:14px;}
   .early-card{padding:24px 22px;}
+}
+@media(max-width:768px) and (max-height:720px){
+  .hero-sub{margin-bottom:20dvh;}
 }
 @media(max-width:480px){
   .hero-btns{flex-direction:column;align-items:stretch;}
@@ -589,6 +597,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="hero-ai-panel">
       <div class="hero-ai-head">
         <div class="hero-ai-dot"></div>
+        <img src="images/kai-mascotte.png" alt="Kai" style="width:18px;height:18px;object-fit:contain;flex-shrink:0;">
         <div class="hero-ai-head-text">Kai<span>AI is online</span></div>
       </div>
       <div class="hero-ai-body">
@@ -788,7 +797,10 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="ai-section" id="ai">
   <div class="ai-inner">
     <div>
-      <div class="ai-label">Kai — je AI-assistent</div>
+      <div class="ai-label-row">
+        <img src="images/kai-mascotte.png" alt="Kai" class="ai-kai-avatar">
+        <div class="ai-label">Kai — je AI-assistent</div>
+      </div>
       <h2 class="ai-title">Kai doet het werk<br>dat jij liever niet doet</h2>
       <p class="ai-sub">Terwijl jij je klanten helpt, regelt Kai de rest. Geen dashboards afstruinen, geen extra werk — gewoon elke week uren bespaard.</p>
       <div class="ai-features">
@@ -815,6 +827,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div class="ai-chat" id="ai-chat">
       <div class="ai-chat-head">
         <div class="ai-chat-dot"></div>
+        <img src="images/kai-mascotte.png" alt="Kai" class="ai-chat-avatar">
         <div>
           <div class="ai-chat-head-text">Kai <span class="ai-chat-live">● Live</span></div>
           <div class="ai-chat-head-sub">Actief · Verwerkt je data realtime</div>
