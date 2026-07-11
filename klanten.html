@@ -218,7 +218,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="tb-spacer"></div>
     <button class="hbg" onclick="openGeblokkeerdOverzicht()" title="Geblokkeerde klanten" style="margin-right:6px;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg></button>
     <button class="hbg" id="btn-campagnes" onclick="openCampagneModal()" title="Marketing campagne" style="display:none;margin-right:6px;"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg></button>
-    <button class="btn-add" onclick="openM('m-new')">+ Klant</button>
+    <button class="btn-add" id="btn-nieuwe-klant" onclick="openM('m-new')">+ Klant</button>
   </div>
 
   <div class="search-wrap">
@@ -320,7 +320,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     </div>
 
     <div class="btns-row">
-      <button class="btn-sec" onclick="editK()">Bewerken</button>
+      <button class="btn-sec" id="btn-bewerk-klant" onclick="editK()">Bewerken</button>
       <button class="btn-prim" onclick="closeM('m-detail')">Afspraak plannen →</button>
     </div>
     <button id="btn-blokkeer" class="btn-blokkeer" onclick="toggleBlokkade()">Blokkeer deze klant</button>
@@ -383,6 +383,9 @@ async function loadData(){
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
   document.getElementById('btn-campagnes').style.display = (SALON?.plan==='business'||SALON?.plan==='pro') ? 'flex' : 'none';
+  if(typeof isAlleenBekijken==='function' && isAlleenBekijken('klanten')){
+    document.getElementById('btn-nieuwe-klant').style.display='none';
+  }
   render();
 }
 
@@ -606,6 +609,11 @@ function showK(id){
   document.getElementById('d-notitie').textContent=k.notities||'—';
   checkBlokkadeStatus(k);
   toonStempelkaart(k);
+
+  const alleenBekijken = typeof isAlleenBekijken==='function' && isAlleenBekijken('klanten');
+  document.getElementById('btn-bewerk-klant').style.display = alleenBekijken ? 'none' : '';
+  document.getElementById('btn-blokkeer').style.display = alleenBekijken ? 'none' : '';
+
   openM('m-detail');
 }
 
@@ -875,7 +883,7 @@ function closeSB(){document.getElementById('sb').classList.remove('on');document
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
 function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';if(id==='m-new')resetKlantForm();}
 
-kronrInit(loadData);
+kronrInit(loadData,'klanten');
 </script>
 </body>
 </html>

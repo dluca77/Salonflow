@@ -177,7 +177,7 @@ select.fi{cursor:pointer;}
     <div class="tb-logo">Kronr<em>.</em></div>
     <div class="tb-title">Diensten</div>
     <div class="tb-spacer"></div>
-    <button class="btn-add" onclick="openM('m-new')">+ Dienst</button>
+    <button class="btn-add" id="btn-nieuwe-dienst" onclick="openM('m-new')">+ Dienst</button>
   </div>
 
   <div class="tabs-bar" id="tabs-bar"></div>
@@ -425,6 +425,9 @@ async function loadData(){
   document.getElementById('d-aanbetaling-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
   document.getElementById('d-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
   document.getElementById('d-kaart-wrap').style.display = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief') ? 'block' : 'none';
+  if(typeof isAlleenBekijken==='function' && isAlleenBekijken('diensten')){
+    document.getElementById('btn-nieuwe-dienst').style.display='none';
+  }
   renderTabs();
   renderRows();
   laadPrijsAdviesVoorDiensten();
@@ -452,6 +455,7 @@ function renderRows(){
   const magAanbetaling = SALON?.plan==='business' && SALON?.stripe_connect_status==='actief';
   const magStempel = SALON?.stempelkaart_actief;
   const magDienstInstellingen = magAanbetaling || magStempel;
+  const alleenBekijken = typeof isAlleenBekijken==='function' && isAlleenBekijken('diensten');
 
   rows.innerHTML=filtered.map(d=>{
     const advies=PRIJSADVIES_SUGGESTIES?.find(s=>s.dienst && s.dienst.toLowerCase()===d.naam.toLowerCase());
@@ -470,12 +474,12 @@ function renderRows(){
         <div class="dt-naam">${d.naam}</div>
         ${d.beschrijving?`<div class="dt-desc">${d.beschrijving}</div>`:''}
         ${advies?`<div class="dt-advies"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${advies.tekst}</div>`:''}
-        <div class="dt-advies" style="color:var(--mu);cursor:pointer;" onclick="openAanbetalingModal('${d.id}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>${labelDelen.join(' · ')} (wijzigen)</div>
+        ${alleenBekijken ? '' : `<div class="dt-advies" style="color:var(--mu);cursor:pointer;" onclick="openAanbetalingModal('${d.id}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>${labelDelen.join(' · ')} (wijzigen)</div>`}
       </div>
       <div class="dt-prijs">€${d.prijs}</div>
       <div class="dt-duur">${d.duur_min?d.duur_min+' min':'—'}</div>
       <div class="dt-cat">${d.categorie||'—'}</div>
-      <div class="dt-toggle" onclick="toggleDienst('${d.id}',${d.actief})">
+      <div class="dt-toggle" ${alleenBekijken ? '' : `onclick="toggleDienst('${d.id}',${d.actief})"`} style="${alleenBekijken?'cursor:default;':''}">
         <div class="toggle${d.actief?' on':''}"><div class="toggle-dot"></div></div>
         <span class="toggle-label">${d.actief?'Actief':'Inactief'}</span>
       </div>
@@ -660,7 +664,7 @@ function closeSB(){document.getElementById('sb').classList.remove('on');document
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
 function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
 
-kronrInit(loadData);
+kronrInit(loadData,'diensten');
 </script>
 </body>
 </html>
