@@ -29,6 +29,9 @@ let SESSION_USER = null;
 let SALON = null;
 let LOCATIES = [];
 let HUIDIGE_LOCATIE_ID = null;
+let IS_MEDEWERKER = false;
+let MEDEWERKER = null;
+let MEDEWERKER_RECHTEN = null;
 
 // Verberg pagina direct zodat er geen flits is
 document.documentElement.style.opacity = '0';
@@ -96,7 +99,36 @@ function renderLocatieSwitcher() {
   }
 }
 
-async function kronrInit(callback) {
+// ── Rechten-helpers (voor medewerker-sessies) ──
+const RECHTEN_NIVEAUS = { geen: 0, bekijken: 1, gebruiken: 1, bewerken: 2 };
+
+function heeftRecht(moduleNaam, minimaalNiveau) {
+  if (!IS_MEDEWERKER) return true; // eigenaar heeft altijd volledige toegang
+  const huidig = MEDEWERKER_RECHTEN?.[moduleNaam] || 'geen';
+  return (RECHTEN_NIVEAUS[huidig] || 0) >= (RECHTEN_NIVEAUS[minimaalNiveau] || 0);
+}
+
+// Is deze medewerker beperkt tot alleen-bekijken voor deze module? (Voor
+// de eigenaar altijd false -- die mag überhaupt alles bewerken.)
+function isAlleenBekijken(moduleNaam) {
+  if (!IS_MEDEWERKER) return false;
+  return !heeftRecht(moduleNaam, 'bewerken');
+}
+
+function toonGeenToegangScherm() {
+  const overlay = document.createElement('div');
+  overlay.id = 'kronr-geen-toegang-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#faf8f4;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Inter,sans-serif;';
+  overlay.innerHTML = `
+    <div style="max-width:380px;text-align:center;">
+      <h1 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#0f0d0b;margin-bottom:12px;">Geen toegang</h1>
+      <p style="font-size:14px;color:#6b6058;line-height:1.6;margin-bottom:24px;">Je hebt geen rechten om deze pagina te bekijken. Neem contact op met je werkgever als je denkt dat dit niet klopt.</p>
+      <a href="medewerker-portal.html" style="display:inline-block;background:#0f0d0b;color:#faf8f4;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">Terug naar mijn rooster</a>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
+async function kronrInit(callback, paginaModule) {
   try {
     const { data: { session } } = await sb.auth.getSession();
 
@@ -107,13 +139,39 @@ async function kronrInit(callback) {
 
     SESSION_USER = session.user;
 
-    // Zoek salon
+    // Zoek salon (eigenaar)
     let { data: salon, error } = await sb.from('salons')
       .select('*')
       .eq('owner_id', session.user.id)
       .single();
 
-    // Salon bestaat nog niet? Maak aan op basis van user metadata
+    // Geen salon als eigenaar? Kan een medewerker zijn -- die heeft
+    // een eigen inlog gekoppeld aan een medewerkersprofiel, niet aan
+    // een salons.owner_id. Check dat VOORDAT we aannemen dat dit een
+    // gloednieuwe eigenaar is en er een nieuwe salon wordt aangemaakt.
+    if (!salon) {
+      const { data: medewerker } = await sb.from('medewerkers')
+        .select('*')
+        .eq('auth_user_id', session.user.id)
+        .maybeSingle();
+
+      if (medewerker) {
+        const { data: medewerkerSalon } = await sb.from('salons')
+          .select('*')
+          .eq('id', medewerker.salon_id)
+          .single();
+
+        if (medewerkerSalon) {
+          salon = medewerkerSalon;
+          IS_MEDEWERKER = true;
+          MEDEWERKER = medewerker;
+          MEDEWERKER_RECHTEN = medewerker.rechten || {};
+        }
+      }
+    }
+
+    // Nog steeds geen salon EN geen medewerker gevonden? Dan is dit
+    // een gloednieuwe eigenaar -- salon aanmaken op basis van user metadata.
     if (!salon) {
       const meta = session.user.user_metadata || {};
       const naam = meta.bedrijf_naam || meta.full_name || 'Mijn Salon';
@@ -144,6 +202,14 @@ async function kronrInit(callback) {
     if (isProefperiodeVerlopen(salon) && !window.location.pathname.endsWith('instellingen.html')) {
       toonVergrendelScherm();
       return; // callback (de eigenlijke paginalogica) draait bewust niet
+    }
+
+    // ── Rechten-check voor medewerkers ──
+    // Alleen relevant als de aanroepende pagina een moduleNaam meegeeft
+    // EN dit een medewerker-sessie is (de eigenaar wordt hier nooit door geraakt).
+    if (paginaModule && IS_MEDEWERKER && !heeftRecht(paginaModule, 'bekijken')) {
+      toonGeenToegangScherm();
+      return;
     }
 
     // Locaties ophalen en de huidige bepalen (uit localStorage, of de

@@ -361,7 +361,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
       <div style="font-size:12px;color:#c0392b;margin-bottom:8px;" id="p-noshow-tekst"></div>
       <button class="pop-btn-afrekenen" style="background:#c0392b;border-color:#c0392b;width:100%;justify-content:center;" id="p-noshow-btn" onclick="incasseerNoshowFee()">No-show-fee incasseren</button>
     </div>
-    <div class="pop-actions">
+    <div class="pop-actions" id="pop-actions">
       <button class="pop-btn-afrekenen" id="p-afrekenen-btn" onclick="afrekenenHuidige()" style="display:none;" title="Afrekenen via de kassa"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Afrekenen</button>
       <button class="pop-btn" onclick="bewerkHuidige()" title="Bewerken"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
       <button class="pop-btn danger" onclick="verwijderHuidige()" title="Verwijderen"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a1 1 0 011-1h4a1 1 0 011 1v2"/></svg></button>
@@ -637,7 +637,7 @@ function buildDayCol(d,slots,today,now,di){
     gl.className='gl'+(s%4===3?' gh':'');
     gl.dataset.slot=s;
     const sh=SH+Math.floor(s/4),sm=(s%4)*15;
-    gl.onclick=()=>{openNieuw(key,ft(sh,sm));};
+    gl.onclick=()=>{ if(typeof isAlleenBekijken==='function' && isAlleenBekijken('agenda')) return; openNieuw(key,ft(sh,sm)); };
     // Drag over target
     gl.addEventListener('dragover',e=>{e.preventDefault();gl.classList.add('drag-over');});
     gl.addEventListener('dragleave',()=>gl.classList.remove('drag-over'));
@@ -686,7 +686,7 @@ function buildAptCard(a,i){
   const card=document.createElement('div');
   card.className=`apt c${i%8}${isBloktijd?' bloktijd':''}${status==='geannuleerd'?' geannuleerd':''}`;
   card.style.top=tp+'px';card.style.height=hp+'px';
-  card.draggable=!a._herhaald;
+  card.draggable=!a._herhaald && !(typeof isAlleenBekijken==='function' && isAlleenBekijken('agenda'));
 
   // Status badge indien groter
   const statusHtml=hp>52?`<div class="apt-status" style="color:${STATUS_COLORS[status]}">${STATUS_LABELS[status]}</div>`:'';
@@ -842,7 +842,7 @@ function renderMedewerker(){
       const gl=document.createElement('div');
       gl.className='gl'+(s%4===3?' gh':'');
       const sh=SH+Math.floor(s/4),sm=(s%4)*15;
-      gl.onclick=()=>{openNieuw(key,ft(sh,sm),m.id);};
+      gl.onclick=()=>{ if(typeof isAlleenBekijken==='function' && isAlleenBekijken('agenda')) return; openNieuw(key,ft(sh,sm),m.id); };
       col.appendChild(gl);
     }
 
@@ -916,6 +916,13 @@ function springNaarApt(dt){
 // ── POPUP ────────────────────────────────────────────────────────────────────
 function showPop(a,card){
   geselecteerdeApt=a;
+
+  // Medewerker met alleen-bekijken-rechten mag afspraakdetails inzien,
+  // maar geen van de actie-knoppen (afrekenen/bewerken/verwijderen/
+  // status wijzigen) gebruiken.
+  const alleenBekijken = typeof isAlleenBekijken === 'function' && isAlleenBekijken('agenda');
+  document.getElementById('pop-actions').style.display = alleenBekijken ? 'none' : 'flex';
+
   const dt=new Date(a.datum_tijd);
   const ah=dt.getHours(),am=dt.getMinutes(),dur=a.duur_min||45;
   const eh=Math.floor(ah+(am+dur)/60),em=(am+dur)%60;
@@ -1374,8 +1381,8 @@ function closeSB(){document.getElementById('sb').classList.remove('on');document
 setInterval(()=>{const n=new Date();document.querySelectorAll('.now-line').forEach(nl=>{nl.style.top=((n.getHours()-SH)*60+n.getMinutes())/15*RH+'px';});},30000);
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
-if(typeof kronrInit==='function') kronrInit(loadData);
-else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData):(document.documentElement.style.opacity='1',render());});
+if(typeof kronrInit==='function') kronrInit(loadData,'agenda');
+else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData,'agenda'):(document.documentElement.style.opacity='1',render());});
 </script>
 </body>
 </html>
