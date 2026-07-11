@@ -403,12 +403,14 @@ async function loadData(){
 
   // Laad alles parallel
   const maandStart=new Date();maandStart.setDate(1);maandStart.setHours(0,0,0,0);
-  const[aR,mR,kR,kNieuwR,boeR]=await Promise.all([
+  const zevenDagenGeleden=new Date();zevenDagenGeleden.setDate(zevenDagenGeleden.getDate()-7);
+  const[aR,mR,kR,kNieuwR,boeR,betR]=await Promise.all([
     sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',ws.toISOString()).lte('datum_tijd',we.toISOString()).order('datum_tijd'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
-    sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').not('klant_email','is',null).order('datum_tijd',{ascending:true}).limit(5)
+    sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').not('klant_email','is',null).gte('created_at',zevenDagenGeleden.toISOString()).order('created_at',{ascending:false}).limit(5),
+    sb.from('betalingen').select('afspraak_id').eq('salon_id',SALON_ID).not('afspraak_id','is',null)
   ]);
 
   const all=aR.data||[],meds=mR.data||[];
@@ -430,9 +432,13 @@ async function loadData(){
   document.getElementById('kpi-klanten').textContent=kR.count||0;
   document.getElementById('kpi-nieuw').textContent=kNieuwR.count||0;
 
-  // Open facturen = afspraken afgerond maar nog geen betaling
-  const afgRond=vandaag.filter(a=>a.status==='afgerond').length;
-  document.getElementById('kpi-facturen').textContent=afgRond?'€'+(afgRond*(omzet/Math.max(vandaag.length,1))).toFixed(0):'€0';
+  // Open facturen = afspraken van vandaag die zijn afgerond, maar waar
+  // nog GEEN betaling voor is geregistreerd in de kassa (echte koppeling
+  // via afspraak_id, i.p.v. een schatting op basis van het gemiddelde).
+  const betaaldeAfspraakIds=new Set((betR.data||[]).map(b=>b.afspraak_id));
+  const openstaandeAfspraken=vandaag.filter(a=>a.status==='afgerond' && !betaaldeAfspraakIds.has(a.id));
+  const openBedrag=openstaandeAfspraken.reduce((s,a)=>s+(a.diensten?.prijs||0),0);
+  document.getElementById('kpi-facturen').textContent='€'+openBedrag.toFixed(0);
 
   // Online boekingen
   const boekingen=boeR.data||[];
