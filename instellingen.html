@@ -254,6 +254,25 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
         <div class="fr">
+          <label class="fl" style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="s-whatsapp-actief" onchange="wisselWhatsappUI()" style="width:16px;height:16px;">
+            WhatsApp-herinneringen versturen
+          </label>
+          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klanten krijgen een WhatsApp-bericht ter herinnering aan hun afspraak, naast de e-mailbevestiging.</div>
+        </div>
+        <div id="whatsapp-instellingen" style="display:none;margin-top:14px;">
+          <div class="fr">
+            <label class="fl">Jouw WhatsApp Business-nummer</label>
+            <input class="fi" id="s-whatsapp-nummer" type="tel" placeholder="+31 6 12345678">
+          </div>
+          <div style="margin-top:10px;padding:12px 14px;background:var(--iv);border:1px solid var(--bd);border-radius:8px;font-size:12px;color:var(--mu);">
+            ⏳ <strong>Nog niet actief.</strong> Dit wacht op goedkeuring van Meta voor zakelijk WhatsApp-berichtenverkeer. Je voorkeur en nummer worden alvast opgeslagen -- zodra de goedkeuring rond is, wordt het verzenden automatisch geactiveerd, zonder dat je verder iets hoeft te doen.
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+        <div class="fr">
           <label class="fl">Annuleren toestaan tot</label>
           <select class="fi" id="s-annuleer-cutoff">
             <option value="0">Altijd (geen minimumtermijn)</option>
@@ -569,6 +588,9 @@ window.addEventListener('message',function(e){
   document.getElementById('s-review-actief').checked = SALON.review_verzoek_actief || false;
   document.getElementById('s-review-link').value = SALON.google_review_link || '';
   wisselReviewUI();
+  document.getElementById('s-whatsapp-actief').checked = SALON.whatsapp_actief || false;
+  document.getElementById('s-whatsapp-nummer').value = SALON.whatsapp_nummer || '';
+  wisselWhatsappUI();
 
   if(SALON.plan==='business'){
     document.getElementById('slug-sectie-business').style.display='block';
@@ -972,6 +994,11 @@ function wisselReviewUI(){
     document.getElementById('s-review-actief').checked ? 'block' : 'none';
 }
 
+function wisselWhatsappUI(){
+  document.getElementById('whatsapp-instellingen').style.display =
+    document.getElementById('s-whatsapp-actief').checked ? 'block' : 'none';
+}
+
 async function slaProfielOp(){
   const naam = document.getElementById('s-naam').value.trim();
   const type = document.getElementById('s-type').value;
@@ -992,6 +1019,13 @@ async function slaProfielOp(){
     return;
   }
 
+  const whatsappActief = document.getElementById('s-whatsapp-actief').checked;
+  const whatsappNummer = document.getElementById('s-whatsapp-nummer').value.trim();
+  if(whatsappActief && !whatsappNummer){
+    showMsg('msg-profiel','Vul je WhatsApp Business-nummer in, of schakel WhatsApp-herinneringen uit.');
+    return;
+  }
+
   const payload = {
     naam, type_bedrijf:type, logo_url:LOGO_URL,
     annuleer_cutoff_uren:parseInt(document.getElementById('s-annuleer-cutoff').value)||0,
@@ -999,7 +1033,9 @@ async function slaProfielOp(){
     stempel_aantal_nodig:stempelAantal,
     stempel_beloning:stempelBeloning||null,
     review_verzoek_actief:reviewActief,
-    google_review_link:reviewLink||null
+    google_review_link:reviewLink||null,
+    whatsapp_actief:whatsappActief,
+    whatsapp_nummer:whatsappNummer||null
   };
 
   // Slug alleen opslaan/valideren als het Business-veld daadwerkelijk zichtbaar is
