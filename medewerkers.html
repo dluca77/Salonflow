@@ -242,6 +242,52 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="msg" id="msg-uitnodiging"></div>
     </div>
 
+    <div style="margin-top:16px;padding:14px 16px;background:var(--wm);border-radius:8px;">
+      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px;">Rechten -- wat mag deze medewerker?</div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <label style="font-size:13px;">Agenda</label>
+          <select class="fi" id="r-agenda" style="width:auto;padding:6px 10px;font-size:12px;">
+            <option value="geen">Geen toegang</option>
+            <option value="bekijken">Alleen bekijken</option>
+            <option value="bewerken">Bekijken en bewerken</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <label style="font-size:13px;">Klanten</label>
+          <select class="fi" id="r-klanten" style="width:auto;padding:6px 10px;font-size:12px;">
+            <option value="geen">Geen toegang</option>
+            <option value="bekijken">Alleen bekijken</option>
+            <option value="bewerken">Bekijken en bewerken</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <label style="font-size:13px;">Kassa</label>
+          <select class="fi" id="r-kassa" style="width:auto;padding:6px 10px;font-size:12px;">
+            <option value="geen">Geen toegang</option>
+            <option value="gebruiken">Mag gebruiken</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <label style="font-size:13px;">Diensten</label>
+          <select class="fi" id="r-diensten" style="width:auto;padding:6px 10px;font-size:12px;">
+            <option value="geen">Geen toegang</option>
+            <option value="bekijken">Alleen bekijken</option>
+            <option value="bewerken">Bekijken en bewerken</option>
+          </select>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+          <label style="font-size:13px;">Rapportages</label>
+          <select class="fi" id="r-rapportages" style="width:auto;padding:6px 10px;font-size:12px;">
+            <option value="geen">Geen toegang</option>
+            <option value="bekijken">Mag bekijken</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn-sec" style="width:100%;margin-top:12px;" onclick="slaRechtenOp()">Rechten opslaan</button>
+      <div class="msg" id="msg-rechten"></div>
+    </div>
+
     <div class="dbtns">
       <button class="dbtn dbtn-sec" onclick="closeM('m-detail')">Sluiten</button>
       <button class="dbtn dbtn-pri" onclick="closeM('m-detail')">Agenda bekijken →</button>
@@ -419,7 +465,36 @@ function toonDetail(id){
     if(!m.email) statusEl.textContent='Nog geen eigen inlog. Vul eerst een e-mailadres in om uit te kunnen nodigen.';
   }
 
+  const rechten=m.rechten||{};
+  document.getElementById('r-agenda').value=rechten.agenda||'bewerken';
+  document.getElementById('r-klanten').value=rechten.klanten||'bekijken';
+  document.getElementById('r-kassa').value=rechten.kassa||'geen';
+  document.getElementById('r-diensten').value=rechten.diensten||'bekijken';
+  document.getElementById('r-rapportages').value=rechten.rapportages||'geen';
+  document.getElementById('msg-rechten').style.display='none';
+
   openM('m-detail');
+}
+
+async function slaRechtenOp(){
+  const rechten={
+    agenda:document.getElementById('r-agenda').value,
+    klanten:document.getElementById('r-klanten').value,
+    kassa:document.getElementById('r-kassa').value,
+    diensten:document.getElementById('r-diensten').value,
+    rapportages:document.getElementById('r-rapportages').value
+  };
+
+  const{error}=await sb.from('medewerkers').update({rechten}).eq('id',huidigDetailId);
+
+  if(error){
+    showMsg('msg-rechten','Fout: '+error.message);
+    return;
+  }
+
+  showMsg('msg-rechten','Rechten opgeslagen.','ok');
+  const m=TEAM.find(x=>x.id===huidigDetailId);
+  if(m) m.rechten=rechten;
 }
 
 async function verstuurUitnodiging(){
