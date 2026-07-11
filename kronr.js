@@ -128,6 +128,35 @@ function toonGeenToegangScherm() {
   document.body.appendChild(overlay);
 }
 
+// ── Automatisch verlopen data opruimen ──
+// Afspraken waarvan de tijd voorbij is en die nog een 'actieve' status
+// hebben, gaan automatisch op 'afgerond'. Wachtlijst-aanvragen waarvan
+// de voorkeursperiode voorbij is, gaan op 'verlopen' (niet verwijderd --
+// blijft zichtbaar in de historie, maar telt niet meer mee als actief).
+async function automatiseerVerlopenData() {
+  const nu = new Date().toISOString();
+
+  try {
+    await sb.from('afspraken')
+      .update({ status: 'afgerond' })
+      .eq('salon_id', SALON_ID)
+      .lt('datum_tijd', nu)
+      .in('status', ['gepland', 'bevestigd', 'niet_bevestigd', 'gearriveerd', 'in_behandeling']);
+  } catch (e) {
+    console.warn('Automatisch afronden van verlopen afspraken mislukt:', e);
+  }
+
+  try {
+    await sb.from('wachtlijst')
+      .update({ status: 'verlopen' })
+      .eq('salon_id', SALON_ID)
+      .eq('status', 'actief')
+      .lt('voorkeur_tot', nu);
+  } catch (e) {
+    console.warn('Automatisch opruimen van verlopen wachtlijst mislukt:', e);
+  }
+}
+
 async function kronrInit(callback, paginaModule) {
   try {
     const { data: { session } } = await sb.auth.getSession();
@@ -220,6 +249,11 @@ async function kronrInit(callback, paginaModule) {
     try { opgeslagenLocatieId = localStorage.getItem(locatieStorageKey(SALON_ID)); } catch (e) {}
     HUIDIGE_LOCATIE_ID = LOCATIES.find(l => l.id === opgeslagenLocatieId)?.id || LOCATIES[0]?.id || null;
     renderLocatieSwitcher();
+
+    // Automatisch verlopen data opruimen (afgeronde afspraken, verlopen
+    // wachtlijst) VOORDAT de aanroepende pagina zijn eigen data ophaalt --
+    // zodat KPI's/tellingen altijd met de actuele status rekenen.
+    await automatiseerVerlopenData();
 
     // Update sidebar
     document.querySelectorAll('.salon-naam').forEach(el => el.textContent = salon.naam);
