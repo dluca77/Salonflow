@@ -465,8 +465,11 @@ function clearBon(){bon=[];verwijderCadeaubon();renderBon();}
 function berekenTotalen(){
   // Cadeaubon-VERKOOP is niet BTW-plichtig bij verkoop (dat gebeurt pas bij
   // inwisselen voor een dienst/product) -- daarom apart van de rest houden.
-  const btwPlichtigeItems=bon.filter(i=>i.type!=='cadeaubon_verkoop');
+  // Fooi is een vrijwillige gift aan het personeel, geen vergoeding voor
+  // een dienst/product -- ook die hoort dus geen btw te hebben.
+  const btwPlichtigeItems=bon.filter(i=>i.type!=='cadeaubon_verkoop'&&i.type!=='fooi');
   const cbVerkoop=bon.filter(i=>i.type==='cadeaubon_verkoop').reduce((s,i)=>s+i.total,0);
+  const fooiTotaal=bon.filter(i=>i.type==='fooi').reduce((s,i)=>s+i.total,0);
 
   // Items met inclBtw=true: het ingevulde bedrag IS het totaal, btw wordt
   // eruit berekend (niet erbovenop). Items met inclBtw=false (uitgezet
@@ -484,8 +487,8 @@ function berekenTotalen(){
   });
 
   const btw=parseFloat((btwUitInclusief+btwOverExclusief).toFixed(2));
-  const totaal=parseFloat((totaalInclusief+totaalExclusief+btwOverExclusief+cbVerkoop).toFixed(2));
-  const sub=parseFloat((totaal-btw-cbVerkoop).toFixed(2));
+  const totaal=parseFloat((totaalInclusief+totaalExclusief+btwOverExclusief+cbVerkoop+fooiTotaal).toFixed(2));
+  const sub=parseFloat((totaal-btw-cbVerkoop-fooiTotaal).toFixed(2));
   const cbGebruikt=cadeaubonActief?Math.min(cadeaubonActief.saldo,totaal):0;
   const teBetalen=parseFloat((totaal-cbGebruikt).toFixed(2));
   return{sub, btw, totaal, cbGebruikt, teBetalen};
