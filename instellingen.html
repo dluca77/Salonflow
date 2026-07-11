@@ -1011,6 +1011,17 @@ function wisselWhatsappUI(){
 const OPENINGSTIJDEN_DAGEN = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'];
 const OPENINGSTIJDEN_LABELS = {maandag:'Maandag',dinsdag:'Dinsdag',woensdag:'Woensdag',donderdag:'Donderdag',vrijdag:'Vrijdag',zaterdag:'Zaterdag',zondag:'Zondag'};
 
+function tijdOpties(geselecteerd){
+  let html = '';
+  for(let m=0; m<24*60; m+=15){
+    const uu = String(Math.floor(m/60)).padStart(2,'0');
+    const mm = String(m%60).padStart(2,'0');
+    const tijd = `${uu}:${mm}`;
+    html += `<option value="${tijd}"${tijd===geselecteerd?' selected':''}>${tijd}</option>`;
+  }
+  return html;
+}
+
 function renderOpeningstijden(){
   const opgeslagen = SALON.openingstijden || {};
   const container = document.getElementById('openingstijden-rijen');
@@ -1021,9 +1032,9 @@ function renderOpeningstijden(){
       <label style="width:90px;font-size:13px;flex-shrink:0;">
         <input type="checkbox" id="ot-${dag}-open" ${d.gesloten?'':'checked'} onchange="wisselOpeningstijdRij('${dag}')" style="margin-right:6px;">${OPENINGSTIJDEN_LABELS[dag]}
       </label>
-      <input class="fi" type="time" id="ot-${dag}-van" value="${d.open||'09:00'}" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">
+      <select class="fi" id="ot-${dag}-van" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">${tijdOpties(d.open||'09:00')}</select>
       <span style="font-size:12px;color:var(--mu);">tot</span>
-      <input class="fi" type="time" id="ot-${dag}-tot" value="${d.dicht||'18:00'}" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">
+      <select class="fi" id="ot-${dag}-tot" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">${tijdOpties(d.dicht||'18:00')}</select>
     </div>`;
   }).join('');
 }
