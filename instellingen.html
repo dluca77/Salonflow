@@ -272,6 +272,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </div>
 
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+        <div class="fl" style="margin-bottom:4px;">Openingstijden</div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:12px;">Bepaalt welke tijden klanten kunnen kiezen bij het online boeken.</div>
+        <div id="openingstijden-rijen" style="display:flex;flex-direction:column;gap:8px;"></div>
+        <button class="btn-sec" style="width:100%;margin-top:12px;" onclick="slaOpeningstijdenOp()">Openingstijden opslaan</button>
+        <div class="msg" id="msg-openingstijden"></div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
         <div class="fr">
           <label class="fl">Annuleren toestaan tot</label>
           <select class="fi" id="s-annuleer-cutoff">
@@ -591,6 +599,7 @@ window.addEventListener('message',function(e){
   document.getElementById('s-whatsapp-actief').checked = SALON.whatsapp_actief || false;
   document.getElementById('s-whatsapp-nummer').value = SALON.whatsapp_nummer || '';
   wisselWhatsappUI();
+  renderOpeningstijden();
 
   if(SALON.plan==='business'){
     document.getElementById('slug-sectie-business').style.display='block';
@@ -997,6 +1006,52 @@ function wisselReviewUI(){
 function wisselWhatsappUI(){
   document.getElementById('whatsapp-instellingen').style.display =
     document.getElementById('s-whatsapp-actief').checked ? 'block' : 'none';
+}
+
+const OPENINGSTIJDEN_DAGEN = ['maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag','zondag'];
+const OPENINGSTIJDEN_LABELS = {maandag:'Maandag',dinsdag:'Dinsdag',woensdag:'Woensdag',donderdag:'Donderdag',vrijdag:'Vrijdag',zaterdag:'Zaterdag',zondag:'Zondag'};
+
+function renderOpeningstijden(){
+  const opgeslagen = SALON.openingstijden || {};
+  const container = document.getElementById('openingstijden-rijen');
+  container.innerHTML = OPENINGSTIJDEN_DAGEN.map(dag=>{
+    const d = opgeslagen[dag] || {open:'09:00',dicht:'18:00',gesloten:false};
+    return `
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+      <label style="width:90px;font-size:13px;flex-shrink:0;">
+        <input type="checkbox" id="ot-${dag}-open" ${d.gesloten?'':'checked'} onchange="wisselOpeningstijdRij('${dag}')" style="margin-right:6px;">${OPENINGSTIJDEN_LABELS[dag]}
+      </label>
+      <input class="fi" type="time" id="ot-${dag}-van" value="${d.open||'09:00'}" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">
+      <span style="font-size:12px;color:var(--mu);">tot</span>
+      <input class="fi" type="time" id="ot-${dag}-tot" value="${d.dicht||'18:00'}" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">
+    </div>`;
+  }).join('');
+}
+
+function wisselOpeningstijdRij(dag){
+  const open = document.getElementById(`ot-${dag}-open`).checked;
+  document.getElementById(`ot-${dag}-van`).disabled = !open;
+  document.getElementById(`ot-${dag}-tot`).disabled = !open;
+}
+
+async function slaOpeningstijdenOp(){
+  const openingstijden = {};
+  OPENINGSTIJDEN_DAGEN.forEach(dag=>{
+    const gesloten = !document.getElementById(`ot-${dag}-open`).checked;
+    openingstijden[dag] = {
+      open: gesloten ? null : document.getElementById(`ot-${dag}-van`).value,
+      dicht: gesloten ? null : document.getElementById(`ot-${dag}-tot`).value,
+      gesloten
+    };
+  });
+
+  const {error} = await sb.from('salons').update({openingstijden}).eq('id',SALON_ID);
+  if(error){
+    showMsg('msg-openingstijden','Fout: '+error.message);
+    return;
+  }
+  SALON.openingstijden = openingstijden;
+  showMsg('msg-openingstijden','Openingstijden opgeslagen.','ok');
 }
 
 async function slaProfielOp(){

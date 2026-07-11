@@ -405,12 +405,12 @@ async function loadData(){
   const maandStart=new Date();maandStart.setDate(1);maandStart.setHours(0,0,0,0);
   const zevenDagenGeleden=new Date();zevenDagenGeleden.setDate(zevenDagenGeleden.getDate()-7);
   const[aR,mR,kR,kNieuwR,boeR,betR]=await Promise.all([
-    sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',ws.toISOString()).lte('datum_tijd',we.toISOString()).order('datum_tijd'),
+    metLocatie(sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID)).gte('datum_tijd',ws.toISOString()).lte('datum_tijd',we.toISOString()).order('datum_tijd'),
     sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
-    sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').not('klant_email','is',null).gte('created_at',zevenDagenGeleden.toISOString()).order('created_at',{ascending:false}).limit(5),
-    sb.from('betalingen').select('afspraak_id').eq('salon_id',SALON_ID).not('afspraak_id','is',null)
+    metLocatie(sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').not('klant_email','is',null).gte('created_at',zevenDagenGeleden.toISOString())).order('created_at',{ascending:false}).limit(5),
+    metLocatie(sb.from('betalingen').select('afspraak_id').eq('salon_id',SALON_ID).not('afspraak_id','is',null))
   ]);
 
   const all=aR.data||[],meds=mR.data||[];

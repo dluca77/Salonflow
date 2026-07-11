@@ -147,11 +147,27 @@ async function automatiseerVerlopenData() {
   }
 
   try {
+    // Aanvragen met een specifieke voorkeursperiode: verlopen zodra die
+    // periode voorbij is.
     await sb.from('wachtlijst')
       .update({ status: 'verlopen' })
       .eq('salon_id', SALON_ID)
       .eq('status', 'actief')
       .lt('voorkeur_tot', nu);
+
+    // Volledig flexibele aanvragen ("maakt niet uit wanneer") hebben geen
+    // voorkeur_tot -- die wordt bij de vorige query dus NOOIT gematcht
+    // (NULL voldoet nooit aan een 'kleiner dan'-vergelijking). Daarom een
+    // aparte, langere vervaltermijn: na 30 dagen zonder specifieke
+    // voorkeur mag zo'n aanvraag ook als verlopen gelden.
+    const dertigDagenGeleden = new Date();
+    dertigDagenGeleden.setDate(dertigDagenGeleden.getDate() - 30);
+    await sb.from('wachtlijst')
+      .update({ status: 'verlopen' })
+      .eq('salon_id', SALON_ID)
+      .eq('status', 'actief')
+      .is('voorkeur_tot', null)
+      .lt('created_at', dertigDagenGeleden.toISOString());
   } catch (e) {
     console.warn('Automatisch opruimen van verlopen wachtlijst mislukt:', e);
   }

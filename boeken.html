@@ -366,10 +366,6 @@ function berekenAanbetalingBedrag(prijs,type,bedrag){
 }
 let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 const MN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
-const volTijden=['09:00','11:30','14:00'];
-const ochtend=['09:00','09:30','10:00','10:30','11:00','11:30'];
-const middag=['12:00','12:30','13:00','13:30','14:00','14:30'];
-const namiddag=['15:00','15:30','16:00','16:30','17:00','17:30'];
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
 // Landcodes -- Nederland staat vooraan en is standaard geselecteerd,
@@ -499,7 +495,7 @@ async function init(){
   }
 
   const[sRes,locRes]=await Promise.all([
-    sb.from('salons').select('naam,type_bedrijf,telefoon,adres,stad,stripe_connect_status,stempelkaart_actief').eq('id',SALON_ID).single(),
+    sb.from('salons').select('naam,type_bedrijf,telefoon,adres,stad,stripe_connect_status,stempelkaart_actief,openingstijden').eq('id',SALON_ID).single(),
     sb.from('locaties').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
   ]);
 
@@ -523,6 +519,7 @@ async function init(){
     window.SALON_NAAM=salon.naam;
     window.SALON_STRIPE_ACTIEF=salon.stripe_connect_status==='actief';
     window.SALON_STEMPEL_ACTIEF=!!salon.stempelkaart_actief;
+    window.SALON_OPENINGSTIJDEN=salon.openingstijden||null;
     const init=salon.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
     if(!IS_EMBED) document.getElementById('brand-init').textContent=init;
     document.getElementById('brand-name').textContent=salon.naam;
@@ -755,25 +752,100 @@ function renderCal(){
   }
 }
 
-function pickDay(d){
+async function pickDay(d){
   state.datum=`${d} ${MN[calMonth]} ${calYear}`;
   state.tijd=null;
   document.getElementById('sum-datum').textContent=state.datum;
   document.getElementById('btn3').disabled=true;
   document.getElementById('btn-wachtlijst-open').style.display='block';
   renderCal();
+
+  document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu);font-size:12px;">Beschikbare tijden laden...</div>`;
+
+  const gekozenDatum=parseStateDatum();
+  const slots=await berekenBeschikbareSlots(gekozenDatum);
+
+  if(!slots.length){
+    document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu);font-size:12px;">Op deze dag zijn geen tijden beschikbaar.</div>`;
+    return;
+  }
+
+  const ochtendSlots=slots.filter(s=>parseInt(s.tijd)<12);
+  const middagSlots=slots.filter(s=>parseInt(s.tijd)>=12&&parseInt(s.tijd)<15);
+  const namiddagSlots=slots.filter(s=>parseInt(s.tijd)>=15);
+
   document.getElementById('time-slots-wrap').innerHTML=`
-    <div class="time-section-label">Ochtend</div>
-    <div class="time-grid">${ochtend.map(slotHTML).join('')}</div>
-    <div class="time-section-label">Middag</div>
-    <div class="time-grid">${middag.map(slotHTML).join('')}</div>
-    <div class="time-section-label">Namiddag</div>
-    <div class="time-grid">${namiddag.map(slotHTML).join('')}</div>`;
+    ${ochtendSlots.length?`<div class="time-section-label">Ochtend</div><div class="time-grid">${ochtendSlots.map(slotHTML).join('')}</div>`:''}
+    ${middagSlots.length?`<div class="time-section-label">Middag</div><div class="time-grid">${middagSlots.map(slotHTML).join('')}</div>`:''}
+    ${namiddagSlots.length?`<div class="time-section-label">Namiddag</div><div class="time-grid">${namiddagSlots.map(slotHTML).join('')}</div>`:''}`;
 }
 
-function slotHTML(t){
-  const vol=volTijden.includes(t);
-  return`<div class="time-slot${vol?' vol':''}" onclick="${vol?'':'pickTime(\''+t+'\')'}">${t}${vol?'<br><span style="font-size:9px">vol</span>':''}</div>`;
+// Berekent écht beschikbare tijden voor een gekozen dag: op basis van de
+// werkelijke openingstijden van de salon (per dag van de week) en de
+// daadwerkelijk al bestaande afspraken op die dag (dus geen dubbele
+// boekingen meer mogelijk). Let op: als de klant 'Geen voorkeur' koos
+// voor de medewerker, wordt hier conservatief gerekend -- een tijdslot
+// geldt als 'vol' zodra ÉÉN willekeurige medewerker daar al een
+// afspraak heeft, ook als er misschien nog een andere medewerker vrij
+// zou zijn. Dat toont soms iets minder beschikbaarheid dan technisch
+// mogelijk bij meerdere medewerkers, maar voorkomt gegarandeerd dat er
+// ooit dubbel geboekt kan worden.
+async function berekenBeschikbareSlots(datum){
+  const dagNamen=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const dagNaam=dagNamen[datum.getDay()];
+  const openingstijden=window.SALON_OPENINGSTIJDEN||{};
+  const dagInfo=openingstijden[dagNaam];
+
+  // Geen openingstijden ingesteld voor deze salon? Val terug op een
+  // redelijke standaardwaarde (09:00-18:00) i.p.v. helemaal niks tonen.
+  const open = dagInfo && !dagInfo.gesloten && dagInfo.open ? dagInfo.open : (dagInfo?.gesloten ? null : '09:00');
+  const dicht = dagInfo && !dagInfo.gesloten && dagInfo.dicht ? dagInfo.dicht : (dagInfo?.gesloten ? null : '18:00');
+  if(!open||!dicht) return [];
+
+  const[openUur,openMin]=open.split(':').map(Number);
+  const[dichtUur,dichtMin]=dicht.split(':').map(Number);
+  const openMinuten=openUur*60+openMin;
+  const dichtMinuten=dichtUur*60+dichtMin;
+
+  const dagStart=new Date(datum);dagStart.setHours(0,0,0,0);
+  const dagEind=new Date(datum);dagEind.setHours(23,59,59,999);
+
+  let query=sb.from('afspraken').select('datum_tijd,duur_min,medewerker_id')
+    .eq('salon_id',SALON_ID)
+    .gte('datum_tijd',dagStart.toISOString())
+    .lte('datum_tijd',dagEind.toISOString())
+    .neq('status','geannuleerd');
+  if(HUIDIGE_BOEK_LOCATIE_ID) query=query.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
+  if(state.med_id) query=query.eq('medewerker_id',state.med_id);
+
+  const{data}=await query;
+  const bestaandeAfspraken=data||[];
+
+  const duurBenodigd=state.duur||30;
+  const stapGrootte=30;
+  const nu=new Date();
+
+  const slots=[];
+  for(let m=openMinuten;m+duurBenodigd<=dichtMinuten;m+=stapGrootte){
+    const slotStart=new Date(datum);slotStart.setHours(Math.floor(m/60),m%60,0,0);
+    const slotEind=new Date(slotStart.getTime()+duurBenodigd*60000);
+
+    const overlapt=bestaandeAfspraken.some(a=>{
+      const aStart=new Date(a.datum_tijd);
+      const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+      return slotStart<aEind && slotEind>aStart;
+    });
+
+    const isVerleden=slotStart<nu;
+    const uu=String(Math.floor(m/60)).padStart(2,'0');
+    const mm=String(m%60).padStart(2,'0');
+    slots.push({tijd:`${uu}:${mm}`,vol:overlapt||isVerleden});
+  }
+  return slots;
+}
+
+function slotHTML(s){
+  return`<div class="time-slot${s.vol?' vol':''}" onclick="${s.vol?'':'pickTime(\''+s.tijd+'\')'}">${s.tijd}${s.vol?'<br><span style="font-size:9px">vol</span>':''}</div>`;
 }
 
 function pickTime(t){
