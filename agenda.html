@@ -1069,9 +1069,32 @@ async function openWachtlijstOverzicht(){
       <div style="color:var(--mu);margin-top:2px;">${item.diensten?.naam||'Onbekende dienst'} · ${item.klant_email}</div>
       <div style="color:var(--ink);margin-top:4px;font-weight:500;">📅 ${datumTekst}</div>
       ${item.voorgestelde_datum_tijd?`<div style="color:var(--gd,#8c6d3f);margin-top:4px;">✨ Plek aangeboden, wacht op reactie</div>`:''}
+      <div style="display:flex;gap:8px;margin-top:8px;">
+        <button class="mo-btn-sec" style="flex:1;padding:6px 10px;font-size:11px;" onclick='wijsWachtlijstToe(${JSON.stringify(item).replace(/'/g,"&#39;")})'>Toewijzen</button>
+        <button class="mo-btn-sec" style="flex:1;padding:6px 10px;font-size:11px;color:#c0392b;border-color:#c0392b;" onclick="verwijderWachtlijstItem('${item.id}')">Verwijderen</button>
+      </div>
     </div>
   `;
   }).join('');
+}
+
+async function verwijderWachtlijstItem(id){
+  if(!confirm('Deze persoon van de wachtlijst verwijderen?')) return;
+  const{error}=await sb.from('wachtlijst').update({status:'verwijderd'}).eq('id',id);
+  if(error){ alert('Fout: '+error.message); return; }
+  openWachtlijstOverzicht(); // lijst verversen
+  updateWachtlijstBadge();
+}
+
+function wijsWachtlijstToe(item){
+  closeModal('modal-wachtlijst');
+  // Voorkeursdatum (indien één specifieke dag gevraagd) alvast invullen,
+  // anders vandaag als redelijk startpunt -- de eigenaar kiest zelf het
+  // exacte tijdstip en bevestigt de dienst in het openende formulier.
+  const datum = (item.voorkeur_vanaf===item.voorkeur_tot && item.voorkeur_vanaf) ? item.voorkeur_vanaf : dk(cur);
+  openNieuw(datum,'09:00',item.medewerker_id||'');
+  document.getElementById('ik').value=item.klant_naam;
+  sb.from('wachtlijst').update({status:'toegewezen'}).eq('id',item.id).then(()=>{ updateWachtlijstBadge(); });
 }
 
 async function incasseerNoshowFee(){
