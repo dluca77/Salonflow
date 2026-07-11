@@ -35,6 +35,35 @@ document.documentElement.style.opacity = '0';
 
 function locatieStorageKey(salonId) { return 'kronr_locatie_' + salonId; }
 
+// ── Proefperiode-check ──
+// Alleen relevant voor het gratis plan; zodra een salon een betaald
+// pakket heeft is er nooit sprake van vergrendeling.
+function isProefperiodeVerlopen(salon) {
+  if (!salon || salon.plan !== 'free') return false;
+  const aangemaakt = salon.created_at ? new Date(salon.created_at) : new Date();
+  const dagenGeleden = Math.floor((new Date() - aangemaakt) / (1000 * 60 * 60 * 24));
+  return dagenGeleden >= 14;
+}
+
+function toonVergrendelScherm() {
+  const overlay = document.createElement('div');
+  overlay.id = 'kronr-vergrendel-overlay';
+  overlay.style.cssText = 'position:fixed;inset:0;z-index:99999;background:#faf8f4;display:flex;align-items:center;justify-content:center;padding:24px;font-family:Inter,sans-serif;';
+  overlay.innerHTML = `
+    <div style="max-width:420px;text-align:center;">
+      <div style="width:56px;height:56px;border-radius:50%;background:#f5ede0;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;">
+        <svg width="26" height="26" fill="none" stroke="#8c6d3f" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+      </div>
+      <h1 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#0f0d0b;margin-bottom:12px;">Je proefperiode is verlopen</h1>
+      <p style="font-size:14.5px;color:#6b6058;line-height:1.6;margin-bottom:28px;">Je 14 dagen gratis zijn voorbij. Kies een pakket om Kronr te blijven gebruiken -- je gegevens staan gewoon klaar, er gaat niets verloren.</p>
+      <a href="instellingen.html#abonnement" style="display:inline-block;background:#0f0d0b;color:#faf8f4;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">Bekijk pakketten</a>
+      <div style="margin-top:20px;">
+        <a href="#" onclick="uitloggen();return false;" style="font-size:13px;color:#a09890;text-decoration:underline;">Uitloggen</a>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+}
+
 function wisselLocatie(id) {
   try { localStorage.setItem(locatieStorageKey(SALON_ID), id); } catch (e) {}
   window.location.reload();
@@ -108,6 +137,14 @@ async function kronrInit(callback) {
 
     SALON_ID = salon.id;
     SALON = salon;
+
+    // ── Proefperiode-vergrendeling ──
+    // Na 14 dagen op het gratis plan wordt alles op slot gezet, behalve
+    // instellingen.html (waar iemand alsnog een pakket kan kiezen).
+    if (isProefperiodeVerlopen(salon) && !window.location.pathname.endsWith('instellingen.html')) {
+      toonVergrendelScherm();
+      return; // callback (de eigenlijke paginalogica) draait bewust niet
+    }
 
     // Locaties ophalen en de huidige bepalen (uit localStorage, of de
     // eerste actieve als er nog geen voorkeur is/de vorige niet meer bestaat)
