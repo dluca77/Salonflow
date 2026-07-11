@@ -243,6 +243,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </div>
 
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+        <div class="fl" style="margin-bottom:8px;">Boekingswidget voor je eigen website</div>
+        <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">Heb je al een eigen website? Plak deze code op de plek waar bezoekers moeten kunnen boeken -- werkt op zo goed als elke websitebouwer (WordPress, Wix, Squarespace, of een eigen HTML-pagina).</div>
+        <div style="position:relative;">
+          <textarea id="widget-embed-code" readonly rows="4" style="width:100%;font-family:'Courier New',monospace;font-size:12px;color:var(--ink2);background:var(--iv);border:1px solid var(--bd);border-radius:8px;padding:14px;resize:vertical;line-height:1.5;"></textarea>
+          <button type="button" onclick="kopieerWidgetCode()" style="position:absolute;top:10px;right:10px;padding:6px 12px;background:var(--white);border:1px solid var(--bd);border-radius:6px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;">Kopiëren</button>
+        </div>
+        <div id="widget-kopieer-msg" style="font-size:11px;color:var(--gd);margin-top:6px;display:none;">✓ Gekopieerd naar klembord</div>
+      </div>
+
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
         <div class="fr">
           <label class="fl">Annuleren toestaan tot</label>
           <select class="fi" id="s-annuleer-cutoff">
@@ -542,6 +552,15 @@ async function loadData(){
   document.getElementById('s-type').value = SALON.type_bedrijf || 'Kapper';
   document.getElementById('s-email').value = SESSION_USER.email || '';
   document.getElementById('s-slug').value = SALON.slug || '';
+  document.getElementById('widget-embed-code').value =
+`<iframe src="https://dluca77.github.io/Salonflow/boeken.html?salon=${SALON_ID}"
+  style="width:100%;min-height:600px;border:none;"
+  title="Boek een afspraak bij ${SALON.naam || 'ons'}"></iframe>
+<script>
+window.addEventListener('message',function(e){
+  if(e.data&&e.data.type==='kronr:hoogte')document.currentScript.previousElementSibling.style.height=e.data.height+'px';
+});
+<\/script>`;
   document.getElementById('s-annuleer-cutoff').value = SALON.annuleer_cutoff_uren ?? 24;
   document.getElementById('s-stempel-actief').checked = SALON.stempelkaart_actief || false;
   document.getElementById('s-stempel-aantal').value = SALON.stempel_aantal_nodig ?? 5;
@@ -931,6 +950,18 @@ async function verwerkStripeConnectReturn(){
 }
 
 // ── SALON PROFIEL ──
+function kopieerWidgetCode(){
+  const veld = document.getElementById('widget-embed-code');
+  veld.select();
+  navigator.clipboard.writeText(veld.value).then(() => {
+    const msg = document.getElementById('widget-kopieer-msg');
+    msg.style.display = 'block';
+    setTimeout(() => { msg.style.display = 'none'; }, 2500);
+  }).catch(() => {
+    document.execCommand('copy'); // fallback voor oudere browsers
+  });
+}
+
 function wisselStempelUI(){
   document.getElementById('stempel-instellingen').style.display =
     document.getElementById('s-stempel-actief').checked ? 'block' : 'none';
