@@ -169,6 +169,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="kronr.js"></script>
+<script src="onboarding.js"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
 </head>
@@ -497,6 +498,7 @@ async function loadData(){
   laadInzichten({vandaag, all, meds, omzet, noshow, bezetting, klantenTotaal:kR.count||0, klantenNieuw:kNieuwR.count||0, boekingen});
 
   setGreeting();
+  if (typeof initOnboarding === 'function') initOnboarding();
 }
 
 async function laadInzichten(d){
