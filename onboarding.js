@@ -107,11 +107,11 @@ function sluitKaiBegroeting() {
 
 // ── Interactieve rondleiding ──
 const RONDLEIDING_STAPPEN = [
-  { selector: 'a[href="agenda.html"]', titel: 'Agenda', tekst: 'Hier zie je al je afspraken. Nieuwe boekingen (ook online) komen hier automatisch binnen.' },
-  { selector: 'a[href="klanten.html"]', titel: 'Klanten', tekst: 'Alle klantgegevens, behandelhistorie en notities op één plek.' },
-  { selector: 'a[href="kassa.html"]', titel: 'Kassa', tekst: 'Reken hier snel af, inclusief pin, contant en cadeaubonnen.' },
-  { selector: 'a[href="diensten.html"]', titel: 'Diensten', tekst: 'Beheer hier je behandelingen, prijzen en duur.' },
-  { selector: 'a[href="instellingen.html"]', titel: 'Instellingen', tekst: 'Salonprofiel, boekingswidget, abonnement -- alles wat je verder kunt aanpassen.' },
+  { selector: '.si[href="agenda.html"], .mob-item[href="agenda.html"]', titel: 'Agenda', tekst: 'Hier zie je al je afspraken. Nieuwe boekingen (ook online) komen hier automatisch binnen.' },
+  { selector: '.si[href="klanten.html"], .mob-item[href="klanten.html"]', titel: 'Klanten', tekst: 'Alle klantgegevens, behandelhistorie en notities op één plek.' },
+  { selector: '.si[href="kassa.html"], .mob-item[href="kassa.html"]', titel: 'Kassa', tekst: 'Reken hier snel af, inclusief pin, contant en cadeaubonnen.' },
+  { selector: '.si[href="diensten.html"], .mob-item[href="diensten.html"]', titel: 'Diensten', tekst: 'Beheer hier je behandelingen, prijzen en duur.' },
+  { selector: '.si[href="instellingen.html"], .mob-item[href="instellingen.html"]', titel: 'Instellingen', tekst: 'Salonprofiel, boekingswidget, abonnement -- alles wat je verder kunt aanpassen.' },
 ];
 
 let rondleidingIndex = 0;
@@ -121,22 +121,42 @@ function startRondleiding() {
   toonRondleidingStap();
 }
 
-function vindZichtbareStapElement(selector) {
-  // Sidebar (desktop) is verborgen op mobiel -- gebruik dan het mobiele menu-item i.p.v. de (onzichtbare) sidebar-link.
-  const kandidaten = document.querySelectorAll(selector);
-  for (const el of kandidaten) {
-    if (el.offsetParent !== null) return el;
-  }
-  return kandidaten[0] || null;
+function elementIsWerkelijkZichtbaar(el) {
+  if (el.offsetParent === null) return false;
+  const r = el.getBoundingClientRect();
+  // offsetParent alleen zegt dat het element niet display:none is -- een
+  // element kan nog steeds volledig BUITEN BEELD staan (bv. het mobiele
+  // menu dat dicht staat via left:-100%). Dat telt hier niet als zichtbaar.
+  return r.width > 0 && r.height > 0 &&
+    r.right > 0 && r.left < window.innerWidth &&
+    r.bottom > 0 && r.top < window.innerHeight;
 }
 
-function toonRondleidingStap() {
+function vindZichtbareStapElement(selector) {
+  const kandidaten = document.querySelectorAll(selector);
+  for (const el of kandidaten) {
+    if (elementIsWerkelijkZichtbaar(el)) return el;
+  }
+  return null;
+}
+
+async function toonRondleidingStap() {
   sluitRondleidingStap();
   if (rondleidingIndex >= RONDLEIDING_STAPPEN.length) return;
 
   const stap = RONDLEIDING_STAPPEN[rondleidingIndex];
-  const el = vindZichtbareStapElement(stap.selector);
-  if (!el) { rondleidingIndex++; toonRondleidingStap(); return; }
+  let el = vindZichtbareStapElement(stap.selector);
+
+  // Geen enkele kandidaat écht zichtbaar? Op mobiel staat het menu dan
+  // waarschijnlijk dicht -- open het (dezelfde functie als de hamburger-
+  // knop) en wacht de schuif-animatie af voordat we opnieuw meten.
+  if (!el && typeof openSB === 'function' && document.getElementById('sb')) {
+    openSB();
+    await new Promise(r => setTimeout(r, 300));
+    el = vindZichtbareStapElement(stap.selector);
+  }
+
+  if (!el) { rondleidingIndex++; return toonRondleidingStap(); }
 
   const rect = el.getBoundingClientRect();
 
@@ -149,9 +169,22 @@ function toonRondleidingStap() {
   highlight.style.cssText = `position:fixed;top:${rect.top - 4}px;left:${rect.left - 4}px;width:${rect.width + 8}px;height:${rect.height + 8}px;border:2px solid var(--gd);border-radius:8px;z-index:9998;pointer-events:none;box-shadow:0 0 0 4000px rgba(15,13,11,.55);`;
   overlay.appendChild(highlight);
 
-  const tooltipLinks = rect.right + 260 < window.innerWidth;
+  // Tooltip binnen de viewport houden: probeer rechts, val terug op
+  // onder het element, en klem in beide gevallen binnen de schermranden.
+  const tooltipBreedte = 240, tooltipMarge = 16;
+  let tooltipLeft, tooltipTop;
+  if (rect.right + tooltipMarge + tooltipBreedte < window.innerWidth) {
+    tooltipLeft = rect.right + tooltipMarge;
+    tooltipTop = rect.top;
+  } else {
+    tooltipLeft = Math.max(tooltipMarge, Math.min(rect.left, window.innerWidth - tooltipBreedte - tooltipMarge));
+    tooltipTop = rect.bottom + 12;
+  }
+  // Verticaal ook binnen het scherm klemmen (tooltip is ong. 160px hoog)
+  tooltipTop = Math.max(tooltipMarge, Math.min(tooltipTop, window.innerHeight - 180));
+
   const tooltip = document.createElement('div');
-  tooltip.style.cssText = `position:fixed;top:${rect.top}px;${tooltipLinks ? 'left:' + (rect.right + 16) + 'px;' : 'left:' + Math.max(16, rect.left) + 'px;top:' + (rect.bottom + 12) + 'px;'}z-index:9999;background:var(--white);border-radius:10px;padding:16px 18px;max-width:240px;box-shadow:0 12px 32px rgba(15,13,11,.15);`;
+  tooltip.style.cssText = `position:fixed;top:${tooltipTop}px;left:${tooltipLeft}px;z-index:9999;background:var(--white);border-radius:10px;padding:16px 18px;max-width:${tooltipBreedte}px;box-shadow:0 12px 32px rgba(15,13,11,.15);`;
   tooltip.innerHTML = `
     <div style="font-size:10px;color:var(--gd);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Stap ${rondleidingIndex + 1} van ${RONDLEIDING_STAPPEN.length}</div>
     <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;">${stap.titel}</div>
