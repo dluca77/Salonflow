@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kronr — Kassa</title>
+<title>Kronr | Kassa</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -505,7 +505,7 @@ function updateTot(){
     balk.style.display='flex';
     document.getElementById('cb-actief-tekst').textContent=
       `Cadeaubon ${cadeaubonActief.code}: €${t.cbGebruikt.toFixed(2)} gebruikt`+
-      (t.teBetalen>0?` — nog €${t.teBetalen.toFixed(2)} te betalen`:' — volledig gedekt');
+      (t.teBetalen>0?`, nog €${t.teBetalen.toFixed(2)} te betalen`:', volledig gedekt');
   } else {
     balk.style.display='none';
   }

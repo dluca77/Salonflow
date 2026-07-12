@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kronr — Medewerkers</title>
+<title>Kronr | Medewerkers</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -365,8 +365,8 @@ async function laadVerlofAanvragen(){
   lijst.innerHTML=aanvragen.map(v=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);">
       <div>
-        <div style="font-size:13px;font-weight:600;">${v.medewerkers?.naam||'Onbekend'} — ${v.type}</div>
-        <div style="font-size:11px;color:var(--mu);">${fmtVerlofDatum(v.van_datum)} — ${fmtVerlofDatum(v.tot_datum)}${v.notitie?' · '+v.notitie:''}</div>
+        <div style="font-size:13px;font-weight:600;">${v.medewerkers?.naam||'Onbekend'} · ${v.type}</div>
+        <div style="font-size:11px;color:var(--mu);">${fmtVerlofDatum(v.van_datum)} t/m ${fmtVerlofDatum(v.tot_datum)}${v.notitie?' · '+v.notitie:''}</div>
       </div>
       <div style="display:flex;gap:6px;">
         <button onclick="behandelVerlof('${v.id}','goedgekeurd')" style="padding:6px 12px;background:var(--green);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Goedkeuren</button>

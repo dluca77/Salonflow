@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Kronr — Inloggen</title>
+<title>Kronr | Inloggen</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -262,7 +262,7 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
 const SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 
-// Zelfde opslag-adapter als kronr.js — leest live de 'kronr_remember' vlag,
+// Zelfde opslag-adapter als kronr.js: leest live de 'kronr_remember' vlag,
 // zodat de sessie na inloggen op de juiste plek staat voor alle andere pagina's.
 function kronrStorage() {
   function backing() {
@@ -278,7 +278,7 @@ const sb = window.supabase.createClient(SB_URL, SB_KEY, {
   auth: { storage: kronrStorage(), persistSession: true, autoRefreshToken: true }
 });
 
-// Auth check — access_token in hash = e-mail bevestigd
+// Auth check: access_token in hash = e-mail bevestigd
 if (window.location.hash.includes('access_token')) {
   sb.auth.getSession().then(({ data: { session } }) => {
     if (session) window.location.href = 'dashboard.html';
@@ -306,7 +306,7 @@ function toonRegistreer() {
   document.getElementById('tab-reg').classList.add('active');
   document.getElementById('tab-login').classList.remove('active');
   document.getElementById('form-title').textContent = 'Begin vandaag gratis';
-  document.getElementById('form-sub').textContent = 'Maak je Kronr account aan — geen creditcard nodig';
+  document.getElementById('form-sub').textContent = 'Maak je Kronr account aan, geen creditcard nodig';
   leegMsg();
 }
 

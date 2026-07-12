@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Mijn rooster — Kronr</title>
+<title>Mijn rooster | Kronr</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
@@ -129,7 +129,7 @@ async function laadVerlof(){
   const rows=(data||[]).map(v=>`
     <div class="verlof-row">
       <div>
-        <div class="verlof-datums">${fmtDatum(v.van_datum)} — ${fmtDatum(v.tot_datum)}</div>
+        <div class="verlof-datums">${fmtDatum(v.van_datum)} t/m ${fmtDatum(v.tot_datum)}</div>
         <div class="verlof-type">${v.type}${v.notitie?' · '+v.notitie:''}</div>
       </div>
       <span class="badge badge-${v.status}">${v.status}</span>

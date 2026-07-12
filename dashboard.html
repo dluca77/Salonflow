@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Kronr — Dashboard</title>
+<title>Kronr | Dashboard</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -366,7 +366,7 @@ function setGreeting(){
   const h=new Date().getHours();
   const gr=h<12?'Goedemorgen':h<18?'Goedemiddag':'Goedenavond';
   const nm=document.querySelector('.salon-naam')?.textContent||'';
-  document.getElementById('greeting').innerHTML=gr+(nm?` — <em>${nm}</em>`:'');
+  document.getElementById('greeting').innerHTML=gr+(nm?`, <em>${nm}</em>`:'');
   const d=new Date().toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
   document.getElementById('greeting-sub').textContent=d.charAt(0).toUpperCase()+d.slice(1);
   document.getElementById('tb-date').textContent=new Date().toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'});
@@ -500,7 +500,7 @@ async function loadData(){
     }).join('');
   }
 
-  // Inzichten — echte AI-analyse via Kronr AI Worker, gecached per dag
+  // Inzichten: echte AI-analyse via Kronr AI Worker, gecached per dag
   laadInzichten({vandaag, all, meds, omzet, noshow, bezetting, klantenTotaal:kR.count||0, klantenNieuw:kNieuwR.count||0, boekingen});
 
   setGreeting();
@@ -519,7 +519,7 @@ async function laadInzichten(d){
   const regelGebaseerd=()=>{
     const ins=[];
     if(!d.vandaag.length) ins.push('Nog geen afspraken vandaag. Deel je boekingslink om nieuwe klanten aan te trekken.');
-    else if(d.vandaag.length>=5) ins.push(`Je hebt ${d.vandaag.length} afspraken vandaag — een drukke dag. Zorg voor pauzes.`);
+    else if(d.vandaag.length>=5) ins.push(`Je hebt ${d.vandaag.length} afspraken vandaag, een drukke dag. Zorg voor pauzes.`);
     else ins.push(`Je hebt ${d.vandaag.length} afspraak${d.vandaag.length!==1?'en':''} vandaag. Er is nog ruimte voor nieuwe boekingen.`);
     if(d.all.length) ins.push(`Deze week staan er ${d.all.length} afspraken gepland.`);
     if(d.meds.length) ins.push(`Je hebt ${d.meds.length} actieve medewerker${d.meds.length!==1?'s':''}.`);

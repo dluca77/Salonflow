@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Kronr — Agenda</title>
+<title>Kronr | Agenda</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
 <style>
@@ -1229,7 +1229,7 @@ function renderDienstenLijst(){
     <div class="dienst-row">
       <select class="fi" style="flex:1;" onchange="selectDienst(${i},this.value)">
         <option value="">Kies behandeling...</option>
-        ${DIENSTEN.map(ds=>`<option value="${ds.id}" ${d.dienst_id===ds.id?'selected':''}>${ds.naam} — €${ds.prijs} — ${ds.duur_min}min</option>`).join('')}
+        ${DIENSTEN.map(ds=>`<option value="${ds.id}" ${d.dienst_id===ds.id?'selected':''}>${ds.naam} · €${ds.prijs} · ${ds.duur_min}min</option>`).join('')}
       </select>
       <button class="dienst-row-del" onclick="verwijderDienst(${i})">×</button>
     </div>`).join('');

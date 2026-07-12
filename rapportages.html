@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kronr — Rapportages</title>
+<title>Kronr | Rapportages</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
 <style>
@@ -379,7 +379,7 @@ async function loadData(){
   else insights.push('Nog geen betalingen in deze periode. Gebruik de kassa om betalingen te registreren.');
   if(apts>0) insights.push(`${apts} afspraken verwerkt, gemiddelde bon €${gemBon}.`);
   if(noshow>0) insights.push(`${noshow} no-show${noshow>1?'s':''} (${noshowPct}%). Stuur herinneringen om dit te verlagen.`);
-  else if(apts>0) insights.push('Geen no-shows — uitstekend!');
+  else if(apts>0) insights.push('Geen no-shows, uitstekend!');
 
   // Render
   const c=document.getElementById('content');
