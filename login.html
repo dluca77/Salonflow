@@ -194,6 +194,10 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
     <!-- REGISTREREN -->
     <div class="form-section" id="sectie-reg">
       <div class="frow">
+        <label class="flabel">Jouw naam</label>
+        <input class="finput" type="text" id="r-contactnaam" placeholder="bijv. Mila Jansen" autocomplete="name">
+      </div>
+      <div class="frow">
         <label class="flabel">Naam van je bedrijf</label>
         <input class="finput" type="text" id="r-naam" placeholder="bijv. Beauty Studio Mila" autocomplete="organization">
       </div>
@@ -216,6 +220,13 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
       <div class="frow">
         <label class="flabel">E-mailadres</label>
         <input class="finput" type="email" id="r-email" placeholder="jij@bedrijf.nl" autocomplete="email">
+      </div>
+      <div class="frow">
+        <label class="flabel">Telefoonnummer <span style="color:var(--mu2,#a09890);font-weight:400;">(optioneel)</span></label>
+        <div style="display:flex;gap:8px;">
+          <span style="flex-shrink:0;display:flex;align-items:center;padding:0 14px;background:var(--iv);border:1px solid var(--bd);color:var(--mu,#8a8078);font-size:14px;">+31</span>
+          <input class="finput" type="tel" id="r-telefoon" placeholder="6 12345678" autocomplete="tel-national">
+        </div>
       </div>
       <div class="frow">
         <label class="flabel">Wachtwoord</label>
@@ -367,11 +378,15 @@ function checkWwSterkte(){
 }
 
 async function registreer() {
+  const contactNaam = document.getElementById('r-contactnaam').value.trim();
   const naam  = document.getElementById('r-naam').value.trim();
   const type  = document.getElementById('r-type').value;
   const email = document.getElementById('r-email').value.trim();
+  const telefoonInvoer = document.getElementById('r-telefoon').value.trim();
+  const telefoon = telefoonInvoer ? '+31' + telefoonInvoer.replace(/^0/, '') : null;
   const pass  = document.getElementById('r-pass').value;
 
+  if (!contactNaam) return toonMsg('Vul je naam in.');
   if (!naam)  return toonMsg('Vul de naam van je bedrijf in.');
   if (!email) return toonMsg('Vul je e-mailadres in.');
   if (!pass)  return toonMsg('Vul een wachtwoord in.');
@@ -386,7 +401,7 @@ async function registreer() {
     email, password: pass,
     options: {
       emailRedirectTo: 'https://kronr.nl/login.html',
-      data: { bedrijf_naam: naam, type_bedrijf: type }
+      data: { bedrijf_naam: naam, type_bedrijf: type, contact_naam: contactNaam }
     }
   });
 
@@ -412,7 +427,8 @@ async function registreer() {
   if (data.user) {
     await sb.from('salons').insert({
       owner_id: data.user.id, naam,
-      type_bedrijf: type, email, plan: 'free'
+      type_bedrijf: type, email, plan: 'free',
+      contact_naam: contactNaam, telefoon
     });
   }
 
