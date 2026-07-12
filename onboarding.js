@@ -169,22 +169,20 @@ async function toonRondleidingStap() {
   highlight.style.cssText = `position:fixed;top:${rect.top - 4}px;left:${rect.left - 4}px;width:${rect.width + 8}px;height:${rect.height + 8}px;border:2px solid var(--gd);border-radius:8px;z-index:9998;pointer-events:none;box-shadow:0 0 0 4000px rgba(15,13,11,.55);`;
   overlay.appendChild(highlight);
 
-  // Tooltip binnen de viewport houden: probeer rechts, val terug op
-  // onder het element, en klem in beide gevallen binnen de schermranden.
-  const tooltipBreedte = 240, tooltipMarge = 16;
-  let tooltipLeft, tooltipTop;
-  if (rect.right + tooltipMarge + tooltipBreedte < window.innerWidth) {
-    tooltipLeft = rect.right + tooltipMarge;
-    tooltipTop = rect.top;
-  } else {
-    tooltipLeft = Math.max(tooltipMarge, Math.min(rect.left, window.innerWidth - tooltipBreedte - tooltipMarge));
-    tooltipTop = rect.bottom + 12;
-  }
-  // Verticaal ook binnen het scherm klemmen (tooltip is ong. 160px hoog)
+  // Tooltip altijd rechts van het gemarkeerde item -- breedte past zich
+  // aan de beschikbare ruimte aan (bv. naast het mobiele menu, dat maar
+  // een deel van het scherm inneemt), i.p.v. terug te vallen op eronder
+  // plaatsen (wat op mobiel over het menu zelf heen viel).
+  const tooltipMarge = 16;
+  const beschikbareBreedte = window.innerWidth - rect.right - (tooltipMarge * 2);
+  const tooltipBreedte = Math.max(140, Math.min(240, beschikbareBreedte));
+  const tooltipLeft = rect.right + tooltipMarge;
+  let tooltipTop = rect.top;
+  // Verticaal binnen het scherm klemmen (tooltip is ong. 160px hoog)
   tooltipTop = Math.max(tooltipMarge, Math.min(tooltipTop, window.innerHeight - 180));
 
   const tooltip = document.createElement('div');
-  tooltip.style.cssText = `position:fixed;top:${tooltipTop}px;left:${tooltipLeft}px;z-index:9999;background:var(--wh);border-radius:10px;padding:16px 18px;max-width:${tooltipBreedte}px;box-shadow:0 12px 32px rgba(15,13,11,.15);`;
+  tooltip.style.cssText = `position:fixed;top:${tooltipTop}px;left:${tooltipLeft}px;z-index:9999;background:var(--wh);border-radius:10px;padding:16px 18px;width:${tooltipBreedte}px;box-sizing:border-box;box-shadow:0 12px 32px rgba(15,13,11,.15);`;
   tooltip.innerHTML = `
     <div style="font-size:10px;color:var(--gd);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Stap ${rondleidingIndex + 1} van ${RONDLEIDING_STAPPEN.length}</div>
     <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;">${stap.titel}</div>
