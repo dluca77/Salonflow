@@ -231,10 +231,12 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
             <div class="ww-balk" data-balk="2" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
             <div class="ww-balk" data-balk="3" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
             <div class="ww-balk" data-balk="4" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
+            <div class="ww-balk" data-balk="5" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
           </div>
           <div id="ww-sterkte" style="display:flex;flex-direction:column;gap:4px;">
             <div class="ww-eis" data-eis="lengte"><span class="ww-eis-icoon"></span>Minimaal 8 tekens</div>
-            <div class="ww-eis" data-eis="letter"><span class="ww-eis-icoon"></span>Een letter</div>
+            <div class="ww-eis" data-eis="hoofdletter"><span class="ww-eis-icoon"></span>Een hoofdletter</div>
+            <div class="ww-eis" data-eis="kleineletter"><span class="ww-eis-icoon"></span>Een kleine letter</div>
             <div class="ww-eis" data-eis="cijfer"><span class="ww-eis-icoon"></span>Een cijfer</div>
             <div class="ww-eis" data-eis="speciaal"><span class="ww-eis-icoon"></span>Een speciaal teken (bijv. ! of #)</div>
           </div>
@@ -351,14 +353,15 @@ function wisselWwZichtbaar(veldId, knop){
 }
 
 function wwVoldoetAanEisen(pass){
-  return pass.length >= 8 && /[a-zA-Z]/.test(pass) && /[0-9]/.test(pass) && /[^a-zA-Z0-9]/.test(pass);
+  return pass.length >= 8 && /[A-Z]/.test(pass) && /[a-z]/.test(pass) && /[0-9]/.test(pass) && /[^a-zA-Z0-9]/.test(pass);
 }
 
 function checkWwSterkte(){
   const pass = document.getElementById('r-pass').value;
   const eisen = {
     lengte: pass.length >= 8,
-    letter: /[a-zA-Z]/.test(pass),
+    hoofdletter: /[A-Z]/.test(pass),
+    kleineletter: /[a-z]/.test(pass),
     cijfer: /[0-9]/.test(pass),
     speciaal: /[^a-zA-Z0-9]/.test(pass)
   };
@@ -367,7 +370,7 @@ function checkWwSterkte(){
   });
 
   const aantalVervuld = Object.values(eisen).filter(Boolean).length;
-  const kleur = aantalVervuld <= 1 ? '#c0392b' : aantalVervuld <= 3 ? '#d9a441' : '#2d6a4f';
+  const kleur = aantalVervuld <= 2 ? '#c0392b' : aantalVervuld <= 4 ? '#d9a441' : '#2d6a4f';
   document.querySelectorAll('.ww-balk').forEach(balk => {
     const balkNr = parseInt(balk.dataset.balk);
     balk.style.background = (pass && balkNr <= aantalVervuld) ? kleur : 'var(--bd,#e2d9ce)';
@@ -384,7 +387,7 @@ async function registreer() {
   if (!email) return toonMsg('Vul je e-mailadres in.');
   if (!pass)  return toonMsg('Vul een wachtwoord in.');
   if (pass.length < 8) return toonMsg('Wachtwoord moet minimaal 8 tekens zijn.');
-  if (!wwVoldoetAanEisen(pass)) return toonMsg('Wachtwoord moet minimaal 1 letter, 1 cijfer en 1 speciaal teken bevatten.');
+  if (!wwVoldoetAanEisen(pass)) return toonMsg('Wachtwoord moet minimaal 1 hoofdletter, 1 kleine letter, 1 cijfer en 1 speciaal teken bevatten.');
 
   setLaden('btn-reg', true, 'Gratis account aanmaken');
   leegMsg();
