@@ -166,7 +166,12 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
       </div>
       <div class="frow">
         <label class="flabel">Wachtwoord</label>
-        <input class="finput" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password">
+        <div style="position:relative;">
+          <input class="finput" type="password" id="l-pass" placeholder="••••••••" autocomplete="current-password" style="padding-right:44px;">
+          <button type="button" onclick="wisselWwZichtbaar('l-pass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--mu,#8a8078);">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
       </div>
       <div class="remember-row">
         <label class="remember-lbl"><input type="checkbox" id="l-remember" checked> Onthoud mij</label>
@@ -208,7 +213,13 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
       </div>
       <div class="frow">
         <label class="flabel">Wachtwoord</label>
-        <input class="finput" type="password" id="r-pass" placeholder="Minimaal 8 tekens" autocomplete="new-password">
+        <div style="position:relative;">
+          <input class="finput" type="password" id="r-pass" placeholder="Minimaal 8 tekens" autocomplete="new-password" oninput="checkWwSterkte()" style="padding-right:44px;">
+          <button type="button" onclick="wisselWwZichtbaar('r-pass',this)" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--mu,#8a8078);">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+        </div>
+        <div id="ww-sterkte" style="font-size:11px;color:var(--mu,#8a8078);margin-top:6px;line-height:1.5;">Minimaal 8 tekens, met een letter, een cijfer en een speciaal teken.</div>
       </div>
       <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken</button>
       <div class="terms">Door te registreren ga je akkoord met onze <a href="#">voorwaarden</a> en <a href="#">privacybeleid</a>.</div>
@@ -310,6 +321,47 @@ async function login() {
 }
 
 // ── REGISTREREN ──
+// ── Wachtwoord: zichtbaarheid + sterkte ──
+function wisselWwZichtbaar(veldId, knop){
+  const veld = document.getElementById(veldId);
+  const zichtbaar = veld.type === 'text';
+  veld.type = zichtbaar ? 'password' : 'text';
+  knop.innerHTML = zichtbaar
+    ? `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+    : `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a18.6 18.6 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+}
+
+function wwVoldoetAanEisen(pass){
+  return pass.length >= 8 && /[a-zA-Z]/.test(pass) && /[0-9]/.test(pass) && /[^a-zA-Z0-9]/.test(pass);
+}
+
+function checkWwSterkte(){
+  const pass = document.getElementById('r-pass').value;
+  const el = document.getElementById('ww-sterkte');
+  if(!pass){
+    el.textContent = 'Minimaal 8 tekens, met een letter, een cijfer en een speciaal teken.';
+    el.style.color = 'var(--mu,#8a8078)';
+    return;
+  }
+  const okLengte = pass.length >= 8;
+  const okLetter = /[a-zA-Z]/.test(pass);
+  const okCijfer = /[0-9]/.test(pass);
+  const okSpeciaal = /[^a-zA-Z0-9]/.test(pass);
+  const ontbreekt = [];
+  if(!okLengte) ontbreekt.push('minimaal 8 tekens');
+  if(!okLetter) ontbreekt.push('een letter');
+  if(!okCijfer) ontbreekt.push('een cijfer');
+  if(!okSpeciaal) ontbreekt.push('een speciaal teken');
+
+  if(!ontbreekt.length){
+    el.textContent = '✓ Sterk genoeg';
+    el.style.color = '#2d6a4f';
+  } else {
+    el.textContent = 'Nog nodig: ' + ontbreekt.join(', ') + '.';
+    el.style.color = '#c0392b';
+  }
+}
+
 async function registreer() {
   const naam  = document.getElementById('r-naam').value.trim();
   const type  = document.getElementById('r-type').value;
@@ -320,6 +372,7 @@ async function registreer() {
   if (!email) return toonMsg('Vul je e-mailadres in.');
   if (!pass)  return toonMsg('Vul een wachtwoord in.');
   if (pass.length < 8) return toonMsg('Wachtwoord moet minimaal 8 tekens zijn.');
+  if (!wwVoldoetAanEisen(pass)) return toonMsg('Wachtwoord moet minimaal 1 letter, 1 cijfer en 1 speciaal teken bevatten.');
 
   setLaden('btn-reg', true, 'Gratis account aanmaken');
   leegMsg();
