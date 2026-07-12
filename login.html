@@ -392,6 +392,19 @@ async function registreer() {
     return;
   }
 
+  // Supabase geeft (bewust, om te voorkomen dat je kunt aftasten welke
+  // e-mailadressen al bestaan) GEEN foutmelding als je registreert met
+  // een e-mailadres dat al bestaat -- data.user wordt gewoon terug-
+  // gegeven, maar met een LEGE identities-array. Zonder deze check zou
+  // de gebruiker hier ten onrechte "Account aangemaakt!" te zien
+  // krijgen, terwijl er niets nieuws gebeurt en er dus ook geen
+  // (nieuwe) bevestigingsmail wordt verstuurd.
+  if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+    toonMsg('Dit e-mailadres is al geregistreerd. Log in, of gebruik "Wachtwoord vergeten" als je het wachtwoord niet meer weet.');
+    setLaden('btn-reg', false, 'Gratis account aanmaken');
+    return;
+  }
+
   if (data.user) {
     await sb.from('salons').insert({
       owner_id: data.user.id, naam,
