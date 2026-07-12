@@ -1154,24 +1154,13 @@ async function bevestigen(){
   const[uur,min]=state.tijd.split(':');
   const dt=new Date(jaar,maandIdx,dag,parseInt(uur),parseInt(min));
 
-  // Bij 'Geen voorkeur' moet er NU een specifieke, daadwerkelijk vrije
-  // medewerker worden toegewezen -- anders zou de afspraak met
-  // medewerker_id:null worden opgeslagen, waardoor twee 'geen voorkeur'-
-  // boekingen voor dezelfde tijd elkaar niet zouden blokkeren (de
-  // beschikbaarheids-check hierboven vergelijkt namelijk per medewerker-
-  // ID, en 'null' is geen ID). Verse controle vlak vóór het opslaan,
-  // voor het geval de tijd tussen bekijken en bevestigen iemand anders
-  // 'm net heeft ingenomen.
+  // Bij 'Geen voorkeur' zou hier automatisch een specifieke, vrije
+  // medewerker worden toegewezen om dubbele boekingen te voorkomen --
+  // TIJDELIJK UITGEZET, want de RLS-policy op de afspraken-tabel
+  // blokkeert momenteel anonieme inserts met een ingevulde
+  // medewerker_id (alleen null lijkt toegestaan). Teruggezet naar de
+  // oude, werkende situatie totdat de RLS-policy is aangepast.
   let toeTeWijzenMedewerkerId=state.med_id||null;
-  if(!toeTeWijzenMedewerkerId){
-    toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, state.duur);
-    if(!toeTeWijzenMedewerkerId){
-      btn.disabled=false;btn.textContent='Afspraak bevestigen';
-      errEl.textContent='Deze tijd is helaas net door iemand anders geboekt. Kies een andere tijd.';
-      errEl.style.display='block';
-      return;
-    }
-  }
 
   const naam=voor+(achter?' '+achter:'');
   const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
@@ -1192,10 +1181,7 @@ async function bevestigen(){
 
   if(error){
     console.error('Fout bij aanmaken afspraak:', error);
-    // TIJDELIJK: echte foutmelding zichtbaar maken voor debug-doeleinden
-    // (geen dev tools nodig op mobiel) -- hierna weer terugzetten naar
-    // de gebruiksvriendelijke generieke tekst.
-    errEl.textContent='DEBUG: '+(error.message||JSON.stringify(error));
+    errEl.textContent='Er ging iets mis. Probeer het opnieuw.';
     errEl.style.display='block';return;
   }
 
