@@ -1191,6 +1191,7 @@ async function bevestigen(){
   btn.disabled=false;btn.textContent='Afspraak bevestigen';
 
   if(error){
+    console.error('Fout bij aanmaken afspraak:', error);
     errEl.textContent='Er ging iets mis. Probeer het opnieuw.';
     errEl.style.display='block';return;
   }
