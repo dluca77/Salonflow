@@ -58,6 +58,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 .finput:focus{border-color:var(--gd);}
 .finput::placeholder{color:var(--mu2);}
+
+.ww-eis{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--mu2,#a09890);transition:color .2s;}
+.ww-eis-icoon{width:15px;height:15px;border-radius:50%;border:1.5px solid var(--bd,#e2d9ce);flex-shrink:0;position:relative;transition:all .2s;}
+.ww-eis.ok{color:#2d6a4f;}
+.ww-eis.ok .ww-eis-icoon{background:#2d6a4f;border-color:#2d6a4f;}
+.ww-eis.ok .ww-eis-icoon::after{content:'';position:absolute;left:4px;top:1px;width:4px;height:8px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);}
 select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%238a7d6e' stroke-width='1.5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;}
 
 /* BUTTONS */
@@ -220,12 +226,12 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
           </button>
         </div>
         <div style="margin-top:8px;">
-          <div style="display:flex;gap:4px;">
-            <div class="ww-balk" id="ww-balk-1" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
-            <div class="ww-balk" id="ww-balk-2" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
-            <div class="ww-balk" id="ww-balk-3" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
+          <div id="ww-sterkte" style="display:flex;flex-direction:column;gap:4px;">
+            <div class="ww-eis" data-eis="lengte"><span class="ww-eis-icoon"></span>Minimaal 8 tekens</div>
+            <div class="ww-eis" data-eis="letter"><span class="ww-eis-icoon"></span>Een letter</div>
+            <div class="ww-eis" data-eis="cijfer"><span class="ww-eis-icoon"></span>Een cijfer</div>
+            <div class="ww-eis" data-eis="speciaal"><span class="ww-eis-icoon"></span>Een speciaal teken (bijv. ! of #)</div>
           </div>
-          <div id="ww-sterkte" style="font-size:11px;color:var(--mu,#8a8078);margin-top:6px;">8+ tekens, met een cijfer en een teken zoals ! of #</div>
         </div>
       </div>
       <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken</button>
@@ -344,28 +350,15 @@ function wwVoldoetAanEisen(pass){
 
 function checkWwSterkte(){
   const pass = document.getElementById('r-pass').value;
-  const el = document.getElementById('ww-sterkte');
-  const balken = [document.getElementById('ww-balk-1'), document.getElementById('ww-balk-2'), document.getElementById('ww-balk-3')];
-  const leeg = 'var(--bd,#e2d9ce)';
-
-  if(!pass){
-    balken.forEach(b => b.style.background = leeg);
-    el.textContent = '8+ tekens, met een cijfer en een teken zoals ! of #';
-    el.style.color = 'var(--mu,#8a8078)';
-    return;
-  }
-
-  const eisen = [pass.length >= 8, /[a-zA-Z]/.test(pass), /[0-9]/.test(pass), /[^a-zA-Z0-9]/.test(pass)];
-  const aantal = eisen.filter(Boolean).length;
-
-  let niveau, kleur, tekst;
-  if(aantal <= 1){ niveau=1; kleur='#c0392b'; tekst='Nog te zwak'; }
-  else if(aantal <= 3){ niveau=2; kleur='#d9a441'; tekst='Kan sterker — mist nog iets'; }
-  else { niveau=3; kleur='#2d6a4f'; tekst='✓ Sterk wachtwoord'; }
-
-  balken.forEach((b, i) => { b.style.background = i < niveau ? kleur : leeg; });
-  el.textContent = tekst;
-  el.style.color = kleur;
+  const eisen = {
+    lengte: pass.length >= 8,
+    letter: /[a-zA-Z]/.test(pass),
+    cijfer: /[0-9]/.test(pass),
+    speciaal: /[^a-zA-Z0-9]/.test(pass)
+  };
+  Object.keys(eisen).forEach(key => {
+    document.querySelector(`.ww-eis[data-eis="${key}"]`).classList.toggle('ok', eisen[key]);
+  });
 }
 
 async function registreer() {
