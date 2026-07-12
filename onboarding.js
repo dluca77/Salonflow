@@ -42,7 +42,7 @@ async function toonOnboardingChecklist() {
   const voltooid = ONBOARDING_STAPPEN.length - openstaand.length;
   const kaart = document.createElement('div');
   kaart.id = 'onboarding-checklist';
-  kaart.style.cssText = 'grid-column:1/-1;background:var(--white);border:1px solid var(--bd);border-radius:12px;padding:20px 22px;margin-bottom:16px;';
+  kaart.style.cssText = 'grid-column:1/-1;background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:20px 22px;margin-bottom:16px;';
   kaart.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <div style="font-size:13.5px;font-weight:600;color:var(--ink);">Zet je salon in ${ONBOARDING_STAPPEN.length} stappen klaar (${voltooid}/${ONBOARDING_STAPPEN.length})</div>
@@ -88,13 +88,13 @@ function toonKaiBegroeting() {
   overlay.id = 'kai-begroeting-overlay';
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(15,13,11,.5);display:flex;align-items:center;justify-content:center;padding:24px;';
   overlay.innerHTML = `
-    <div style="background:var(--white);border-radius:16px;max-width:420px;width:100%;padding:32px;text-align:center;">
+    <div style="background:var(--wh);border-radius:16px;max-width:420px;width:100%;padding:32px;text-align:center;">
       <img src="images/kai-mascotte.png" alt="Kai" style="width:64px;height:64px;object-fit:contain;margin:0 auto 18px;">
       <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:10px;">Hoi! Ik ben Kai.</h2>
       <p style="font-size:14px;color:var(--mu);line-height:1.6;margin-bottom:24px;">Welkom bij Kronr. Laat ik je in een korte rondleiding laten zien waar alles staat -- duurt hooguit een minuutje.</p>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button onclick="sluitKaiBegroeting()" style="padding:12px 20px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;color:var(--mu);cursor:pointer;font-family:inherit;">Later</button>
-        <button onclick="sluitKaiBegroeting();startRondleiding();" style="padding:12px 22px;background:var(--ink);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Start rondleiding</button>
+        <button onclick="sluitKaiBegroeting();startRondleiding();" style="padding:12px 22px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Start rondleiding</button>
       </div>
     </div>`;
   document.body.appendChild(overlay);
@@ -184,14 +184,14 @@ async function toonRondleidingStap() {
   tooltipTop = Math.max(tooltipMarge, Math.min(tooltipTop, window.innerHeight - 180));
 
   const tooltip = document.createElement('div');
-  tooltip.style.cssText = `position:fixed;top:${tooltipTop}px;left:${tooltipLeft}px;z-index:9999;background:var(--white);border-radius:10px;padding:16px 18px;max-width:${tooltipBreedte}px;box-shadow:0 12px 32px rgba(15,13,11,.15);`;
+  tooltip.style.cssText = `position:fixed;top:${tooltipTop}px;left:${tooltipLeft}px;z-index:9999;background:var(--wh);border-radius:10px;padding:16px 18px;max-width:${tooltipBreedte}px;box-shadow:0 12px 32px rgba(15,13,11,.15);`;
   tooltip.innerHTML = `
     <div style="font-size:10px;color:var(--gd);font-weight:600;letter-spacing:1px;text-transform:uppercase;margin-bottom:6px;">Stap ${rondleidingIndex + 1} van ${RONDLEIDING_STAPPEN.length}</div>
     <div style="font-size:14px;font-weight:700;color:var(--ink);margin-bottom:6px;">${stap.titel}</div>
     <div style="font-size:12.5px;color:var(--mu);line-height:1.5;margin-bottom:14px;">${stap.tekst}</div>
     <div style="display:flex;justify-content:space-between;align-items:center;">
       <button onclick="stopRondleiding()" style="background:none;border:none;color:var(--mu);font-size:11.5px;cursor:pointer;font-family:inherit;">Overslaan</button>
-      <button onclick="volgendeRondleidingStap()" style="padding:8px 16px;background:var(--ink);color:var(--white);border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">${rondleidingIndex === RONDLEIDING_STAPPEN.length - 1 ? 'Klaar' : 'Volgende'}</button>
+      <button onclick="volgendeRondleidingStap()" style="padding:8px 16px;background:var(--ink);color:var(--wh);border:none;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit;">${rondleidingIndex === RONDLEIDING_STAPPEN.length - 1 ? 'Klaar' : 'Volgende'}</button>
     </div>`;
   overlay.appendChild(tooltip);
 }
