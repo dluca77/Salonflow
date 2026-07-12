@@ -1192,7 +1192,10 @@ async function bevestigen(){
 
   if(error){
     console.error('Fout bij aanmaken afspraak:', error);
-    errEl.textContent='Er ging iets mis. Probeer het opnieuw.';
+    // TIJDELIJK: echte foutmelding zichtbaar maken voor debug-doeleinden
+    // (geen dev tools nodig op mobiel) -- hierna weer terugzetten naar
+    // de gebruiksvriendelijke generieke tekst.
+    errEl.textContent='DEBUG: '+(error.message||JSON.stringify(error));
     errEl.style.display='block';return;
   }
 
