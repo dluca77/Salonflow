@@ -565,6 +565,7 @@ async function init(){
 
   // Medewerkers
   const medewerkers=mRes.data||[];
+  window.BOEKEN_MEDEWERKERS=medewerkers;
   document.getElementById('med-grid').innerHTML=`
     <div class="med-any selected" id="med-any" onclick="selectMed(null,'Geen voorkeur',null)">
       <div class="med-av">?</div>
@@ -783,13 +784,9 @@ async function pickDay(d){
 // Berekent écht beschikbare tijden voor een gekozen dag: op basis van de
 // werkelijke openingstijden van de salon (per dag van de week) en de
 // daadwerkelijk al bestaande afspraken op die dag (dus geen dubbele
-// boekingen meer mogelijk). Let op: als de klant 'Geen voorkeur' koos
-// voor de medewerker, wordt hier conservatief gerekend -- een tijdslot
-// geldt als 'vol' zodra ÉÉN willekeurige medewerker daar al een
-// afspraak heeft, ook als er misschien nog een andere medewerker vrij
-// zou zijn. Dat toont soms iets minder beschikbaarheid dan technisch
-// mogelijk bij meerdere medewerkers, maar voorkomt gegarandeerd dat er
-// ooit dubbel geboekt kan worden.
+// boekingen meer mogelijk). Bij 'Geen voorkeur' voor de medewerker wordt
+// nu per medewerker apart gecheckt: een tijdslot is beschikbaar zodra
+// ÉÉN medewerker vrij is, niet pas als ALLEMAAL vrij zijn.
 async function berekenBeschikbareSlots(datum){
   const dagNamen=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
   const dagNaam=dagNamen[datum.getDay()];
@@ -810,31 +807,56 @@ async function berekenBeschikbareSlots(datum){
   const dagStart=new Date(datum);dagStart.setHours(0,0,0,0);
   const dagEind=new Date(datum);dagEind.setHours(23,59,59,999);
 
+  // Altijd ALLE afspraken van de dag ophalen (niet filteren op medewerker
+  // in de query zelf) -- bij 'Geen voorkeur' is per-medewerker-data nodig
+  // om te kunnen bepalen of er ÜBERHAUPT iemand vrij is.
   let query=sb.from('afspraken').select('datum_tijd,duur_min,medewerker_id')
     .eq('salon_id',SALON_ID)
     .gte('datum_tijd',dagStart.toISOString())
     .lte('datum_tijd',dagEind.toISOString())
     .neq('status','geannuleerd');
   if(HUIDIGE_BOEK_LOCATIE_ID) query=query.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
-  if(state.med_id) query=query.eq('medewerker_id',state.med_id);
 
   const{data}=await query;
   const bestaandeAfspraken=data||[];
+  const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
 
   const duurBenodigd=state.duur||30;
   const stapGrootte=30;
   const nu=new Date();
+
+  // Overlapt deze specifieke medewerker (of 'geen medewerker toegewezen',
+  // voor bloktijden e.d.) met het voorgestelde tijdslot?
+  function medewerkerOverlapt(medewerkerId, slotStart, slotEind){
+    return bestaandeAfspraken.some(a=>{
+      if(a.medewerker_id!==medewerkerId) return false;
+      const aStart=new Date(a.datum_tijd);
+      const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+      return slotStart<aEind && slotEind>aStart;
+    });
+  }
 
   const slots=[];
   for(let m=openMinuten;m+duurBenodigd<=dichtMinuten;m+=stapGrootte){
     const slotStart=new Date(datum);slotStart.setHours(Math.floor(m/60),m%60,0,0);
     const slotEind=new Date(slotStart.getTime()+duurBenodigd*60000);
 
-    const overlapt=bestaandeAfspraken.some(a=>{
-      const aStart=new Date(a.datum_tijd);
-      const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
-      return slotStart<aEind && slotEind>aStart;
-    });
+    let overlapt;
+    if(state.med_id){
+      // Specifieke medewerker gekozen: check alleen die ene.
+      overlapt=medewerkerOverlapt(state.med_id, slotStart, slotEind);
+    } else if(alleMedewerkerIds.length){
+      // 'Geen voorkeur': beschikbaar zodra minstens 1 medewerker vrij is.
+      overlapt=alleMedewerkerIds.every(id=>medewerkerOverlapt(id, slotStart, slotEind));
+    } else {
+      // Geen medewerkers bekend (zou niet moeten voorkomen, maar voor de
+      // zekerheid): val terug op de oude, conservatieve controle.
+      overlapt=bestaandeAfspraken.some(a=>{
+        const aStart=new Date(a.datum_tijd);
+        const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+        return slotStart<aEind && slotEind>aStart;
+      });
+    }
 
     const isVerleden=slotStart<nu;
     const uu=String(Math.floor(m/60)).padStart(2,'0');
@@ -842,6 +864,40 @@ async function berekenBeschikbareSlots(datum){
     slots.push({tijd:`${uu}:${mm}`,vol:overlapt||isVerleden});
   }
   return slots;
+}
+
+// Zoekt, voor een specifiek tijdstip + duur, de eerste medewerker die
+// daadwerkelijk vrij is -- gebruikt bij het definitief bevestigen van
+// een 'Geen voorkeur'-boeking (haalt verse data op, voor het geval de
+// beschikbaarheid net is veranderd sinds het kiezen van de tijd).
+async function vindBeschikbareMedewerker(dt, duurMin){
+  const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
+  if(!alleMedewerkerIds.length) return null;
+
+  const dagStart=new Date(dt);dagStart.setHours(0,0,0,0);
+  const dagEind=new Date(dt);dagEind.setHours(23,59,59,999);
+
+  let query=sb.from('afspraken').select('datum_tijd,duur_min,medewerker_id')
+    .eq('salon_id',SALON_ID)
+    .gte('datum_tijd',dagStart.toISOString())
+    .lte('datum_tijd',dagEind.toISOString())
+    .neq('status','geannuleerd');
+  if(HUIDIGE_BOEK_LOCATIE_ID) query=query.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
+
+  const{data}=await query;
+  const bestaandeAfspraken=data||[];
+  const slotEind=new Date(dt.getTime()+duurMin*60000);
+
+  for(const medewerkerId of alleMedewerkerIds){
+    const overlapt=bestaandeAfspraken.some(a=>{
+      if(a.medewerker_id!==medewerkerId) return false;
+      const aStart=new Date(a.datum_tijd);
+      const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+      return dt<aEind && slotEind>aStart;
+    });
+    if(!overlapt) return medewerkerId;
+  }
+  return null;
 }
 
 function slotHTML(s){
@@ -1098,11 +1154,30 @@ async function bevestigen(){
   const[uur,min]=state.tijd.split(':');
   const dt=new Date(jaar,maandIdx,dag,parseInt(uur),parseInt(min));
 
+  // Bij 'Geen voorkeur' moet er NU een specifieke, daadwerkelijk vrije
+  // medewerker worden toegewezen -- anders zou de afspraak met
+  // medewerker_id:null worden opgeslagen, waardoor twee 'geen voorkeur'-
+  // boekingen voor dezelfde tijd elkaar niet zouden blokkeren (de
+  // beschikbaarheids-check hierboven vergelijkt namelijk per medewerker-
+  // ID, en 'null' is geen ID). Verse controle vlak vóór het opslaan,
+  // voor het geval de tijd tussen bekijken en bevestigen iemand anders
+  // 'm net heeft ingenomen.
+  let toeTeWijzenMedewerkerId=state.med_id||null;
+  if(!toeTeWijzenMedewerkerId){
+    toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, state.duur);
+    if(!toeTeWijzenMedewerkerId){
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Deze tijd is helaas net door iemand anders geboekt. Kies een andere tijd.';
+      errEl.style.display='block';
+      return;
+    }
+  }
+
   const naam=voor+(achter?' '+achter:'');
   const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
     salon_id:SALON_ID||null,
     dienst_id:state.dienst_id||null,
-    medewerker_id:state.med_id||null,
+    medewerker_id:toeTeWijzenMedewerkerId,
     datum_tijd:dt.toISOString(),
     duur_min:state.duur,
     status:'gepland',
