@@ -219,7 +219,14 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
           </button>
         </div>
-        <div id="ww-sterkte" style="font-size:11px;color:var(--mu,#8a8078);margin-top:6px;line-height:1.5;">Minimaal 8 tekens, met een letter, een cijfer en een speciaal teken.</div>
+        <div style="margin-top:8px;">
+          <div style="display:flex;gap:4px;">
+            <div class="ww-balk" id="ww-balk-1" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
+            <div class="ww-balk" id="ww-balk-2" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
+            <div class="ww-balk" id="ww-balk-3" style="flex:1;height:4px;border-radius:2px;background:var(--bd,#e2d9ce);transition:background .2s;"></div>
+          </div>
+          <div id="ww-sterkte" style="font-size:11px;color:var(--mu,#8a8078);margin-top:6px;">8+ tekens, met een cijfer en een teken zoals ! of #</div>
+        </div>
       </div>
       <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken</button>
       <div class="terms">Door te registreren ga je akkoord met onze <a href="#">voorwaarden</a> en <a href="#">privacybeleid</a>.</div>
@@ -338,28 +345,27 @@ function wwVoldoetAanEisen(pass){
 function checkWwSterkte(){
   const pass = document.getElementById('r-pass').value;
   const el = document.getElementById('ww-sterkte');
+  const balken = [document.getElementById('ww-balk-1'), document.getElementById('ww-balk-2'), document.getElementById('ww-balk-3')];
+  const leeg = 'var(--bd,#e2d9ce)';
+
   if(!pass){
-    el.textContent = 'Minimaal 8 tekens, met een letter, een cijfer en een speciaal teken.';
+    balken.forEach(b => b.style.background = leeg);
+    el.textContent = '8+ tekens, met een cijfer en een teken zoals ! of #';
     el.style.color = 'var(--mu,#8a8078)';
     return;
   }
-  const okLengte = pass.length >= 8;
-  const okLetter = /[a-zA-Z]/.test(pass);
-  const okCijfer = /[0-9]/.test(pass);
-  const okSpeciaal = /[^a-zA-Z0-9]/.test(pass);
-  const ontbreekt = [];
-  if(!okLengte) ontbreekt.push('minimaal 8 tekens');
-  if(!okLetter) ontbreekt.push('een letter');
-  if(!okCijfer) ontbreekt.push('een cijfer');
-  if(!okSpeciaal) ontbreekt.push('een speciaal teken');
 
-  if(!ontbreekt.length){
-    el.textContent = '✓ Sterk genoeg';
-    el.style.color = '#2d6a4f';
-  } else {
-    el.textContent = 'Nog nodig: ' + ontbreekt.join(', ') + '.';
-    el.style.color = '#c0392b';
-  }
+  const eisen = [pass.length >= 8, /[a-zA-Z]/.test(pass), /[0-9]/.test(pass), /[^a-zA-Z0-9]/.test(pass)];
+  const aantal = eisen.filter(Boolean).length;
+
+  let niveau, kleur, tekst;
+  if(aantal <= 1){ niveau=1; kleur='#c0392b'; tekst='Nog te zwak'; }
+  else if(aantal <= 3){ niveau=2; kleur='#d9a441'; tekst='Kan sterker — mist nog iets'; }
+  else { niveau=3; kleur='#2d6a4f'; tekst='✓ Sterk wachtwoord'; }
+
+  balken.forEach((b, i) => { b.style.background = i < niveau ? kleur : leeg; });
+  el.textContent = tekst;
+  el.style.color = kleur;
 }
 
 async function registreer() {
