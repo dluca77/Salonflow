@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacybeleid — Kronr</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg">
+<meta name="description" content="Hoe Kronr omgaat met persoonsgegevens van salon-eigenaren en hun klanten.">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#0f0d0b;--ink2:#2a2420;--mu:#6b6058;--mu2:#a09890;
+  --iv:#faf8f4;--wm:#f3ede4;--bd:#e2d9ce;
+  --gd:#8c6d3f;--gd2:#6e5230;--gd-light:#f5ede0;
+  --white:#ffffff;
+  --green:#1a7a40;
+}
+html{scroll-behavior:smooth;}
+body{font-family:'Inter',sans-serif;background:var(--white);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;justify-content:space-between;gap:24px;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-0.5px;}
+.nav-logo em{color:var(--gd);font-style:normal;}
+.nav-back{font-size:14px;font-weight:500;color:var(--mu);text-decoration:none;display:flex;align-items:center;gap:6px;transition:color .2s;}
+.nav-back:hover{color:var(--ink);}
+.nav-actions{display:flex;align-items:center;gap:20px;}
+.nav-login{font-size:14px;font-weight:500;color:var(--ink);text-decoration:none;}
+.nav-cta{padding:9px 22px;background:var(--ink);color:var(--white);font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;transition:all .2s;}
+.nav-cta:hover{background:var(--ink2);transform:translateY(-1px);}
+
+.content-wrap{max-width:760px;margin:0 auto;padding:140px 24px 100px;}
+.content-label{font-size:12px;font-weight:600;color:var(--gd);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px;}
+.content-title{font-family:'Playfair Display',serif;font-size:clamp(32px,5vw,52px);font-weight:800;line-height:1.1;letter-spacing:-1px;color:var(--ink);margin-bottom:20px;}
+.content-sub{font-size:17px;color:var(--mu);line-height:1.7;margin-bottom:48px;max-width:600px;}
+.content-updated{font-size:13px;color:var(--mu2);margin-bottom:40px;}
+.prose h2{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--ink);margin:40px 0 14px;}
+.prose h3{font-size:16px;font-weight:700;color:var(--ink);margin:28px 0 10px;}
+.prose p{font-size:15px;color:var(--ink2);line-height:1.75;margin-bottom:16px;}
+.prose ul{margin:0 0 16px 20px;}
+.prose li{font-size:15px;color:var(--ink2);line-height:1.75;margin-bottom:8px;}
+.prose a{color:var(--gd);text-decoration:underline;}
+.prose strong{color:var(--ink);}
+.placeholder-note{background:var(--gd-light);border:1px solid rgba(140,109,63,0.2);border-radius:10px;padding:16px 20px;font-size:13.5px;color:var(--gd2);line-height:1.6;margin-bottom:32px;}
+
+footer{background:var(--ink);padding:60px 24px 32px;}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:48px;margin-bottom:48px;}
+.footer-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:16px;}
+.footer-logo em{color:var(--gd);font-style:normal;}
+.footer-desc{font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:260px;}
+.footer-col-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:16px;font-weight:600;}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.footer-links a{font-size:14px;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s;}
+.footer-links a:hover{color:var(--white);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.footer-copy{font-size:13px;color:rgba(255,255,255,.3);}
+.footer-legal{display:flex;gap:20px;flex-wrap:wrap;}
+.footer-legal a{font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;}
+.footer-legal a:hover{color:rgba(255,255,255,.6);}
+
+@media(max-width:700px){
+  .footer-top{grid-template-columns:1fr;gap:32px;}
+  .content-wrap{padding:110px 20px 60px;}
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-logo">Kronr<em>.</em></a>
+    <a href="index.html" class="nav-back">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Terug naar home
+    </a>
+    <div class="nav-actions">
+      <a href="login.html" class="nav-login">Inloggen</a>
+      <a href="login.html" class="nav-cta">Start gratis</a>
+    </div>
+  </div>
+</nav>
+
+<div class="content-wrap">
+
+<div class="content-label">Privacybeleid</div>
+<h1 class="content-title">Privacybeleid</h1>
+<p class="content-updated">Laatst bijgewerkt: 12 juli 2026</p>
+
+<div class="placeholder-note">
+<strong>Let op:</strong> dit is een zorgvuldig opgestelde basisversie op basis van hoe Kronr daadwerkelijk werkt. De tekst bevat nog een paar plekken met [vierkante haken] die je zelf moet invullen (KVK-nummer, adres). Laat dit voor de zekerheid nog even door een jurist checken voordat je het als definitief beschouwt -- vooral omdat je hier persoonsgegevens van je eigen klanten mee verwerkt.
+</div>
+
+<div class="prose">
+<p>Dit privacybeleid legt uit welke persoonsgegevens Kronr verzamelt, waarom, en welke rechten je hebt -- zowel als salon-eigenaar die Kronr gebruikt, als klant van een salon die Kronr gebruikt.</p>
+
+<h2>Wie is verantwoordelijk?</h2>
+<p>Kronr wordt beheerd door [naam ondernemer / bedrijfsnaam], ingeschreven bij de KVK onder nummer [KVK-nummer], gevestigd te [adres]. Voor privacy-vragen: <a href="mailto:privacy@kronr.nl">privacy@kronr.nl</a>.</p>
+
+<h2>Welke gegevens verzamelen we?</h2>
+<h3>Van salon-eigenaren (accounthouders)</h3>
+<ul>
+<li>Naam, e-mailadres, telefoonnummer</li>
+<li>Bedrijfsgegevens (bedrijfsnaam, type onderneming, adres)</li>
+<li>Betaalgegevens (verwerkt via Stripe -- Kronr slaat zelf geen creditcardgegevens op)</li>
+</ul>
+
+<h3>Van klanten van een salon (via de salon-eigenaar)</h3>
+<ul>
+<li>Naam, e-mailadres, telefoonnummer</li>
+<li>Afspraakgeschiedenis en -voorkeuren</li>
+<li>Notities die de salon zelf toevoegt (bijvoorbeeld allergieën of behandelvoorkeuren)</li>
+</ul>
+<p>Deze gegevens worden ingevoerd en beheerd door de salon zelf. De salon is hiervoor de verwerkingsverantwoordelijke; Kronr treedt op als verwerker namens de salon.</p>
+
+<h2>Waarvoor gebruiken we deze gegevens?</h2>
+<ul>
+<li>Het leveren van de dienst zelf (agenda, boekingen, kassa, klantbeheer)</li>
+<li>Het versturen van bevestigingen en herinneringen over afspraken</li>
+<li>Facturatie en betalingsverwerking</li>
+<li>Klantenservice en accountbeheer</li>
+<li>Beveiliging (o.a. bescherming tegen bots via Cloudflare Turnstile)</li>
+</ul>
+
+<h2>Met wie delen we gegevens?</h2>
+<p>Kronr werkt met een aantal externe partijen om de dienst te kunnen leveren:</p>
+<ul>
+<li><strong>Supabase</strong> -- database en accountbeheer</li>
+<li><strong>Stripe</strong> -- betalingsverwerking</li>
+<li><strong>Resend</strong> -- transactionele e-mail (bevestigingen, herinneringen)</li>
+<li><strong>Cloudflare</strong> -- beveiliging en hosting-infrastructuur</li>
+<li><strong>Moneybird</strong> (optioneel, alleen als de salon dit zelf koppelt) -- boekhoudkoppeling</li>
+</ul>
+<p>Met elk van deze partijen zijn passende afspraken gemaakt over gegevensbescherming. We verkopen nooit gegevens aan derden voor marketingdoeleinden.</p>
+
+<h2>Hoe lang bewaren we gegevens?</h2>
+<p>Gegevens worden bewaard zolang het account actief is. Na opzegging van een account worden gegevens binnen een redelijke termijn verwijderd, tenzij een langere bewaartermijn wettelijk verplicht is (bijvoorbeeld voor de fiscale bewaarplicht van facturen).</p>
+
+<h2>Jouw rechten</h2>
+<p>Onder de AVG/GDPR heb je het recht op:</p>
+<ul>
+<li>Inzage in je gegevens</li>
+<li>Correctie van onjuiste gegevens</li>
+<li>Verwijdering van je gegevens ("recht op vergetelheid")</li>
+<li>Beperking van de verwerking</li>
+<li>Overdraagbaarheid van je gegevens</li>
+<li>Bezwaar tegen bepaalde verwerkingen</li>
+</ul>
+<p>Ben je klant van een salon die Kronr gebruikt? Neem dan in eerste instantie contact op met die salon zelf -- zij zijn verantwoordelijk voor jouw gegevens. Ben je salon-eigenaar met een Kronr-account? Mail naar <a href="mailto:privacy@kronr.nl">privacy@kronr.nl</a>.</p>
+
+<h2>Klacht indienen</h2>
+<p>Ben je niet tevreden met hoe we met je gegevens omgaan? Je hebt het recht om een klacht in te dienen bij de <a href="https://www.autoriteitpersoonsgegevens.nl" target="_blank" rel="noopener">Autoriteit Persoonsgegevens</a>.</p>
+
+<h2>Wijzigingen</h2>
+<p>Dit privacybeleid kan worden bijgewerkt. Bij belangrijke wijzigingen laten we dit via e-mail of een melding in de app weten.</p>
+</div>
+
+</div>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Kronr<em>.</em></div>
+        <p class="footer-desc">Alles wat je nodig hebt om je salon soepel te laten draaien. Gebouwd door ondernemers, voor ondernemers.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Product</div>
+        <ul class="footer-links">
+          <li><a href="index.html#features">Features</a></li>
+          <li><a href="index.html#prijzen">Prijzen</a></li>
+          <li><a href="index.html#ai">Kai</a></li>
+          <li><a href="login.html">Inloggen</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Bedrijf</div>
+        <ul class="footer-links">
+          <li><a href="over-ons.html">Over ons</a></li>
+          <li><a href="blog.html">Blog</a></li>
+          <li><a href="vacatures.html">Vacatures</a></li>
+          <li><a href="mailto:hallo@kronr.nl">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Juridisch</div>
+        <ul class="footer-links">
+          <li><a href="privacybeleid.html">Privacybeleid</a></li>
+          <li><a href="algemene-voorwaarden.html">Algemene voorwaarden</a></li>
+          <li><a href="gdpr.html">GDPR</a></li>
+          <li><a href="cookies.html">Cookies</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <div class="footer-copy">© 2026 Kronr · Alle rechten voorbehouden</div>
+      <div class="footer-legal">
+        <a href="privacybeleid.html">Privacy</a>
+        <a href="algemene-voorwaarden.html">Voorwaarden</a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
