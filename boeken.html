@@ -840,17 +840,17 @@ async function berekenBeschikbareSlots(datum){
   const dagStart=new Date(datum);dagStart.setHours(0,0,0,0);
   const dagEind=new Date(datum);dagEind.setHours(23,59,59,999);
 
-  // Altijd ALLE afspraken van de dag ophalen (niet filteren op medewerker
-  // in de query zelf) -- bij 'Geen voorkeur' is per-medewerker-data nodig
-  // om te kunnen bepalen of er ÜBERHAUPT iemand vrij is.
-  let query=sb.from('afspraken').select('datum_tijd,duur_min,medewerker_id')
-    .eq('salon_id',SALON_ID)
-    .gte('datum_tijd',dagStart.toISOString())
-    .lte('datum_tijd',dagEind.toISOString())
-    .neq('status','geannuleerd');
-  if(HUIDIGE_BOEK_LOCATIE_ID) query=query.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
-
-  const{data,error:queryError}=await query;
+  // Bestaande afspraken ophalen via een veilige databasefunctie i.p.v.
+  // de tabel rechtstreeks -- RLS blokkeert anonieme leestoegang tot
+  // afspraken (terecht, want die tabel bevat klantgegevens), maar deze
+  // functie geeft alleen tijd/duur/medewerker terug, geen namen of
+  // contactgegevens, dus is veilig voor de publieke boekingswidget.
+  const{data,error:queryError}=await sb.rpc('get_bezette_tijden',{
+    p_salon_id:SALON_ID,
+    p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+    p_datum_start:dagStart.toISOString(),
+    p_datum_eind:dagEind.toISOString()
+  });
   window.__laatsteBeschikbaarheidQueryFout = queryError || null;
   window.__laatsteBeschikbaarheidDebug = {
     SALON_ID, HUIDIGE_BOEK_LOCATIE_ID,
@@ -921,14 +921,12 @@ async function vindBeschikbareMedewerker(dt, duurMin){
   const dagStart=new Date(dt);dagStart.setHours(0,0,0,0);
   const dagEind=new Date(dt);dagEind.setHours(23,59,59,999);
 
-  let query=sb.from('afspraken').select('datum_tijd,duur_min,medewerker_id')
-    .eq('salon_id',SALON_ID)
-    .gte('datum_tijd',dagStart.toISOString())
-    .lte('datum_tijd',dagEind.toISOString())
-    .neq('status','geannuleerd');
-  if(HUIDIGE_BOEK_LOCATIE_ID) query=query.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
-
-  const{data}=await query;
+  const{data}=await sb.rpc('get_bezette_tijden',{
+    p_salon_id:SALON_ID,
+    p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+    p_datum_start:dagStart.toISOString(),
+    p_datum_eind:dagEind.toISOString()
+  });
   const bestaandeAfspraken=data||[];
   const slotEind=new Date(dt.getTime()+duurMin*60000);
 
