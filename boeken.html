@@ -778,6 +778,14 @@ async function pickDay(d){
   const gekozenDatum=parseStateDatum();
   const slots=await berekenBeschikbareSlots(gekozenDatum);
 
+  // TIJDELIJK: als het ophalen van bestaande afspraken faalde, laat dat
+  // zichtbaar zien i.p.v. gewoon door te gaan alsof alles vrij is --
+  // nodig om te debuggen waarom dubbele boekingen niet geblokkeerd worden.
+  if(window.__laatsteBeschikbaarheidQueryFout){
+    document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:16px;background:#fdecea;border:1px solid #e57373;border-radius:8px;font-size:11px;color:#b71c1c;">DEBUG QUERYFOUT: ${(window.__laatsteBeschikbaarheidQueryFout.message||JSON.stringify(window.__laatsteBeschikbaarheidQueryFout))}</div>`;
+    return;
+  }
+
   if(!slots.length){
     document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu);font-size:12px;">Op deze dag zijn geen tijden beschikbaar.</div>`;
     return;
@@ -829,7 +837,11 @@ async function berekenBeschikbareSlots(datum){
     .neq('status','geannuleerd');
   if(HUIDIGE_BOEK_LOCATIE_ID) query=query.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
 
-  const{data}=await query;
+  const{data,error:queryError}=await query;
+  window.__laatsteBeschikbaarheidQueryFout = queryError || null;
+  if(queryError){
+    console.error('Kon bestaande afspraken niet ophalen voor beschikbaarheidscheck:', queryError);
+  }
   const bestaandeAfspraken=data||[];
   const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
 
