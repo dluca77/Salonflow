@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Beheer | Kronr</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--wh:#ffffff;--red:#c0392b;--green:#2d6a4f;}
+body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacity:0;transition:opacity .2s;}
+.topbar{min-height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);}
+.logo em{color:var(--gd);font-style:normal;}
+.navlink{font-size:13px;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;text-decoration:none;}
+.wrap{max-width:1100px;margin:0 auto;padding:32px 24px;}
+.kpi-rij{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
+.kpi{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px 20px;}
+.kpi-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;}
+.kpi-val{font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:var(--ink);}
+.tabel-wrap{background:var(--wh);border:1px solid var(--bd);border-radius:12px;overflow:hidden;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{text-align:left;padding:12px 16px;background:var(--iv);font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:var(--mu);border-bottom:1px solid var(--bd);}
+td{padding:12px 16px;border-bottom:1px solid var(--bd);color:var(--ink);}
+tr:last-child td{border-bottom:none;}
+.plan-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
+.plan-free{background:var(--iv);color:var(--mu);}
+.plan-starter{background:#eaf2ec;color:var(--green);}
+.plan-pro{background:#f5ede0;color:var(--gd);}
+.plan-business{background:#1a1714;color:var(--wh);}
+select.plan-select{font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--bd);font-family:inherit;background:var(--wh);}
+.zoekbalk{width:100%;max-width:320px;padding:10px 14px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;margin-bottom:16px;}
+@media(max-width:700px){
+  .tabel-wrap{overflow-x:auto;}
+  table{min-width:600px;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Kronr<em>.</em> <span style="font-size:13px;color:var(--mu);font-weight:400;">Beheer</span></div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <a href="postvak.html" class="navlink">Postvak</a>
+    <button class="navlink" onclick="uitloggen()">Uitloggen</button>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="kpi-rij" id="kpi-rij">
+    <div class="kpi"><div class="kpi-label">Totaal salons</div><div class="kpi-val" id="kpi-totaal">—</div></div>
+    <div class="kpi"><div class="kpi-label">Actief (betaald)</div><div class="kpi-val" id="kpi-actief">—</div></div>
+    <div class="kpi"><div class="kpi-label">Op gratis proef</div><div class="kpi-val" id="kpi-gratis">—</div></div>
+    <div class="kpi"><div class="kpi-label">Nieuw deze maand</div><div class="kpi-val" id="kpi-nieuw">—</div></div>
+  </div>
+
+  <input type="text" class="zoekbalk" id="zoekveld" placeholder="Zoek op salonnaam of e-mail..." oninput="renderTabel()">
+
+  <div class="tabel-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Salon</th>
+          <th>Type</th>
+          <th>Contact</th>
+          <th>Pakket</th>
+          <th>Aangemeld</th>
+        </tr>
+      </thead>
+      <tbody id="tabel-body">
+        <tr><td colspan="5" style="text-align:center;color:var(--mu2);padding:24px;">Laden...</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+let sb;
+let sbInitMislukt = false;
+try{
+  if(typeof window.supabase === 'undefined'){
+    throw new Error('Supabase-script kon niet geladen worden (mogelijk een netwerk- of adblocker-probleem).');
+  }
+  sb = window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co', 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6');
+}catch(e){
+  sbInitMislukt = true;
+  document.body.style.opacity='1';
+  document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">'+e.message+'</div>';
+}
+
+let ALLE_SALONS = [];
+const PLAN_LABELS = {free:'Gratis',starter:'Starter',pro:'Pro',business:'Business'};
+
+async function init(){
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){ window.location.href='postvak-login.html'; return; }
+
+    const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
+    if(teamlidError){
+      document.body.style.opacity='1';
+      document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Kon niet controleren of je toegang hebt: '+teamlidError.message+'</div>';
+      return;
+    }
+    if(!teamlid){
+      await sb.auth.signOut();
+      window.location.href='postvak-login.html';
+      return;
+    }
+
+    document.body.style.opacity='1';
+    await laadSalons();
+  }catch(e){
+    document.body.style.opacity='1';
+    document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Er ging iets mis bij het laden: '+e.message+'</div>';
+  }
+}
+
+async function laadSalons(){
+  const{data,error}=await sb.from('salons').select('*').order('created_at',{ascending:false});
+  if(error){
+    document.getElementById('tabel-body').innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--red);padding:24px;">Kon salons niet laden: '+error.message+'</td></tr>';
+    return;
+  }
+  ALLE_SALONS = data||[];
+  renderKpis();
+  renderTabel();
+}
+
+function renderKpis(){
+  const totaal = ALLE_SALONS.length;
+  const actief = ALLE_SALONS.filter(s=>s.plan && s.plan!=='free').length;
+  const gratis = totaal - actief;
+  const maandStart = new Date(); maandStart.setDate(1); maandStart.setHours(0,0,0,0);
+  const nieuw = ALLE_SALONS.filter(s=>s.created_at && new Date(s.created_at) >= maandStart).length;
+
+  document.getElementById('kpi-totaal').textContent = totaal;
+  document.getElementById('kpi-actief').textContent = actief;
+  document.getElementById('kpi-gratis').textContent = gratis;
+  document.getElementById('kpi-nieuw').textContent = nieuw;
+}
+
+function renderTabel(){
+  const zoekterm = (document.getElementById('zoekveld').value||'').toLowerCase();
+  const gefilterd = ALLE_SALONS.filter(s=>
+    !zoekterm ||
+    (s.naam||'').toLowerCase().includes(zoekterm) ||
+    (s.email||'').toLowerCase().includes(zoekterm)
+  );
+
+  const tbody = document.getElementById('tabel-body');
+  if(!gefilterd.length){
+    tbody.innerHTML='<tr><td colspan="5" style="text-align:center;color:var(--mu2);padding:24px;">Geen salons gevonden.</td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = gefilterd.map(s=>{
+    const datum = s.created_at ? new Date(s.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'}) : '—';
+    const plan = s.plan||'free';
+    return `
+    <tr>
+      <td><strong>${s.naam||'(naamloos)'}</strong></td>
+      <td>${s.type_bedrijf||'—'}</td>
+      <td>${s.email||'—'}${s.telefoon?'<br><span style="color:var(--mu);font-size:12px;">'+s.telefoon+'</span>':''}</td>
+      <td>
+        <select class="plan-select" onchange="wijzigPlan('${s.id}',this.value)">
+          ${Object.keys(PLAN_LABELS).map(p=>`<option value="${p}" ${p===plan?'selected':''}>${PLAN_LABELS[p]}</option>`).join('')}
+        </select>
+      </td>
+      <td>${datum}</td>
+    </tr>`;
+  }).join('');
+}
+
+async function wijzigPlan(salonId, nieuwPlan){
+  const{error}=await sb.from('salons').update({plan:nieuwPlan}).eq('id',salonId);
+  if(error){
+    alert('Kon pakket niet wijzigen: '+error.message);
+    return;
+  }
+  const salon = ALLE_SALONS.find(s=>s.id===salonId);
+  if(salon){ salon.plan = nieuwPlan; renderKpis(); }
+}
+
+async function uitloggen(){
+  await sb.auth.signOut();
+  window.location.href='postvak-login.html';
+}
+
+setTimeout(()=>{
+  if(document.body.style.opacity!=='1'){
+    document.body.style.opacity='1';
+    document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">De pagina kon niet laden. Probeer de pagina te verversen, of neem contact op als dit blijft gebeuren.</div>';
+  }
+},4000);
+
+if(!sbInitMislukt) init();
+</script>
+</body>
+</html>
