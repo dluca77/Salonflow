@@ -110,8 +110,24 @@ async function inloggen(){
     return toonMsg('Inloggen mislukt: '+error.message);
   }
 
-  // Check: is dit ook echt een teamlid (niet zomaar elk Supabase-account)?
-  const{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',data.user.id).maybeSingle();
+  // Check: is dit ook echt een teamlid?
+  let{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',data.user.id).maybeSingle();
+
+  // Nog geen teamlid? Dit kan de allereerste keer zijn na registreren --
+  // de bootstrap-policy in de database staat dit alleen toe zolang de
+  // tabel nog helemaal leeg is (dus precies 1 keer, voor de eerste
+  // persoon). Bij elke volgende poging (tabel niet meer leeg) wordt dit
+  // door de database zelf geweigerd.
+  if(!teamlid){
+    const naam = localStorage.getItem('postvak_naam_'+email) || email.split('@')[0];
+    const{error:insertError}=await sb.from('kronr_team').insert({auth_user_id:data.user.id, naam, email, rol:'eigenaar'});
+    if(!insertError){
+      localStorage.removeItem('postvak_naam_'+email);
+      const opnieuw = await sb.from('kronr_team').select('id').eq('auth_user_id',data.user.id).maybeSingle();
+      teamlid = opnieuw.data;
+    }
+  }
+
   if(!teamlid){
     await sb.auth.signOut();
     btn.disabled=false;btn.textContent='Inloggen';
@@ -142,9 +158,11 @@ async function registreren(){
     return toonMsg('Dit e-mailadres is al geregistreerd. Log in.');
   }
 
-  if(data.user){
-    await sb.from('kronr_team').insert({auth_user_id:data.user.id, naam, email, rol:'eigenaar'});
-  }
+  // Naam bewaren voor als deze persoon straks voor het eerst inlogt --
+  // op het moment van registreren is er nog GEEN actieve sessie (moet
+  // eerst de e-mail bevestigen), dus het teamlid-record kan pas dan
+  // pas écht worden aangemaakt.
+  localStorage.setItem('postvak_naam_'+email, naam);
 
   btn.disabled=false;btn.textContent='Account aanmaken';
   toonMsg('Account aangemaakt! Check je e-mail om te bevestigen, log daarna in.','ok');
