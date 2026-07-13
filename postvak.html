@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Postvak IN | Kronr</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--wh:#ffffff;--red:#c0392b;--green:#2d6a4f;}
+body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacity:0;transition:opacity .2s;}
+.topbar{height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10;}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);}
+.logo em{color:var(--gd);font-style:normal;}
+.uitloggen{font-size:13px;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;}
+.layout{display:grid;grid-template-columns:340px 1fr;max-width:1200px;margin:0 auto;min-height:calc(100vh - 60px);}
+.lijst{border-right:1px solid var(--bd);background:var(--wh);overflow-y:auto;}
+.lijst-item{padding:16px 20px;border-bottom:1px solid var(--bd);cursor:pointer;}
+.lijst-item:hover{background:var(--iv);}
+.lijst-item.actief{background:var(--iv);border-left:3px solid var(--gd);}
+.lijst-item.ongelezen .li-van{font-weight:700;}
+.li-van{font-size:14px;color:var(--ink);margin-bottom:2px;}
+.li-onderwerp{font-size:13px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.li-datum{font-size:11px;color:var(--mu2);margin-top:4px;}
+.detail{padding:32px;}
+.detail-leeg{padding:60px 32px;text-align:center;color:var(--mu2);font-size:14px;}
+.detail-onderwerp{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px;}
+.detail-van{font-size:13px;color:var(--mu);margin-bottom:24px;}
+.detail-inhoud{font-size:14.5px;color:#2a2420;line-height:1.7;white-space:pre-wrap;background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:20px;margin-bottom:24px;}
+.reply-box textarea{width:100%;min-height:140px;border:1px solid var(--bd);border-radius:10px;padding:14px;font-family:inherit;font-size:14px;resize:vertical;}
+.btn-reply{margin-top:10px;padding:11px 22px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.btn-reply:disabled{opacity:.5;cursor:default;}
+.reply-msg{font-size:13px;margin-top:10px;display:none;}
+.reply-msg.fout{color:var(--red);}
+.reply-msg.ok{color:var(--green);}
+@media(max-width:800px){
+  .layout{grid-template-columns:1fr;}
+  .lijst{display:none;}
+  .lijst.toon-mobiel{display:block;}
+  .detail{display:none;}
+  .detail.toon-mobiel{display:block;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Kronr<em>.</em> <span style="font-size:13px;color:var(--mu);font-weight:400;">Postvak IN</span></div>
+  <button class="uitloggen" onclick="uitloggen()">Uitloggen</button>
+</div>
+
+<div class="layout">
+  <div class="lijst toon-mobiel" id="lijst">
+    <div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">Laden...</div>
+  </div>
+  <div class="detail" id="detail">
+    <div class="detail-leeg">Selecteer een bericht om te lezen.</div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const sb = window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co', 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6');
+let BERICHTEN = [];
+let HUIDIG_BERICHT_ID = null;
+
+async function init(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){ window.location.href='postvak-login.html'; return; }
+
+  const{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
+  if(!teamlid){
+    await sb.auth.signOut();
+    window.location.href='postvak-login.html';
+    return;
+  }
+
+  document.documentElement.style.opacity='1';
+  await laadBerichten();
+}
+
+async function laadBerichten(){
+  const{data,error}=await sb.from('kronr_berichten').select('*').order('ontvangen_op',{ascending:false});
+  if(error){
+    document.getElementById('lijst').innerHTML='<div style="padding:24px;text-align:center;color:var(--red);font-size:12px;">Kon berichten niet laden.</div>';
+    return;
+  }
+  BERICHTEN = data||[];
+  renderLijst();
+}
+
+function renderLijst(){
+  const lijstEl = document.getElementById('lijst');
+  if(!BERICHTEN.length){
+    lijstEl.innerHTML='<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">Nog geen berichten.</div>';
+    return;
+  }
+  lijstEl.innerHTML = BERICHTEN.map(b=>{
+    const datum = new Date(b.ontvangen_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    return `
+    <div class="lijst-item ${b.id===HUIDIG_BERICHT_ID?'actief':''} ${!b.gelezen?'ongelezen':''}" onclick="toonBericht('${b.id}')">
+      <div class="li-van">${b.van_naam||b.van_email}</div>
+      <div class="li-onderwerp">${b.onderwerp||'(geen onderwerp)'}</div>
+      <div class="li-datum">${datum}</div>
+    </div>`;
+  }).join('');
+}
+
+async function toonBericht(id){
+  HUIDIG_BERICHT_ID = id;
+  const bericht = BERICHTEN.find(b=>b.id===id);
+  if(!bericht) return;
+
+  document.getElementById('lijst').classList.remove('toon-mobiel');
+  document.getElementById('detail').classList.add('toon-mobiel');
+
+  renderLijst();
+
+  const datum = new Date(bericht.ontvangen_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('detail').innerHTML = `
+    <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
+    <div class="detail-onderwerp">${bericht.onderwerp||'(geen onderwerp)'}</div>
+    <div class="detail-van">Van <strong>${bericht.van_naam||bericht.van_email}</strong> (${bericht.van_email}) · ${datum}</div>
+    <div class="detail-inhoud">${(bericht.inhoud||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+    <div class="reply-box">
+      <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px;display:block;">Antwoorden</label>
+      <textarea id="reply-tekst" placeholder="Typ je antwoord..."></textarea>
+      <button class="btn-reply" id="btn-reply" onclick="verstuurAntwoord()">Antwoord versturen</button>
+      <div class="reply-msg" id="reply-msg"></div>
+    </div>
+  `;
+
+  if(!bericht.gelezen){
+    await sb.from('kronr_berichten').update({gelezen:true}).eq('id',id);
+    bericht.gelezen = true;
+    renderLijst();
+  }
+}
+
+function terugNaarLijst(){
+  document.getElementById('lijst').classList.add('toon-mobiel');
+  document.getElementById('detail').classList.remove('toon-mobiel');
+}
+
+async function verstuurAntwoord(){
+  const tekst = document.getElementById('reply-tekst').value.trim();
+  const msgEl = document.getElementById('reply-msg');
+  if(!tekst){
+    msgEl.textContent='Vul een antwoord in.';
+    msgEl.className='reply-msg fout';
+    msgEl.style.display='block';
+    return;
+  }
+
+  const bericht = BERICHTEN.find(b=>b.id===HUIDIG_BERICHT_ID);
+  const btn = document.getElementById('btn-reply');
+  btn.disabled=true;btn.textContent='Versturen...';
+
+  const{data:{session}}=await sb.auth.getSession();
+
+  try{
+    const res = await fetch('https://kronr-postvak.isaak-elia.workers.dev/versturen',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        naar: bericht.van_email,
+        onderwerp: 'Re: '+(bericht.onderwerp||''),
+        inhoud: tekst,
+        thread_id: bericht.id,
+        sessie_token: session.access_token,
+      })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||'Versturen mislukt');
+
+    bericht.beantwoord = true;
+    msgEl.textContent='Antwoord verstuurd!';
+    msgEl.className='reply-msg ok';
+    msgEl.style.display='block';
+    document.getElementById('reply-tekst').value='';
+  }catch(e){
+    msgEl.textContent='Fout: '+e.message;
+    msgEl.className='reply-msg fout';
+    msgEl.style.display='block';
+  }
+
+  btn.disabled=false;btn.textContent='Antwoord versturen';
+}
+
+async function uitloggen(){
+  await sb.auth.signOut();
+  window.location.href='postvak-login.html';
+}
+
+init();
+</script>
+</body>
+</html>
