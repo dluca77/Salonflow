@@ -184,6 +184,20 @@ async function kronrInit(callback, paginaModule) {
 
     SESSION_USER = session.user;
 
+    // Is dit account een Kronr-teamlid (jouw eigen hallo@kronr.nl-account,
+    // niet een salon-eigenaar)? Dan hoort dit account HELEMAAL NIET in de
+    // salon-specifieke pagina's -- zonder deze check zou hieronder anders
+    // per ongeluk een nieuwe, foutieve salon voor dit account worden
+    // aangemaakt (want het is geen bestaande eigenaar of medewerker).
+    const { data: teamlid } = await sb.from('kronr_team')
+      .select('id')
+      .eq('auth_user_id', session.user.id)
+      .maybeSingle();
+    if (teamlid) {
+      window.location.href = 'admin.html';
+      return;
+    }
+
     // Zoek salon (eigenaar)
     let { data: salon, error } = await sb.from('salons')
       .select('*')
