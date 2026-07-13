@@ -122,7 +122,10 @@ function toonContent(salon){
   }
   document.getElementById('info-row').innerHTML=infoItems.join('');
 
-  document.getElementById('booking-frame').src='boeken.html?salon='+salon.id;
+  // Cache-busting-parameter toegevoegd: zonder dit kon een verouderde,
+  // gecachte versie van boeken.html in de iframe blijven hangen na een
+  // update, ook als de buitenste s.html-pagina zelf wel vers laadde.
+  document.getElementById('booking-frame').src='boeken.html?salon='+salon.id+'&_v='+Date.now();
 
   document.getElementById('laden-state').style.display='none';
   document.getElementById('content').style.display='block';
