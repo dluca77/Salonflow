@@ -131,7 +131,7 @@ async function registreren(){
   const btn=document.getElementById('btn-reg');
   btn.disabled=true;btn.textContent='Bezig...';
 
-  const{data,error}=await sb.auth.signUp({email,password:pass});
+  const{data,error}=await sb.auth.signUp({email,password:pass,options:{emailRedirectTo:'https://kronr.nl/postvak-login.html'}});
   if(error){
     btn.disabled=false;btn.textContent='Account aanmaken';
     return toonMsg('Registratie mislukt: '+error.message);
