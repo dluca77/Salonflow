@@ -9,10 +9,17 @@
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--wh:#ffffff;--red:#c0392b;--green:#2d6a4f;}
 body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacity:0;transition:opacity .2s;}
-.topbar{height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;z-index:10;}
+.topbar{min-height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;row-gap:8px;}
+@media(max-width:700px){
+  .topbar{padding:10px 14px;}
+  .topbar .tabs{order:3;width:100%;justify-content:center;}
+}
 .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);}
 .logo em{color:var(--gd);font-style:normal;}
 .uitloggen{font-size:13px;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;}
+.tab-knop{font-size:13px;font-weight:600;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;padding:8px 14px;border-radius:8px;}
+.tab-knop.actief{background:var(--iv);color:var(--ink);}
+.tab-knop:hover:not(.actief){background:var(--iv);}
 .layout{display:grid;grid-template-columns:340px 1fr;max-width:1200px;margin:0 auto;min-height:calc(100vh - 60px);}
 .lijst{border-right:1px solid var(--bd);background:var(--wh);overflow-y:auto;}
 .lijst-item{padding:16px 20px;border-bottom:1px solid var(--bd);cursor:pointer;}
@@ -45,8 +52,16 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
 <body>
 
 <div class="topbar">
-  <div class="logo">Kronr<em>.</em> <span style="font-size:13px;color:var(--mu);font-weight:400;">Postvak IN</span></div>
-  <button class="uitloggen" onclick="uitloggen()">Uitloggen</button>
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="tabs" style="display:flex;gap:4px;">
+    <button class="tab-knop actief" id="tab-in" onclick="wisselTab('in')">Postvak IN</button>
+    <button class="tab-knop" id="tab-uit" onclick="wisselTab('uit')">Postvak UIT</button>
+    <button class="tab-knop" id="tab-archief" onclick="wisselTab('archief')">Archief</button>
+  </div>
+  <div style="display:flex;align-items:center;gap:16px;">
+    <button class="uitloggen" onclick="toonInstellingen()">Instellingen</button>
+    <button class="uitloggen" onclick="uitloggen()">Uitloggen</button>
+  </div>
 </div>
 
 <div class="layout">
@@ -55,6 +70,20 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
   </div>
   <div class="detail" id="detail">
     <div class="detail-leeg">Selecteer een bericht om te lezen.</div>
+  </div>
+</div>
+
+<!-- Instellingen-scherm (handtekening) -->
+<div id="instellingen-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,13,11,.4);z-index:100;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--wh);border-radius:14px;padding:28px;max-width:420px;width:100%;">
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:800;color:var(--ink);margin-bottom:16px;">Handtekening</div>
+    <p style="font-size:13px;color:var(--mu);margin-bottom:12px;">Wordt automatisch onder elk verstuurd antwoord geplakt.</p>
+    <textarea id="handtekening-tekst" style="width:100%;min-height:100px;border:1px solid var(--bd);border-radius:8px;padding:12px;font-family:inherit;font-size:13px;resize:vertical;" placeholder="Bijv:&#10;Isaak&#10;Kronr"></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button onclick="slaHandtekeningOp()" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Opslaan</button>
+      <button onclick="sluitInstellingen()" style="padding:11px 18px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;">Sluiten</button>
+    </div>
+    <div class="reply-msg" id="instellingen-msg" style="margin-top:10px;"></div>
   </div>
 </div>
 
@@ -73,14 +102,17 @@ try{
   document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">'+e.message+'</div>';
 }
 let BERICHTEN = [];
+let VERZONDEN = [];
 let HUIDIG_BERICHT_ID = null;
+let HUIDIGE_TAB = 'in';
+let HUIDIG_TEAMLID = null;
 
 async function init(){
   try{
     const{data:{session}}=await sb.auth.getSession();
     if(!session){ window.location.href='postvak-login.html'; return; }
 
-    const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
+    const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id,handtekening').eq('auth_user_id',session.user.id).maybeSingle();
     if(teamlidError){
       document.body.style.opacity='1';
       document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Kon niet controleren of je toegang hebt: '+teamlidError.message+'</div>';
@@ -91,17 +123,36 @@ async function init(){
       window.location.href='postvak-login.html';
       return;
     }
+    HUIDIG_TEAMLID = teamlid;
 
     document.body.style.opacity='1';
-    await laadBerichten();
+    await wisselTab('in');
   }catch(e){
     document.body.style.opacity='1';
     document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Er ging iets mis bij het laden: '+e.message+'</div>';
   }
 }
 
+async function wisselTab(tab){
+  HUIDIGE_TAB = tab;
+  document.querySelectorAll('.tab-knop').forEach(t=>t.classList.remove('actief'));
+  document.getElementById('tab-'+tab).classList.add('actief');
+  document.getElementById('detail').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
+  HUIDIG_BERICHT_ID = null;
+
+  document.getElementById('lijst').classList.add('toon-mobiel');
+  document.getElementById('detail').classList.remove('toon-mobiel');
+
+  if(tab==='uit'){
+    await laadVerzonden();
+  } else {
+    await laadBerichten();
+  }
+}
+
 async function laadBerichten(){
-  const{data,error}=await sb.from('kronr_berichten').select('*').order('ontvangen_op',{ascending:false});
+  const gearchiveerd = HUIDIGE_TAB==='archief';
+  const{data,error}=await sb.from('kronr_berichten').select('*').eq('gearchiveerd',gearchiveerd).order('ontvangen_op',{ascending:false});
   if(error){
     document.getElementById('lijst').innerHTML='<div style="padding:24px;text-align:center;color:var(--red);font-size:12px;">Kon berichten niet laden.</div>';
     return;
@@ -110,21 +161,67 @@ async function laadBerichten(){
   renderLijst();
 }
 
+async function laadVerzonden(){
+  const{data,error}=await sb.from('kronr_verzonden').select('*').order('verzonden_op',{ascending:false});
+  if(error){
+    document.getElementById('lijst').innerHTML='<div style="padding:24px;text-align:center;color:var(--red);font-size:12px;">Kon verzonden berichten niet laden.</div>';
+    return;
+  }
+  VERZONDEN = data||[];
+  renderLijst();
+}
+
 function renderLijst(){
   const lijstEl = document.getElementById('lijst');
+
+  if(HUIDIGE_TAB==='uit'){
+    if(!VERZONDEN.length){
+      lijstEl.innerHTML='<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">Nog niks verstuurd.</div>';
+      return;
+    }
+    lijstEl.innerHTML = VERZONDEN.map(v=>{
+      const datum = new Date(v.verzonden_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+      return `
+      <div class="lijst-item ${v.id===HUIDIG_BERICHT_ID?'actief':''}" onclick="toonVerzonden('${v.id}')">
+        <div class="li-van">Aan: ${v.naar_email}</div>
+        <div class="li-onderwerp">${v.onderwerp||'(geen onderwerp)'}</div>
+        <div class="li-datum">${datum}</div>
+      </div>`;
+    }).join('');
+    return;
+  }
+
   if(!BERICHTEN.length){
-    lijstEl.innerHTML='<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">Nog geen berichten.</div>';
+    lijstEl.innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${HUIDIGE_TAB==='archief'?'Nog niks gearchiveerd.':'Nog geen berichten.'}</div>`;
     return;
   }
   lijstEl.innerHTML = BERICHTEN.map(b=>{
     const datum = new Date(b.ontvangen_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     return `
     <div class="lijst-item ${b.id===HUIDIG_BERICHT_ID?'actief':''} ${!b.gelezen?'ongelezen':''}" onclick="toonBericht('${b.id}')">
-      <div class="li-van">${b.van_naam||b.van_email}</div>
+      <div class="li-van">${b.van_naam||b.van_email} ${b.beantwoord?'✓':''}</div>
       <div class="li-onderwerp">${b.onderwerp||'(geen onderwerp)'}</div>
       <div class="li-datum">${datum}</div>
     </div>`;
   }).join('');
+}
+
+async function toonVerzonden(id){
+  HUIDIG_BERICHT_ID = id;
+  const bericht = VERZONDEN.find(v=>v.id===id);
+  if(!bericht) return;
+
+  document.getElementById('lijst').classList.remove('toon-mobiel');
+  document.getElementById('detail').classList.add('toon-mobiel');
+  renderLijst();
+
+  const datum = new Date(bericht.verzonden_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
+  document.getElementById('detail').innerHTML = `
+    <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
+    <div class="detail-onderwerp">${bericht.onderwerp||'(geen onderwerp)'}</div>
+    <div class="detail-van">Aan <strong>${bericht.naar_email}</strong> · ${datum}</div>
+    <div class="detail-inhoud">${(bericht.inhoud||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
+  `;
 }
 
 async function toonBericht(id){
@@ -142,6 +239,10 @@ async function toonBericht(id){
     <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
     <div class="detail-onderwerp">${bericht.onderwerp||'(geen onderwerp)'}</div>
     <div class="detail-van">Van <strong>${bericht.van_naam||bericht.van_email}</strong> (${bericht.van_email}) · ${datum}</div>
+    <div style="display:flex;gap:10px;margin-bottom:16px;">
+      <button onclick="wisselBeantwoord('${id}',${!bericht.beantwoord})" style="font-size:12px;padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:${bericht.beantwoord?'var(--iv)':'var(--wh)'};cursor:pointer;font-family:inherit;">${bericht.beantwoord?'✓ Beantwoord':'Markeer als beantwoord'}</button>
+      <button onclick="wisselArchief('${id}',${!bericht.gearchiveerd})" style="font-size:12px;padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-family:inherit;">${bericht.gearchiveerd?'Terugzetten naar Postvak IN':'Archiveren'}</button>
+    </div>
     <div class="detail-inhoud">${(bericht.inhoud||'').replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>
     <div class="reply-box">
       <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:8px;display:block;">Antwoorden</label>
@@ -156,6 +257,22 @@ async function toonBericht(id){
     bericht.gelezen = true;
     renderLijst();
   }
+}
+
+async function wisselBeantwoord(id, nieuweStatus){
+  await sb.from('kronr_berichten').update({beantwoord:nieuweStatus}).eq('id',id);
+  const bericht = BERICHTEN.find(b=>b.id===id);
+  if(bericht){ bericht.beantwoord = nieuweStatus; toonBericht(id); }
+}
+
+async function wisselArchief(id, nieuweStatus){
+  await sb.from('kronr_berichten').update({gearchiveerd:nieuweStatus}).eq('id',id);
+  // Item hoort niet meer thuis in de huidige lijst (gearchiveerd/niet-
+  // gearchiveerd is nu anders) -- gewoon opnieuw laden.
+  await laadBerichten();
+  document.getElementById('detail').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
+  document.getElementById('lijst').classList.remove('toon-mobiel');
+  document.getElementById('detail').classList.add('toon-mobiel');
 }
 
 function terugNaarLijst(){
@@ -199,6 +316,7 @@ async function verstuurAntwoord(){
     msgEl.className='reply-msg ok';
     msgEl.style.display='block';
     document.getElementById('reply-tekst').value='';
+    renderLijst();
   }catch(e){
     msgEl.textContent='Fout: '+e.message;
     msgEl.className='reply-msg fout';
@@ -206,6 +324,29 @@ async function verstuurAntwoord(){
   }
 
   btn.disabled=false;btn.textContent='Antwoord versturen';
+}
+
+function toonInstellingen(){
+  document.getElementById('handtekening-tekst').value = HUIDIG_TEAMLID?.handtekening || '';
+  document.getElementById('instellingen-msg').style.display='none';
+  document.getElementById('instellingen-overlay').style.display='flex';
+}
+function sluitInstellingen(){
+  document.getElementById('instellingen-overlay').style.display='none';
+}
+async function slaHandtekeningOp(){
+  const tekst = document.getElementById('handtekening-tekst').value.trim();
+  const msgEl = document.getElementById('instellingen-msg');
+  const{error}=await sb.from('kronr_team').update({handtekening:tekst||null}).eq('id',HUIDIG_TEAMLID.id);
+  if(error){
+    msgEl.textContent='Fout: '+error.message;
+    msgEl.className='reply-msg fout';
+  } else {
+    HUIDIG_TEAMLID.handtekening = tekst;
+    msgEl.textContent='Handtekening opgeslagen.';
+    msgEl.className='reply-msg ok';
+  }
+  msgEl.style.display='block';
 }
 
 async function uitloggen(){
