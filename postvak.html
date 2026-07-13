@@ -60,7 +60,18 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const sb = window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co', 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6');
+let sb;
+let sbInitMislukt = false;
+try{
+  if(typeof window.supabase === 'undefined'){
+    throw new Error('Supabase-script kon niet geladen worden (mogelijk een netwerk- of adblocker-probleem).');
+  }
+  sb = window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co', 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6');
+}catch(e){
+  sbInitMislukt = true;
+  document.documentElement.style.opacity='1';
+  document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">'+e.message+'</div>';
+}
 let BERICHTEN = [];
 let HUIDIG_BERICHT_ID = null;
 
@@ -202,7 +213,19 @@ async function uitloggen(){
   window.location.href='postvak-login.html';
 }
 
-init();
+// Vangnet: als er ook maar iets misgaat vóórdat init() de kans krijgt
+// om de pagina zichtbaar te maken (bijvoorbeeld: de Supabase-CDN-script
+// laadt niet, of iets anders faalt stil bovenaan het script), moet de
+// pagina na een paar seconden hoe dan ook zichtbaar worden met een
+// duidelijke melding -- nooit voor altijd wit blijven.
+setTimeout(()=>{
+  if(document.documentElement.style.opacity!=='1'){
+    document.documentElement.style.opacity='1';
+    document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">De pagina kon niet laden. Dit kan komen doordat een script (bijv. de Supabase-verbinding) niet is geladen. Probeer de pagina te verversen (evt. met een nieuw tabblad of hard-refresh), of neem contact op als dit blijft gebeuren.</div>';
+  }
+},4000);
+
+if(!sbInitMislukt) init();
 </script>
 </body>
 </html>
