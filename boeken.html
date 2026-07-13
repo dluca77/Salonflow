@@ -778,34 +778,13 @@ async function pickDay(d){
   const gekozenDatum=parseStateDatum();
   const slots=await berekenBeschikbareSlots(gekozenDatum);
 
-  // TIJDELIJK: als het ophalen van bestaande afspraken faalde, laat dat
-  // zichtbaar zien i.p.v. gewoon door te gaan alsof alles vrij is --
-  // nodig om te debuggen waarom dubbele boekingen niet geblokkeerd worden.
   if(window.__laatsteBeschikbaarheidQueryFout){
-    document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:16px;background:#fdecea;border:1px solid #e57373;border-radius:8px;font-size:11px;color:#b71c1c;">DEBUG QUERYFOUT: ${(window.__laatsteBeschikbaarheidQueryFout.message||JSON.stringify(window.__laatsteBeschikbaarheidQueryFout))}</div>`;
+    document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:16px;text-align:center;color:var(--mu);font-size:12px;">Kon de beschikbaarheid niet ophalen. Probeer het opnieuw.</div>`;
     return;
   }
 
-  // TIJDELIJK: altijd de ruwe query-parameters en -resultaten tonen, om te
-  // zien wat er precies wordt opgehaald en vergeleken.
-  const dbg=window.__laatsteBeschikbaarheidDebug||{};
-  const dbgHtml=`<div style="padding:12px;background:#fff3cd;border:1px solid #ffc107;border-radius:8px;font-size:10px;color:#5c4a00;margin-bottom:10px;word-break:break-all;">
-    <strong>DEBUG</strong><br>
-    salon_id: ${dbg.SALON_ID}<br>
-    locatie_id: ${dbg.HUIDIGE_BOEK_LOCATIE_ID}<br>
-    gekozen medewerker (state.med_id): ${dbg.state_med_id}<br>
-    zoekperiode: ${dbg.dagStart} t/m ${dbg.dagEind}<br>
-    aantal bestaande afspraken gevonden: ${dbg.aantalGevonden}<br>
-    gevonden afspraken: ${JSON.stringify(dbg.gevonden)}<br>
-    <hr style="margin:6px 0;">
-    <strong>ZONDER locatie-filter:</strong><br>
-    fout: ${dbg.fout_zonder_locatie ? JSON.stringify(dbg.fout_zonder_locatie) : 'geen'}<br>
-    aantal gevonden zonder locatie-filter: ${dbg.aantalGevondenZonderLocatie}<br>
-    gevonden zonder locatie-filter: ${JSON.stringify(dbg.gevondenZonderLocatie)}
-  </div>`;
-
   if(!slots.length){
-    document.getElementById('time-slots-wrap').innerHTML=dbgHtml+`<div style="padding:24px;text-align:center;color:var(--mu);font-size:12px;">Op deze dag zijn geen tijden beschikbaar.</div>`;
+    document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu);font-size:12px;">Op deze dag zijn geen tijden beschikbaar.</div>`;
     return;
   }
 
@@ -813,7 +792,7 @@ async function pickDay(d){
   const middagSlots=slots.filter(s=>parseInt(s.tijd)>=12&&parseInt(s.tijd)<15);
   const namiddagSlots=slots.filter(s=>parseInt(s.tijd)>=15);
 
-  document.getElementById('time-slots-wrap').innerHTML=dbgHtml+`
+  document.getElementById('time-slots-wrap').innerHTML=`
     ${ochtendSlots.length?`<div class="time-section-label">Ochtend</div><div class="time-grid">${ochtendSlots.map(slotHTML).join('')}</div>`:''}
     ${middagSlots.length?`<div class="time-section-label">Middag</div><div class="time-grid">${middagSlots.map(slotHTML).join('')}</div>`:''}
     ${namiddagSlots.length?`<div class="time-section-label">Namiddag</div><div class="time-grid">${namiddagSlots.map(slotHTML).join('')}</div>`:''}`;
@@ -856,25 +835,7 @@ async function berekenBeschikbareSlots(datum){
     p_datum_start:dagStart.toISOString(),
     p_datum_eind:dagEind.toISOString()
   });
-  // TIJDELIJK: zelfde aanroep, maar dan ZONDER locatie-filter, om te
-  // testen of een locatie-mismatch de oorzaak is dat er niks gevonden wordt.
-  const{data:dataZonderLocatie,error:queryErrorZonderLocatie}=await sb.rpc('get_bezette_tijden',{
-    p_salon_id:SALON_ID,
-    p_locatie_id:null,
-    p_datum_start:dagStart.toISOString(),
-    p_datum_eind:dagEind.toISOString()
-  });
   window.__laatsteBeschikbaarheidQueryFout = queryError || null;
-  window.__laatsteBeschikbaarheidDebug = {
-    SALON_ID, HUIDIGE_BOEK_LOCATIE_ID,
-    state_med_id: state.med_id,
-    dagStart: dagStart.toISOString(), dagEind: dagEind.toISOString(),
-    aantalGevonden: (data||[]).length,
-    gevonden: (data||[]).map(a=>({medewerker_id:a.medewerker_id, datum_tijd:a.datum_tijd, duur_min:a.duur_min})),
-    fout_zonder_locatie: queryErrorZonderLocatie || null,
-    aantalGevondenZonderLocatie: (dataZonderLocatie||[]).length,
-    gevondenZonderLocatie: (dataZonderLocatie||[]).map(a=>({medewerker_id:a.medewerker_id, datum_tijd:a.datum_tijd, duur_min:a.duur_min})),
-  };
   if(queryError){
     console.error('Kon bestaande afspraken niet ophalen voor beschikbaarheidscheck:', queryError);
   }
@@ -1223,6 +1184,7 @@ async function bevestigen(){
   const naam=voor+(achter?' '+achter:'');
   const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
     salon_id:SALON_ID||null,
+    locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
     dienst_id:state.dienst_id||null,
     medewerker_id:toeTeWijzenMedewerkerId,
     datum_tijd:dt.toISOString(),
