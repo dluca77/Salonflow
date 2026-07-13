@@ -1173,13 +1173,22 @@ async function bevestigen(){
   const[uur,min]=state.tijd.split(':');
   const dt=new Date(jaar,maandIdx,dag,parseInt(uur),parseInt(min));
 
-  // Bij 'Geen voorkeur' zou hier automatisch een specifieke, vrije
-  // medewerker worden toegewezen om dubbele boekingen te voorkomen --
-  // TIJDELIJK UITGEZET, want de RLS-policy op de afspraken-tabel
-  // blokkeert momenteel anonieme inserts met een ingevulde
-  // medewerker_id (alleen null lijkt toegestaan). Teruggezet naar de
-  // oude, werkende situatie totdat de RLS-policy is aangepast.
+  // Bij 'Geen voorkeur' een specifieke, daadwerkelijk vrije medewerker
+  // toewijzen i.p.v. medewerker_id:null -- zonder dit zouden twee 'geen
+  // voorkeur'-boekingen voor dezelfde tijd elkaar niet blokkeren (de
+  // beschikbaarheidscheck vergelijkt per medewerker-ID, en 'null' is
+  // geen ID). Verse controle vlak vóór het opslaan, voor het geval de
+  // tijd tussen bekijken en bevestigen net is ingenomen.
   let toeTeWijzenMedewerkerId=state.med_id||null;
+  if(!toeTeWijzenMedewerkerId){
+    toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, state.duur);
+    if(!toeTeWijzenMedewerkerId){
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Deze tijd is helaas net door iemand anders geboekt. Kies een andere tijd.';
+      errEl.style.display='block';
+      return;
+    }
+  }
 
   const naam=voor+(achter?' '+achter:'');
   const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
