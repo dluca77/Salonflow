@@ -88,6 +88,21 @@ tr.salon-rij:hover{background:var(--iv);}
       <div class="kpi-icoon"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
       <div class="kpi-label">Nieuw deze maand</div><div class="kpi-val" id="kpi-nieuw">—</div>
     </div>
+    <div class="kpi">
+      <div class="kpi-icoon"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div class="kpi-label">Geschatte MRR</div><div class="kpi-val" id="kpi-mrr">—</div>
+    </div>
+  </div>
+
+  <div class="grafiek-rij" id="alert-rij" style="margin-bottom:16px;">
+    <div class="grafiek-kaart">
+      <div class="grafiek-titel">⏳ Proefperiode loopt af</div>
+      <div id="alert-proef"><div style="color:var(--mu2);font-size:12px;padding:8px 0;">Laden...</div></div>
+    </div>
+    <div class="grafiek-kaart">
+      <div class="grafiek-titel">⚠️ Risico-salons (inactief)</div>
+      <div id="alert-risico"><div style="color:var(--mu2);font-size:12px;padding:8px 0;">Laden...</div></div>
+    </div>
   </div>
 
   <div class="grafiek-rij">
@@ -173,6 +188,9 @@ async function init(){
   }
 }
 
+let LAATSTE_ACTIVITEIT = {};
+const PLAN_PRIJZEN = {free:0,starter:19,pro:39,business:69};
+
 async function laadSalons(){
   const{data,error}=await sb.from('salons').select('*').order('created_at',{ascending:false});
   if(error){
@@ -180,9 +198,15 @@ async function laadSalons(){
     return;
   }
   ALLE_SALONS = data||[];
+
+  const{data:activiteitData}=await sb.rpc('get_salon_laatste_activiteit');
+  LAATSTE_ACTIVITEIT = {};
+  (activiteitData||[]).forEach(a=>{ LAATSTE_ACTIVITEIT[a.salon_id] = a.laatste_afspraak; });
+
   renderKpis();
   renderGrafieken();
   renderTabel();
+  renderAlerts();
 }
 
 function renderKpis(){
@@ -191,11 +215,63 @@ function renderKpis(){
   const gratis = totaal - actief;
   const maandStart = new Date(); maandStart.setDate(1); maandStart.setHours(0,0,0,0);
   const nieuw = ALLE_SALONS.filter(s=>s.created_at && new Date(s.created_at) >= maandStart).length;
+  const mrr = ALLE_SALONS.reduce((som,s)=>som+(PLAN_PRIJZEN[s.plan||'free']||0),0);
 
   document.getElementById('kpi-totaal').textContent = totaal;
   document.getElementById('kpi-actief').textContent = actief;
   document.getElementById('kpi-gratis').textContent = gratis;
   document.getElementById('kpi-nieuw').textContent = nieuw;
+  document.getElementById('kpi-mrr').textContent = '€'+mrr.toLocaleString('nl-NL');
+}
+
+function renderAlerts(){
+  const nu = new Date();
+
+  // Proefperiode loopt af: plan=free, 10-14 dagen sinds aanmelding
+  // (dus nog niet verlopen, maar wel bijna)
+  const proefAlert = ALLE_SALONS.filter(s=>{
+    if((s.plan||'free')!=='free' || !s.created_at) return false;
+    const dagenGeleden = (nu - new Date(s.created_at)) / (1000*3600*24);
+    return dagenGeleden >= 10 && dagenGeleden <= 14;
+  }).sort((a,b)=>new Date(a.created_at)-new Date(b.created_at));
+
+  const proefEl = document.getElementById('alert-proef');
+  if(!proefAlert.length){
+    proefEl.innerHTML = '<div style="color:var(--mu2);font-size:12px;padding:8px 0;">Niemand op dit moment.</div>';
+  } else {
+    proefEl.innerHTML = proefAlert.map(s=>{
+      const dagenOver = Math.max(0, Math.ceil(14 - (nu-new Date(s.created_at))/(1000*3600*24)));
+      return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12.5px;cursor:pointer;" onclick="toonDetail('${s.id}')">
+        <span>${s.naam||'(naamloos)'}</span><span style="color:var(--red);font-weight:600;">${dagenOver} dag${dagenOver===1?'':'en'} over</span>
+      </div>`;
+    }).join('');
+  }
+
+  // Risico: nooit een afspraak gehad (na een coulanceperiode van 7 dagen
+  // om net-aangemelde salons niet meteen als risico te bestempelen), of
+  // laatste afspraak >30 dagen geleden.
+  const risicoSalons = ALLE_SALONS.filter(s=>{
+    const laatste = LAATSTE_ACTIVITEIT[s.id];
+    if(!laatste){
+      const dagenSindsAanmelding = s.created_at ? (nu - new Date(s.created_at)) / (1000*3600*24) : 999;
+      return dagenSindsAanmelding > 7;
+    }
+    const dagenGeleden = (nu - new Date(laatste)) / (1000*3600*24);
+    return dagenGeleden > 30;
+  }).slice(0,8);
+
+  const risicoEl = document.getElementById('alert-risico');
+  if(!risicoSalons.length){
+    risicoEl.innerHTML = '<div style="color:var(--mu2);font-size:12px;padding:8px 0;">Geen risico-salons gevonden.</div>';
+  } else {
+    risicoEl.innerHTML = risicoSalons.map(s=>{
+      const laatste = LAATSTE_ACTIVITEIT[s.id];
+      const label = laatste ? new Date(laatste).toLocaleDateString('nl-NL',{day:'numeric',month:'short'}) : 'Nooit';
+      return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12.5px;cursor:pointer;" onclick="toonDetail('${s.id}')">
+        <span>${s.naam||'(naamloos)'}</span><span style="color:var(--mu);">Laatste afspraak: ${label}</span>
+      </div>`;
+    }).join('');
+  }
 }
 
 function renderGrafieken(){
@@ -268,10 +344,11 @@ async function toonDetail(salonId){
   document.getElementById('detail-overlay').style.display='flex';
   document.getElementById('detail-inhoud').innerHTML='<div style="text-align:center;color:var(--mu2);padding:40px 0;">Laden...</div>';
 
-  const[afsprakenRes, klantenRes, betalingenRes] = await Promise.all([
+  const[afsprakenRes, klantenRes, betalingenRes, notitiesRes] = await Promise.all([
     sb.from('afspraken').select('id',{count:'exact',head:true}).eq('salon_id',salonId),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',salonId),
     sb.from('betalingen').select('bedrag').eq('salon_id',salonId),
+    sb.from('kronr_salon_notities').select('*').eq('salon_id',salonId).order('created_at',{ascending:false}),
   ]);
 
   const maandStart = new Date(); maandStart.setDate(1); maandStart.setHours(0,0,0,0);
@@ -279,10 +356,11 @@ async function toonDetail(salonId){
 
   const omzetTotaal = (betalingenRes.data||[]).reduce((s,b)=>s+(b.bedrag||0),0);
   const datum = salon.created_at ? new Date(salon.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}) : '—';
+  const notities = notitiesRes.data||[];
 
   document.getElementById('detail-inhoud').innerHTML = `
     <div class="detail-naam">${salon.naam||'(naamloos)'}</div>
-    <div class="detail-sub">${salon.type_bedrijf||'—'} · Aangemeld ${datum}</div>
+    <div class="detail-sub">${salon.type_bedrijf||'—'} · Aangemeld ${datum} ${salon.gepauzeerd?'· <span style="color:var(--red);font-weight:600;">Gepauzeerd</span>':''}</div>
 
     <div class="detail-stats">
       <div class="detail-stat"><div class="detail-stat-label">Totaal afspraken</div><div class="detail-stat-val">${afsprakenRes.count||0}</div></div>
@@ -308,7 +386,57 @@ async function toonDetail(salonId){
 
     <button class="detail-btn" onclick="slaSalonOp('${salonId}')">Opslaan</button>
     <div class="detail-msg" id="detail-msg"></div>
+
+    <div style="display:flex;gap:8px;margin-top:10px;">
+      <button class="detail-btn" style="margin-top:0;background:var(--wh);color:var(--ink);border:1px solid var(--bd);" onclick="wisselPauze('${salonId}',${!salon.gepauzeerd})">${salon.gepauzeerd?'Activeren':'Pauzeren'}</button>
+      <button class="detail-btn" style="margin-top:0;background:var(--wh);color:var(--red);border:1px solid var(--red);" onclick="verwijderSalon('${salonId}')">Verwijderen</button>
+    </div>
+
+    <div style="margin-top:28px;padding-top:20px;border-top:1px solid var(--bd);">
+      <div class="detail-label" style="margin-bottom:10px;">Interne notities</div>
+      <textarea id="nieuwe-notitie" style="width:100%;min-height:60px;border:1px solid var(--bd);border-radius:8px;padding:10px;font-family:inherit;font-size:13px;resize:vertical;margin-bottom:8px;" placeholder="Notitie toevoegen..."></textarea>
+      <button class="detail-btn" style="margin-top:0;" onclick="voegNotitieToe('${salonId}')">Notitie toevoegen</button>
+      <div style="margin-top:14px;">
+        ${notities.length ? notities.map(n=>`
+          <div style="background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12.5px;color:var(--ink);">
+            <div>${(n.tekst||'').replace(/</g,'&lt;')}</div>
+            <div style="color:var(--mu2);font-size:11px;margin-top:6px;">${new Date(n.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
+          </div>`).join('') : '<div style="color:var(--mu2);font-size:12px;">Nog geen notities.</div>'}
+      </div>
+    </div>
   `;
+}
+
+async function wisselPauze(salonId, nieuweStatus){
+  const{error}=await sb.from('salons').update({gepauzeerd:nieuweStatus}).eq('id',salonId);
+  if(error){ alert('Kon status niet wijzigen: '+error.message); return; }
+  const salon = ALLE_SALONS.find(s=>s.id===salonId);
+  if(salon){ salon.gepauzeerd = nieuweStatus; }
+  toonDetail(salonId);
+}
+
+async function verwijderSalon(salonId){
+  const salon = ALLE_SALONS.find(s=>s.id===salonId);
+  if(!salon) return;
+  const bevestiging = prompt(`Dit verwijdert "${salon.naam}" en AL hun gegevens permanent. Dit kan niet ongedaan worden gemaakt.\n\nTyp de salonnaam exact over om te bevestigen:`);
+  if(bevestiging !== salon.naam){
+    if(bevestiging !== null) alert('Naam kwam niet overeen, niks verwijderd.');
+    return;
+  }
+  const{error}=await sb.from('salons').delete().eq('id',salonId);
+  if(error){ alert('Verwijderen mislukt: '+error.message); return; }
+  ALLE_SALONS = ALLE_SALONS.filter(s=>s.id!==salonId);
+  sluitDetail();
+  renderKpis();
+  renderTabel();
+}
+
+async function voegNotitieToe(salonId){
+  const tekst = document.getElementById('nieuwe-notitie').value.trim();
+  if(!tekst) return;
+  const{error}=await sb.from('kronr_salon_notities').insert({salon_id:salonId, tekst});
+  if(error){ alert('Kon notitie niet opslaan: '+error.message); return; }
+  toonDetail(salonId);
 }
 
 async function slaSalonOp(salonId){
