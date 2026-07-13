@@ -69,7 +69,7 @@ try{
   sb = window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co', 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6');
 }catch(e){
   sbInitMislukt = true;
-  document.documentElement.style.opacity='1';
+  document.body.style.opacity='1';
   document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">'+e.message+'</div>';
 }
 let BERICHTEN = [];
@@ -82,7 +82,7 @@ async function init(){
 
     const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
     if(teamlidError){
-      document.documentElement.style.opacity='1';
+      document.body.style.opacity='1';
       document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Kon niet controleren of je toegang hebt: '+teamlidError.message+'</div>';
       return;
     }
@@ -92,10 +92,10 @@ async function init(){
       return;
     }
 
-    document.documentElement.style.opacity='1';
+    document.body.style.opacity='1';
     await laadBerichten();
   }catch(e){
-    document.documentElement.style.opacity='1';
+    document.body.style.opacity='1';
     document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Er ging iets mis bij het laden: '+e.message+'</div>';
   }
 }
@@ -219,8 +219,8 @@ async function uitloggen(){
 // pagina na een paar seconden hoe dan ook zichtbaar worden met een
 // duidelijke melding -- nooit voor altijd wit blijven.
 setTimeout(()=>{
-  if(document.documentElement.style.opacity!=='1'){
-    document.documentElement.style.opacity='1';
+  if(document.body.style.opacity!=='1'){
+    document.body.style.opacity='1';
     document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">De pagina kon niet laden. Dit kan komen doordat een script (bijv. de Supabase-verbinding) niet is geladen. Probeer de pagina te verversen (evt. met een nieuw tabblad of hard-refresh), of neem contact op als dit blijft gebeuren.</div>';
   }
 },4000);
