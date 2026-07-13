@@ -130,6 +130,12 @@ tr.salon-rij:hover{background:var(--iv);}
     </div>
   </div>
 
+  <div class="grafiek-kaart" style="margin-bottom:24px;">
+    <div class="grafiek-titel">📣 Marketing — wie nu benaderen</div>
+    <p style="font-size:12.5px;color:var(--mu);margin-bottom:16px;">Slimme groepen op basis van salon-gedrag, met een kant-en-klaar voorstel om te versturen.</p>
+    <div id="marketing-kaarten" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;"></div>
+  </div>
+
   <input type="text" class="zoekbalk" id="zoekveld" placeholder="Zoek op salonnaam of e-mail..." oninput="renderTabel()">
 
   <div class="tabel-wrap">
@@ -147,6 +153,21 @@ tr.salon-rij:hover{background:var(--iv);}
         <tr><td colspan="5" style="text-align:center;color:var(--mu2);padding:24px;">Laden...</td></tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<div id="campagne-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,13,11,.4);z-index:100;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--wh);border-radius:14px;padding:28px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;">
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:800;color:var(--ink);margin-bottom:6px;" id="campagne-titel">Campagne</div>
+    <p style="font-size:12.5px;color:var(--mu);margin-bottom:16px;" id="campagne-aantal"></p>
+    <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Onderwerp</label>
+    <input type="text" id="camp-onderwerp" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:13px;margin-bottom:14px;background:var(--wh);color:var(--ink);">
+    <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Bericht <span style="font-weight:400;color:var(--mu);">(gebruik {naam} voor personalisatie)</span></label>
+    <textarea id="camp-inhoud" style="width:100%;min-height:160px;border:1px solid var(--bd);border-radius:8px;padding:12px;font-family:inherit;font-size:13px;resize:vertical;background:var(--wh);color:var(--ink);"></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button onclick="verstuurCampagne()" id="camp-btn" style="flex:1;padding:12px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Versturen</button>
+      <button onclick="sluitCampagne()" style="padding:12px 18px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);">Annuleren</button>
+    </div>
   </div>
 </div>
 
@@ -243,6 +264,7 @@ async function laadSalons(){
   renderGrafieken();
   renderTabel();
   renderAlerts();
+  renderMarketing();
 }
 
 function renderKpis(){
@@ -308,6 +330,121 @@ function renderAlerts(){
       </div>`;
     }).join('');
   }
+}
+
+let MARKETING_SEGMENTEN = {};
+
+function renderMarketing(){
+  const nu = new Date();
+
+  const proefBijnaOm = ALLE_SALONS.filter(s=>{
+    if((s.plan||'free')!=='free' || !s.created_at) return false;
+    const d = (nu-new Date(s.created_at))/(1000*3600*24);
+    return d>=10 && d<=14;
+  });
+
+  const risico = ALLE_SALONS.filter(s=>{
+    const laatste = LAATSTE_ACTIVITEIT[s.id];
+    if(!laatste){
+      const dagenSindsAanmelding = s.created_at ? (nu-new Date(s.created_at))/(1000*3600*24) : 999;
+      return dagenSindsAanmelding > 7;
+    }
+    return (nu-new Date(laatste))/(1000*3600*24) > 30;
+  });
+
+  const nieuwAangemeld = ALLE_SALONS.filter(s=>{
+    if(!s.created_at) return false;
+    const d = (nu-new Date(s.created_at))/(1000*3600*24);
+    return d>=0 && d<=3;
+  });
+
+  const klaarVoorUpgrade = ALLE_SALONS.filter(s=>{
+    if(s.plan!=='starter' || !s.created_at) return false;
+    const d = (nu-new Date(s.created_at))/(1000*3600*24);
+    return d > 60; // 2+ maanden op Starter, mogelijk toe aan meer
+  });
+
+  MARKETING_SEGMENTEN = {
+    proef: {
+      titel:'Proefperiode loopt af', icoon:'⏳', salons:proefBijnaOm,
+      omschrijving:'Bijna 14 dagen gratis gebruikt, nog geen keuze gemaakt.',
+      onderwerp:'Je proefperiode bij Kronr loopt bijna af',
+      inhoud:'Hoi {naam},\n\nJe gratis proefperiode bij Kronr loopt over een paar dagen af. Vond je het prettig werken? Kies een pakket dat bij je salon past en blijf gewoon door boeken, zonder gedoe.\n\nHeb je vragen of twijfels? Antwoord gewoon op deze mail, dan denk ik met je mee.',
+    },
+    risico: {
+      titel:'Inactieve salons', icoon:'⚠️', salons:risico,
+      omschrijving:'Lang geen afspraak meer gemaakt -- kans op afhaken.',
+      onderwerp:'Alles goed? We hebben je een tijdje niet gezien',
+      inhoud:'Hoi {naam},\n\nHet viel me op dat er al even geen nieuwe afspraken zijn ingepland in Kronr. Loopt alles goed, of loop je ergens tegenaan waar ik bij kan helpen?\n\nLaat het gewoon weten, ik denk graag met je mee.',
+    },
+    nieuw: {
+      titel:'Net aangemeld', icoon:'👋', salons:nieuwAangemeld,
+      omschrijving:'Nieuwe salons -- goed moment voor een welkomst-tip.',
+      onderwerp:'Welkom bij Kronr — een paar tips om snel te starten',
+      inhoud:'Hoi {naam},\n\nWelkom bij Kronr! Een paar dingen die veel salons in de eerste week instellen: je openingstijden, je diensten met prijzen, en de online boekingswidget op je eigen site.\n\nLoop je ergens tegenaan, antwoord gewoon op deze mail.',
+    },
+    upgrade: {
+      titel:'Klaar voor upgrade', icoon:'📈', salons:klaarVoorUpgrade,
+      omschrijving:'Al 2+ maanden op Starter -- mogelijk toe aan meer.',
+      onderwerp:'Groeit je salon? Misschien tijd voor een groter pakket',
+      inhoud:'Hoi {naam},\n\nJe gebruikt Kronr nu al een tijdje op het Starter-pakket. Loop je tegen de grenzen aan, of ben je benieuwd wat een groter pakket je extra oplevert (zoals Kai, onze AI-assistent, of meerdere medewerkers)? Laat het weten, dan denk ik met je mee.',
+    },
+  };
+
+  const kaartenEl = document.getElementById('marketing-kaarten');
+  kaartenEl.innerHTML = Object.entries(MARKETING_SEGMENTEN).map(([key,seg])=>`
+    <div style="background:var(--iv);border:1px solid var(--bd);border-radius:12px;padding:16px 18px;">
+      <div style="font-size:13px;font-weight:700;color:var(--ink);margin-bottom:4px;">${seg.icoon} ${seg.titel}</div>
+      <div style="font-size:11.5px;color:var(--mu);margin-bottom:10px;line-height:1.5;">${seg.omschrijving}</div>
+      <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:10px;">${seg.salons.length}</div>
+      <button onclick="toonCampagne('${key}')" ${seg.salons.length?'':'disabled'} style="width:100%;padding:9px;background:${seg.salons.length?'var(--ink)':'var(--bd)'};color:var(--wh);border:none;border-radius:8px;font-size:12px;font-weight:600;cursor:${seg.salons.length?'pointer':'default'};font-family:inherit;">${seg.salons.length?'Bekijk & verstuur':'Niemand op dit moment'}</button>
+    </div>
+  `).join('');
+}
+
+function toonCampagne(segmentKey){
+  const seg = MARKETING_SEGMENTEN[segmentKey];
+  if(!seg || !seg.salons.length) return;
+  document.getElementById('campagne-titel').textContent = seg.icoon+' '+seg.titel;
+  document.getElementById('campagne-aantal').textContent = `Naar ${seg.salons.length} salon${seg.salons.length===1?'':'s'}: ${seg.salons.map(s=>s.naam||'(naamloos)').join(', ')}`;
+  document.getElementById('camp-onderwerp').value = seg.onderwerp;
+  document.getElementById('camp-inhoud').value = seg.inhoud;
+  document.getElementById('campagne-overlay').dataset.segment = segmentKey;
+  document.getElementById('campagne-overlay').style.display='flex';
+}
+function sluitCampagne(){
+  document.getElementById('campagne-overlay').style.display='none';
+}
+
+async function verstuurCampagne(){
+  const segmentKey = document.getElementById('campagne-overlay').dataset.segment;
+  const seg = MARKETING_SEGMENTEN[segmentKey];
+  const onderwerp = document.getElementById('camp-onderwerp').value.trim();
+  const inhoud = document.getElementById('camp-inhoud').value.trim();
+  if(!onderwerp || !inhoud || !seg) return;
+
+  const ontvangers = seg.salons.filter(s=>s.email).map(s=>({naam:s.naam, email:s.email}));
+  if(!ontvangers.length){ toonToast('Geen van deze salons heeft een e-mailadres.','fout'); return; }
+
+  const btn = document.getElementById('camp-btn');
+  btn.disabled=true; btn.textContent='Versturen...';
+
+  const{data:{session}}=await sb.auth.getSession();
+  try{
+    const res = await fetch('https://kronr-postvak.isaak-elia.workers.dev/marketing-campagne',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ onderwerp, inhoud, ontvangers, sessie_token: session.access_token })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||'Versturen mislukt');
+    toonToast(`Verstuurd naar ${data.gelukt} salon${data.gelukt===1?'':'s'}${data.mislukt?' ('+data.mislukt+' mislukt)':''}.`,'ok');
+    sluitCampagne();
+  }catch(e){
+    toonToast('Fout: '+e.message,'fout');
+  }
+
+  btn.disabled=false; btn.textContent='Versturen';
 }
 
 function renderGrafieken(){
