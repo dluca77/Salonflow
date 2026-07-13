@@ -8,6 +8,15 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--gd2:#6e5230;--wh:#ffffff;--red:#c0392b;--green:#2d6a4f;}
+html[data-thema="donker"]{--ink:#f2ede6;--mu:#a89e93;--mu2:#7a7168;--iv:#231f1c;--bd:#3a352f;--gd:#c9a876;--gd2:#c9a876;--wh:#1a1613;--red:#e57373;--green:#6fbf8f;}
+html{transition:background .2s;}
+#toast-wrap{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px;}
+.toast{background:var(--ink);color:var(--wh);padding:12px 18px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.15);animation:toastIn .25s ease both;max-width:320px;}
+.toast.fout{background:var(--red);}
+.toast.ok{background:var(--green);}
+@keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+.kpi,.grafiek-kaart,.tabel-wrap{transition:background .2s,border-color .2s;}
+tr.salon-rij{transition:background .15s;}
 body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacity:0;transition:opacity .2s;}
 .topbar{min-height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;}
 .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);}
@@ -66,9 +75,14 @@ tr.salon-rij:hover{background:var(--iv);}
   <div class="logo">Kronr<em>.</em> <span style="font-size:13px;color:var(--mu);font-weight:400;">Beheer</span></div>
   <div style="display:flex;align-items:center;gap:16px;">
     <a href="postvak.html" class="navlink">Postvak</a>
+    <button class="navlink" onclick="wisselThema()" id="thema-knop" style="display:flex;align-items:center;padding:6px;border-radius:8px;" title="Donkere modus">
+      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 009 9 9 9 0 11-9-9z"/></svg>
+    </button>
     <button class="navlink" onclick="uitloggen()">Uitloggen</button>
   </div>
 </div>
+
+<div id="toast-wrap"></div>
 
 <div class="wrap">
   <div class="kpi-rij" id="kpi-rij">
@@ -146,6 +160,28 @@ tr.salon-rij:hover{background:var(--iv);}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
+function toonToast(bericht, type){
+  const wrap = document.getElementById('toast-wrap');
+  const el = document.createElement('div');
+  el.className = 'toast ' + (type||'');
+  el.textContent = bericht;
+  wrap.appendChild(el);
+  setTimeout(()=>{ el.style.opacity='0'; el.style.transition='opacity .3s'; setTimeout(()=>el.remove(),300); }, 3200);
+}
+
+function wisselThema(){
+  const huidig = document.documentElement.getAttribute('data-thema');
+  const nieuw = huidig==='donker' ? 'licht' : 'donker';
+  if(nieuw==='donker') document.documentElement.setAttribute('data-thema','donker');
+  else document.documentElement.removeAttribute('data-thema');
+  localStorage.setItem('postvak_thema', nieuw);
+}
+(function(){
+  if(localStorage.getItem('postvak_thema')==='donker'){
+    document.documentElement.setAttribute('data-thema','donker');
+  }
+})();
+
 let sb;
 let sbInitMislukt = false;
 try{
@@ -409,7 +445,7 @@ async function toonDetail(salonId){
 
 async function wisselPauze(salonId, nieuweStatus){
   const{error}=await sb.from('salons').update({gepauzeerd:nieuweStatus}).eq('id',salonId);
-  if(error){ alert('Kon status niet wijzigen: '+error.message); return; }
+  if(error){ toonToast('Kon status niet wijzigen: '+error.message,'fout'); return; }
   const salon = ALLE_SALONS.find(s=>s.id===salonId);
   if(salon){ salon.gepauzeerd = nieuweStatus; }
   toonDetail(salonId);
@@ -420,11 +456,11 @@ async function verwijderSalon(salonId){
   if(!salon) return;
   const bevestiging = prompt(`Dit verwijdert "${salon.naam}" en AL hun gegevens permanent. Dit kan niet ongedaan worden gemaakt.\n\nTyp de salonnaam exact over om te bevestigen:`);
   if(bevestiging !== salon.naam){
-    if(bevestiging !== null) alert('Naam kwam niet overeen, niks verwijderd.');
+    if(bevestiging !== null) toonToast('Naam kwam niet overeen, niks verwijderd.','fout');
     return;
   }
   const{error}=await sb.from('salons').delete().eq('id',salonId);
-  if(error){ alert('Verwijderen mislukt: '+error.message); return; }
+  if(error){ toonToast('Verwijderen mislukt: '+error.message,'fout'); return; }
   ALLE_SALONS = ALLE_SALONS.filter(s=>s.id!==salonId);
   sluitDetail();
   renderKpis();
@@ -435,7 +471,7 @@ async function voegNotitieToe(salonId){
   const tekst = document.getElementById('nieuwe-notitie').value.trim();
   if(!tekst) return;
   const{error}=await sb.from('kronr_salon_notities').insert({salon_id:salonId, tekst});
-  if(error){ alert('Kon notitie niet opslaan: '+error.message); return; }
+  if(error){ toonToast('Kon notitie niet opslaan: '+error.message,'fout'); return; }
   toonDetail(salonId);
 }
 
