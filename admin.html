@@ -7,33 +7,57 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--wh:#ffffff;--red:#c0392b;--green:#2d6a4f;}
+:root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--gd2:#6e5230;--wh:#ffffff;--red:#c0392b;--green:#2d6a4f;}
 body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacity:0;transition:opacity .2s;}
 .topbar{min-height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;}
 .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);}
 .logo em{color:var(--gd);font-style:normal;}
-.navlink{font-size:13px;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;text-decoration:none;}
-.wrap{max-width:1100px;margin:0 auto;padding:32px 24px;}
-.kpi-rij{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:28px;}
-.kpi{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px 20px;}
-.kpi-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;}
-.kpi-val{font-family:'Playfair Display',serif;font-size:28px;font-weight:800;color:var(--ink);}
-.tabel-wrap{background:var(--wh);border:1px solid var(--bd);border-radius:12px;overflow:hidden;}
+.navlink{font-size:13px;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;text-decoration:none;padding:6px 0;}
+.wrap{max-width:1200px;margin:0 auto;padding:32px 24px;}
+
+.kpi-rij{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px;}
+.kpi{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:20px 22px;position:relative;overflow:hidden;}
+.kpi-icoon{width:34px;height:34px;border-radius:9px;background:var(--iv);display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--gd);}
+.kpi-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:4px;}
+.kpi-val{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--ink);}
+
+.grafiek-rij{display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:24px;}
+.grafiek-kaart{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:20px 22px;}
+.grafiek-titel{font-size:13px;font-weight:700;color:var(--ink);margin-bottom:14px;}
+.grafiek-canvas-wrap{position:relative;height:220px;}
+@media(max-width:800px){ .grafiek-rij{grid-template-columns:1fr;} }
+
+.tabel-wrap{background:var(--wh);border:1px solid var(--bd);border-radius:14px;overflow:hidden;}
 table{width:100%;border-collapse:collapse;font-size:13px;}
 th{text-align:left;padding:12px 16px;background:var(--iv);font-size:11px;letter-spacing:0.5px;text-transform:uppercase;color:var(--mu);border-bottom:1px solid var(--bd);}
 td{padding:12px 16px;border-bottom:1px solid var(--bd);color:var(--ink);}
 tr:last-child td{border-bottom:none;}
+tr.salon-rij{cursor:pointer;transition:background .1s;}
+tr.salon-rij:hover{background:var(--iv);}
 .plan-badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;}
 .plan-free{background:var(--iv);color:var(--mu);}
 .plan-starter{background:#eaf2ec;color:var(--green);}
 .plan-pro{background:#f5ede0;color:var(--gd);}
 .plan-business{background:#1a1714;color:var(--wh);}
-select.plan-select{font-size:12px;padding:5px 8px;border-radius:6px;border:1px solid var(--bd);font-family:inherit;background:var(--wh);}
 .zoekbalk{width:100%;max-width:320px;padding:10px 14px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;margin-bottom:16px;}
-@media(max-width:700px){
-  .tabel-wrap{overflow-x:auto;}
-  table{min-width:600px;}
-}
+@media(max-width:700px){ .tabel-wrap{overflow-x:auto;} table{min-width:600px;} }
+
+#detail-overlay{display:none;position:fixed;inset:0;background:rgba(15,13,11,.4);z-index:100;justify-content:flex-end;}
+#detail-paneel{background:var(--iv);width:100%;max-width:460px;height:100%;overflow-y:auto;padding:28px;}
+.detail-sluit{background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;font-family:inherit;}
+.detail-naam{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--ink);margin-bottom:4px;}
+.detail-sub{font-size:13px;color:var(--mu);margin-bottom:24px;}
+.detail-stats{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:24px;}
+.detail-stat{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:14px 16px;}
+.detail-stat-label{font-size:10.5px;letter-spacing:0.5px;text-transform:uppercase;color:var(--mu);margin-bottom:4px;}
+.detail-stat-val{font-family:'Playfair Display',serif;font-size:19px;font-weight:800;color:var(--ink);}
+.detail-veld{margin-bottom:14px;}
+.detail-label{font-size:11px;font-weight:600;color:var(--ink);margin-bottom:5px;display:block;}
+.detail-input{width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;background:var(--wh);}
+.detail-btn{width:100%;padding:12px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:8px;}
+.detail-msg{font-size:13px;margin-top:10px;display:none;}
+.detail-msg.fout{color:var(--red);}
+.detail-msg.ok{color:var(--green);}
 </style>
 </head>
 <body>
@@ -48,10 +72,33 @@ select.plan-select{font-size:12px;padding:5px 8px;border-radius:6px;border:1px s
 
 <div class="wrap">
   <div class="kpi-rij" id="kpi-rij">
-    <div class="kpi"><div class="kpi-label">Totaal salons</div><div class="kpi-val" id="kpi-totaal">—</div></div>
-    <div class="kpi"><div class="kpi-label">Actief (betaald)</div><div class="kpi-val" id="kpi-actief">—</div></div>
-    <div class="kpi"><div class="kpi-label">Op gratis proef</div><div class="kpi-val" id="kpi-gratis">—</div></div>
-    <div class="kpi"><div class="kpi-label">Nieuw deze maand</div><div class="kpi-val" id="kpi-nieuw">—</div></div>
+    <div class="kpi">
+      <div class="kpi-icoon"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg></div>
+      <div class="kpi-label">Totaal salons</div><div class="kpi-val" id="kpi-totaal">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icoon"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
+      <div class="kpi-label">Actief (betaald)</div><div class="kpi-val" id="kpi-actief">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icoon"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg></div>
+      <div class="kpi-label">Op gratis proef</div><div class="kpi-val" id="kpi-gratis">—</div>
+    </div>
+    <div class="kpi">
+      <div class="kpi-icoon"><svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></div>
+      <div class="kpi-label">Nieuw deze maand</div><div class="kpi-val" id="kpi-nieuw">—</div>
+    </div>
+  </div>
+
+  <div class="grafiek-rij">
+    <div class="grafiek-kaart">
+      <div class="grafiek-titel">Groei — nieuwe salons per maand</div>
+      <div class="grafiek-canvas-wrap"><canvas id="groei-grafiek"></canvas></div>
+    </div>
+    <div class="grafiek-kaart">
+      <div class="grafiek-titel">Pakketten-verdeling</div>
+      <div class="grafiek-canvas-wrap"><canvas id="pakket-grafiek"></canvas></div>
+    </div>
   </div>
 
   <input type="text" class="zoekbalk" id="zoekveld" placeholder="Zoek op salonnaam of e-mail..." oninput="renderTabel()">
@@ -74,7 +121,15 @@ select.plan-select{font-size:12px;padding:5px 8px;border-radius:6px;border:1px s
   </div>
 </div>
 
+<div id="detail-overlay" onclick="if(event.target===this)sluitDetail()">
+  <div id="detail-paneel">
+    <button class="detail-sluit" onclick="sluitDetail()">← Sluiten</button>
+    <div id="detail-inhoud">Laden...</div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script>
 let sb;
 let sbInitMislukt = false;
@@ -91,6 +146,7 @@ try{
 
 let ALLE_SALONS = [];
 const PLAN_LABELS = {free:'Gratis',starter:'Starter',pro:'Pro',business:'Business'};
+const PLAN_KLEUREN = {free:'#a09890',starter:'#2d6a4f',pro:'#8c6d3f',business:'#1a1714'};
 
 async function init(){
   try{
@@ -125,6 +181,7 @@ async function laadSalons(){
   }
   ALLE_SALONS = data||[];
   renderKpis();
+  renderGrafieken();
   renderTabel();
 }
 
@@ -139,6 +196,41 @@ function renderKpis(){
   document.getElementById('kpi-actief').textContent = actief;
   document.getElementById('kpi-gratis').textContent = gratis;
   document.getElementById('kpi-nieuw').textContent = nieuw;
+}
+
+function renderGrafieken(){
+  const maandLabels = [], maandData = [];
+  const nu = new Date();
+  for(let i=5;i>=0;i--){
+    const maandStart = new Date(nu.getFullYear(), nu.getMonth()-i, 1);
+    const maandEind = new Date(nu.getFullYear(), nu.getMonth()-i+1, 1);
+    const aantal = ALLE_SALONS.filter(s=>{
+      if(!s.created_at) return false;
+      const d = new Date(s.created_at);
+      return d>=maandStart && d<maandEind;
+    }).length;
+    maandLabels.push(maandStart.toLocaleDateString('nl-NL',{month:'short'}));
+    maandData.push(aantal);
+  }
+
+  new Chart(document.getElementById('groei-grafiek'), {
+    type:'line',
+    data:{ labels:maandLabels, datasets:[{ data:maandData, borderColor:'#8c6d3f', backgroundColor:'rgba(140,109,63,0.08)', fill:true, tension:0.3, pointBackgroundColor:'#8c6d3f' }] },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}}, scales:{ y:{beginAtZero:true, ticks:{stepSize:1}}, x:{grid:{display:false}} } }
+  });
+
+  const perPlan = {};
+  ALLE_SALONS.forEach(s=>{ const p=s.plan||'free'; perPlan[p]=(perPlan[p]||0)+1; });
+  const planKeys = Object.keys(PLAN_LABELS).filter(p=>perPlan[p]);
+
+  new Chart(document.getElementById('pakket-grafiek'), {
+    type:'doughnut',
+    data:{
+      labels: planKeys.map(p=>PLAN_LABELS[p]),
+      datasets:[{ data: planKeys.map(p=>perPlan[p]), backgroundColor: planKeys.map(p=>PLAN_KLEUREN[p]), borderWidth:0 }]
+    },
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{boxWidth:10,font:{size:11}}}} }
+  });
 }
 
 function renderTabel(){
@@ -159,28 +251,89 @@ function renderTabel(){
     const datum = s.created_at ? new Date(s.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric'}) : '—';
     const plan = s.plan||'free';
     return `
-    <tr>
+    <tr class="salon-rij" onclick="toonDetail('${s.id}')">
       <td><strong>${s.naam||'(naamloos)'}</strong></td>
       <td>${s.type_bedrijf||'—'}</td>
-      <td>${s.email||'—'}${s.telefoon?'<br><span style="color:var(--mu);font-size:12px;">'+s.telefoon+'</span>':''}</td>
-      <td>
-        <select class="plan-select" onchange="wijzigPlan('${s.id}',this.value)">
-          ${Object.keys(PLAN_LABELS).map(p=>`<option value="${p}" ${p===plan?'selected':''}>${PLAN_LABELS[p]}</option>`).join('')}
-        </select>
-      </td>
+      <td>${s.email||'—'}</td>
+      <td><span class="plan-badge plan-${plan}">${PLAN_LABELS[plan]||plan}</span></td>
       <td>${datum}</td>
     </tr>`;
   }).join('');
 }
 
-async function wijzigPlan(salonId, nieuwPlan){
-  const{error}=await sb.from('salons').update({plan:nieuwPlan}).eq('id',salonId);
-  if(error){
-    alert('Kon pakket niet wijzigen: '+error.message);
-    return;
-  }
+async function toonDetail(salonId){
   const salon = ALLE_SALONS.find(s=>s.id===salonId);
-  if(salon){ salon.plan = nieuwPlan; renderKpis(); }
+  if(!salon) return;
+
+  document.getElementById('detail-overlay').style.display='flex';
+  document.getElementById('detail-inhoud').innerHTML='<div style="text-align:center;color:var(--mu2);padding:40px 0;">Laden...</div>';
+
+  const[afsprakenRes, klantenRes, betalingenRes] = await Promise.all([
+    sb.from('afspraken').select('id',{count:'exact',head:true}).eq('salon_id',salonId),
+    sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',salonId),
+    sb.from('betalingen').select('bedrag').eq('salon_id',salonId),
+  ]);
+
+  const maandStart = new Date(); maandStart.setDate(1); maandStart.setHours(0,0,0,0);
+  const{count:afsprakenDezeMaand} = await sb.from('afspraken').select('id',{count:'exact',head:true}).eq('salon_id',salonId).gte('datum_tijd',maandStart.toISOString());
+
+  const omzetTotaal = (betalingenRes.data||[]).reduce((s,b)=>s+(b.bedrag||0),0);
+  const datum = salon.created_at ? new Date(salon.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}) : '—';
+
+  document.getElementById('detail-inhoud').innerHTML = `
+    <div class="detail-naam">${salon.naam||'(naamloos)'}</div>
+    <div class="detail-sub">${salon.type_bedrijf||'—'} · Aangemeld ${datum}</div>
+
+    <div class="detail-stats">
+      <div class="detail-stat"><div class="detail-stat-label">Totaal afspraken</div><div class="detail-stat-val">${afsprakenRes.count||0}</div></div>
+      <div class="detail-stat"><div class="detail-stat-label">Deze maand</div><div class="detail-stat-val">${afsprakenDezeMaand||0}</div></div>
+      <div class="detail-stat"><div class="detail-stat-label">Klanten</div><div class="detail-stat-val">${klantenRes.count||0}</div></div>
+      <div class="detail-stat"><div class="detail-stat-label">Totale omzet</div><div class="detail-stat-val">€${omzetTotaal.toFixed(0)}</div></div>
+    </div>
+
+    <div class="detail-veld">
+      <label class="detail-label">Salonnaam</label>
+      <input class="detail-input" id="d-naam" value="${(salon.naam||'').replace(/"/g,'&quot;')}">
+    </div>
+    <div class="detail-veld">
+      <label class="detail-label">E-mailadres</label>
+      <input class="detail-input" id="d-email" value="${(salon.email||'').replace(/"/g,'&quot;')}">
+    </div>
+    <div class="detail-veld">
+      <label class="detail-label">Pakket</label>
+      <select class="detail-input" id="d-plan">
+        ${Object.keys(PLAN_LABELS).map(p=>`<option value="${p}" ${p===(salon.plan||'free')?'selected':''}>${PLAN_LABELS[p]}</option>`).join('')}
+      </select>
+    </div>
+
+    <button class="detail-btn" onclick="slaSalonOp('${salonId}')">Opslaan</button>
+    <div class="detail-msg" id="detail-msg"></div>
+  `;
+}
+
+async function slaSalonOp(salonId){
+  const naam = document.getElementById('d-naam').value.trim();
+  const email = document.getElementById('d-email').value.trim();
+  const plan = document.getElementById('d-plan').value;
+  const msgEl = document.getElementById('detail-msg');
+
+  const{error}=await sb.from('salons').update({naam,email,plan}).eq('id',salonId);
+  if(error){
+    msgEl.textContent='Fout: '+error.message;
+    msgEl.className='detail-msg fout';
+  } else {
+    const salon = ALLE_SALONS.find(s=>s.id===salonId);
+    if(salon){ salon.naam=naam; salon.email=email; salon.plan=plan; }
+    renderKpis();
+    renderTabel();
+    msgEl.textContent='Opgeslagen.';
+    msgEl.className='detail-msg ok';
+  }
+  msgEl.style.display='block';
+}
+
+function sluitDetail(){
+  document.getElementById('detail-overlay').style.display='none';
 }
 
 async function uitloggen(){
