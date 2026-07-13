@@ -45,7 +45,12 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
     </div>
     <div class="frow">
       <label class="flabel">Wachtwoord</label>
-      <input class="finput" type="password" id="l-pass" placeholder="••••••••">
+      <div style="position:relative;">
+        <input class="finput" type="password" id="l-pass" placeholder="••••••••" style="padding-right:44px;">
+        <button type="button" onclick="wisselWwZichtbaar('l-pass',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--mu);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
     </div>
     <button class="btn-main" id="btn-login" onclick="inloggen()">Inloggen</button>
   </div>
@@ -61,7 +66,12 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
     </div>
     <div class="frow">
       <label class="flabel">Wachtwoord</label>
-      <input class="finput" type="password" id="r-pass" placeholder="Minimaal 8 tekens">
+      <div style="position:relative;">
+        <input class="finput" type="password" id="r-pass" placeholder="Minimaal 8 tekens" style="padding-right:44px;">
+        <button type="button" onclick="wisselWwZichtbaar('r-pass',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--mu);">
+          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </button>
+      </div>
     </div>
     <button class="btn-main" id="btn-reg" onclick="registreren()">Account aanmaken</button>
   </div>
@@ -80,6 +90,15 @@ function toonMsg(tekst, type){
   el.style.display = 'block';
 }
 function leegMsg(){ document.getElementById('msg').style.display='none'; }
+
+function wisselWwZichtbaar(veldId, knop){
+  const veld = document.getElementById(veldId);
+  const zichtbaar = veld.type === 'text';
+  veld.type = zichtbaar ? 'password' : 'text';
+  knop.innerHTML = zichtbaar
+    ? `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>`
+    : `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a18.6 18.6 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
+}
 
 function toonLogin(){
   document.getElementById('sectie-login').style.display='block';

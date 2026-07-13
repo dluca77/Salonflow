@@ -65,18 +65,28 @@ let BERICHTEN = [];
 let HUIDIG_BERICHT_ID = null;
 
 async function init(){
-  const{data:{session}}=await sb.auth.getSession();
-  if(!session){ window.location.href='postvak-login.html'; return; }
+  try{
+    const{data:{session}}=await sb.auth.getSession();
+    if(!session){ window.location.href='postvak-login.html'; return; }
 
-  const{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
-  if(!teamlid){
-    await sb.auth.signOut();
-    window.location.href='postvak-login.html';
-    return;
+    const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
+    if(teamlidError){
+      document.documentElement.style.opacity='1';
+      document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Kon niet controleren of je toegang hebt: '+teamlidError.message+'</div>';
+      return;
+    }
+    if(!teamlid){
+      await sb.auth.signOut();
+      window.location.href='postvak-login.html';
+      return;
+    }
+
+    document.documentElement.style.opacity='1';
+    await laadBerichten();
+  }catch(e){
+    document.documentElement.style.opacity='1';
+    document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Er ging iets mis bij het laden: '+e.message+'</div>';
   }
-
-  document.documentElement.style.opacity='1';
-  await laadBerichten();
 }
 
 async function laadBerichten(){
