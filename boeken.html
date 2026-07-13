@@ -796,7 +796,12 @@ async function pickDay(d){
     gekozen medewerker (state.med_id): ${dbg.state_med_id}<br>
     zoekperiode: ${dbg.dagStart} t/m ${dbg.dagEind}<br>
     aantal bestaande afspraken gevonden: ${dbg.aantalGevonden}<br>
-    gevonden afspraken: ${JSON.stringify(dbg.gevonden)}
+    gevonden afspraken: ${JSON.stringify(dbg.gevonden)}<br>
+    <hr style="margin:6px 0;">
+    <strong>ZONDER locatie-filter:</strong><br>
+    fout: ${dbg.fout_zonder_locatie ? JSON.stringify(dbg.fout_zonder_locatie) : 'geen'}<br>
+    aantal gevonden zonder locatie-filter: ${dbg.aantalGevondenZonderLocatie}<br>
+    gevonden zonder locatie-filter: ${JSON.stringify(dbg.gevondenZonderLocatie)}
   </div>`;
 
   if(!slots.length){
@@ -851,6 +856,14 @@ async function berekenBeschikbareSlots(datum){
     p_datum_start:dagStart.toISOString(),
     p_datum_eind:dagEind.toISOString()
   });
+  // TIJDELIJK: zelfde aanroep, maar dan ZONDER locatie-filter, om te
+  // testen of een locatie-mismatch de oorzaak is dat er niks gevonden wordt.
+  const{data:dataZonderLocatie,error:queryErrorZonderLocatie}=await sb.rpc('get_bezette_tijden',{
+    p_salon_id:SALON_ID,
+    p_locatie_id:null,
+    p_datum_start:dagStart.toISOString(),
+    p_datum_eind:dagEind.toISOString()
+  });
   window.__laatsteBeschikbaarheidQueryFout = queryError || null;
   window.__laatsteBeschikbaarheidDebug = {
     SALON_ID, HUIDIGE_BOEK_LOCATIE_ID,
@@ -858,6 +871,9 @@ async function berekenBeschikbareSlots(datum){
     dagStart: dagStart.toISOString(), dagEind: dagEind.toISOString(),
     aantalGevonden: (data||[]).length,
     gevonden: (data||[]).map(a=>({medewerker_id:a.medewerker_id, datum_tijd:a.datum_tijd, duur_min:a.duur_min})),
+    fout_zonder_locatie: queryErrorZonderLocatie || null,
+    aantalGevondenZonderLocatie: (dataZonderLocatie||[]).length,
+    gevondenZonderLocatie: (dataZonderLocatie||[]).map(a=>({medewerker_id:a.medewerker_id, datum_tijd:a.datum_tijd, duur_min:a.duur_min})),
   };
   if(queryError){
     console.error('Kon bestaande afspraken niet ophalen voor beschikbaarheidscheck:', queryError);
