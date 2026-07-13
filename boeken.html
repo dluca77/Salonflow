@@ -605,7 +605,18 @@ function goStep(n){
     lbl.classList.toggle('active',i===n);
     if(i<4)document.getElementById('line'+i).classList.toggle('done',i<n);
   }
-  if(n===3)renderCal();
+  if(n===3){
+    renderCal();
+    // Beschikbaarheid altijd vers ophalen zodra deze stap actief wordt --
+    // zowel bij vooruit gaan als bij TERUG gaan vanuit stap 4. Zonder dit
+    // kon een eerder al getoonde (inmiddels verouderde) tijd-lijst blijven
+    // staan, met het risico dat iemand een tijd bevestigt die in de
+    // tussentijd door iemand anders is ingenomen.
+    if(state.datum){
+      const dagNummer=parseInt(state.datum.split(' ')[0]);
+      pickDay(dagNummer);
+    }
+  }
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
@@ -1181,7 +1192,7 @@ async function bevestigen(){
 
   if(error){
     console.error('Fout bij aanmaken afspraak:', error);
-    errEl.textContent='DEBUG: '+(error.message||JSON.stringify(error));
+    errEl.textContent='Deze tijd is helaas niet meer beschikbaar. Kies een andere tijd.';
     errEl.style.display='block';return;
   }
 
