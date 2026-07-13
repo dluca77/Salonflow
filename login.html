@@ -279,13 +279,21 @@ const sb = window.supabase.createClient(SB_URL, SB_KEY, {
 });
 
 // Auth check: access_token in hash = e-mail bevestigd
+async function redirectNaJuisteBestemming(session){
+  if(!session) return;
+  // Is dit account ook een Kronr-teamlid (Isaak zelf)? Dan naar het
+  // beheer-dashboard i.p.v. het gewone salon-dashboard.
+  const{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
+  window.location.href = teamlid ? 'admin.html' : 'dashboard.html';
+}
+
 if (window.location.hash.includes('access_token')) {
   sb.auth.getSession().then(({ data: { session } }) => {
-    if (session) window.location.href = 'dashboard.html';
+    redirectNaJuisteBestemming(session);
   });
 } else {
   sb.auth.getSession().then(({ data: { session } }) => {
-    if (session) window.location.href = 'dashboard.html';
+    redirectNaJuisteBestemming(session);
   });
 }
 
@@ -338,12 +346,12 @@ async function login() {
   localStorage.setItem('kronr_remember', onthoud ? '1' : '0');
   setLaden('btn-login', true, 'Inloggen');
   leegMsg();
-  const { error } = await sb.auth.signInWithPassword({ email, password: pass });
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
   if (error) {
     toonMsg('Inloggen mislukt. Controleer je gegevens.');
     setLaden('btn-login', false, 'Inloggen');
   } else {
-    window.location.href = 'dashboard.html';
+    await redirectNaJuisteBestemming(data.session);
   }
 }
 
