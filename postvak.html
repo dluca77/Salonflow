@@ -59,6 +59,7 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
     <button class="tab-knop" id="tab-archief" onclick="wisselTab('archief')">Archief</button>
   </div>
   <div style="display:flex;align-items:center;gap:16px;">
+    <button onclick="toonNieuwBericht()" style="font-size:13px;font-weight:600;color:var(--wh);background:var(--ink);border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:inherit;">+ Nieuw bericht</button>
     <button class="uitloggen" onclick="toonInstellingen()">Instellingen</button>
     <button class="uitloggen" onclick="uitloggen()">Uitloggen</button>
   </div>
@@ -73,17 +74,36 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
   </div>
 </div>
 
-<!-- Instellingen-scherm (handtekening) -->
+<!-- Instellingen-scherm -->
 <div id="instellingen-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,13,11,.4);z-index:100;align-items:center;justify-content:center;padding:24px;">
   <div style="background:var(--wh);border-radius:14px;padding:28px;max-width:420px;width:100%;">
-    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:800;color:var(--ink);margin-bottom:16px;">Handtekening</div>
-    <p style="font-size:13px;color:var(--mu);margin-bottom:12px;">Wordt automatisch onder elk verstuurd antwoord geplakt.</p>
-    <textarea id="handtekening-tekst" style="width:100%;min-height:100px;border:1px solid var(--bd);border-radius:8px;padding:12px;font-family:inherit;font-size:13px;resize:vertical;" placeholder="Bijv:&#10;Isaak&#10;Kronr"></textarea>
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:800;color:var(--ink);margin-bottom:16px;">Instellingen</div>
+    <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Jouw naam</label>
+    <p style="font-size:12.5px;color:var(--mu);margin-bottom:8px;">Verstuurde mail gebruikt automatisch de Kronr-huisstijl (zoals de bevestigingsmails), met "— [jouw naam], Kronr" onderaan.</p>
+    <input type="text" id="naam-tekst" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:13px;" placeholder="Bijv. Isaak">
     <div style="display:flex;gap:10px;margin-top:14px;">
-      <button onclick="slaHandtekeningOp()" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Opslaan</button>
+      <button onclick="slaNaamOp()" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Opslaan</button>
       <button onclick="sluitInstellingen()" style="padding:11px 18px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;">Sluiten</button>
     </div>
     <div class="reply-msg" id="instellingen-msg" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- Nieuw bericht -->
+<div id="nieuw-bericht-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,13,11,.4);z-index:100;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--wh);border-radius:14px;padding:28px;max-width:480px;width:100%;">
+    <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:800;color:var(--ink);margin-bottom:16px;">Nieuw bericht</div>
+    <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Aan</label>
+    <input type="email" id="nb-naar" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:13px;margin-bottom:14px;" placeholder="naam@voorbeeld.nl">
+    <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Onderwerp</label>
+    <input type="text" id="nb-onderwerp" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:13px;margin-bottom:14px;">
+    <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Bericht</label>
+    <textarea id="nb-inhoud" style="width:100%;min-height:140px;border:1px solid var(--bd);border-radius:8px;padding:12px;font-family:inherit;font-size:13px;resize:vertical;"></textarea>
+    <div style="display:flex;gap:10px;margin-top:14px;">
+      <button onclick="verstuurNieuwBericht()" id="nb-btn" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Versturen</button>
+      <button onclick="sluitNieuwBericht()" style="padding:11px 18px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;">Annuleren</button>
+    </div>
+    <div class="reply-msg" id="nb-msg" style="margin-top:10px;"></div>
   </div>
 </div>
 
@@ -112,7 +132,7 @@ async function init(){
     const{data:{session}}=await sb.auth.getSession();
     if(!session){ window.location.href='postvak-login.html'; return; }
 
-    const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id,handtekening').eq('auth_user_id',session.user.id).maybeSingle();
+    const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id,naam').eq('auth_user_id',session.user.id).maybeSingle();
     if(teamlidError){
       document.body.style.opacity='1';
       document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Kon niet controleren of je toegang hebt: '+teamlidError.message+'</div>';
@@ -327,26 +347,76 @@ async function verstuurAntwoord(){
 }
 
 function toonInstellingen(){
-  document.getElementById('handtekening-tekst').value = HUIDIG_TEAMLID?.handtekening || '';
+  document.getElementById('naam-tekst').value = HUIDIG_TEAMLID?.naam || '';
   document.getElementById('instellingen-msg').style.display='none';
   document.getElementById('instellingen-overlay').style.display='flex';
 }
 function sluitInstellingen(){
   document.getElementById('instellingen-overlay').style.display='none';
 }
-async function slaHandtekeningOp(){
-  const tekst = document.getElementById('handtekening-tekst').value.trim();
+async function slaNaamOp(){
+  const naam = document.getElementById('naam-tekst').value.trim();
   const msgEl = document.getElementById('instellingen-msg');
-  const{error}=await sb.from('kronr_team').update({handtekening:tekst||null}).eq('id',HUIDIG_TEAMLID.id);
+  const{error}=await sb.from('kronr_team').update({naam:naam||null}).eq('id',HUIDIG_TEAMLID.id);
   if(error){
     msgEl.textContent='Fout: '+error.message;
     msgEl.className='reply-msg fout';
   } else {
-    HUIDIG_TEAMLID.handtekening = tekst;
-    msgEl.textContent='Handtekening opgeslagen.';
+    HUIDIG_TEAMLID.naam = naam;
+    msgEl.textContent='Opgeslagen.';
     msgEl.className='reply-msg ok';
   }
   msgEl.style.display='block';
+}
+
+function toonNieuwBericht(){
+  document.getElementById('nb-naar').value='';
+  document.getElementById('nb-onderwerp').value='';
+  document.getElementById('nb-inhoud').value='';
+  document.getElementById('nb-msg').style.display='none';
+  document.getElementById('nieuw-bericht-overlay').style.display='flex';
+}
+function sluitNieuwBericht(){
+  document.getElementById('nieuw-bericht-overlay').style.display='none';
+}
+async function verstuurNieuwBericht(){
+  const naar = document.getElementById('nb-naar').value.trim();
+  const onderwerp = document.getElementById('nb-onderwerp').value.trim();
+  const inhoud = document.getElementById('nb-inhoud').value.trim();
+  const msgEl = document.getElementById('nb-msg');
+
+  if(!naar||!onderwerp||!inhoud){
+    msgEl.textContent='Vul alle velden in.';
+    msgEl.className='reply-msg fout';
+    msgEl.style.display='block';
+    return;
+  }
+
+  const btn=document.getElementById('nb-btn');
+  btn.disabled=true;btn.textContent='Versturen...';
+
+  const{data:{session}}=await sb.auth.getSession();
+
+  try{
+    const res = await fetch('https://kronr-postvak.isaak-elia.workers.dev/versturen',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ naar, onderwerp, inhoud, sessie_token: session.access_token })
+    });
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error||'Versturen mislukt');
+
+    msgEl.textContent='Verstuurd!';
+    msgEl.className='reply-msg ok';
+    msgEl.style.display='block';
+    setTimeout(()=>{ sluitNieuwBericht(); if(HUIDIGE_TAB==='uit') laadVerzonden(); }, 900);
+  }catch(e){
+    msgEl.textContent='Fout: '+e.message;
+    msgEl.className='reply-msg fout';
+    msgEl.style.display='block';
+  }
+
+  btn.disabled=false;btn.textContent='Versturen';
 }
 
 async function uitloggen(){
