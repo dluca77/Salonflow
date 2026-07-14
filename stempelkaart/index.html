@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stempelkaart | Kronr</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;}
+.wrap{max-width:440px;margin:0 auto;padding:60px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:36px;}
+.logo em{font-style:normal;color:var(--gd);}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;}
+.card-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;text-align:center;}
+.card-sub{font-size:13px;color:var(--mu);margin-bottom:24px;line-height:1.6;text-align:center;}
+.fi{width:100%;padding:12px 14px;border:1px solid var(--bd);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;margin-bottom:14px;}
+.fi:focus{outline:none;border-color:var(--gd);}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn-prim{background:var(--ink);color:#fff;}
+.btn-prim:hover:not(:disabled){opacity:.9;}
+.btn-back{background:transparent;color:var(--mu);margin-top:10px;text-decoration:underline;text-underline-offset:2px;}
+.state-icon{font-size:40px;text-align:center;margin-bottom:16px;}
+.msg-center{text-align:center;color:var(--mu);font-size:13px;line-height:1.6;}
+.spinner{width:20px;height:20px;border:2px solid var(--bd);border-top-color:var(--gd);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.stamps-row{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.stamp{width:34px;height:34px;border-radius:50%;border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:16px;}
+.stamp.gevuld{background:var(--gd);border-color:var(--gd);color:#fff;}
+.reward-box{background:var(--wm);border-radius:10px;padding:18px;text-align:center;margin-top:8px;}
+.reward-code{font-family:monospace;font-size:26px;font-weight:700;letter-spacing:4px;color:var(--gd2);margin:8px 0;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="card" id="card">
+    <div class="card-title">Jouw stempelkaart</div>
+    <p class="card-sub">Vul je e-mailadres in om je stempels te bekijken.</p>
+    <input class="fi" id="inp-email" type="email" placeholder="jouw@email.nl" autocomplete="email">
+    <button class="btn btn-prim" id="btn-zoek" onclick="zoekStempelkaart()">Bekijk mijn stempelkaart</button>
+    <div id="err" style="display:none;color:var(--red);font-size:12px;text-align:center;margin-top:10px;"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+const params=new URLSearchParams(location.search);
+const SALON_ID=params.get('salon');
+const card=document.getElementById('card');
+
+document.getElementById('inp-email').addEventListener('keydown',e=>{
+  if(e.key==='Enter') zoekStempelkaart();
+});
+
+async function zoekStempelkaart(){
+  const email=document.getElementById('inp-email').value.trim();
+  const errEl=document.getElementById('err');
+  errEl.style.display='none';
+
+  if(!SALON_ID){
+    errEl.textContent='Ongeldige link. Vraag de salon om de juiste link.';
+    errEl.style.display='block';
+    return;
+  }
+  if(!email || !email.includes('@')){
+    errEl.textContent='Vul een geldig e-mailadres in.';
+    errEl.style.display='block';
+    return;
+  }
+
+  const btn=document.getElementById('btn-zoek');
+  btn.disabled=true;btn.textContent='Zoeken...';
+
+  const{data,error}=await sb.rpc('get_stempelkaart',{p_salon_id:SALON_ID,p_email:email});
+  const info=Array.isArray(data)?data[0]:data;
+
+  btn.disabled=false;btn.textContent='Bekijk mijn stempelkaart';
+
+  if(error||!info||info.stempels_nodig===0){
+    errEl.textContent='Deze salon heeft geen stempelkaart-programma, of er is iets misgegaan.';
+    errEl.style.display='block';
+    return;
+  }
+
+  toonKaart(info);
+}
+
+function toonKaart(info){
+  let stampsHtml='';
+  for(let i=0;i<info.stempels_nodig;i++){
+    stampsHtml+=`<div class="stamp${i<info.stempels_huidig?' gevuld':''}">${i<info.stempels_huidig?'✓':''}</div>`;
+  }
+
+  card.innerHTML=`
+    <div class="card-title">Jouw stempelkaart</div>
+    <p class="card-sub">${info.stempels_huidig} van de ${info.stempels_nodig} stempels verzameld</p>
+    <div class="stamps-row">${stampsHtml}</div>
+    ${info.vol && info.open_code ? `
+      <div class="reward-box">
+        <div style="font-size:13px;color:var(--mu);">🎉 Je hebt <strong>${info.beloning||'een beloning'}</strong> verdiend!</div>
+        <div class="reward-code">${info.open_code}</div>
+        <div style="font-size:11px;color:var(--mu);">Toon deze code aan de salon om 'm in te wisselen.</div>
+      </div>
+    ` : `<p class="msg-center">Nog ${info.stempels_nodig-info.stempels_huidig} te gaan voor: ${info.beloning||'je beloning'}!</p>`}
+    <button class="btn btn-back" onclick="location.reload()">Ander e-mailadres proberen</button>
+  `;
+}
+</script>
+</body>
+</html>

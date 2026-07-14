@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boek een afspraak</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0f0d0b;--ink2:#2a2420;--mu:#6b6058;--mu2:#a09890;
+  --iv:#faf8f4;--wm:#f3ede4;--bd:#e2d9ce;
+  --gd:#8c6d3f;--gd2:#6e5230;--gd-light:#f5ede0;
+  --white:#ffffff;--green:#1a7a40;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+.hero{padding:48px 24px 32px;text-align:center;}
+.logo-box{width:76px;height:76px;border-radius:16px;margin:0 auto 20px;overflow:hidden;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--gd);}
+.logo-box img{width:100%;height:100%;object-fit:cover;}
+.salon-naam{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;margin-bottom:6px;}
+.salon-type{font-size:13px;color:var(--mu);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;}
+
+.info-row{display:flex;flex-wrap:wrap;justify-content:center;gap:20px;font-size:13px;color:var(--ink2);margin-bottom:8px;}
+.info-item{display:flex;align-items:center;gap:6px;}
+.info-item svg{width:14px;height:14px;color:var(--gd);flex-shrink:0;}
+
+.widget-wrap{max-width:900px;margin:0 auto;padding:0 16px 48px;}
+.widget-frame{width:100%;min-height:600px;border:none;border-radius:16px;box-shadow:0 20px 60px rgba(15,13,11,.08);background:var(--white);display:block;}
+
+.footer-tag{text-align:center;padding:20px;font-size:11px;color:var(--mu2);}
+.footer-tag a{color:var(--gd);text-decoration:none;font-weight:600;}
+
+.state{min-height:100vh;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px;padding:24px;text-align:center;}
+.spinner{width:24px;height:24px;border:2px solid var(--bd);border-top-color:var(--gd);border-radius:50%;animation:spin .7s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:600px){
+  .hero{padding:32px 16px 24px;}
+  .salon-naam{font-size:24px;}
+}
+</style>
+</head>
+<body>
+
+<div id="laden-state" class="state">
+  <div class="spinner"></div>
+  <p style="font-size:13px;color:var(--mu);">Pagina laden...</p>
+</div>
+
+<div id="content" style="display:none;">
+  <div class="hero">
+    <div class="logo-box" id="logo-box">?</div>
+    <div class="salon-naam" id="salon-naam"></div>
+    <div class="salon-type" id="salon-type"></div>
+    <div class="info-row" id="info-row"></div>
+  </div>
+
+  <div class="widget-wrap">
+    <iframe class="widget-frame" id="booking-frame" src=""></iframe>
+  </div>
+
+  <div class="footer-tag">Website gemaakt met <a href="https://kronr.nl" target="_blank">Kronr</a></div>
+</div>
+
+<div id="fout-state" class="state" style="display:none;">
+  <div style="font-size:32px;">⚠</div>
+  <p style="font-size:14px;color:var(--mu);max-width:320px;">Deze pagina kon niet gevonden worden. Controleer of je de juiste link hebt.</p>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+const params=new URLSearchParams(location.search);
+const slug=params.get('salon');
+
+async function init(){
+  if(!slug){
+    toonFout();
+    return;
+  }
+
+  const{data,error}=await sb.rpc('get_salon_via_slug',{p_slug:slug});
+  const salon=Array.isArray(data)?data[0]:data;
+
+  if(error||!salon){
+    toonFout();
+    return;
+  }
+
+  // Deze gehoste pagina is een functie van het Business-pakket
+  if(salon.plan!=='business'){
+    toonFout();
+    return;
+  }
+
+  toonContent(salon);
+}
+
+function toonContent(salon){
+  document.title=salon.naam+' | Boek een afspraak';
+  document.getElementById('salon-naam').textContent=salon.naam;
+  document.getElementById('salon-type').textContent=salon.type_bedrijf||'';
+
+  const logoBox=document.getElementById('logo-box');
+  if(salon.logo_url){
+    logoBox.innerHTML=`<img src="${salon.logo_url}" alt="${salon.naam}">`;
+  } else {
+    logoBox.textContent=salon.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+  }
+
+  const infoItems=[];
+  if(salon.adres||salon.stad){
+    infoItems.push(`<div class="info-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${[salon.adres,salon.stad].filter(Boolean).join(', ')}</div>`);
+  }
+  if(salon.telefoon){
+    infoItems.push(`<div class="info-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>${salon.telefoon}</div>`);
+  }
+  document.getElementById('info-row').innerHTML=infoItems.join('');
+
+  // Cache-busting-parameter toegevoegd: zonder dit kon een verouderde,
+  // gecachte versie van boeken in de iframe blijven hangen na een
+  // update, ook als de buitenste s-pagina zelf wel vers laadde.
+  document.getElementById('booking-frame').src='/boeken?salon='+salon.id+'&_v='+Date.now();
+
+  document.getElementById('laden-state').style.display='none';
+  document.getElementById('content').style.display='block';
+}
+
+function toonFout(){
+  document.getElementById('laden-state').style.display='none';
+  document.getElementById('fout-state').style.display='flex';
+}
+
+// Iframe laat automatisch meegroeien met zijn echte inhoud (geen vaste
+// hoogte meer) -- voorkomt dat er twee losse scroll-containers ontstaan
+// wanneer de boekingsflow hoger is dan een vast aantal pixels.
+window.addEventListener('message', (e)=>{
+  if(e.data && e.data.type==='kronr:hoogte' && typeof e.data.height==='number'){
+    const frame=document.getElementById('booking-frame');
+    if(frame) frame.style.height=Math.max(600, e.data.height)+'px';
+  }
+});
+
+init();
+</script>
+</body>
+</html>

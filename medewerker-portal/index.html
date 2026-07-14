@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Mijn rooster | Kronr</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;--amber:#b8860b;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;margin:0;min-height:100vh;overflow-x:hidden;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;background:var(--wh);border-bottom:1px solid var(--bd);}
+.logo{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.logo em{font-style:normal;color:var(--gd);}
+.topbar-naam{font-size:12px;color:var(--mu);}
+.btn-uit{background:none;border:1px solid var(--bd);border-radius:6px;padding:6px 12px;font-size:11px;cursor:pointer;font-family:'Inter',sans-serif;color:var(--mu);}
+.wrap{max-width:640px;margin:0 auto;padding:24px 20px 60px;}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:20px;margin-bottom:20px;}
+.card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:14px;}
+.apt-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);font-size:13px;}
+.apt-row:last-child{border-bottom:none;}
+.apt-datum{font-weight:600;}
+.apt-svc{color:var(--mu);font-size:11px;margin-top:2px;}
+.empty{padding:20px 0;text-align:center;color:var(--mu2);font-size:12px;text-transform:uppercase;letter-spacing:1px;}
+.verlof-row{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd);}
+.verlof-row:last-child{border-bottom:none;}
+.verlof-datums{font-size:13px;font-weight:500;}
+.verlof-type{font-size:11px;color:var(--mu);margin-top:2px;text-transform:capitalize;}
+.badge{font-size:10px;padding:4px 9px;border-radius:99px;text-transform:uppercase;letter-spacing:0.5px;font-weight:600;}
+.badge-aangevraagd{background:rgba(184,134,11,0.12);color:var(--amber);}
+.badge-goedgekeurd{background:rgba(45,106,79,0.1);color:var(--green);}
+.badge-afgewezen{background:rgba(192,57,43,0.1);color:var(--red);}
+.fl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;margin-top:12px;}
+.fi{width:100%;padding:11px 12px;border:1px solid var(--bd);border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;}
+.btn{padding:12px;border:none;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:0.3px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:14px;width:100%;}
+.btn-prim{background:var(--ink);color:#fff;}
+.btn:disabled{opacity:.5;}
+.err{color:var(--red);font-size:12px;margin-top:8px;display:none;}
+.msg-ok{color:var(--green);font-size:12px;margin-top:8px;display:none;}
+.laden{text-align:center;padding:60px 20px;color:var(--mu);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Kronr<em>.</em></div>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="topbar-naam" id="topbar-naam"></span>
+    <button class="btn-uit" onclick="logUit()">Uitloggen</button>
+  </div>
+</div>
+
+<div class="wrap" id="wrap">
+  <div class="laden">Laden...</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+let MEDEWERKER=null;
+
+async function logUit(){
+  await sb.auth.signOut();
+  window.location.href = '/medewerker-login';
+}
+
+function fmtDatum(d){
+  return new Date(d).toLocaleDateString('nl-NL',{day:'numeric',month:'short'});
+}
+
+async function init(){
+  const{data:{session}}=await sb.auth.getSession();
+  if(!session){ window.location.href = '/medewerker-login'; return; }
+
+  const{data,error}=await sb.from('medewerkers').select('*').eq('auth_user_id',session.user.id).maybeSingle();
+
+  if(error||!data){
+    document.getElementById('wrap').innerHTML=`
+      <div class="card" style="text-align:center;">
+        <div class="card-title">Geen gekoppeld account gevonden</div>
+        <p style="font-size:13px;color:var(--mu);">Je bent ingelogd, maar dit account is nog niet aan een medewerkersprofiel gekoppeld. Neem contact op met je werkgever.</p>
+      </div>`;
+    return;
+  }
+
+  MEDEWERKER=data;
+  document.getElementById('topbar-naam').textContent=MEDEWERKER.naam;
+
+  await Promise.all([laadRooster(), laadVerlof()]);
+}
+
+async function laadRooster(){
+  const nu=new Date();
+  const{data}=await sb.from('afspraken')
+    .select('*,diensten(naam)')
+    .eq('medewerker_id',MEDEWERKER.id)
+    .gte('datum_tijd',nu.toISOString())
+    .not('status','eq','geannuleerd')
+    .order('datum_tijd')
+    .limit(15);
+
+  const rows=(data||[]).map(a=>`
+    <div class="apt-row">
+      <div>
+        <div class="apt-datum">${fmtDatum(a.datum_tijd)} · ${new Date(a.datum_tijd).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}</div>
+        <div class="apt-svc">${a.diensten?.naam||a.bloktijd_type||'Afspraak'}${a.klant_naam?' · '+a.klant_naam:''}</div>
+      </div>
+    </div>`).join('');
+
+  renderCard('rooster-card', 'Mijn eerstvolgende afspraken', rows || `<div class="empty">Geen aankomende afspraken</div>`);
+}
+
+async function laadVerlof(){
+  const{data}=await sb.from('medewerker_verlof')
+    .select('*')
+    .eq('medewerker_id',MEDEWERKER.id)
+    .order('van_datum',{ascending:false})
+    .limit(20);
+
+  const rows=(data||[]).map(v=>`
+    <div class="verlof-row">
+      <div>
+        <div class="verlof-datums">${fmtDatum(v.van_datum)} t/m ${fmtDatum(v.tot_datum)}</div>
+        <div class="verlof-type">${v.type}${v.notitie?' · '+v.notitie:''}</div>
+      </div>
+      <span class="badge badge-${v.status}">${v.status}</span>
+    </div>`).join('');
+
+  const formHtml=`
+    <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--bd);">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Nieuwe aanvraag</div>
+      <label class="fl">Type</label>
+      <select class="fi" id="v-type">
+        <option value="verlof">Verlof</option>
+        <option value="ziekte">Ziekte</option>
+      </select>
+      <label class="fl">Van</label>
+      <input class="fi" id="v-van" type="date">
+      <label class="fl">Tot en met</label>
+      <input class="fi" id="v-tot" type="date">
+      <label class="fl">Notitie (optioneel)</label>
+      <input class="fi" id="v-notitie" type="text" placeholder="bv. familiebezoek">
+      <button class="btn btn-prim" id="btn-verlof-aanvragen" onclick="vraagVerlofAan()">Aanvragen</button>
+      <div class="err" id="v-err"></div>
+      <div class="msg-ok" id="v-ok"></div>
+    </div>
+  `;
+
+  renderCard('verlof-card', 'Verlof & ziekte', (rows || `<div class="empty">Nog geen aanvragen</div>`) + formHtml);
+}
+
+let laadStateGewist=false;
+function renderCard(id, titel, inhoud){
+  if(!laadStateGewist){
+    document.getElementById('wrap').innerHTML='';
+    laadStateGewist=true;
+  }
+  let el=document.getElementById(id);
+  if(!el){
+    el=document.createElement('div');
+    el.className='card';
+    el.id=id;
+    document.getElementById('wrap').appendChild(el);
+  }
+  el.innerHTML=`<div class="card-title">${titel}</div>${inhoud}`;
+}
+
+async function vraagVerlofAan(){
+  const type=document.getElementById('v-type').value;
+  const van=document.getElementById('v-van').value;
+  const tot=document.getElementById('v-tot').value;
+  const notitie=document.getElementById('v-notitie').value.trim();
+  const errEl=document.getElementById('v-err');
+  const okEl=document.getElementById('v-ok');
+  errEl.style.display='none';okEl.style.display='none';
+
+  if(!van||!tot){ errEl.textContent='Vul een start- en einddatum in.'; errEl.style.display='block'; return; }
+  if(tot<van){ errEl.textContent='Einddatum kan niet voor de startdatum liggen.'; errEl.style.display='block'; return; }
+
+  const btn=document.getElementById('btn-verlof-aanvragen');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{error}=await sb.from('medewerker_verlof').insert({
+    salon_id:MEDEWERKER.salon_id,
+    medewerker_id:MEDEWERKER.id,
+    van_datum:van,tot_datum:tot,type,
+    notitie:notitie||null
+  });
+
+  btn.disabled=false;btn.textContent='Aanvragen';
+
+  if(error){ errEl.textContent='Fout: '+error.message; errEl.style.display='block'; return; }
+
+  okEl.textContent='Aanvraag verstuurd.'; okEl.style.display='block';
+  await laadVerlof();
+}
+
+init();
+</script>
+</body>
+</html>

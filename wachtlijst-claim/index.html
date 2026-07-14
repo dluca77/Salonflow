@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plek claimen | Kronr</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+.wrap{max-width:440px;margin:0 auto;padding:60px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:36px;}
+.logo em{font-style:normal;color:var(--gd);}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:32px 28px;}
+.card-title{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:8px;}
+.card-sub{font-size:13px;color:var(--mu);margin-bottom:24px;line-height:1.6;}
+.detail-box{background:var(--iv);border:1px solid var(--bd);border-radius:10px;padding:16px 18px;margin-bottom:24px;}
+.detail-row{display:flex;justify-content:space-between;gap:12px;padding:4px 0;font-size:13px;}
+.detail-label{color:var(--mu);flex-shrink:0;}
+.detail-value{font-weight:500;text-align:right;min-width:0;overflow-wrap:break-word;}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;cursor:pointer;font-family:'Inter',sans-serif;transition:opacity .15s;}
+.btn:disabled{opacity:.5;cursor:default;}
+.btn-claim{background:var(--gd);color:#fff;}
+.btn-claim:hover:not(:disabled){opacity:.9;}
+.state-icon{font-size:40px;text-align:center;margin-bottom:16px;}
+.msg-center{text-align:center;color:var(--mu);font-size:13px;line-height:1.6;}
+.spinner{width:20px;height:20px;border:2px solid var(--bd);border-top-color:var(--gd);border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+@keyframes spin{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="card" id="card">
+    <div class="spinner"></div>
+    <p class="msg-center" style="margin-top:16px;">Plek opzoeken...</p>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+const params=new URLSearchParams(location.search);
+const token=params.get('token');
+const card=document.getElementById('card');
+
+function fmtDatum(iso){
+  const d=new Date(iso);
+  return d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})+' om '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+}
+
+async function init(){
+  if(!token){
+    toonFout('Ongeldige link. Controleer of je de volledige link uit de e-mail hebt geopend.');
+    return;
+  }
+
+  const{data,error}=await sb.rpc('get_wachtlijst_via_token',{p_token:token});
+  const entry=Array.isArray(data)?data[0]:data;
+
+  if(error||!entry||!entry.voorgestelde_datum_tijd){
+    toonFout('Deze plek kon niet gevonden worden. Mogelijk is de link verlopen.');
+    return;
+  }
+
+  if(entry.status==='vervuld'){
+    toonAlGeclaimd();
+    return;
+  }
+
+  const verlopen=entry.voorgesteld_op && (new Date()-new Date(entry.voorgesteld_op))>24*60*60*1000;
+  if(verlopen){
+    toonVerlopen();
+    return;
+  }
+
+  toonDetails(entry);
+}
+
+function toonDetails(e){
+  card.innerHTML=`
+    <div class="card-title">Er is een plek voor je!</div>
+    <p class="card-sub">Bevestig hieronder dat je deze plek wilt claimen.</p>
+    <div class="detail-box">
+      <div class="detail-row"><span class="detail-label">Naam</span><span class="detail-value">${e.klant_naam||'-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Dienst</span><span class="detail-value">${e.dienst_naam||'-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Datum</span><span class="detail-value">${fmtDatum(e.voorgestelde_datum_tijd)}</span></div>
+    </div>
+    <button class="btn btn-claim" id="btn-claim">Ja, ik wil deze plek!</button>
+  `;
+  document.getElementById('btn-claim').onclick=bevestigClaim;
+}
+
+async function bevestigClaim(){
+  const btn=document.getElementById('btn-claim');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{data,error}=await sb.rpc('claim_wachtlijst_plek',{p_token:token});
+
+  if(error||!data?.success){
+    toonFout(data?.error||'Claimen is niet gelukt. Probeer het later opnieuw of neem contact op met de salon.');
+    return;
+  }
+
+  // Bevestigingsmail versturen -- dit was eerst alleen beloofd in de tekst,
+  // maar werd nooit daadwerkelijk verstuurd. Nu gebeurt het echt.
+  fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      email:data.klant_email,
+      klant_naam:data.klant_naam,
+      salon_naam:data.salon_naam,
+      dienst_naam:data.dienst_naam,
+      datum_tijd:data.datum_tijd,
+      annuleer_token:data.annuleer_token
+    })
+  }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
+
+  card.innerHTML=`
+    <div class="state-icon">✓</div>
+    <div class="card-title" style="text-align:center;">Afspraak bevestigd!</div>
+    <p class="msg-center">Je plek is vastgelegd. Je ontvangt hiervan ook nog een losse bevestiging.</p>
+  `;
+}
+
+function toonAlGeclaimd(){
+  card.innerHTML=`
+    <div class="state-icon">—</div>
+    <div class="card-title" style="text-align:center;">Al geclaimd</div>
+    <p class="msg-center">Deze plek is al geclaimd (misschien door jou, in een ander tabblad?). Check je agenda of neem contact op met de salon.</p>
+  `;
+}
+
+function toonVerlopen(){
+  card.innerHTML=`
+    <div class="state-icon">⏱</div>
+    <div class="card-title" style="text-align:center;">Plek verlopen</div>
+    <p class="msg-center">Deze plek was 24 uur gereserveerd en is helaas verlopen. Neem contact op met de salon voor een nieuwe afspraak.</p>
+  `;
+}
+
+function toonFout(tekst){
+  card.innerHTML=`
+    <div class="state-icon">⚠</div>
+    <div class="card-title" style="text-align:center;">Kon niet worden geladen</div>
+    <p class="msg-center">${tekst}</p>
+  `;
+}
+
+init();
+</script>
+</body>
+</html>

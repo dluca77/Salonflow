@@ -59,7 +59,7 @@ function toonVergrendelScherm() {
       </div>
       <h1 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#0f0d0b;margin-bottom:12px;">Je proefperiode is verlopen</h1>
       <p style="font-size:14.5px;color:#6b6058;line-height:1.6;margin-bottom:28px;">Je 14 dagen gratis zijn voorbij. Kies een pakket om Kronr te blijven gebruiken -- je gegevens staan gewoon klaar, er gaat niets verloren.</p>
-      <a href="instellingen.html#abonnement" style="display:inline-block;background:#0f0d0b;color:#faf8f4;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">Bekijk pakketten</a>
+      <a href="/instellingen#abonnement" style="display:inline-block;background:#0f0d0b;color:#faf8f4;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">Bekijk pakketten</a>
       <div style="margin-top:20px;">
         <a href="#" onclick="uitloggen();return false;" style="font-size:13px;color:#a09890;text-decoration:underline;">Uitloggen</a>
       </div>
@@ -123,7 +123,7 @@ function toonGeenToegangScherm() {
     <div style="max-width:380px;text-align:center;">
       <h1 style="font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:#0f0d0b;margin-bottom:12px;">Geen toegang</h1>
       <p style="font-size:14px;color:#6b6058;line-height:1.6;margin-bottom:24px;">Je hebt geen rechten om deze pagina te bekijken. Neem contact op met je werkgever als je denkt dat dit niet klopt.</p>
-      <a href="medewerker-portal.html" style="display:inline-block;background:#0f0d0b;color:#faf8f4;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">Terug naar mijn rooster</a>
+      <a href="/medewerker-portal" style="display:inline-block;background:#0f0d0b;color:#faf8f4;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">Terug naar mijn rooster</a>
     </div>`;
   document.body.appendChild(overlay);
 }
@@ -178,7 +178,7 @@ async function kronrInit(callback, paginaModule) {
     const { data: { session } } = await sb.auth.getSession();
 
     if (!session) {
-      window.location.href = 'login.html';
+      window.location.href = '/login';
       return;
     }
 
@@ -194,7 +194,7 @@ async function kronrInit(callback, paginaModule) {
       .eq('auth_user_id', session.user.id)
       .maybeSingle();
     if (teamlid) {
-      window.location.href = 'admin.html';
+      window.location.href = '/admin';
       return;
     }
 
@@ -248,7 +248,7 @@ async function kronrInit(callback, paginaModule) {
     if (!salon) {
       // Salon aanmaken mislukt, log uit en stuur naar login
       await sb.auth.signOut();
-      window.location.href = 'login.html';
+      window.location.href = '/login';
       return;
     }
 
@@ -257,8 +257,8 @@ async function kronrInit(callback, paginaModule) {
 
     // ── Proefperiode-vergrendeling ──
     // Na 14 dagen op het gratis plan wordt alles op slot gezet, behalve
-    // instellingen.html (waar iemand alsnog een pakket kan kiezen).
-    if (isProefperiodeVerlopen(salon) && !window.location.pathname.endsWith('instellingen.html')) {
+    // instellingen (waar iemand alsnog een pakket kan kiezen).
+    if (isProefperiodeVerlopen(salon) && !window.location.pathname.includes('instellingen')) {
       toonVergrendelScherm();
       return; // callback (de eigenlijke paginalogica) draait bewust niet
     }
@@ -308,7 +308,7 @@ async function kronrInit(callback, paginaModule) {
 
 async function uitloggen() {
   await sb.auth.signOut();
-  window.location.href = 'login.html';
+  window.location.href = '/login';
 }
 
 // Kleine helper: past het locatie-filter alleen toe als er daadwerkelijk

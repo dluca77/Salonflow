@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Medewerker inloggen | Kronr</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+*{box-sizing:border-box;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;}
+.wrap{max-width:400px;margin:0 auto;padding:60px 24px;min-height:100vh;display:flex;flex-direction:column;justify-content:center;}
+.logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;text-align:center;margin-bottom:8px;}
+.logo em{font-style:normal;color:var(--gd);}
+.sub{text-align:center;font-size:12px;color:var(--mu);text-transform:uppercase;letter-spacing:1px;margin-bottom:32px;}
+.card{background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:28px;}
+.fl{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;display:block;}
+.fi{width:100%;padding:12px 14px;border:1px solid var(--bd);border-radius:8px;font-size:14px;font-family:'Inter',sans-serif;margin-bottom:14px;}
+.fi:focus{outline:none;border-color:var(--gd);}
+.btn{width:100%;padding:13px;border:none;border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-prim{background:var(--ink);color:#fff;}
+.btn:disabled{opacity:.5;}
+.err{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none;}
+.terug{display:block;text-align:center;margin-top:20px;font-size:12px;color:var(--mu);text-decoration:none;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="sub">Medewerker-inlog</div>
+  <div class="card">
+    <label class="fl">E-mail</label>
+    <input class="fi" id="inp-email" type="email" autocomplete="email">
+    <label class="fl">Wachtwoord</label>
+    <input class="fi" id="inp-ww" type="password" autocomplete="current-password">
+    <button class="btn btn-prim" id="btn-login" onclick="login()">Inloggen</button>
+    <div class="err" id="err"></div>
+  </div>
+  <a class="terug" href="/login">Ben je salon-eigenaar? Log hier in →</a>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+
+document.getElementById('inp-ww').addEventListener('keydown',e=>{ if(e.key==='Enter') login(); });
+
+async function login(){
+  const email=document.getElementById('inp-email').value.trim();
+  const ww=document.getElementById('inp-ww').value;
+  const errEl=document.getElementById('err');
+  errEl.style.display='none';
+
+  if(!email||!ww){ errEl.textContent='Vul e-mail en wachtwoord in.'; errEl.style.display='block'; return; }
+
+  const btn=document.getElementById('btn-login');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{error}=await sb.auth.signInWithPassword({email,password:ww});
+
+  if(error){
+    btn.disabled=false;btn.textContent='Inloggen';
+    errEl.textContent='Inloggen mislukt: '+error.message;errEl.style.display='block';
+    return;
+  }
+
+  // Was er een openstaande koppeling (bv. na e-mailbevestiging voordat de
+  // uitnodiging kon worden geaccepteerd)? Dan die alsnog afronden.
+  let pendingToken=null;
+  try{ pendingToken=sessionStorage.getItem('kronr_pending_uitnodiging_token'); }catch(e){}
+  if(pendingToken){
+    await sb.rpc('accepteer_medewerker_uitnodiging',{p_token:pendingToken});
+    try{ sessionStorage.removeItem('kronr_pending_uitnodiging_token'); }catch(e){}
+  }
+
+  window.location.href = '/medewerker-portal';
+}
+</script>
+</body>
+</html>

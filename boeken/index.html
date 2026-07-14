@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Afspraak maken</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --iv:#faf8f4;--wh:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+  --green:#2d6a4f;--red:#c0392b;
+}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;min-height:100vh;overflow-x:hidden;}
+
+/* ── HEADER ── */
+.header{background:var(--wh);border-bottom:1px solid var(--bd);height:60px;position:sticky;top:0;z-index:10;}
+.header-inner{max-width:1200px;margin:0 auto;padding:0 40px;height:100%;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{width:36px;height:36px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;color:var(--iv);font-size:14px;font-weight:700;flex-shrink:0;}
+.brand-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;letter-spacing:0.5px;}
+.brand-sub{font-size:11px;color:var(--mu2);letter-spacing:0.5px;margin-top:1px;}
+.header-right{font-size:11px;color:var(--mu2);letter-spacing:1.5px;text-transform:uppercase;}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:1fr 380px;min-height:calc(100vh - 60px);max-width:1200px;margin:0 auto;min-width:0;}
+
+/* ── STEPS MAIN ── */
+.steps-main{padding:36px 40px;border-right:1px solid var(--bd);min-width:0;overflow-wrap:break-word;}
+
+/* Progress */
+.progress-bar{display:flex;align-items:center;margin-bottom:36px;}
+.step-dot{display:flex;align-items:center;gap:8px;}
+.step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:1px solid var(--bd);color:var(--mu2);transition:all 0.2s;flex-shrink:0;}
+.step-num.done{background:var(--gd);border-color:var(--gd);color:var(--iv);}
+.step-num.active{background:var(--ink);border-color:var(--ink);color:var(--iv);}
+.step-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
+.step-label.active{color:var(--ink);}
+.step-line{flex:1;height:1px;background:var(--bd);margin:0 10px;}
+.step-line.done{background:var(--gd);}
+
+/* Panels */
+.step-panel{display:none;}
+.step-panel.active{display:block;}
+.step-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;letter-spacing:-0.5px;margin-bottom:6px;}
+.step-sub{font-size:13px;color:var(--mu);margin-bottom:28px;font-weight:300;}
+
+/* Step 1: Diensten */
+.dienst-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:24px;}
+.dienst-card{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:18px;cursor:pointer;transition:all 0.15s;}
+.dienst-card:hover{border-color:var(--gd);}
+.dienst-card.selected{border-color:var(--ink);background:var(--ink);}
+.dienst-card.selected .dc-naam{color:var(--iv);}
+.dienst-card.selected .dc-prijs{color:var(--iv);}
+.dienst-card.selected .dc-duur{color:rgba(255,255,255,0.5);}
+.dc-naam{font-size:14px;font-weight:500;margin-bottom:8px;line-height:1.3;transition:color 0.15s;}
+.dc-prijs{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--gd);transition:color 0.15s;}
+.dc-duur{font-size:10px;letter-spacing:1px;color:var(--mu2);margin-top:4px;transition:color 0.15s;}
+.dc-aanbetaling{font-size:10px;color:var(--gd);margin-top:6px;font-weight:600;}
+.dienst-card.selected .dc-aanbetaling{color:rgba(255,255,255,0.8);}
+
+/* Step 2: Medewerkers */
+.med-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:24px;}
+.med-card{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.med-card:hover,.med-any:hover{border-color:var(--gd);}
+.med-card.selected,.med-any.selected{border-color:var(--ink);background:var(--ink);}
+.med-card.selected .med-naam,.med-any.selected .med-naam{color:var(--iv);}
+.med-card.selected .med-rol,.med-any.selected .med-rol{color:rgba(255,255,255,0.5);}
+.med-any{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
+.med-av{width:40px;height:40px;background:var(--wm);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gd);margin:0 auto 10px;}
+.med-naam{font-size:13px;font-weight:500;transition:color 0.15s;}
+.med-rol{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-top:3px;transition:color 0.15s;}
+
+/* Step 3: Kalender */
+.cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.cal-month-label{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;}
+.cal-nav-btn{width:32px;height:32px;border:1px solid var(--bd);border-radius:50%;background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s;}
+.cal-nav-btn:hover{background:var(--wm);}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:24px;}
+.cal-dayname{text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);padding:6px 0;}
+.cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;border-radius:8px;}
+.cal-day:hover:not(.past):not(.empty){background:var(--wm);border-color:var(--bd);}
+.cal-day.today{font-weight:700;color:var(--gd);}
+.cal-day.selected{background:var(--ink);color:var(--iv);}
+.cal-day.past{color:var(--mu2);cursor:default;}
+.cal-day.busy{color:var(--mu2);}
+.cal-day.empty{cursor:default;}
+
+.time-section-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;margin-top:16px;}
+.time-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
+.time-slot{padding:9px 4px;border:1px solid var(--bd);border-radius:8px;text-align:center;font-size:12px;cursor:pointer;background:var(--wh);transition:all 0.15s;}
+.time-slot:hover:not(.vol){border-color:var(--gd);}
+.time-slot.selected{background:var(--ink);color:var(--iv);border-color:var(--ink);}
+.time-slot.vol{background:var(--iv);color:var(--mu2);cursor:not-allowed;font-size:10px;}
+
+/* Step 4: Gegevens */
+.form-row{margin-bottom:14px;}
+.form-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
+.form-input{width:100%;background:var(--iv);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;}
+.form-input.geldig{border-color:var(--green);}
+.form-input.ongeldig{border-color:var(--red);}
+.form-input:focus{border-color:var(--gd);}
+.form-input::placeholder{color:var(--mu2);}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+
+/* Step 5: Bevestiging */
+.confirm-icon{width:56px;height:56px;border-radius:50%;background:rgba(45,106,79,0.08);border:1px solid rgba(45,106,79,0.2);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px;}
+.confirm-rows{border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:24px;}
+.cr{display:flex;justify-content:space-between;gap:12px;padding:11px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
+.cr:last-child{border-bottom:none;}
+.cr-label{color:var(--mu);flex-shrink:0;}
+.cr-val{font-weight:500;text-align:right;min-width:0;overflow-wrap:break-word;}
+
+/* Knoppen */
+.btn-next{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;border-radius:10px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;margin-top:8px;}
+.btn-next:hover{background:var(--ink2);}
+.btn-next:disabled{opacity:0.3;cursor:not-allowed;}
+.btn-back{background:var(--white);border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;color:var(--ink);cursor:pointer;font-family:'Inter',sans-serif;margin-top:10px;padding:12px 20px;width:100%;transition:all .15s;}
+.btn-back:hover{background:var(--iv);border-color:var(--gd);}
+.btn-wachtlijst{width:100%;background:transparent;border:1px dashed var(--bd2);border-radius:10px;padding:12px;font-size:12px;color:var(--gd2);cursor:pointer;font-family:'Inter',sans-serif;margin-top:16px;transition:all 0.15s;}
+.btn-wachtlijst:hover{border-color:var(--gd);background:var(--gd-light,#f5ede0);}
+.spinner-inline{display:inline-block;width:14px;height:14px;border:2px solid rgba(250,248,244,0.3);border-top-color:var(--iv);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+/* ── SUMMARY PANEL ── */
+.summary-panel{padding:36px 28px;background:var(--wh);}
+.summary-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink);margin-bottom:20px;}
+.sum-item{padding:14px 0;border-bottom:1px solid var(--bd);}
+.sum-item:last-of-type{border-bottom:none;}
+.sum-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:4px;}
+.sum-value{font-size:13px;font-weight:500;color:var(--ink);}
+.sum-total{margin-top:20px;padding:16px;background:var(--ink);border-radius:10px;display:flex;align-items:center;justify-content:space-between;}
+.sum-total-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+.sum-total-price{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--iv);}
+.salon-info{margin-top:24px;border-top:1px solid var(--bd);padding-top:20px;}
+.salon-info-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--mu);margin-bottom:10px;overflow-wrap:break-word;min-width:0;}
+.salon-info-item svg{flex-shrink:0;margin-top:1px;}
+.salon-info-item svg{flex-shrink:0;color:var(--gd);}
+.powered{margin-top:24px;text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
+.powered a{color:var(--gd);text-decoration:none;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:900px){
+  .layout{grid-template-columns:1fr;}
+  .summary-panel{border-top:1px solid var(--bd);border-right:none;}
+  .steps-main{border-right:none;padding:24px 5vw;}
+  .summary-panel{padding:24px 5vw;}
+  .header-inner{padding:0 5vw;}
+}
+@media(max-width:600px){
+  .dienst-grid{grid-template-columns:1fr;}
+  .med-grid{grid-template-columns:1fr 1fr;}
+  .time-grid{grid-template-columns:repeat(4,1fr);}
+  .form-row-2{grid-template-columns:1fr;}
+  .header-inner{padding:0 4vw;}
+  .step-label{display:none;}
+  .step-line{margin:0 4px;}
+}
+
+/* ── EMBED MODE (binnen de Kronr widget-iframe) ── */
+/* De widget zelf toont al de Kronr-merknaam bovenaan het paneel, hier dus
+   geen tweede logo-blokje, alleen de naam van de salon als context. */
+body.embed .header{height:40px;border-bottom:1px solid var(--bd);}
+body.embed .header-inner{padding:0 18px;max-width:none;}
+body.embed .brand-logo{width:22px;height:22px;font-size:10px;background:var(--gd);color:var(--iv);border-radius:6px;}
+body.embed .brand-name{font-size:13px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.2px;}
+body.embed .brand-sub{display:none;}
+body.embed .header-right{display:none;}
+body.embed .steps-main{padding:20px 20px;}
+body.embed .summary-panel{padding:20px 20px;}
+body.embed .progress-bar{margin-bottom:24px;}
+body.embed .step-label{display:none;}
+body.embed .step-dot{gap:0;}
+body.embed .step-line{margin:0 4px;}
+body.embed .step-num{width:22px;height:22px;font-size:10px;}
+body.embed .layout{grid-template-columns:1fr;max-width:none;}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo" id="brand-init">K</div>
+      <div>
+        <div class="brand-name" id="brand-name">Laden...</div>
+        <div class="brand-sub" id="brand-type"></div>
+      </div>
+    </div>
+    <div class="header-right">Online boeken</div>
+  </div>
+</header>
+
+<div class="layout">
+  <div class="steps-main">
+
+    <div id="locatie-picker" style="display:none;margin-bottom:20px;padding:14px 16px;background:var(--wm);border-radius:8px;">
+      <label style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Kies een locatie</label>
+      <select id="locatie-select" onchange="wisselBoekLocatie(this.value)" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;background:var(--wh);"></select>
+    </div>
+
+    <!-- Progress -->
+    <div class="progress-bar" id="progress-bar">
+      <div class="step-dot"><div class="step-num active" id="sn1">1</div><div class="step-label active" id="sl1">Dienst</div></div>
+      <div class="step-line" id="line1"></div>
+      <div class="step-dot"><div class="step-num" id="sn2">2</div><div class="step-label" id="sl2">Medewerker</div></div>
+      <div class="step-line" id="line2"></div>
+      <div class="step-dot"><div class="step-num" id="sn3">3</div><div class="step-label" id="sl3">Datum & tijd</div></div>
+      <div class="step-line" id="line3"></div>
+      <div class="step-dot"><div class="step-num" id="sn4">4</div><div class="step-label" id="sl4">Gegevens</div></div>
+    </div>
+
+    <!-- Stap 1: Dienst -->
+    <div class="step-panel active" id="step1">
+      <div class="step-title">Kies een dienst</div>
+      <div class="step-sub">Welke behandeling wil je boeken?</div>
+      <div class="dienst-grid" id="dienst-grid">
+        <div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Laden...</div>
+      </div>
+      <button class="btn-next" id="btn1" onclick="goStep(2)" disabled>Volgende →</button>
+    </div>
+
+    <!-- Stap 2: Medewerker -->
+    <div class="step-panel" id="step2">
+      <div class="step-title">Kies een medewerker</div>
+      <div class="step-sub">Of laat ons de beste keuze voor je maken.</div>
+      <div class="med-grid" id="med-grid">
+        <div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Laden...</div>
+      </div>
+      <button class="btn-next" id="btn2" onclick="goStep(3)">Volgende →</button>
+      <button class="btn-back" onclick="goStep(1)">← Terug</button>
+    </div>
+
+    <!-- Stap 3: Datum & tijd -->
+    <div class="step-panel" id="step3">
+      <div class="step-title">Kies datum & tijd</div>
+      <div class="step-sub">Selecteer een beschikbare datum en tijdslot.</div>
+      <div class="cal-nav">
+        <button class="cal-nav-btn" onclick="prevMonth()">‹</button>
+        <div class="cal-month-label" id="cal-month"></div>
+        <button class="cal-nav-btn" onclick="nextMonth()">›</button>
+      </div>
+      <div class="cal-grid" id="cal-grid"></div>
+      <div id="time-slots-wrap"></div>
+      <button class="btn-wachtlijst" id="btn-wachtlijst-open" onclick="toonWachtlijstForm()" style="display:none;">Geen geschikt tijdstip? Zet me op de wachtlijst →</button>
+
+      <div id="wachtlijst-form" style="display:none;margin-top:16px;padding:16px;background:var(--iv);border:1px solid var(--bd);border-radius:10px;">
+        <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Zet me op de wachtlijst</div>
+        <p style="font-size:12px;color:var(--mu);margin-bottom:14px;">Voor <strong id="wl-datum-label"></strong>. We mailen je zodra er een plek vrijkomt.</p>
+        <div class="form-row"><label class="form-label">Naam</label><input class="form-input" id="wl-naam" type="text" placeholder="Jasmijn de Vries"></div>
+        <div class="form-row"><label class="form-label">E-mailadres</label><input class="form-input" id="wl-email" type="email" placeholder="naam@email.nl"></div>
+        <div class="form-row">
+          <label class="form-label">Ik wil graag</label>
+          <select class="form-input" id="wl-flexibiliteit">
+            <option value="dag">Alleen deze specifieke dag</option>
+            <option value="week">Deze week (7 dagen rond deze datum)</option>
+            <option value="alles">Zo snel mogelijk, elke dag is goed</option>
+          </select>
+        </div>
+        <div id="wl-err" style="display:none;padding:8px 12px;border-left:3px solid var(--red);font-size:12px;margin:10px 0;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+        <button class="btn-next" id="wl-btn" onclick="verstuurWachtlijst()" style="margin-top:6px;">Zet me op de wachtlijst</button>
+      </div>
+
+      <button class="btn-next" id="btn3" onclick="goStep(4)" disabled>Volgende →</button>
+      <button class="btn-back" onclick="goStep(2)">← Terug</button>
+    </div>
+
+    <!-- Stap 4: Gegevens -->
+    <div class="step-panel" id="step4">
+      <div class="step-title">Jouw gegevens</div>
+      <div class="step-sub">We sturen een bevestiging naar je e-mail.</div>
+      <div id="form-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+      <div class="form-row-2">
+        <div class="form-row"><label class="form-label">Voornaam</label><input class="form-input" id="inp-voor" type="text" placeholder="Jasmijn"></div>
+        <div class="form-row"><label class="form-label">Achternaam</label><input class="form-input" id="inp-achter" type="text" placeholder="de Vries"></div>
+      </div>
+      <div class="form-row"><label class="form-label">E-mailadres</label><input class="form-input" id="inp-email" type="email" placeholder="naam@email.nl"></div>
+      <div class="form-row">
+        <label class="form-label">Telefoonnummer</label>
+        <div style="display:flex;gap:8px;">
+          <select class="form-input" id="inp-tel-code" style="flex:0 0 108px;padding-left:8px;padding-right:4px;"></select>
+          <input class="form-input" id="inp-tel" type="tel" placeholder="6 12345678" style="flex:1;">
+        </div>
+      </div>
+      <div class="form-row"><label class="form-label">Opmerking (optioneel)</label><input class="form-input" id="inp-notitie" type="text" placeholder="Allergieën, wensen..."></div>
+      <button class="btn-next" id="btn-confirm" onclick="bevestigen()">Afspraak bevestigen</button>
+      <button class="btn-back" onclick="goStep(3)">← Terug</button>
+    </div>
+
+    <!-- Stap 5: Bevestiging -->
+    <div class="step-panel" id="step5">
+      <div class="confirm-icon">✓</div>
+      <div class="step-title">Afspraak bevestigd!</div>
+      <div class="step-sub">Je ontvangt een bevestiging per e-mail.</div>
+      <div class="confirm-rows">
+        <div class="cr"><span class="cr-label">Dienst</span><span class="cr-val" id="cf-dienst"></span></div>
+        <div class="cr"><span class="cr-label">Medewerker</span><span class="cr-val" id="cf-med"></span></div>
+        <div class="cr"><span class="cr-label">Datum</span><span class="cr-val" id="cf-datum"></span></div>
+        <div class="cr"><span class="cr-label">Tijd</span><span class="cr-val" id="cf-tijd"></span></div>
+        <div class="cr"><span class="cr-label">Prijs</span><span class="cr-val" id="cf-prijs" style="color:var(--gd)"></span></div>
+        <div class="cr" id="cf-aanbetaling-row" style="display:none;"><span class="cr-label">Aanbetaling</span><span class="cr-val" id="cf-aanbetaling"></span></div>
+        <div class="cr" id="cf-kaart-row" style="display:none;"><span class="cr-label">Kaartgegevens</span><span class="cr-val" id="cf-kaart"></span></div>
+      </div>
+      <p style="font-size:13px;color:var(--mu);line-height:1.7;font-weight:300;">Wil je de afspraak wijzigen of annuleren? Dat kan tot 24 uur van tevoren via de link in je bevestigingsmail.</p>
+      <a id="cf-stempel-link" href="#" style="display:none;font-size:12px;color:var(--gd);text-decoration:none;font-weight:600;">✦ Bekijk je stempelkaart →</a>
+      <button class="btn-next" id="btn-embed-close" style="display:none;margin-top:20px;" onclick="parent.postMessage('kronr:close','*')">Sluiten</button>
+    </div>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-panel">
+    <div class="summary-title">Jouw afspraak</div>
+    <div class="sum-item"><div class="sum-label">Dienst</div><div class="sum-value" id="sum-dienst">Nog niet gekozen</div></div>
+    <div class="sum-item"><div class="sum-label">Medewerker</div><div class="sum-value" id="sum-med">Geen voorkeur</div></div>
+    <div class="sum-item"><div class="sum-label">Datum & tijd</div><div class="sum-value" id="sum-datum">Nog niet gekozen</div></div>
+    <div class="sum-item"><div class="sum-label">Duur</div><div class="sum-value" id="sum-duur">—</div></div>
+    <div class="sum-total">
+      <div class="sum-total-label">Totaal</div>
+      <div class="sum-total-price" id="sum-prijs">€0</div>
+    </div>
+    <div class="sum-item" id="sum-aanbetaling" style="display:none;color:var(--gd);font-weight:600;"></div>
+    <div id="abo-panel" style="display:none;margin-top:14px;padding:14px;background:var(--wm);border-radius:8px;">
+      <div id="abo-panel-check">
+        <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Al een abonnement voor deze dienst?</div>
+        <input class="fi" id="abo-check-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
+        <button onclick="checkAbonnementTegoed()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Check tegoed</button>
+        <div id="abo-check-err" style="display:none;color:var(--red);font-size:11px;margin-top:6px;"></div>
+        <a href="#" id="abo-nieuw-link" onclick="return openAboAanmelden(event)" style="display:block;text-align:center;margin-top:10px;font-size:11px;color:var(--gd2);">Nog geen abonnement? Bekijk prijzen →</a>
+      </div>
+      <div id="abo-panel-gevonden" style="display:none;">
+        <div style="font-size:12px;color:var(--gd2);font-weight:600;">✓ Je hebt nog <span id="abo-credits-tekst"></span> tegoed! Deze afspraak wordt gratis geboekt met je abonnement.</div>
+        <button onclick="verwijderAbonnementGebruik()" style="background:none;border:none;color:var(--mu);font-size:11px;text-decoration:underline;cursor:pointer;margin-top:6px;padding:0;">Toch niet gebruiken</button>
+      </div>
+      <div id="abo-panel-nieuw" style="display:none;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:4px;" id="abo-nieuw-titel"></div>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:10px;">Je wordt naar Stripe doorgestuurd om het abonnement te starten. Je eerste beurt is meteen beschikbaar zodra de betaling lukt.</div>
+        <input class="fi" id="abo-nieuw-naam" type="text" placeholder="Je naam" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
+        <input class="fi" id="abo-nieuw-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
+        <button onclick="startAbonnement()" style="width:100%;padding:9px;background:var(--gd);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Abonnement starten</button>
+        <div id="abo-nieuw-err" style="display:none;color:var(--red);font-size:11px;margin-top:6px;"></div>
+        <a href="#" onclick="return terugNaarAboCheck(event)" style="display:block;text-align:center;margin-top:8px;font-size:11px;color:var(--mu);">← Terug</a>
+      </div>
+    </div>
+    <div class="salon-info" id="salon-info"></div>
+    <div class="powered">Online boeken via <a href="index.html">Kronr<em style="font-style:normal;color:var(--gd)">.</em></a></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
+const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
+const sb=window.supabase.createClient(SB_URL,SB_KEY);
+const params=new URLSearchParams(location.search);
+const SALON_ID=params.get('salon');
+const IS_EMBED=params.get('embed')==='1';
+if(IS_EMBED) document.body.classList.add('embed');
+
+let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,gebruikt_abonnement_id:null};
+
+function berekenAanbetalingBedrag(prijs,type,bedrag){
+  if(type==='percentage') return Math.round(prijs*bedrag/100*100)/100;
+  if(type==='vast') return Math.round(Math.min(bedrag,prijs)*100)/100; // nooit meer dan de dienst-prijs zelf
+  return 0;
+}
+let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
+const MN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+// Landcodes -- Nederland staat vooraan en is standaard geselecteerd,
+// de rest alfabetisch op landnaam (typen op eerste letter werkt dan intuïtief).
+const LANDCODES=[
+  {land:'Nederland',code:'+31',iso:'NL'},
+  {land:'België',code:'+32',iso:'BE'},
+  {land:'Duitsland',code:'+49',iso:'DE'},
+  {land:'Afghanistan',code:'+93',iso:'AF'},{land:'Albanië',code:'+355',iso:'AL'},{land:'Algerije',code:'+213',iso:'DZ'},
+  {land:'Andorra',code:'+376',iso:'AD'},{land:'Angola',code:'+244',iso:'AO'},{land:'Argentinië',code:'+54',iso:'AR'},
+  {land:'Armenië',code:'+374',iso:'AM'},{land:'Australië',code:'+61',iso:'AU'},{land:'Oostenrijk',code:'+43',iso:'AT'},
+  {land:'Azerbeidzjan',code:'+994',iso:'AZ'},{land:'Bahama\'s',code:'+1',iso:'BS'},{land:'Bahrein',code:'+973',iso:'BH'},
+  {land:'Bangladesh',code:'+880',iso:'BD'},{land:'Barbados',code:'+1',iso:'BB'},{land:'Wit-Rusland',code:'+375',iso:'BY'},
+  {land:'Belize',code:'+501',iso:'BZ'},{land:'Benin',code:'+229',iso:'BJ'},{land:'Bhutan',code:'+975',iso:'BT'},
+  {land:'Bolivia',code:'+591',iso:'BO'},{land:'Bosnië en Herzegovina',code:'+387',iso:'BA'},{land:'Botswana',code:'+267',iso:'BW'},
+  {land:'Brazilië',code:'+55',iso:'BR'},{land:'Brunei',code:'+673',iso:'BN'},{land:'Bulgarije',code:'+359',iso:'BG'},
+  {land:'Burkina Faso',code:'+226',iso:'BF'},{land:'Burundi',code:'+257',iso:'BI'},{land:'Cambodja',code:'+855',iso:'KH'},
+  {land:'Kameroen',code:'+237',iso:'CM'},{land:'Canada',code:'+1',iso:'CA'},{land:'Kaapverdië',code:'+238',iso:'CV'},
+  {land:'Centraal-Afrikaanse Republiek',code:'+236',iso:'CF'},{land:'Tsjaad',code:'+235',iso:'TD'},{land:'Chili',code:'+56',iso:'CL'},
+  {land:'China',code:'+86',iso:'CN'},{land:'Colombia',code:'+57',iso:'CO'},{land:'Comoren',code:'+269',iso:'KM'},
+  {land:'Congo',code:'+242',iso:'CG'},{land:'Costa Rica',code:'+506',iso:'CR'},{land:'Kroatië',code:'+385',iso:'HR'},
+  {land:'Cuba',code:'+53',iso:'CU'},{land:'Cyprus',code:'+357',iso:'CY'},{land:'Tsjechië',code:'+420',iso:'CZ'},
+  {land:'Denemarken',code:'+45',iso:'DK'},{land:'Djibouti',code:'+253',iso:'DJ'},{land:'Dominicaanse Republiek',code:'+1',iso:'DO'},
+  {land:'Ecuador',code:'+593',iso:'EC'},{land:'Egypte',code:'+20',iso:'EG'},{land:'El Salvador',code:'+503',iso:'SV'},
+  {land:'Equatoriaal-Guinea',code:'+240',iso:'GQ'},{land:'Eritrea',code:'+291',iso:'ER'},{land:'Estland',code:'+372',iso:'EE'},
+  {land:'Ethiopië',code:'+251',iso:'ET'},{land:'Fiji',code:'+679',iso:'FJ'},{land:'Finland',code:'+358',iso:'FI'},
+  {land:'Frankrijk',code:'+33',iso:'FR'},{land:'Gabon',code:'+241',iso:'GA'},{land:'Gambia',code:'+220',iso:'GM'},
+  {land:'Georgië',code:'+995',iso:'GE'},{land:'Ghana',code:'+233',iso:'GH'},{land:'Griekenland',code:'+30',iso:'GR'},
+  {land:'Guatemala',code:'+502',iso:'GT'},{land:'Guinee',code:'+224',iso:'GN'},{land:'Guyana',code:'+592',iso:'GY'},
+  {land:'Haïti',code:'+509',iso:'HT'},{land:'Honduras',code:'+504',iso:'HN'},{land:'Hongkong',code:'+852',iso:'HK'},
+  {land:'Hongarije',code:'+36',iso:'HU'},{land:'IJsland',code:'+354',iso:'IS'},{land:'India',code:'+91',iso:'IN'},
+  {land:'Indonesië',code:'+62',iso:'ID'},{land:'Iran',code:'+98',iso:'IR'},{land:'Irak',code:'+964',iso:'IQ'},
+  {land:'Ierland',code:'+353',iso:'IE'},{land:'Israël',code:'+972',iso:'IL'},{land:'Italië',code:'+39',iso:'IT'},
+  {land:'Ivoorkust',code:'+225',iso:'CI'},{land:'Jamaica',code:'+1',iso:'JM'},{land:'Japan',code:'+81',iso:'JP'},
+  {land:'Jordanië',code:'+962',iso:'JO'},{land:'Kazachstan',code:'+7',iso:'KZ'},{land:'Kenia',code:'+254',iso:'KE'},
+  {land:'Koeweit',code:'+965',iso:'KW'},{land:'Kirgizië',code:'+996',iso:'KG'},{land:'Laos',code:'+856',iso:'LA'},
+  {land:'Letland',code:'+371',iso:'LV'},{land:'Libanon',code:'+961',iso:'LB'},{land:'Lesotho',code:'+266',iso:'LS'},
+  {land:'Liberia',code:'+231',iso:'LR'},{land:'Libië',code:'+218',iso:'LY'},{land:'Liechtenstein',code:'+423',iso:'LI'},
+  {land:'Litouwen',code:'+370',iso:'LT'},{land:'Luxemburg',code:'+352',iso:'LU'},{land:'Macedonië',code:'+389',iso:'MK'},
+  {land:'Madagaskar',code:'+261',iso:'MG'},{land:'Malawi',code:'+265',iso:'MW'},{land:'Malaysia',code:'+60',iso:'MY'},
+  {land:'Maldiven',code:'+960',iso:'MV'},{land:'Mali',code:'+223',iso:'ML'},{land:'Malta',code:'+356',iso:'MT'},
+  {land:'Mauritanië',code:'+222',iso:'MR'},{land:'Mauritius',code:'+230',iso:'MU'},{land:'Mexico',code:'+52',iso:'MX'},
+  {land:'Moldavië',code:'+373',iso:'MD'},{land:'Monaco',code:'+377',iso:'MC'},{land:'Mongolië',code:'+976',iso:'MN'},
+  {land:'Montenegro',code:'+382',iso:'ME'},{land:'Marokko',code:'+212',iso:'MA'},{land:'Mozambique',code:'+258',iso:'MZ'},
+  {land:'Myanmar',code:'+95',iso:'MM'},{land:'Namibië',code:'+264',iso:'NA'},{land:'Nepal',code:'+977',iso:'NP'},
+  {land:'Nieuw-Zeeland',code:'+64',iso:'NZ'},{land:'Nicaragua',code:'+505',iso:'NI'},{land:'Niger',code:'+227',iso:'NE'},
+  {land:'Nigeria',code:'+234',iso:'NG'},{land:'Noord-Korea',code:'+850',iso:'KP'},{land:'Noorwegen',code:'+47',iso:'NO'},
+  {land:'Oman',code:'+968',iso:'OM'},{land:'Pakistan',code:'+92',iso:'PK'},{land:'Panama',code:'+507',iso:'PA'},
+  {land:'Papoea-Nieuw-Guinea',code:'+675',iso:'PG'},{land:'Paraguay',code:'+595',iso:'PY'},{land:'Peru',code:'+51',iso:'PE'},
+  {land:'Filipijnen',code:'+63',iso:'PH'},{land:'Polen',code:'+48',iso:'PL'},{land:'Portugal',code:'+351',iso:'PT'},
+  {land:'Qatar',code:'+974',iso:'QA'},{land:'Roemenië',code:'+40',iso:'RO'},{land:'Rusland',code:'+7',iso:'RU'},
+  {land:'Rwanda',code:'+250',iso:'RW'},{land:'Saoedi-Arabië',code:'+966',iso:'SA'},{land:'Senegal',code:'+221',iso:'SN'},
+  {land:'Servië',code:'+381',iso:'RS'},{land:'Sierra Leone',code:'+232',iso:'SL'},{land:'Singapore',code:'+65',iso:'SG'},
+  {land:'Slowakije',code:'+421',iso:'SK'},{land:'Slovenië',code:'+386',iso:'SI'},{land:'Somalië',code:'+252',iso:'SO'},
+  {land:'Zuid-Afrika',code:'+27',iso:'ZA'},{land:'Zuid-Korea',code:'+82',iso:'KR'},{land:'Spanje',code:'+34',iso:'ES'},
+  {land:'Sri Lanka',code:'+94',iso:'LK'},{land:'Soedan',code:'+249',iso:'SD'},{land:'Suriname',code:'+597',iso:'SR'},
+  {land:'Zweden',code:'+46',iso:'SE'},{land:'Zwitserland',code:'+41',iso:'CH'},{land:'Syrië',code:'+963',iso:'SY'},
+  {land:'Taiwan',code:'+886',iso:'TW'},{land:'Tadzjikistan',code:'+992',iso:'TJ'},{land:'Tanzania',code:'+255',iso:'TZ'},
+  {land:'Thailand',code:'+66',iso:'TH'},{land:'Togo',code:'+228',iso:'TG'},{land:'Tunesië',code:'+216',iso:'TN'},
+  {land:'Turkije',code:'+90',iso:'TR'},{land:'Turkmenistan',code:'+993',iso:'TM'},{land:'Uganda',code:'+256',iso:'UG'},
+  {land:'Ukraine',code:'+380',iso:'UA'},{land:'Verenigde Arabische Emiraten',code:'+971',iso:'AE'},
+  {land:'Verenigd Koninkrijk',code:'+44',iso:'GB'},{land:'Verenigde Staten',code:'+1',iso:'US'},
+  {land:'Uruguay',code:'+598',iso:'UY'},{land:'Oezbekistan',code:'+998',iso:'UZ'},{land:'Venezuela',code:'+58',iso:'VE'},
+  {land:'Vietnam',code:'+84',iso:'VN'},{land:'Jemen',code:'+967',iso:'YE'},{land:'Zambia',code:'+260',iso:'ZM'},
+  {land:'Zimbabwe',code:'+263',iso:'ZW'}
+];
+
+// Voorbeeld-placeholders per land -- generieke tekst voor landen zonder specifiek voorbeeld
+const TEL_PLACEHOLDERS={
+  NL:'6 12345678',
+  DE:'151 23456789',
+  BE:'470 12 34 56',
+  GB:'7400 123456',
+  FR:'6 12 34 56 78',
+};
+const TEL_PLACEHOLDER_STANDAARD='je nummer, zonder landcode';
+
+function vulLandcodeDropdown(){
+  const sel=document.getElementById('inp-tel-code');
+  sel.innerHTML=LANDCODES.map((l,i)=>
+    `<option value="${l.code}" data-iso="${l.iso}"${i===0?' selected':''}>${l.iso} ${l.code}</option>`
+  ).join('');
+  zetTelPlaceholder();
+  sel.addEventListener('change',zetTelPlaceholder);
+}
+
+function zetTelPlaceholder(){
+  const sel=document.getElementById('inp-tel-code');
+  const iso=sel.options[sel.selectedIndex]?.dataset.iso;
+  document.getElementById('inp-tel').placeholder=TEL_PLACEHOLDERS[iso]||TEL_PLACEHOLDER_STANDAARD;
+}
+
+const EMAIL_REGEX=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+function zetLiveEmailValidatie(){
+  const el=document.getElementById('inp-email');
+
+  el.addEventListener('input',()=>{
+    const v=el.value.trim();
+    el.classList.remove('geldig','ongeldig');
+    if(v&&EMAIL_REGEX.test(v)) el.classList.add('geldig');
+    // Nog geen rood tijdens typen -- alleen groen zodra het geldig wordt,
+    // rood pas bij weg-klikken (blur), zodat het niet bestraffend aanvoelt.
+  });
+
+  el.addEventListener('blur',()=>{
+    const v=el.value.trim();
+    el.classList.remove('geldig','ongeldig');
+    if(!v) return; // leeg veld: geen kleur, dat vangt de submit-validatie al af
+    el.classList.add(EMAIL_REGEX.test(v)?'geldig':'ongeldig');
+  });
+}
+
+let HUIDIGE_BOEK_LOCATIE_ID=null;
+
+function wisselBoekLocatie(id){
+  HUIDIGE_BOEK_LOCATIE_ID=id;
+  if(window.laadDienstenEnMedewerkers) window.laadDienstenEnMedewerkers();
+}
+
+async function init(){
+  vulLandcodeDropdown();
+  zetLiveEmailValidatie();
+  if(!SALON_ID){
+    document.getElementById('brand-name').textContent='Ongeldige link';
+    return;
+  }
+
+  const[sRes,locRes]=await Promise.all([
+    sb.from('salons').select('naam,type_bedrijf,telefoon,adres,stad,stripe_connect_status,stempelkaart_actief,openingstijden').eq('id',SALON_ID).single(),
+    sb.from('locaties').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
+  ]);
+
+  const locaties=locRes.data||[];
+  if(locaties.length>1){
+    HUIDIGE_BOEK_LOCATIE_ID=locaties[0].id;
+    document.getElementById('locatie-picker').style.display='block';
+    document.getElementById('locatie-select').innerHTML=locaties.map(l=>`<option value="${l.id}">${l.naam}</option>`).join('');
+  } else if(locaties.length===1){
+    HUIDIGE_BOEK_LOCATIE_ID=locaties[0].id;
+  }
+  // 0 locaties (salon nog niet gemigreerd, of net aangemaakt): geen
+  // filter toepassen -- gewoon alle diensten/medewerkers van de salon
+  // tonen, zoals vóór deze feature.
+
+  await laadDienstenEnMedewerkers();
+
+  // Salon info
+  const salon=sRes.data;
+  if(salon){
+    window.SALON_NAAM=salon.naam;
+    window.SALON_STRIPE_ACTIEF=salon.stripe_connect_status==='actief';
+    window.SALON_STEMPEL_ACTIEF=!!salon.stempelkaart_actief;
+    window.SALON_OPENINGSTIJDEN=salon.openingstijden||null;
+    const init=salon.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+    if(!IS_EMBED) document.getElementById('brand-init').textContent=init;
+    document.getElementById('brand-name').textContent=salon.naam;
+    document.getElementById('brand-type').textContent=salon.type_bedrijf||'';
+    document.title=salon.naam+' | Afspraak maken';
+    document.getElementById('salon-info').innerHTML=`
+      ${salon.adres?`<div class="salon-info-item"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${salon.adres}${salon.stad?', '+salon.stad:''}</div>`:''}
+      ${salon.telefoon?`<div class="salon-info-item"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>${salon.telefoon}</div>`:''}
+    `;
+  }
+
+  // Diensten
+  async function laadDienstenEnMedewerkers(){
+    let dQuery=sb.from('diensten').select('*,abonnement_plannen(id,naam,prijs_per_maand,credits_per_maand,actief)').eq('salon_id',SALON_ID).eq('actief',true);
+    let mQuery=sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true);
+    if(HUIDIGE_BOEK_LOCATIE_ID){
+      dQuery=dQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
+      mQuery=mQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
+    }
+    const[dRes,mRes]=await Promise.all([dQuery.order('naam'), mQuery.order('naam')]);
+
+    const diensten=dRes.data||[];
+  window.DIENSTEN_MET_ABO={};
+  diensten.forEach(d=>{ const p=(d.abonnement_plannen||[]).find(x=>x.actief); if(p) window.DIENSTEN_MET_ABO[d.id]=p; });
+
+  document.getElementById('dienst-grid').innerHTML=diensten.length
+    ?diensten.map(d=>{
+      const heeftAanbetaling = window.SALON_STRIPE_ACTIEF && d.aanbetaling_type;
+      const aanbEuro = heeftAanbetaling ? berekenAanbetalingBedrag(d.prijs, d.aanbetaling_type, d.aanbetaling_bedrag) : 0;
+      const vereistKaart = window.SALON_STRIPE_ACTIEF && d.vereist_kaartgegevens;
+      const abo = window.DIENSTEN_MET_ABO[d.id];
+      return `
+      <div class="dienst-card" onclick="selectDienst(this,'${d.naam.replace(/'/g,"\\'")}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart})">
+        <div class="dc-naam">${d.naam}</div>
+        <div class="dc-prijs">€${d.prijs}</div>
+        <div class="dc-duur">${d.duur_min} min</div>
+        ${heeftAanbetaling?`<div class="dc-aanbetaling">Aanbetaling vereist: €${aanbEuro}</div>`:''}
+        ${vereistKaart?`<div class="dc-aanbetaling">Kaartgegevens verplicht bij boeken</div>`:''}
+        ${abo?`<div class="dc-aanbetaling" style="color:var(--gd2);">✦ Ook als abonnement: €${abo.prijs_per_maand}/maand</div>`:''}
+      </div>`;
+    }).join('')
+    :`<div style="grid-column:1/-1;padding:32px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Geen diensten beschikbaar</div>`;
+
+  // Medewerkers
+  const medewerkers=mRes.data||[];
+  window.BOEKEN_MEDEWERKERS=medewerkers;
+  document.getElementById('med-grid').innerHTML=`
+    <div class="med-any selected" id="med-any" onclick="selectMed(null,'Geen voorkeur',null)">
+      <div class="med-av">?</div>
+      <div class="med-naam">Geen voorkeur</div>
+      <div class="med-rol">Eerste beschikbare</div>
+    </div>
+    ${medewerkers.map(m=>{
+      const init=m.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+      return`<div class="med-card" onclick="selectMed(this,'${m.naam.replace(/'/g,"\\'")}','${m.id}')">
+        <div class="med-av">${init}</div>
+        <div class="med-naam">${m.naam.split(' ')[0]}</div>
+        <div class="med-rol">${m.rol}</div>
+      </div>`;
+    }).join('')}
+  `;
+  }
+  window.laadDienstenEnMedewerkers=laadDienstenEnMedewerkers;
+
+  renderCal();
+
+  // Komt de bezoeker terug van Stripe Checkout (aanbetaling)? Dan de
+  // afspraak vers ophalen (niet vertrouwen op state, die is leeg na een
+  // fris paginabezoek) en direct de bevestiging tonen.
+  await verwerkAanbetalingReturn();
+}
+
+// ── STAP NAVIGATIE ─────────────────────────────────────────────────────────────
+function goStep(n){
+  document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('step'+n).classList.add('active');
+  for(let i=1;i<=4;i++){
+    const num=document.getElementById('sn'+i);
+    const lbl=document.getElementById('sl'+i);
+    if(i<n){num.classList.add('done');num.classList.remove('active');num.textContent='✓';}
+    else if(i===n){num.classList.add('active');num.classList.remove('done');num.textContent=i;}
+    else{num.classList.remove('done','active');num.textContent=i;}
+    lbl.classList.toggle('active',i===n);
+    if(i<4)document.getElementById('line'+i).classList.toggle('done',i<n);
+  }
+  if(n===3){
+    renderCal();
+    // Beschikbaarheid altijd vers ophalen zodra deze stap actief wordt --
+    // zowel bij vooruit gaan als bij TERUG gaan vanuit stap 4. Zonder dit
+    // kon een eerder al getoonde (inmiddels verouderde) tijd-lijst blijven
+    // staan, met het risico dat iemand een tijd bevestigt die in de
+    // tussentijd door iemand anders is ingenomen.
+    if(state.datum){
+      const dagNummer=parseInt(state.datum.split(' ')[0]);
+      pickDay(dagNummer);
+    }
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── SELECTIES ─────────────────────────────────────────────────────────────────
+function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
+  document.querySelectorAll('.dienst-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.dienst=naam;state.prijs=prijs;state.duur=duur;state.dienst_id=id;
+  state.aanb_type = (window.SALON_STRIPE_ACTIEF && aanbType) ? aanbType : null;
+  state.aanb_bedrag = state.aanb_type ? berekenAanbetalingBedrag(prijs,aanbType,aanbBedrag) : 0;
+  state.vereist_kaart = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
+  state.gebruikt_abonnement_id = null;
+  document.getElementById('sum-dienst').textContent=naam;
+  document.getElementById('sum-prijs').textContent='€'+prijs;
+  document.getElementById('sum-duur').textContent=duur+' min';
+  const aanbEl=document.getElementById('sum-aanbetaling');
+  if(aanbEl){
+    if(state.aanb_type){ aanbEl.textContent='Aanbetaling nu: €'+state.aanb_bedrag; aanbEl.style.display='block'; }
+    else aanbEl.style.display='none';
+  }
+
+  const aboPanel=document.getElementById('abo-panel');
+  const heeftAbo = window.DIENSTEN_MET_ABO && window.DIENSTEN_MET_ABO[id];
+  if(heeftAbo){
+    aboPanel.style.display='block';
+    document.getElementById('abo-panel-check').style.display='block';
+    document.getElementById('abo-panel-gevonden').style.display='none';
+    document.getElementById('abo-panel-nieuw').style.display='none';
+    document.getElementById('abo-check-email').value='';
+    document.getElementById('abo-check-err').style.display='none';
+  } else {
+    aboPanel.style.display='none';
+  }
+
+  document.getElementById('btn1').disabled=false;
+}
+
+async function checkAbonnementTegoed(){
+  const email=document.getElementById('abo-check-email').value.trim();
+  const errEl=document.getElementById('abo-check-err');
+  errEl.style.display='none';
+  if(!email || !email.includes('@')){
+    errEl.textContent='Vul een geldig e-mailadres in.';errEl.style.display='block';return;
+  }
+
+  const{data,error}=await sb.rpc('get_abonnement_tegoed',{p_salon_id:SALON_ID,p_email:email,p_dienst_id:state.dienst_id});
+  const info=Array.isArray(data)?data[0]:data;
+
+  if(error||!info||!info.heeft_tegoed){
+    errEl.textContent='Geen (actief) abonnement met tegoed gevonden voor dit e-mailadres.';errEl.style.display='block';
+    return;
+  }
+
+  state.gebruikt_abonnement_id=info.abonnement_id;
+  document.getElementById('abo-panel-check').style.display='none';
+  document.getElementById('abo-panel-gevonden').style.display='block';
+  document.getElementById('abo-credits-tekst').textContent=info.credits_resterend+'x';
+
+  document.getElementById('sum-prijs').textContent='€0 (abonnement)';
+}
+
+function verwijderAbonnementGebruik(){
+  state.gebruikt_abonnement_id=null;
+  document.getElementById('abo-panel-check').style.display='block';
+  document.getElementById('abo-panel-gevonden').style.display='none';
+  document.getElementById('sum-prijs').textContent='€'+state.prijs;
+}
+
+function openAboAanmelden(e){
+  e.preventDefault();
+  const abo=window.DIENSTEN_MET_ABO[state.dienst_id];
+  if(!abo)return false;
+  document.getElementById('abo-panel-check').style.display='none';
+  document.getElementById('abo-panel-nieuw').style.display='block';
+  document.getElementById('abo-nieuw-titel').textContent=abo.naam+' · €'+abo.prijs_per_maand+'/maand ('+abo.credits_per_maand+'x per maand)';
+  return false;
+}
+
+function terugNaarAboCheck(e){
+  e.preventDefault();
+  document.getElementById('abo-panel-nieuw').style.display='none';
+  document.getElementById('abo-panel-check').style.display='block';
+  return false;
+}
+
+async function startAbonnement(){
+  const naam=document.getElementById('abo-nieuw-naam').value.trim();
+  const email=document.getElementById('abo-nieuw-email').value.trim();
+  const errEl=document.getElementById('abo-nieuw-err');
+  errEl.style.display='none';
+
+  if(!naam||!email||!email.includes('@')){
+    errEl.textContent='Vul je naam en een geldig e-mailadres in.';errEl.style.display='block';return;
+  }
+
+  const abo=window.DIENSTEN_MET_ABO[state.dienst_id];
+  if(!abo)return;
+
+  try{
+    const res=await fetch('https://kronr-stripe.isaak-elia.workers.dev/create-subscription-checkout',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        salon_id:SALON_ID,
+        plan_id:abo.id,
+        klant_naam:naam,
+        email,
+        success_url:window.location.origin+window.location.pathname+'?abo_gestart=1&salon='+SALON_ID,
+        cancel_url:window.location.href
+      })
+    });
+    if(!res.ok) throw new Error('HTTP '+res.status);
+    const data=await res.json();
+    if(!data.url) throw new Error(data.error||'Onbekende fout');
+    window.location.href=data.url;
+  }catch(e){
+    errEl.textContent='Kon abonnement niet starten: '+e.message;errEl.style.display='block';
+  }
+}
+
+function selectMed(el,naam,id){
+  document.querySelectorAll('.med-card,.med-any').forEach(c=>c.classList.remove('selected'));
+  if(el)el.classList.add('selected');else document.getElementById('med-any').classList.add('selected');
+  state.med=naam||'Geen voorkeur';
+  state.med_id=id||null;
+  document.getElementById('sum-med').textContent=state.med;
+}
+
+// ── KALENDER ──────────────────────────────────────────────────────────────────
+function renderCal(){
+  const grid=document.getElementById('cal-grid');
+  grid.innerHTML=['Zo','Ma','Di','Wo','Do','Vr','Za'].map(d=>`<div class="cal-dayname">${d}</div>`).join('');
+  document.getElementById('cal-month').textContent=MN[calMonth]+' '+calYear;
+  const first=new Date(calYear,calMonth,1).getDay();
+  const days=new Date(calYear,calMonth+1,0).getDate();
+  const today=new Date();today.setHours(0,0,0,0);
+  for(let i=0;i<first;i++) grid.innerHTML+=`<div class="cal-day empty"></div>`;
+  for(let d=1;d<=days;d++){
+    const date=new Date(calYear,calMonth,d);
+    const isPast=date<today;
+    const isToday=date.getTime()===today.getTime();
+    const isSel=state.datum&&state.datum===`${d} ${MN[calMonth]}`;
+    const cls=['cal-day',isPast?'past':'',isToday?'today':'',isSel?'selected':''].join(' ').trim();
+    grid.innerHTML+=`<div class="${cls}" onclick="${isPast?'':'pickDay('+d+')'}">${d}</div>`;
+  }
+}
+
+async function pickDay(d){
+  state.datum=`${d} ${MN[calMonth]} ${calYear}`;
+  state.tijd=null;
+  document.getElementById('sum-datum').textContent=state.datum;
+  document.getElementById('btn3').disabled=true;
+  document.getElementById('btn-wachtlijst-open').style.display='block';
+  renderCal();
+
+  document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu);font-size:12px;">Beschikbare tijden laden...</div>`;
+
+  const gekozenDatum=parseStateDatum();
+  const slots=await berekenBeschikbareSlots(gekozenDatum);
+
+  if(window.__laatsteBeschikbaarheidQueryFout){
+    document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:16px;text-align:center;color:var(--mu);font-size:12px;">Kon de beschikbaarheid niet ophalen. Probeer het opnieuw.</div>`;
+    return;
+  }
+
+  if(!slots.length){
+    document.getElementById('time-slots-wrap').innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu);font-size:12px;">Op deze dag zijn geen tijden beschikbaar.</div>`;
+    return;
+  }
+
+  const ochtendSlots=slots.filter(s=>parseInt(s.tijd)<12);
+  const middagSlots=slots.filter(s=>parseInt(s.tijd)>=12&&parseInt(s.tijd)<15);
+  const namiddagSlots=slots.filter(s=>parseInt(s.tijd)>=15);
+
+  document.getElementById('time-slots-wrap').innerHTML=`
+    ${ochtendSlots.length?`<div class="time-section-label">Ochtend</div><div class="time-grid">${ochtendSlots.map(slotHTML).join('')}</div>`:''}
+    ${middagSlots.length?`<div class="time-section-label">Middag</div><div class="time-grid">${middagSlots.map(slotHTML).join('')}</div>`:''}
+    ${namiddagSlots.length?`<div class="time-section-label">Namiddag</div><div class="time-grid">${namiddagSlots.map(slotHTML).join('')}</div>`:''}`;
+}
+
+// Berekent écht beschikbare tijden voor een gekozen dag: op basis van de
+// werkelijke openingstijden van de salon (per dag van de week) en de
+// daadwerkelijk al bestaande afspraken op die dag (dus geen dubbele
+// boekingen meer mogelijk). Bij 'Geen voorkeur' voor de medewerker wordt
+// nu per medewerker apart gecheckt: een tijdslot is beschikbaar zodra
+// ÉÉN medewerker vrij is, niet pas als ALLEMAAL vrij zijn.
+async function berekenBeschikbareSlots(datum){
+  const dagNamen=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+  const dagNaam=dagNamen[datum.getDay()];
+  const openingstijden=window.SALON_OPENINGSTIJDEN||{};
+  const dagInfo=openingstijden[dagNaam];
+
+  // Geen openingstijden ingesteld voor deze salon? Val terug op een
+  // redelijke standaardwaarde (09:00-18:00) i.p.v. helemaal niks tonen.
+  const open = dagInfo && !dagInfo.gesloten && dagInfo.open ? dagInfo.open : (dagInfo?.gesloten ? null : '09:00');
+  const dicht = dagInfo && !dagInfo.gesloten && dagInfo.dicht ? dagInfo.dicht : (dagInfo?.gesloten ? null : '18:00');
+  if(!open||!dicht) return [];
+
+  const[openUur,openMin]=open.split(':').map(Number);
+  const[dichtUur,dichtMin]=dicht.split(':').map(Number);
+  const openMinuten=openUur*60+openMin;
+  const dichtMinuten=dichtUur*60+dichtMin;
+
+  const dagStart=new Date(datum);dagStart.setHours(0,0,0,0);
+  const dagEind=new Date(datum);dagEind.setHours(23,59,59,999);
+
+  // Bestaande afspraken ophalen via een veilige databasefunctie i.p.v.
+  // de tabel rechtstreeks -- RLS blokkeert anonieme leestoegang tot
+  // afspraken (terecht, want die tabel bevat klantgegevens), maar deze
+  // functie geeft alleen tijd/duur/medewerker terug, geen namen of
+  // contactgegevens, dus is veilig voor de publieke boekingswidget.
+  const{data,error:queryError}=await sb.rpc('get_bezette_tijden',{
+    p_salon_id:SALON_ID,
+    p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+    p_datum_start:dagStart.toISOString(),
+    p_datum_eind:dagEind.toISOString()
+  });
+  window.__laatsteBeschikbaarheidQueryFout = queryError || null;
+  if(queryError){
+    console.error('Kon bestaande afspraken niet ophalen voor beschikbaarheidscheck:', queryError);
+  }
+  const bestaandeAfspraken=data||[];
+  const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
+
+  const duurBenodigd=state.duur||30;
+  const stapGrootte=30;
+  const nu=new Date();
+
+  // Overlapt deze specifieke medewerker (of 'geen medewerker toegewezen',
+  // voor bloktijden e.d.) met het voorgestelde tijdslot?
+  function medewerkerOverlapt(medewerkerId, slotStart, slotEind){
+    return bestaandeAfspraken.some(a=>{
+      if(a.medewerker_id!==medewerkerId) return false;
+      const aStart=new Date(a.datum_tijd);
+      const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+      return slotStart<aEind && slotEind>aStart;
+    });
+  }
+
+  const slots=[];
+  for(let m=openMinuten;m+duurBenodigd<=dichtMinuten;m+=stapGrootte){
+    const slotStart=new Date(datum);slotStart.setHours(Math.floor(m/60),m%60,0,0);
+    const slotEind=new Date(slotStart.getTime()+duurBenodigd*60000);
+
+    let overlapt;
+    if(state.med_id){
+      // Specifieke medewerker gekozen: check alleen die ene.
+      overlapt=medewerkerOverlapt(state.med_id, slotStart, slotEind);
+    } else if(alleMedewerkerIds.length){
+      // 'Geen voorkeur': beschikbaar zodra minstens 1 medewerker vrij is.
+      overlapt=alleMedewerkerIds.every(id=>medewerkerOverlapt(id, slotStart, slotEind));
+    } else {
+      // Geen medewerkers bekend (zou niet moeten voorkomen, maar voor de
+      // zekerheid): val terug op de oude, conservatieve controle.
+      overlapt=bestaandeAfspraken.some(a=>{
+        const aStart=new Date(a.datum_tijd);
+        const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+        return slotStart<aEind && slotEind>aStart;
+      });
+    }
+
+    const isVerleden=slotStart<nu;
+    const uu=String(Math.floor(m/60)).padStart(2,'0');
+    const mm=String(m%60).padStart(2,'0');
+    slots.push({tijd:`${uu}:${mm}`,vol:overlapt||isVerleden});
+  }
+  return slots;
+}
+
+// Zoekt, voor een specifiek tijdstip + duur, de eerste medewerker die
+// daadwerkelijk vrij is -- gebruikt bij het definitief bevestigen van
+// een 'Geen voorkeur'-boeking (haalt verse data op, voor het geval de
+// beschikbaarheid net is veranderd sinds het kiezen van de tijd).
+async function vindBeschikbareMedewerker(dt, duurMin){
+  const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
+  if(!alleMedewerkerIds.length) return null;
+
+  const dagStart=new Date(dt);dagStart.setHours(0,0,0,0);
+  const dagEind=new Date(dt);dagEind.setHours(23,59,59,999);
+
+  const{data}=await sb.rpc('get_bezette_tijden',{
+    p_salon_id:SALON_ID,
+    p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+    p_datum_start:dagStart.toISOString(),
+    p_datum_eind:dagEind.toISOString()
+  });
+  const bestaandeAfspraken=data||[];
+  const slotEind=new Date(dt.getTime()+duurMin*60000);
+
+  for(const medewerkerId of alleMedewerkerIds){
+    const overlapt=bestaandeAfspraken.some(a=>{
+      if(a.medewerker_id!==medewerkerId) return false;
+      const aStart=new Date(a.datum_tijd);
+      const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+      return dt<aEind && slotEind>aStart;
+    });
+    if(!overlapt) return medewerkerId;
+  }
+  return null;
+}
+
+function slotHTML(s){
+  return`<div class="time-slot${s.vol?' vol':''}" onclick="${s.vol?'':'pickTime(\''+s.tijd+'\')'}">${s.tijd}${s.vol?'<br><span style="font-size:9px">vol</span>':''}</div>`;
+}
+
+function pickTime(t){
+  state.tijd=t;
+  document.querySelectorAll('.time-slot').forEach(s=>s.classList.remove('selected'));
+  event.target.closest('.time-slot').classList.add('selected');
+  document.getElementById('sum-datum').textContent=state.datum+' om '+t;
+  document.getElementById('btn3').disabled=false;
+}
+
+function prevMonth(){if(calMonth===0){calMonth=11;calYear--;}else calMonth--;renderCal();}
+function nextMonth(){if(calMonth===11){calMonth=0;calYear++;}else calMonth++;renderCal();}
+
+// ── BEVESTIGEN → SUPABASE ─────────────────────────────────────────────────────
+function parseStateDatum(){
+  // Hergebruikt dezelfde parse-logica als bevestigen(), voor consistentie
+  const parts=state.datum.split(' ');
+  const dag=parseInt(parts[0]);
+  const maandIdx=MN.indexOf(parts[1]);
+  const jaar=parseInt(parts[2]);
+  return new Date(jaar,maandIdx,dag);
+}
+
+function naarISODatum(d){
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function toonWachtlijstForm(){
+  const form=document.getElementById('wachtlijst-form');
+  const wordtGetoond=form.style.display==='none';
+  form.style.display=wordtGetoond?'block':'none';
+  if(wordtGetoond&&state.datum){
+    document.getElementById('wl-datum-label').textContent=state.datum;
+  }
+}
+
+async function verstuurWachtlijst(){
+  const naam=document.getElementById('wl-naam').value.trim();
+  const email=document.getElementById('wl-email').value.trim();
+  const flexibiliteit=document.getElementById('wl-flexibiliteit').value;
+  const errEl=document.getElementById('wl-err');
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  if(!naam||!emailRegex.test(email)){
+    errEl.textContent='Vul je naam en een geldig e-mailadres in.';
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+
+  const btn=document.getElementById('wl-btn');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  // Voorkeursdatum-range bepalen op basis van de gekozen flexibiliteit
+  let voorkeurVanaf=null,voorkeurTot=null;
+  if(state.datum&&flexibiliteit!=='alles'){
+    const gekozenDag=parseStateDatum();
+    if(flexibiliteit==='dag'){
+      voorkeurVanaf=naarISODatum(gekozenDag);
+      voorkeurTot=voorkeurVanaf;
+    } else if(flexibiliteit==='week'){
+      const vanaf=new Date(gekozenDag);vanaf.setDate(vanaf.getDate()-3);
+      const tot=new Date(gekozenDag);tot.setDate(tot.getDate()+3);
+      voorkeurVanaf=naarISODatum(vanaf);
+      voorkeurTot=naarISODatum(tot);
+    }
+  }
+
+  const{error}=await sb.from('wachtlijst').insert({
+    salon_id:SALON_ID,
+    klant_naam:naam,
+    klant_email:email,
+    dienst_id:state.dienst_id||null,
+    medewerker_id:state.med_id||null,
+    voorkeur_vanaf:voorkeurVanaf,
+    voorkeur_tot:voorkeurTot
+  });
+
+  btn.disabled=false;btn.textContent='Zet me op de wachtlijst';
+
+  if(error){
+    errEl.textContent='Er ging iets mis. Probeer het opnieuw.';
+    errEl.style.display='block';
+    return;
+  }
+
+  document.getElementById('wachtlijst-form').innerHTML=`
+    <div style="text-align:center;padding:8px 0;">
+      <div style="font-size:20px;margin-bottom:8px;">✓</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Je staat op de wachtlijst!</div>
+      <div style="font-size:12px;color:var(--mu);">We mailen je zodra er een plek vrijkomt.</div>
+    </div>`;
+}
+
+function zetStempelLink(email){
+  const el=document.getElementById('cf-stempel-link');
+  if(window.SALON_STEMPEL_ACTIEF && email){
+    el.href='/stempelkaart?salon='+SALON_ID;
+    el.style.display='inline-block';
+  } else {
+    el.style.display='none';
+  }
+}
+
+async function verwerkAanbetalingReturn(){
+  const aanbResultaat=params.get('aanbetaling');
+  const kaartResultaat=params.get('kaart');
+  const afspraakId=params.get('afspraak');
+  if((!aanbResultaat && !kaartResultaat) || !afspraakId) return;
+
+  history.replaceState(null,'',window.location.pathname);
+
+  const{data:a}=await sb.from('afspraken')
+    .select('*,medewerkers(naam),diensten(naam,prijs)')
+    .eq('id',afspraakId)
+    .single();
+
+  if(!a){
+    // Kan niet meer gevonden worden -- toon in ieder geval geen kapotte pagina
+    return;
+  }
+
+  document.getElementById('cf-dienst').textContent=a.diensten?.naam||'—';
+  document.getElementById('cf-med').textContent=a.medewerkers?.naam||'Geen voorkeur';
+  const dt=new Date(a.datum_tijd);
+  document.getElementById('cf-datum').textContent=dt.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
+  document.getElementById('cf-tijd').textContent=dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+  document.getElementById('cf-prijs').textContent='€'+(a.diensten?.prijs??'—');
+  zetStempelLink(a.klant_email);
+
+  const titelEl=document.querySelector('#step5 .step-title');
+  const subEl=document.querySelector('#step5 .step-sub');
+  const aanbRow=document.getElementById('cf-aanbetaling-row');
+  const kaartRow=document.getElementById('cf-kaart-row');
+
+  const alleGeslaagd = (aanbResultaat!=='geannuleerd') && (kaartResultaat!=='geannuleerd');
+
+  if(aanbResultaat==='succes'){
+    aanbRow.style.display='flex';
+    document.getElementById('cf-aanbetaling').textContent='€'+(a.aanbetaling_bedrag??'—')+' ontvangen ✓';
+    document.getElementById('cf-aanbetaling').style.color='var(--gd)';
+  } else if(aanbResultaat==='geannuleerd'){
+    aanbRow.style.display='flex';
+    document.getElementById('cf-aanbetaling').textContent='€'+(a.aanbetaling_bedrag??'—')+' nog niet ontvangen';
+    document.getElementById('cf-aanbetaling').style.color='var(--red)';
+  }
+
+  if(kaartResultaat==='succes'){
+    kaartRow.style.display='flex';
+    document.getElementById('cf-kaart').textContent='Vastgelegd ✓';
+    document.getElementById('cf-kaart').style.color='var(--gd)';
+  } else if(kaartResultaat==='geannuleerd'){
+    kaartRow.style.display='flex';
+    document.getElementById('cf-kaart').textContent='Nog niet vastgelegd';
+    document.getElementById('cf-kaart').style.color='var(--red)';
+  }
+
+  if(alleGeslaagd){
+    titelEl.textContent='Afspraak bevestigd!';
+    subEl.textContent='Je ontvangt ook een bevestiging per e-mail.';
+  } else {
+    titelEl.textContent='Afspraak staat nog steeds gepland';
+    subEl.textContent='Niet alles is afgerond. Je afspraak blijft staan -- neem contact op met de salon, of probeer het opnieuw.';
+  }
+
+  document.getElementById('progress-bar').style.display='none';
+  if(IS_EMBED) document.getElementById('btn-embed-close').style.display='block';
+  goStep(5);
+}
+
+async function bevestigen(){
+  const voor=document.getElementById('inp-voor').value.trim();
+  const achter=document.getElementById('inp-achter').value.trim();
+  const email=document.getElementById('inp-email').value.trim();
+  const telLokaal=document.getElementById('inp-tel').value.trim();
+  const telCode=document.getElementById('inp-tel-code').value;
+  // Nummer opschonen: eventuele voorloop-0 uit het lokale deel halen
+  // (mensen typen soms "06 12345678" terwijl de landcode-dropdown al +31 heeft)
+  const telLokaalSchoon=telLokaal.replace(/^0+/,'').replace(/[\s-]/g,'');
+  const tel=telLokaal?(telCode+telLokaalSchoon):'';
+  const notitie=document.getElementById('inp-notitie').value.trim();
+  const errEl=document.getElementById('form-err');
+
+  if(!voor||!email){
+    errEl.textContent='Vul je voornaam en e-mailadres in.';
+    errEl.style.display='block';return;
+  }
+
+  // E-mail: check op een geldig algemeen formaat (iets@iets.iets) --
+  // NIET beperkt tot specifieke providers, anders weiger je Gmail/Outlook/zakelijke adressen.
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+  if(!emailRegex.test(email)){
+    errEl.textContent='Vul een geldig e-mailadres in (bijv. naam@voorbeeld.nl).';
+    errEl.style.display='block';return;
+  }
+
+  // Telefoonnummer: optioneel, maar als ingevuld moet het lokale deel
+  // minimaal een paar cijfers bevatten (de landcode komt al uit de dropdown).
+  let telSchoon=tel;
+  if(telLokaal){
+    const telRegex=/^\+\d{8,15}$/;
+    if(!telRegex.test(telSchoon)){
+      errEl.textContent='Vul een geldig telefoonnummer in, bijv. 6 12345678.';
+      errEl.style.display='block';return;
+    }
+  }
+  errEl.style.display='none';
+
+  const btn=document.getElementById('btn-confirm');
+  btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span> Bezig...';
+
+  // Check of deze klant geblokkeerd is (via een veilige functie die alleen true/false teruggeeft)
+  try{
+    const{data:geblokkeerd}=await sb.rpc('is_klant_geblokkeerd',{
+      p_salon_id:SALON_ID,
+      p_email:email||null,
+      p_telefoon:telSchoon||null
+    });
+    if(geblokkeerd){
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Het is helaas niet mogelijk om via dit formulier een afspraak te maken. Neem rechtstreeks contact op met de salon.';
+      errEl.style.display='block';
+      return;
+    }
+  }catch(e){
+    console.warn('Kon blokkeerstatus niet controleren, boeking gaat door:',e);
+    // Bewust: als de check zelf faalt (bijv. netwerkfout), blokkeren we de boeking niet --
+    // liever een enkele ongewenste boeking dan alle klanten onterecht weigeren.
+  }
+
+  // Abonnement-tegoed? Dan EERST atomisch verbruiken (voorkomt dat 2
+  // gelijktijdige boekingen hetzelfde laatste tegoed dubbel gebruiken) --
+  // pas als dat lukt, de afspraak aanmaken met de koppeling erbij.
+  if(state.gebruikt_abonnement_id){
+    const{data:gelukt,error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id});
+    if(credErr || !gelukt){
+      state.gebruikt_abonnement_id=null;
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Je abonnementstegoed kon niet worden gebruikt (mogelijk net op door een andere boeking). Probeer het opnieuw, of boek zonder abonnement.';
+      errEl.style.display='block';
+      return;
+    }
+  }
+
+  // Datum → ISO
+  const parts=state.datum.split(' ');
+  const dag=parseInt(parts[0]);
+  const maandIdx=MN.indexOf(parts[1]);
+  const jaar=parseInt(parts[2]);
+  const[uur,min]=state.tijd.split(':');
+  const dt=new Date(jaar,maandIdx,dag,parseInt(uur),parseInt(min));
+
+  // Bij 'Geen voorkeur' een specifieke, daadwerkelijk vrije medewerker
+  // toewijzen i.p.v. medewerker_id:null -- zonder dit zouden twee 'geen
+  // voorkeur'-boekingen voor dezelfde tijd elkaar niet blokkeren (de
+  // beschikbaarheidscheck vergelijkt per medewerker-ID, en 'null' is
+  // geen ID). Verse controle vlak vóór het opslaan, voor het geval de
+  // tijd tussen bekijken en bevestigen net is ingenomen.
+  let toeTeWijzenMedewerkerId=state.med_id||null;
+  if(!toeTeWijzenMedewerkerId){
+    toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, state.duur);
+    if(!toeTeWijzenMedewerkerId){
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Deze tijd is helaas net door iemand anders geboekt. Kies een andere tijd.';
+      errEl.style.display='block';
+      return;
+    }
+  }
+
+  const naam=voor+(achter?' '+achter:'');
+  const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
+    salon_id:SALON_ID||null,
+    locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+    dienst_id:state.dienst_id||null,
+    medewerker_id:toeTeWijzenMedewerkerId,
+    datum_tijd:dt.toISOString(),
+    duur_min:state.duur,
+    status:'gepland',
+    klant_naam:naam,
+    klant_email:email,
+    klant_telefoon:telSchoon||null,
+    notities:notitie||null,
+    gebruikt_abonnement_id:state.gebruikt_abonnement_id||null
+  }).select('id,annuleer_token').single();
+
+  btn.disabled=false;btn.textContent='Afspraak bevestigen';
+
+  if(error){
+    console.error('Fout bij aanmaken afspraak:', error);
+    errEl.textContent='Deze tijd is helaas niet meer beschikbaar. Kies een andere tijd.';
+    errEl.style.display='block';return;
+  }
+
+  // Aanbetaling en/of verplichte kaartgegevens? Dan eerst naar Stripe
+  // Checkout (op de eigen Stripe-account van de salon) voordat we de
+  // boeking als compleet tonen. De afspraak zelf staat al vast (status
+  // 'gepland') -- als de Stripe-stap om wat voor reden dan ook niet lukt,
+  // blijft de boeking gewoon staan en valt het terug op 'ter plekke regelen'.
+  //
+  // Als een dienst ZOWEL een aanbetaling ALS verplichte kaartgegevens
+  // heeft, gebruiken we bewust 1 Stripe-sessie i.p.v. de klant twee keer
+  // naar Stripe te sturen: /create-deposit-checkout ondersteunt dan een
+  // save_card-vlag die de kaart ook meteen vastlegt voor latere no-show-
+  // incasso (zie workers/kronr-stripe-noshow-routes.md).
+  const needsPayment = state.aanb_type && window.SALON_STRIPE_ACTIEF && !state.gebruikt_abonnement_id;
+  const needsCardOnFile = state.vereist_kaart && !state.gebruikt_abonnement_id;
+
+  if((needsPayment || needsCardOnFile) && nieuweAfspraak){
+    try{
+      await sb.from('afspraken').update({
+        ...(needsPayment ? {aanbetaling_status:'in_afwachting', aanbetaling_bedrag:state.aanb_bedrag} : {}),
+        ...(needsCardOnFile ? {noshow_fee_status:'in_afwachting'} : {})
+      }).eq('id',nieuweAfspraak.id);
+
+      const successUrl=window.location.origin+window.location.pathname+'?aanbetaling='+(needsPayment?'succes':'geen')+'&kaart='+(needsCardOnFile?'succes':'geen')+'&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:'');
+      const cancelUrl=window.location.origin+window.location.pathname+'?aanbetaling='+(needsPayment?'geannuleerd':'geen')+'&kaart='+(needsCardOnFile?'geannuleerd':'geen')+'&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:'');
+
+      const route = needsPayment ? '/create-deposit-checkout' : '/create-setup-checkout';
+      const checkoutRes=await fetch('https://kronr-stripe.isaak-elia.workers.dev'+route,{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          salon_id:SALON_ID,
+          afspraak_id:nieuweAfspraak.id,
+          bedrag:needsPayment?state.aanb_bedrag:undefined,
+          save_card:needsCardOnFile,
+          email,
+          success_url:successUrl,
+          cancel_url:cancelUrl
+        })
+      });
+      if(!checkoutRes.ok) throw new Error('Checkout-aanroep mislukt');
+      const checkoutData=await checkoutRes.json();
+      if(!checkoutData.url) throw new Error('Geen checkout-URL ontvangen');
+
+      // Bevestigingsmail alsnog versturen voordat we wegnavigeren
+      fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({email,klant_naam:naam,salon_naam:window.SALON_NAAM||'',dienst_naam:state.dienst,datum_tijd:dt.toISOString(),annuleer_token:nieuweAfspraak?.annuleer_token})
+      }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
+
+      window.location.href=checkoutData.url;
+      return;
+    }catch(e){
+      console.warn('Stripe-stap kon niet gestart worden, boeking blijft staan zonder aanbetaling/kaartgegevens:',e);
+      // Val gewoon door naar de normale bevestiging hieronder -- de klant
+      // regelt het dan ter plekke met de salon.
+    }
+  }
+
+  // Bevestigingsmail versturen -- gebeurt op de achtergrond; als dit faalt
+  // (bijv. mailserver tijdelijk onbereikbaar) laten we de boeking gewoon staan,
+  // een klant zonder mail is beter dan een klant zonder afspraak.
+  fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      email,
+      klant_naam:naam,
+      salon_naam:window.SALON_NAAM||'',
+      dienst_naam:state.dienst,
+      datum_tijd:dt.toISOString(),
+      annuleer_token:nieuweAfspraak?.annuleer_token
+    })
+  }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
+
+  // Toon bevestiging
+  document.getElementById('cf-dienst').textContent=state.dienst;
+  document.getElementById('cf-med').textContent=state.med;
+  document.getElementById('cf-datum').textContent=state.datum;
+  document.getElementById('cf-tijd').textContent=state.tijd;
+  document.getElementById('cf-prijs').textContent='€'+state.prijs;
+  zetStempelLink(email);
+  document.getElementById('progress-bar').style.display='none';
+  if(IS_EMBED) document.getElementById('btn-embed-close').style.display='block';
+  goStep(5);
+}
+
+init();
+
+// ── Hoogte doorgeven aan de omliggende pagina (bv. s) ─────────────────
+// Zodra dit document in een iframe zit, melden we onze werkelijke inhoud-
+// hoogte aan de parent zodat die de iframe kan laten meegroeien in plaats
+// van een vaste hoogte te gebruiken. Dat voorkomt twee losse scroll-lagen
+// (dubbele/rare scroll) wanneer de boekingsflow hoger is dan de iframe.
+if(window.parent !== window){
+  // .layout gebruikt elders min-height:calc(100vh - 60px) voor een mooie
+  // volledige-hoogte weergave bij een directe (niet-ingesloten) bezoeker.
+  // In een iframe die zichzelf op inhoud laat meegroeien (zie hieronder)
+  // zou dat een oneindige groei-loop geven: iframe groter -> 100vh binnen
+  // de iframe groter -> .layout groter -> iframe nog groter, enzovoort.
+  // Daarom breken we die vh-afhankelijkheid hier expliciet.
+  const layoutEl=document.querySelector('.layout');
+  if(layoutEl) layoutEl.style.minHeight='0';
+
+  let laatsteHoogte=0;
+  function meldHoogte(){
+    const h=document.documentElement.scrollHeight;
+    if(Math.abs(h-laatsteHoogte)<2) return;
+    laatsteHoogte=h;
+    window.parent.postMessage({type:'kronr:hoogte', height:h}, '*');
+  }
+  window.addEventListener('load', meldHoogte);
+  window.addEventListener('resize', meldHoogte);
+  if(window.ResizeObserver){
+    new ResizeObserver(meldHoogte).observe(document.body);
+  } else {
+    setInterval(meldHoogte, 500);
+  }
+  meldHoogte();
+}
+</script>
+<!-- TIJDELIJK: overflow-detectie, wordt later weer verwijderd -->
+<div id="overflow-debug" style="position:fixed;bottom:0;left:0;right:0;background:#c0392b;color:#fff;font-family:monospace;font-size:11px;padding:8px;z-index:99999;display:none;word-break:break-all;"></div>
+<script>
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const docWidth = document.documentElement.clientWidth;
+    let boosdoener = null;
+    let maxRight = docWidth;
+    document.querySelectorAll('*').forEach(el => {
+      const rect = el.getBoundingClientRect();
+      if (rect.right > maxRight + 2) {
+        maxRight = rect.right;
+        boosdoener = el;
+      }
+    });
+    if (boosdoener) {
+      const info = `OVERFLOW: <${boosdoener.tagName.toLowerCase()} class="${boosdoener.className}" id="${boosdoener.id}"> steekt ${Math.round(maxRight - docWidth)}px uit. Viewport: ${docWidth}px, element rechterkant: ${Math.round(maxRight)}px.`;
+      const el = document.getElementById('overflow-debug');
+      el.textContent = info;
+      el.style.display = 'block';
+    }
+  }, 800);
+});
+</script>
+</body>
+</html>
