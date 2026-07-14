@@ -70,7 +70,7 @@ let MEDEWERKER=null;
 
 async function logUit(){
   await sb.auth.signOut();
-  window.location.href = '/medewerker-login';
+  window.location.href = '/medewerker-login/';
 }
 
 function fmtDatum(d){
@@ -79,7 +79,7 @@ function fmtDatum(d){
 
 async function init(){
   const{data:{session}}=await sb.auth.getSession();
-  if(!session){ window.location.href = '/medewerker-login'; return; }
+  if(!session){ window.location.href = '/medewerker-login/'; return; }
 
   const{data,error}=await sb.from('medewerkers').select('*').eq('auth_user_id',session.user.id).maybeSingle();
 

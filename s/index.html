@@ -125,7 +125,7 @@ function toonContent(salon){
   // Cache-busting-parameter toegevoegd: zonder dit kon een verouderde,
   // gecachte versie van boeken in de iframe blijven hangen na een
   // update, ook als de buitenste s-pagina zelf wel vers laadde.
-  document.getElementById('booking-frame').src='/boeken?salon='+salon.id+'&_v='+Date.now();
+  document.getElementById('booking-frame').src='/boeken/?salon='+salon.id+'&_v='+Date.now();
 
   document.getElementById('laden-state').style.display='none';
   document.getElementById('content').style.display='block';

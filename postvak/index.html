@@ -89,7 +89,7 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
     <button class="tab-knop" id="tab-archief" onclick="wisselTab('archief')">Archief</button>
   </div>
   <div style="display:flex;align-items:center;gap:14px;">
-    <a href="/admin" class="uitloggen" style="text-decoration:none;">Beheer</a>
+    <a href="/admin/" class="uitloggen" style="text-decoration:none;">Beheer</a>
     <button onclick="toonNieuwBericht()" style="font-size:13px;font-weight:600;color:var(--wh);background:var(--ink);border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:inherit;transition:opacity .15s;">+ Nieuw bericht</button>
     <button class="icon-btn" onclick="wisselThema()" id="thema-knop" title="Donkere modus">
       <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 009 9 9 9 0 11-9-9z"/></svg>
@@ -221,7 +221,7 @@ function wisselThema(){
 async function init(){
   try{
     const{data:{session}}=await sb.auth.getSession();
-    if(!session){ window.location.href = '/postvak-login'; return; }
+    if(!session){ window.location.href = '/postvak-login/'; return; }
 
     const{data:teamlid,error:teamlidError}=await sb.from('kronr_team').select('id,naam').eq('auth_user_id',session.user.id).maybeSingle();
     if(teamlidError){
@@ -231,7 +231,7 @@ async function init(){
     }
     if(!teamlid){
       await sb.auth.signOut();
-      window.location.href = '/postvak-login';
+      window.location.href = '/postvak-login/';
       return;
     }
     HUIDIG_TEAMLID = teamlid;
@@ -626,7 +626,7 @@ async function verstuurNieuwBericht(){
 
 async function uitloggen(){
   await sb.auth.signOut();
-  window.location.href = '/postvak-login';
+  window.location.href = '/postvak-login/';
 }
 
 // Vangnet: als er ook maar iets misgaat vóórdat init() de kans krijgt

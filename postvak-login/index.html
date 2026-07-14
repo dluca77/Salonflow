@@ -153,7 +153,7 @@ async function inloggen(){
     return toonMsg('Dit account heeft geen toegang tot het postvak.');
   }
 
-  window.location.href = '/admin';
+  window.location.href = '/admin/';
 }
 
 async function registreren(){
@@ -166,7 +166,7 @@ async function registreren(){
   const btn=document.getElementById('btn-reg');
   btn.disabled=true;btn.textContent='Bezig...';
 
-  const{data,error}=await sb.auth.signUp({email,password:pass,options:{emailRedirectTo:'https://kronr.nl/postvak-login'}});
+  const{data,error}=await sb.auth.signUp({email,password:pass,options:{emailRedirectTo:'https://kronr.nl/postvak-login/'}});
   if(error){
     btn.disabled=false;btn.textContent='Account aanmaken';
     return toonMsg('Registratie mislukt: '+error.message);

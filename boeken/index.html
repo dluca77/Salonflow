@@ -1018,7 +1018,7 @@ async function verstuurWachtlijst(){
 function zetStempelLink(email){
   const el=document.getElementById('cf-stempel-link');
   if(window.SALON_STEMPEL_ACTIEF && email){
-    el.href='/stempelkaart?salon='+SALON_ID;
+    el.href='/stempelkaart/?salon='+SALON_ID;
     el.style.display='inline-block';
   } else {
     el.style.display='none';

@@ -249,7 +249,7 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
       </div>
       <div class="cf-turnstile" data-sitekey="0x4AAAAAAD0aeX0QQ5F-MtW4" style="margin-bottom:16px;"></div>
       <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken</button>
-      <div class="terms">Door te registreren ga je akkoord met onze <a href="/algemene-voorwaarden" target="_blank">voorwaarden</a> en <a href="/privacybeleid" target="_blank">privacybeleid</a>.</div>
+      <div class="terms">Door te registreren ga je akkoord met onze <a href="/algemene-voorwaarden/" target="_blank">voorwaarden</a> en <a href="/privacybeleid/" target="_blank">privacybeleid</a>.</div>
     </div>
 
     <a href="index.html" class="back">← Terug naar Kronr.nl</a>
@@ -284,7 +284,7 @@ async function redirectNaJuisteBestemming(session){
   // Is dit account ook een Kronr-teamlid (Isaak zelf)? Dan naar het
   // beheer-dashboard i.p.v. het gewone salon-dashboard.
   const{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
-  window.location.href = teamlid ? '/admin' : '/dashboard';
+  window.location.href = teamlid ? '/admin/' : '/dashboard/';
 }
 
 if (window.location.hash.includes('access_token')) {
@@ -428,7 +428,7 @@ async function registreer() {
   const { data, error } = await sb.auth.signUp({
     email, password: pass,
     options: {
-      emailRedirectTo: 'https://kronr.nl/login',
+      emailRedirectTo: 'https://kronr.nl/login/',
       data: { bedrijf_naam: naam, type_bedrijf: type, contact_naam: contactNaam }
     }
   });
@@ -471,7 +471,7 @@ async function loginGoogle() {
   localStorage.setItem('kronr_remember', '1');
   await sb.auth.signInWithOAuth({
     provider: 'google',
-    options: { redirectTo: 'https://kronr.nl/dashboard' }
+    options: { redirectTo: 'https://kronr.nl/dashboard/' }
   });
 }
 
@@ -481,7 +481,7 @@ async function resetWw(e) {
   const email = document.getElementById('l-email').value.trim();
   if (!email) return toonMsg('Vul eerst je e-mailadres in.');
   await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://kronr.nl/login'
+    redirectTo: 'https://kronr.nl/login/'
   });
   toonMsg('Reset-link verstuurd! Check je e-mail.', 'ok');
 }

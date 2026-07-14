@@ -43,7 +43,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
     <button class="btn btn-prim" id="btn-login" onclick="login()">Inloggen</button>
     <div class="err" id="err"></div>
   </div>
-  <a class="terug" href="/login">Ben je salon-eigenaar? Log hier in →</a>
+  <a class="terug" href="/login/">Ben je salon-eigenaar? Log hier in →</a>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -82,7 +82,7 @@ async function login(){
     try{ sessionStorage.removeItem('kronr_pending_uitnodiging_token'); }catch(e){}
   }
 
-  window.location.href = '/medewerker-portal';
+  window.location.href = '/medewerker-portal/';
 }
 </script>
 </body>
