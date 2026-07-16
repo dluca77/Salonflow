@@ -36,7 +36,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .mob-menu{display:none;width:36px;height:36px;border:none;background:transparent;cursor:pointer;margin-left:auto;}
 
 /* ── HERO ── */
-.hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:100px 24px 150px;background:var(--white);position:relative;overflow:hidden;box-sizing:border-box;}
+.hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:100px 24px 150px;background:linear-gradient(rgba(255,255,255,.9),rgba(255,255,255,.94)),url('/images/achtergrond.jpg');background-size:cover;background-position:center top;position:relative;overflow:hidden;box-sizing:border-box;}
 .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:600px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(140,109,63,0.06) 0%,transparent 70%);pointer-events:none;}
 .hero-grid{max-width:1600px;width:100%;margin:140px auto 0;display:grid;grid-template-columns:0.95fr 1.05fr;gap:56px;align-items:center;}
 .hero-left{text-align:left;}
@@ -569,7 +569,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 
 <!-- HERO -->
 <section class="hero">
-  <div class="hero-label-wrap"><div class="hero-label"><span class="streep"></span> <strong>Nieuw</strong> — Kai-assistent inbegrepen</div></div>
   <div class="hero-grid">
     <div class="hero-left">
       <div class="hero-text-group">
