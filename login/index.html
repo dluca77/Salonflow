@@ -16,7 +16,9 @@
 html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;}
 
 /* ── LAYOUT ── */
-.wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;background:url('/images/login.jpg');background-size:cover;background-position:center;}
+.wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;}
+.wrap::after{content:'';position:fixed;inset:0;background:url('/images/login.jpg');background-size:cover;background-position:center;z-index:0;}
+.wrap>.left,.wrap>.right{position:relative;z-index:1;}
 
 /* ── LEFT PANEL ── */
 .left{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:48px;}
@@ -123,8 +125,11 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
 /* ── RESPONSIVE ── */
 @media(max-width:768px){
   .wrap{grid-template-columns:1fr;background:var(--iv);}
-  .left{display:none;}
-  .right{max-width:100%;padding:40px 6vw 40px;min-height:100vh;margin:0;}
+  .wrap::after{display:none;}
+  .left{display:flex;min-height:0;height:180px;padding:20px 24px;background:url('/images/login.jpg');background-size:cover;background-position:center 30%;}
+  .left::before{background:linear-gradient(to bottom,rgba(15,13,11,.35) 0%,rgba(15,13,11,.55) 100%);}
+  .left-bottom{display:none;}
+  .right{max-width:100%;padding:32px 6vw 40px;min-height:0;margin:0;}
 }
 </style>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
