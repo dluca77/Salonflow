@@ -18,11 +18,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* ── LAYOUT ── */
 .wrap{min-height:100vh;display:grid;grid-template-columns:1fr 1fr;position:relative;}
 .wrap::after{content:'';position:fixed;inset:0;background:url('/images/login.jpg');background-size:cover;background-position:center;z-index:0;}
-.wrap>.left,.wrap>.right{position:relative;z-index:1;}
+.wrap>.left,.wrap>.right{position:relative;z-index:2;}
 
 /* ── LEFT PANEL ── */
 .left{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;padding:48px;}
-.left::before{content:'';position:absolute;inset:0;background:linear-gradient(to top,rgba(15,13,11,.65) 0%,rgba(15,13,11,.25) 35%,transparent 55%);pointer-events:none;z-index:1;}
+.wrap::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 900px 700px at 0% 100%,rgba(15,13,11,.7) 0%,rgba(15,13,11,.4) 35%,transparent 70%);pointer-events:none;z-index:1;}
+.left::before{display:none;}
 .left-bg{display:none;}
 .left-letter{position:absolute;bottom:-0.1em;right:-0.05em;font-family:'Playfair Display',serif;font-size:280px;font-weight:700;color:transparent;-webkit-text-stroke:1px rgba(140,109,63,0.12);line-height:1;user-select:none;pointer-events:none;}
 .left-top{position:relative;z-index:2;}
@@ -126,8 +127,9 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
 @media(max-width:768px){
   .wrap{grid-template-columns:1fr;background:var(--iv);}
   .wrap::after{display:none;}
+  .wrap::before{display:none;}
   .left{display:flex;min-height:0;height:180px;padding:20px 24px;background:url('/images/login.jpg');background-size:cover;background-position:center 30%;}
-  .left::before{background:linear-gradient(to bottom,rgba(15,13,11,.35) 0%,rgba(15,13,11,.55) 100%);}
+  .left::before{display:block;content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(15,13,11,.35) 0%,rgba(15,13,11,.55) 100%);pointer-events:none;}
   .left-bottom{display:none;}
   .right{max-width:100%;padding:32px 6vw 40px;min-height:0;margin:0;}
 }
