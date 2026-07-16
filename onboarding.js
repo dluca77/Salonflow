@@ -25,10 +25,10 @@ async function haalOnboardingStatus() {
 }
 
 const ONBOARDING_STAPPEN = [
-  { key: 'profiel', label: 'Vul je salonprofiel aan', sub: 'Logo en adres, zodat klanten je herkennen', href: 'instellingen.html' },
-  { key: 'dienst', label: 'Voeg je eerste dienst toe', sub: 'Wat bied je aan, en voor welke prijs?', href: 'diensten.html' },
-  { key: 'klant', label: 'Voeg je eerste klant toe', sub: 'Of wacht tot je eerste online boeking binnenkomt', href: 'klanten.html' },
-  { key: 'afspraak', label: 'Plan je eerste afspraak in', sub: 'Zelf inplannen, of via je boekingslink laten binnenkomen', href: 'agenda.html' },
+  { key: 'profiel', label: 'Vul je salonprofiel aan', sub: 'Logo en adres, zodat klanten je herkennen', href: '/instellingen/' },
+  { key: 'dienst', label: 'Voeg je eerste dienst toe', sub: 'Wat bied je aan, en voor welke prijs?', href: '/diensten/' },
+  { key: 'klant', label: 'Voeg je eerste klant toe', sub: 'Of wacht tot je eerste online boeking binnenkomt', href: '/klanten/' },
+  { key: 'afspraak', label: 'Plan je eerste afspraak in', sub: 'Zelf inplannen, of via je boekingslink laten binnenkomen', href: '/agenda/' },
 ];
 
 // ── Checklist: widget renderen ──
@@ -89,7 +89,7 @@ function toonKaiBegroeting() {
   overlay.style.cssText = 'position:fixed;inset:0;z-index:9998;background:rgba(15,13,11,.5);display:flex;align-items:center;justify-content:center;padding:24px;';
   overlay.innerHTML = `
     <div style="background:var(--wh);border-radius:16px;max-width:420px;width:100%;padding:32px;text-align:center;">
-      <img src="images/kai-mascotte.png" alt="Kai" style="width:64px;height:64px;object-fit:contain;margin:0 auto 18px;">
+      <img src="/images/kai-mascotte.png" alt="Kai" style="width:64px;height:64px;object-fit:contain;margin:0 auto 18px;">
       <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:10px;">Hoi! Ik ben Kai.</h2>
       <p style="font-size:14px;color:var(--mu);line-height:1.6;margin-bottom:24px;">Welkom bij Kronr. Laat ik je in een korte rondleiding laten zien waar alles staat -- duurt hooguit een minuutje.</p>
       <div style="display:flex;gap:10px;justify-content:center;">
@@ -107,11 +107,11 @@ function sluitKaiBegroeting() {
 
 // ── Interactieve rondleiding ──
 const RONDLEIDING_STAPPEN = [
-  { selector: '.si[href="agenda.html"], .mob-item[href="agenda.html"]', titel: 'Agenda', tekst: 'Hier zie je al je afspraken. Nieuwe boekingen (ook online) komen hier automatisch binnen.' },
-  { selector: '.si[href="klanten.html"], .mob-item[href="klanten.html"]', titel: 'Klanten', tekst: 'Alle klantgegevens, behandelhistorie en notities op één plek.' },
-  { selector: '.si[href="kassa.html"], .mob-item[href="kassa.html"]', titel: 'Kassa', tekst: 'Reken hier snel af, inclusief pin, contant en cadeaubonnen.' },
-  { selector: '.si[href="diensten.html"], .mob-item[href="diensten.html"]', titel: 'Diensten', tekst: 'Beheer hier je behandelingen, prijzen en duur.' },
-  { selector: '.si[href="instellingen.html"], .mob-item[href="instellingen.html"]', titel: 'Instellingen', tekst: 'Salonprofiel, boekingswidget, abonnement -- alles wat je verder kunt aanpassen.' },
+  { selector: '.si[href="/agenda/"], .mob-item[href="/agenda/"]', titel: 'Agenda', tekst: 'Hier zie je al je afspraken. Nieuwe boekingen (ook online) komen hier automatisch binnen.' },
+  { selector: '.si[href="/klanten/"], .mob-item[href="/klanten/"]', titel: 'Klanten', tekst: 'Alle klantgegevens, behandelhistorie en notities op één plek.' },
+  { selector: '.si[href="/kassa/"], .mob-item[href="/kassa/"]', titel: 'Kassa', tekst: 'Reken hier snel af, inclusief pin, contant en cadeaubonnen.' },
+  { selector: '.si[href="/diensten/"], .mob-item[href="/diensten/"]', titel: 'Diensten', tekst: 'Beheer hier je behandelingen, prijzen en duur.' },
+  { selector: '.si[href="/instellingen/"], .mob-item[href="/instellingen/"]', titel: 'Instellingen', tekst: 'Salonprofiel, boekingswidget, abonnement -- alles wat je verder kunt aanpassen.' },
 ];
 
 let rondleidingIndex = 0;
