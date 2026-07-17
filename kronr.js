@@ -4,6 +4,20 @@
 const SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 
+// ── Veiligheid: klantgegevens (naam, telefoon, notities) komen van de
+// PUBLIEKE boekingswidget en dus van willekeurige, niet-vertrouwde
+// bezoekers. Alles wat uit klant_naam/klant_email/notities e.d. komt
+// moet door deze functie heen vóórdat het in innerHTML terechtkomt --
+// anders kan een kwaadwillende "klant" met een script-payload als
+// naam de sessie van de ingelogde salon-eigenaar/medewerker kapen
+// zodra die de agenda/dashboard/klantenlijst bekijkt.
+function escapeHtml(tekst) {
+  if (tekst === null || tekst === undefined) return '';
+  return String(tekst)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 // ── "Onthoud mij" ────────────────────────────────────────────────────────
 // De voorkeur zelf staat altijd in localStorage (klein, niet gevoelig) en
 // bepaalt of de eigenlijke sessie in localStorage (blijft na sluiten browser)

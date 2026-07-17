@@ -68,6 +68,16 @@ const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
 let MEDEWERKER=null;
 
+// Klantgegevens (klant_naam) komen van de publieke boekingswidget en
+// zijn dus niet-vertrouwde invoer -- moet ge-escaped voordat het in
+// innerHTML terechtkomt.
+function escapeHtml(tekst) {
+  if (tekst === null || tekst === undefined) return '';
+  return String(tekst)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 async function logUit(){
   await sb.auth.signOut();
   window.location.href = '/medewerker-login/';
@@ -112,7 +122,7 @@ async function laadRooster(){
     <div class="apt-row">
       <div>
         <div class="apt-datum">${fmtDatum(a.datum_tijd)} · ${new Date(a.datum_tijd).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}</div>
-        <div class="apt-svc">${a.diensten?.naam||a.bloktijd_type||'Afspraak'}${a.klant_naam?' · '+a.klant_naam:''}</div>
+        <div class="apt-svc">${a.diensten?.naam||a.bloktijd_type||'Afspraak'}${a.klant_naam?' · '+escapeHtml(a.klant_naam):''}</div>
       </div>
     </div>`).join('');
 

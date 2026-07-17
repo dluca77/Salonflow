@@ -51,6 +51,16 @@ const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
+// Klantgegevens komen van de publieke boekingswidget/wachtlijst en
+// zijn dus niet-vertrouwde invoer -- moet ge-escaped voordat het in
+// innerHTML terechtkomt.
+function escapeHtml(tekst) {
+  if (tekst === null || tekst === undefined) return '';
+  return String(tekst)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+
 const params=new URLSearchParams(location.search);
 const token=params.get('token');
 const card=document.getElementById('card');
@@ -93,7 +103,7 @@ function toonDetails(e){
     <div class="card-title">Er is een plek voor je!</div>
     <p class="card-sub">Bevestig hieronder dat je deze plek wilt claimen.</p>
     <div class="detail-box">
-      <div class="detail-row"><span class="detail-label">Naam</span><span class="detail-value">${e.klant_naam||'-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Naam</span><span class="detail-value">${escapeHtml(e.klant_naam)||'-'}</span></div>
       <div class="detail-row"><span class="detail-label">Dienst</span><span class="detail-value">${e.dienst_naam||'-'}</span></div>
       <div class="detail-row"><span class="detail-label">Datum</span><span class="detail-value">${fmtDatum(e.voorgestelde_datum_tijd)}</span></div>
     </div>

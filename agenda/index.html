@@ -794,7 +794,7 @@ function renderMaand(){
         const rest=dayApts.length-3;
         return`<div class="month-day${isOther?' other-month':''}${isToday?' today':''}" onclick="clickDay('${dk(d)}')">
           <div class="md-num">${d.getDate()}</div>
-          ${visible.map(a=>`<div class="md-apt${a.type==='bloktijd'?' bloktijd-dot':''}" onclick="event.stopPropagation();showPop(a_${a.id.replace(/-/g,'_')},null)">${a.klant_naam||a.bloktijd_type||'Bloktijd'}</div>`).join('')}
+          ${visible.map(a=>`<div class="md-apt${a.type==='bloktijd'?' bloktijd-dot':''}" onclick="event.stopPropagation();showPop(a_${a.id.replace(/-/g,'_')},null)">${escapeHtml(a.klant_naam)||a.bloktijd_type||'Bloktijd'}</div>`).join('')}
           ${rest>0?`<div class="md-more">+${rest} meer</div>`:''}
         </div>`;
       }).join('')}
@@ -899,7 +899,7 @@ function doSearch(q){
     el.innerHTML=res.map(a=>{
       const dt=new Date(a.datum_tijd);
       return`<div class="sr-item" onclick="springNaarApt('${a.datum_tijd}')">
-        <div class="sr-naam">${a.klant_naam||'Onbekend'}</div>
+        <div class="sr-naam">${escapeHtml(a.klant_naam)||'Onbekend'}</div>
         <div class="sr-meta">${DN[dt.getDay()]} ${dt.getDate()} ${MNS[dt.getMonth()]} · ${ft(dt.getHours(),dt.getMinutes())} · ${a.diensten?.naam||''}</div>
       </div>`;
     }).join('');
@@ -1065,8 +1065,8 @@ async function openWachtlijstOverzicht(){
     }
     return `
     <div style="padding:10px 14px;background:var(--iv,#faf8f4);border:1px solid var(--bd,#e2d9ce);border-radius:8px;font-size:12px;">
-      <div style="font-weight:600;">${item.klant_naam}</div>
-      <div style="color:var(--mu);margin-top:2px;">${item.diensten?.naam||'Onbekende dienst'} · ${item.klant_email}</div>
+      <div style="font-weight:600;">${escapeHtml(item.klant_naam)}</div>
+      <div style="color:var(--mu);margin-top:2px;">${item.diensten?.naam||'Onbekende dienst'} · ${escapeHtml(item.klant_email)}</div>
       <div style="color:var(--ink);margin-top:4px;font-weight:500;">📅 ${datumTekst}</div>
       ${item.voorgestelde_datum_tijd?`<div style="color:var(--gd,#8c6d3f);margin-top:4px;">✨ Plek aangeboden, wacht op reactie</div>`:''}
       <div style="display:flex;gap:8px;margin-top:8px;">

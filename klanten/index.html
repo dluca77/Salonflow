@@ -434,7 +434,7 @@ async function laadCampagneGeschiedenis(){
   const SEGMENT_LABELS={alle_klanten:'Alle klanten',inactief_60d:'Niet geweest in 60+ dagen',jarig_deze_maand:'Jarig deze maand'};
   el.innerHTML=data.map(c=>`
     <div style="padding:8px 0;border-bottom:1px solid var(--bd);">
-      <div style="font-weight:600;color:var(--ink);">${c.onderwerp}</div>
+      <div style="font-weight:600;color:var(--ink);">${escapeHtml(c.onderwerp)}</div>
       <div>${SEGMENT_LABELS[c.segment_type]||c.segment_type} · ${c.aantal_ontvangers} ontvangers · ${c.status==='verzonden'?'Verzonden':'Mislukt'} ${c.verzonden_op?'op '+new Date(c.verzonden_op).toLocaleDateString('nl-NL'):''}</div>
     </div>`).join('');
 }
@@ -576,12 +576,12 @@ function render(){
     const since=new Date(k.created_at).toLocaleDateString('nl-NL',{month:'short',year:'numeric'});
     const gb=k.geslacht?`<span class="gbadge ${k.geslacht}"></span>`:'';
     const s=vindStats(k);
-    const av=k.foto_url?`<img src="${k.foto_url}" alt="${k.naam}">`:init;
+    const av=k.foto_url?`<img src="${escapeHtml(k.foto_url)}" alt="${escapeHtml(k.naam)}">`:init;
     return `<div class="kcard" onclick="showK('${k.id}')">
       <div class="kav">${av}</div>
       <div class="kinfo">
-        <div class="kname">${gb}${k.naam}</div>
-        <div class="kmeta">${k.email||k.telefoon||'Geen contactgegevens'} · Klant sinds ${since}</div>
+        <div class="kname">${gb}${escapeHtml(k.naam)}</div>
+        <div class="kmeta">${escapeHtml(k.email||k.telefoon)||'Geen contactgegevens'} · Klant sinds ${since}</div>
       </div>
       <div class="kright">
         <div class="kval">${s.omzet?'€'+s.omzet:'—'}</div>
@@ -596,7 +596,7 @@ function showK(id){
   currentDetailId=id;
   const init=getInit(k.naam);
   const since=new Date(k.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
-  document.getElementById('d-av').innerHTML=k.foto_url?`<img src="${k.foto_url}" alt="${k.naam}">`:init;
+  document.getElementById('d-av').innerHTML=k.foto_url?`<img src="${escapeHtml(k.foto_url)}" alt="${escapeHtml(k.naam)}">`:init;
   document.getElementById('d-naam').textContent=k.naam;
   document.getElementById('d-sub').textContent=(k.email||'')+(k.telefoon?' · '+k.telefoon:'');
   const s=vindStats(k);

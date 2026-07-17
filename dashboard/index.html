@@ -455,7 +455,7 @@ async function loadData(){
         <div class="apt-time">${ft(dt.getHours(),dt.getMinutes())}</div>
         <div class="apt-bar" style="background:#e07020;"></div>
         <div class="apt-info">
-          <div class="apt-naam">${a.klant_naam||'Onbekend'}</div>
+          <div class="apt-naam">${escapeHtml(a.klant_naam)||'Onbekend'}</div>
           <div class="apt-svc">${a.diensten?.naam||''} · ${dt.toLocaleDateString('nl-NL',{day:'numeric',month:'short'})}</div>
         </div>
         <div style="font-size:10px;padding:3px 8px;background:#fff3e0;color:#e07020;border-radius:99px;font-weight:600;">Nieuw</div>
@@ -477,7 +477,7 @@ async function loadData(){
       return`<div class="apt-row">
         <div class="apt-time">${ft(dt.getHours(),dt.getMinutes())}</div>
         <div class="apt-bar"></div>
-        <div class="apt-info"><div class="apt-naam">${a.klant_naam||'Onbekend'}</div><div class="apt-svc">${a.diensten?.naam||''}${a.medewerkers?.naam?' · '+a.medewerkers.naam:''}</div></div>
+        <div class="apt-info"><div class="apt-naam">${escapeHtml(a.klant_naam)||'Onbekend'}</div><div class="apt-svc">${a.diensten?.naam||''}${a.medewerkers?.naam?' · '+a.medewerkers.naam:''}</div></div>
         <div class="apt-dur">${a.duur_min||45}min</div>
       </div>`;
     }).join('')+(vandaag.length>8?`<div style="padding:10px 18px;font-size:11px;color:var(--mu2);border-top:1px solid var(--bd)"><a href="/agenda/" style="color:var(--gd);text-decoration:none;">+${vandaag.length-8} meer →</a></div>`:'');
