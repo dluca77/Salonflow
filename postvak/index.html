@@ -195,6 +195,20 @@ const LABEL_OPTIES = [
 ];
 
 // ── Toast-meldingen (i.p.v. alert()) ──
+// Veiligheid: klant-/afzender-gegevens (naam, onderwerp, inhoud van
+// binnenkomende mail) komen van BUITEN Kronr en mogen dus NOOIT
+// ongefilterd als HTML worden ingevoegd -- dat zou willekeurige
+// bezoekers/afzenders de kans geven om script uit te voeren in het
+// ingelogde postvak. Alles wat uit klant_naam/van_naam/onderwerp/
+// inhoud komt gaat door deze functie heen vóór het in innerHTML
+// terechtkomt.
+function escapeHtml(tekst){
+  if(tekst===null||tekst===undefined) return '';
+  return String(tekst)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 function toonToast(bericht, type){
   const wrap = document.getElementById('toast-wrap');
   const el = document.createElement('div');
@@ -320,8 +334,8 @@ function renderLijst(){
       const datum = new Date(v.verzonden_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
       return `
       <div class="lijst-item ${v.id===HUIDIG_BERICHT_ID?'actief':''}" onclick="toonVerzonden('${v.id}')">
-        <div class="li-van">Aan: ${v.naar_email}</div>
-        <div class="li-onderwerp">${v.onderwerp||'(geen onderwerp)'}</div>
+        <div class="li-van">Aan: ${escapeHtml(v.naar_email)}</div>
+        <div class="li-onderwerp">${escapeHtml(v.onderwerp)||'(geen onderwerp)'}</div>
         <div class="li-datum">${datum}</div>
       </div>`;
     }).join('');
@@ -338,12 +352,12 @@ function renderLijst(){
     const labels = (b.labels||[]);
     return `
     <div class="lijst-item ${b.id===HUIDIG_BERICHT_ID?'actief':''} ${!b.gelezen?'ongelezen':''}" onclick="toonBericht('${b.id}')">
-      <div class="li-van">${b.van_naam||b.van_email} ${b.beantwoord?'✓':''}</div>
-      <div class="li-onderwerp">${b.onderwerp||'(geen onderwerp)'}</div>
+      <div class="li-van">${escapeHtml(b.van_naam||b.van_email)} ${b.beantwoord?'✓':''}</div>
+      <div class="li-onderwerp">${escapeHtml(b.onderwerp)||'(geen onderwerp)'}</div>
       <div class="li-datum">${datum}</div>
       ${labels.length?`<div class="li-labels">${labels.map(l=>{
         const optie = LABEL_OPTIES.find(o=>o.naam===l);
-        return `<span class="label-pill" style="background:${optie?optie.kleur:'#999'}22;color:${optie?optie.kleur:'#999'};">${l}</span>`;
+        return `<span class="label-pill" style="background:${optie?optie.kleur:'#999'}22;color:${optie?optie.kleur:'#999'};">${escapeHtml(l)}</span>`;
       }).join('')}</div>`:''}
     </div>`;
   }).join('');
@@ -361,9 +375,9 @@ async function toonVerzonden(id){
   const datum = new Date(bericht.verzonden_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
   document.getElementById('detail').innerHTML = `
     <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
-    <div class="detail-onderwerp">${bericht.onderwerp||'(geen onderwerp)'}</div>
-    <div class="detail-van">Aan <strong>${bericht.naar_email}</strong> · ${datum}</div>
-    <div class="detail-inhoud">${bericht.inhoud||''}</div>
+    <div class="detail-onderwerp">${escapeHtml(bericht.onderwerp)||'(geen onderwerp)'}</div>
+    <div class="detail-van">Aan <strong>${escapeHtml(bericht.naar_email)}</strong> · ${datum}</div>
+    <div class="detail-inhoud">${escapeHtml(bericht.inhoud)}</div>
   `;
 }
 
@@ -388,14 +402,14 @@ async function toonBericht(id){
   const datum = new Date(bericht.ontvangen_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
   document.getElementById('detail').innerHTML = `
     <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
-    <div class="detail-onderwerp">${bericht.onderwerp||'(geen onderwerp)'}</div>
-    <div class="detail-van">Van <strong>${bericht.van_naam||bericht.van_email}</strong> (${bericht.van_email}) · ${datum}</div>
+    <div class="detail-onderwerp">${escapeHtml(bericht.onderwerp)||'(geen onderwerp)'}</div>
+    <div class="detail-van">Van <strong>${escapeHtml(bericht.van_naam||bericht.van_email)}</strong> (${escapeHtml(bericht.van_email)}) · ${datum}</div>
     <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">${renderLabelToggles(bericht)}</div>
     <div style="display:flex;gap:10px;margin-bottom:16px;">
       <button onclick="wisselBeantwoord('${id}',${!bericht.beantwoord})" style="font-size:12px;padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:${bericht.beantwoord?'var(--iv)':'var(--wh)'};cursor:pointer;font-family:inherit;color:var(--ink);">${bericht.beantwoord?'✓ Beantwoord':'Markeer als beantwoord'}</button>
       <button onclick="wisselArchief('${id}',${!bericht.gearchiveerd})" style="font-size:12px;padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-family:inherit;color:var(--ink);">${bericht.gearchiveerd?'Terugzetten naar Postvak IN':'Archiveren'}</button>
     </div>
-    <div class="detail-inhoud">${(bericht.inhoud||'').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>')}</div>
+    <div class="detail-inhoud">${escapeHtml(bericht.inhoud).replace(/\n/g,'<br>')}</div>
     <div class="reply-box">
       <div class="sjabloon-rij">
         <label style="font-size:12px;font-weight:600;color:var(--ink);">Antwoorden</label>
