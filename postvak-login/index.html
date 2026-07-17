@@ -33,7 +33,7 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
   <div class="logo">Kronr<em>.</em></div>
   <div class="sub">Postvak IN — hallo@kronr.nl</div>
 
-  <div class="tabs">
+  <div class="tabs" id="login-tabs">
     <div class="tab actief" id="tab-login" onclick="toonLogin()">Inloggen</div>
     <div class="tab" id="tab-reg" onclick="toonRegistreer()">Eerste keer</div>
   </div>
@@ -53,6 +53,15 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
       </div>
     </div>
     <button class="btn-main" id="btn-login" onclick="inloggen()">Inloggen</button>
+  </div>
+
+  <div id="sectie-mfa" style="display:none;">
+    <p style="font-size:13px;color:var(--mu);margin-bottom:16px;">Voer de 6-cijferige code uit je authenticator-app in.</p>
+    <div class="frow">
+      <label class="flabel">Verificatiecode</label>
+      <input class="finput" type="text" id="mfa-login-code" maxlength="6" inputmode="numeric" style="text-align:center;font-size:18px;letter-spacing:4px;" placeholder="123456">
+    </div>
+    <button class="btn-main" id="btn-mfa" onclick="bevestigMfaInloggen()">Bevestigen</button>
   </div>
 
   <div id="sectie-reg" style="display:none;">
@@ -129,27 +138,76 @@ async function inloggen(){
     return toonMsg('Inloggen mislukt: '+error.message);
   }
 
-  // Check: is dit ook echt een teamlid?
-  let{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',data.user.id).maybeSingle();
+  // Heeft dit account 2FA ingeschakeld? Dan eerst de code vragen
+  // voordat we verdergaan -- zonder dit zou een wachtwoord alleen
+  // (zonder de tweede factor) nog steeds voldoende zijn om in te
+  // loggen, wat het hele nut van 2FA ondermijnt.
+  const{data:levels} = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
+  if(levels.currentLevel !== levels.nextLevel){
+    document.getElementById('sectie-login').style.display='none';
+    document.getElementById('sectie-mfa').style.display='block';
+    document.getElementById('login-tabs').style.display='none';
+    leegMsg();
+    btn.disabled=false;btn.textContent='Inloggen';
+    return;
+  }
 
-  // Nog geen teamlid? Dit kan de allereerste keer zijn na registreren --
-  // de bootstrap-policy in de database staat dit alleen toe zolang de
-  // tabel nog helemaal leeg is (dus precies 1 keer, voor de eerste
-  // persoon). Bij elke volgende poging (tabel niet meer leeg) wordt dit
-  // door de database zelf geweigerd.
+  await voltooiInloggen(btn,'Inloggen');
+}
+
+async function bevestigMfaInloggen(){
+  const code = document.getElementById('mfa-login-code').value.trim();
+  const btn = document.getElementById('btn-mfa');
+  if(!/^\d{6}$/.test(code)){
+    return toonMsg('Vul een geldige 6-cijferige code in.');
+  }
+
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{data:factors} = await sb.auth.mfa.listFactors();
+  const factor = (factors.totp||[]).find(f=>f.status==='verified');
+  if(!factor){
+    btn.disabled=false;btn.textContent='Bevestigen';
+    return toonMsg('Kon geen actieve 2FA-factor vinden.');
+  }
+
+  const{data:challengeData, error:challengeError} = await sb.auth.mfa.challenge({factorId:factor.id});
+  if(challengeError){
+    btn.disabled=false;btn.textContent='Bevestigen';
+    return toonMsg('Fout: '+challengeError.message);
+  }
+
+  const{error:verifyError} = await sb.auth.mfa.verify({factorId:factor.id, challengeId:challengeData.id, code});
+  if(verifyError){
+    btn.disabled=false;btn.textContent='Bevestigen';
+    return toonMsg('Code klopt niet, probeer opnieuw.');
+  }
+
+  await voltooiInloggen(btn,'Bevestigen');
+}
+
+// Gedeelde afronding ná een geslaagde login (met of zonder 2FA):
+// controleren of dit account een teamlid is (met bootstrap voor de
+// allereerste keer), en doorsturen naar het beheer-dashboard.
+async function voltooiInloggen(btn, oorspronkelijkeTekst){
+  const{data:{session}} = await sb.auth.getSession();
+  const email = session.user.email;
+
+  let{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
+
   if(!teamlid){
     const naam = localStorage.getItem('postvak_naam_'+email) || email.split('@')[0];
-    const{error:insertError}=await sb.from('kronr_team').insert({auth_user_id:data.user.id, naam, email, rol:'eigenaar'});
+    const{error:insertError}=await sb.from('kronr_team').insert({auth_user_id:session.user.id, naam, email, rol:'eigenaar'});
     if(!insertError){
       localStorage.removeItem('postvak_naam_'+email);
-      const opnieuw = await sb.from('kronr_team').select('id').eq('auth_user_id',data.user.id).maybeSingle();
+      const opnieuw = await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
       teamlid = opnieuw.data;
     }
   }
 
   if(!teamlid){
     await sb.auth.signOut();
-    btn.disabled=false;btn.textContent='Inloggen';
+    btn.disabled=false;btn.textContent=oorspronkelijkeTekst;
     return toonMsg('Dit account heeft geen toegang tot het postvak.');
   }
 

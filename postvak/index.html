@@ -126,11 +126,33 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
       <button onclick="voegSjabloonToe()" style="margin-top:8px;padding:9px 14px;background:var(--wh);color:var(--ink);border:1px solid var(--bd);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">+ Sjabloon opslaan</button>
     </div>
 
+    <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+      <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Twee-staps-verificatie (2FA)</label>
+      <p style="font-size:12.5px;color:var(--mu);margin-bottom:10px;">Extra beveiliging: naast je wachtwoord ook een code uit een authenticator-app (bijv. Google Authenticator).</p>
+      <div id="mfa-status">Laden...</div>
+    </div>
+
     <div style="display:flex;gap:10px;margin-top:20px;">
       <button onclick="slaNaamOp()" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Opslaan</button>
       <button onclick="sluitInstellingen()" style="padding:11px 18px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);">Sluiten</button>
     </div>
     <div class="reply-msg" id="instellingen-msg" style="margin-top:10px;"></div>
+  </div>
+</div>
+
+<!-- 2FA-inschrijfscherm -->
+<div id="mfa-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,13,11,.5);z-index:110;align-items:center;justify-content:center;padding:24px;">
+  <div style="background:var(--wh);border-radius:14px;padding:28px;max-width:380px;width:100%;text-align:center;">
+    <div style="font-family:'Playfair Display',serif;font-size:18px;font-weight:800;color:var(--ink);margin-bottom:14px;">Scan met je authenticator-app</div>
+    <div id="mfa-qr" style="margin:0 auto 14px;"></div>
+    <p style="font-size:11.5px;color:var(--mu);margin-bottom:14px;word-break:break-all;">Lukt scannen niet? Voer handmatig in: <strong id="mfa-secret"></strong></p>
+    <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;text-align:left;">Voer de 6-cijferige code in</label>
+    <input type="text" id="mfa-code" maxlength="6" inputmode="numeric" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:18px;text-align:center;letter-spacing:4px;margin-bottom:12px;" placeholder="123456">
+    <div style="display:flex;gap:10px;">
+      <button onclick="bevestigMfaInschrijving()" id="mfa-bevestig-btn" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Bevestigen</button>
+      <button onclick="annuleerMfaInschrijving()" style="padding:11px 16px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);">Annuleren</button>
+    </div>
+    <div class="reply-msg" id="mfa-msg" style="margin-top:10px;"></div>
   </div>
 </div>
 
@@ -534,6 +556,7 @@ function toonInstellingen(){
   document.getElementById('naam-tekst').value = HUIDIG_TEAMLID?.naam || '';
   document.getElementById('instellingen-msg').style.display='none';
   renderSjablonenLijst();
+  laadMfaStatus();
   document.getElementById('instellingen-overlay').style.display='flex';
 }
 function sluitInstellingen(){
@@ -636,6 +659,100 @@ async function verstuurNieuwBericht(){
   }
 
   btn.disabled=false;btn.textContent='Versturen';
+}
+
+// ── Twee-staps-verificatie (2FA/MFA) ──
+let MFA_INSCHRIJF_FACTOR_ID = null;
+
+async function laadMfaStatus(){
+  const statusEl = document.getElementById('mfa-status');
+  const{data,error} = await sb.auth.mfa.listFactors();
+  if(error){
+    statusEl.innerHTML = '<span style="color:var(--red);font-size:12.5px;">Kon status niet laden.</span>';
+    return;
+  }
+  const actieveFactor = (data.totp||[]).find(f=>f.status==='verified');
+  if(actieveFactor){
+    statusEl.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--iv);border-radius:8px;padding:10px 14px;">
+        <span style="font-size:13px;color:var(--green);font-weight:600;">✓ Ingeschakeld</span>
+        <button onclick="schakelMfaUit('${actieveFactor.id}')" style="background:none;border:none;color:var(--red);font-size:12.5px;cursor:pointer;font-family:inherit;">Uitschakelen</button>
+      </div>`;
+  } else {
+    statusEl.innerHTML = `<button onclick="startMfaInschrijving()" style="width:100%;padding:10px;background:var(--wh);color:var(--ink);border:1px solid var(--bd);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">Inschakelen</button>`;
+  }
+}
+
+async function startMfaInschrijving(){
+  const{data,error} = await sb.auth.mfa.enroll({factorType:'totp'});
+  if(error){
+    toonToast('Kon 2FA niet starten: '+error.message,'fout');
+    return;
+  }
+  MFA_INSCHRIJF_FACTOR_ID = data.id;
+  document.getElementById('mfa-qr').innerHTML = `<img src="${data.totp.qr_code}" alt="QR-code" style="width:180px;height:180px;">`;
+  document.getElementById('mfa-secret').textContent = data.totp.secret;
+  document.getElementById('mfa-code').value = '';
+  document.getElementById('mfa-msg').style.display = 'none';
+  document.getElementById('mfa-overlay').style.display = 'flex';
+}
+
+function annuleerMfaInschrijving(){
+  // Onafgemaakte inschrijving weer opruimen, anders blijft hij als
+  // "unverified" factor hangen.
+  if(MFA_INSCHRIJF_FACTOR_ID){
+    sb.auth.mfa.unenroll({factorId:MFA_INSCHRIJF_FACTOR_ID});
+  }
+  MFA_INSCHRIJF_FACTOR_ID = null;
+  document.getElementById('mfa-overlay').style.display = 'none';
+}
+
+async function bevestigMfaInschrijving(){
+  const code = document.getElementById('mfa-code').value.trim();
+  const msgEl = document.getElementById('mfa-msg');
+  if(!/^\d{6}$/.test(code)){
+    msgEl.textContent = 'Vul een geldige 6-cijferige code in.';
+    msgEl.className = 'reply-msg fout';
+    msgEl.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('mfa-bevestig-btn');
+  btn.disabled = true; btn.textContent = 'Bezig...';
+
+  const{data:challengeData, error:challengeError} = await sb.auth.mfa.challenge({factorId:MFA_INSCHRIJF_FACTOR_ID});
+  if(challengeError){
+    msgEl.textContent = 'Fout: '+challengeError.message;
+    msgEl.className = 'reply-msg fout';
+    msgEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Bevestigen';
+    return;
+  }
+
+  const{error:verifyError} = await sb.auth.mfa.verify({factorId:MFA_INSCHRIJF_FACTOR_ID, challengeId:challengeData.id, code});
+  if(verifyError){
+    msgEl.textContent = 'Code klopt niet, probeer opnieuw.';
+    msgEl.className = 'reply-msg fout';
+    msgEl.style.display = 'block';
+    btn.disabled = false; btn.textContent = 'Bevestigen';
+    return;
+  }
+
+  MFA_INSCHRIJF_FACTOR_ID = null;
+  document.getElementById('mfa-overlay').style.display = 'none';
+  toonToast('Twee-staps-verificatie ingeschakeld!','ok');
+  laadMfaStatus();
+}
+
+async function schakelMfaUit(factorId){
+  if(!confirm('Weet je zeker dat je twee-staps-verificatie wilt uitschakelen?')) return;
+  const{error} = await sb.auth.mfa.unenroll({factorId});
+  if(error){
+    toonToast('Kon niet uitschakelen: '+error.message,'fout');
+    return;
+  }
+  toonToast('Twee-staps-verificatie uitgeschakeld.','ok');
+  laadMfaStatus();
 }
 
 async function uitloggen(){
