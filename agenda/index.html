@@ -1104,9 +1104,10 @@ async function incasseerNoshowFee(){
   btn.disabled=true;btn.textContent='Bezig met incasseren...';
 
   try{
+    const{data:{session}}=await sb.auth.getSession();
     const res=await fetch('https://kronr-stripe.isaak-elia.workers.dev/charge-noshow-fee',{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},
       body:JSON.stringify({salon_id:SALON_ID, afspraak_id:geselecteerdeApt.id})
     });
     if(!res.ok) throw new Error('HTTP '+res.status);
