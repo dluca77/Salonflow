@@ -1274,7 +1274,7 @@ async function bevestigen(){
       fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({email,klant_naam:naam,salon_naam:window.SALON_NAAM||'',dienst_naam:state.dienst,datum_tijd:dt.toISOString(),annuleer_token:nieuweAfspraak?.annuleer_token})
+        body:JSON.stringify({email,klant_naam:naam,salon_naam:window.SALON_NAAM||'',dienst_naam:state.dienst,datum_tijd:dt.toISOString(),annuleer_token:nieuweAfspraak?.annuleer_token,afspraak_id:nieuweAfspraak?.id,duur_min:state.duur})
       }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
 
       window.location.href=checkoutData.url;
@@ -1298,7 +1298,9 @@ async function bevestigen(){
       salon_naam:window.SALON_NAAM||'',
       dienst_naam:state.dienst,
       datum_tijd:dt.toISOString(),
-      annuleer_token:nieuweAfspraak?.annuleer_token
+      annuleer_token:nieuweAfspraak?.annuleer_token,
+      afspraak_id:nieuweAfspraak?.id,
+      duur_min:state.duur
     })
   }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
 
