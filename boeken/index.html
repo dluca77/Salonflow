@@ -304,11 +304,6 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="cr" id="cf-kaart-row" style="display:none;"><span class="cr-label">Kaartgegevens</span><span class="cr-val" id="cf-kaart"></span></div>
       </div>
       <p style="font-size:13px;color:var(--mu);line-height:1.7;font-weight:300;">Wil je de afspraak wijzigen of annuleren? Dat kan tot 24 uur van tevoren via de link in je bevestigingsmail.</p>
-      <a id="cf-whatsapp-herinnering" href="#" target="_blank" style="display:none;margin-top:14px;font-size:13px;color:#25D366;text-decoration:none;font-weight:600;align-items:center;gap:6px;justify-content:center;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="display:inline;vertical-align:-3px;"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 004.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.83 14.01c-.24.68-1.4 1.3-1.93 1.34-.51.05-1.02.24-3.43-.76-2.9-1.21-4.75-4.16-4.9-4.35-.14-.19-1.17-1.56-1.17-2.97 0-1.41.73-2.1.99-2.39.26-.29.56-.36.75-.36l.53.01c.17.01.4-.06.62.48.24.58.81 2 .88 2.14.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.13-.28.28-.12.55.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.21 1.37.28.14.44.12.6-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.53.72 1.79.85.26.13.44.19.5.3.06.11.06.62-.18 1.3z"/></svg>
-        Zet zelf een herinnering in WhatsApp
-      </a>
-      <br>
       <a id="cf-stempel-link" href="#" style="display:none;font-size:12px;color:var(--gd);text-decoration:none;font-weight:600;">✦ Bekijk je stempelkaart →</a>
       <button class="btn-next" id="btn-embed-close" style="display:none;margin-top:20px;" onclick="parent.postMessage('kronr:close','*')">Sluiten</button>
     </div>
@@ -359,14 +354,6 @@ const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
-// Gratis WhatsApp-klik-link (geen API-kosten): opent WhatsApp met een
-// vooraf ingevulde tekst die de gebruiker zelf nog moet versturen.
-function bouwWhatsappLink(telefoonnummer, tekst) {
-  let schoon = (telefoonnummer || '').replace(/[^\d+]/g, '');
-  if (schoon.startsWith('06')) schoon = '31' + schoon.slice(1);
-  schoon = schoon.replace(/^\+/, '');
-  return `https://wa.me/${schoon}?text=${encodeURIComponent(tekst)}`;
-}
 const params=new URLSearchParams(location.search);
 const SALON_ID=params.get('salon');
 const IS_EMBED=params.get('embed')==='1';
@@ -1323,16 +1310,6 @@ async function bevestigen(){
   document.getElementById('cf-tijd').textContent=state.tijd;
   document.getElementById('cf-prijs').textContent='€'+state.prijs;
   zetStempelLink(email);
-
-  // Gratis WhatsApp-herinnering-link (geen Twilio/Meta-kosten): stuurt
-  // naar het EIGEN nummer van de klant, met een vooraf ingevulde tekst
-  // die zij zelf nog moeten versturen.
-  if(telSchoon){
-    const herinneringTekst=`Herinnering: mijn afspraak bij ${window.SALON_NAAM||'de salon'} is op ${state.datum} om ${state.tijd} (${state.dienst}).`;
-    const whatsappEl=document.getElementById('cf-whatsapp-herinnering');
-    whatsappEl.href=bouwWhatsappLink(telSchoon,herinneringTekst);
-    whatsappEl.style.display='inline-flex';
-  }
 
   document.getElementById('progress-bar').style.display='none';
   if(IS_EMBED) document.getElementById('btn-embed-close').style.display='block';
