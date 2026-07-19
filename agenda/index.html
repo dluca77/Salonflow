@@ -1167,6 +1167,23 @@ async function checkWachtlijstMatch(afspraak){
         claim_token:data.claim_token
       })
     });
+
+    // WhatsApp-variant -- alleen actief zodra goedgekeurd, de Worker
+    // controleert dit zelf en doet anders gewoon niks.
+    if(data.klant_telefoon){
+      fetch('https://kronr-whatsapp.isaak-elia.workers.dev/wachtlijst-plek',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({
+          salon_id:SALON_ID,
+          klant_naam:data.klant_naam,
+          telefoon:data.klant_telefoon,
+          datum_tijd:afspraak.datum_tijd,
+          claim_url:'https://kronr.nl/wachtlijst-claim/?token='+data.claim_token
+        })
+      }).catch(e=>console.warn('WhatsApp-wachtlijst-melding kon niet worden verstuurd:',e));
+    }
+
     toast('Wachtlijst-plek aangeboden aan '+data.klant_naam);
   }catch(e){
     console.warn('Wachtlijst-match kon niet worden gecontroleerd:',e);

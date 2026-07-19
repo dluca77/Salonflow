@@ -1288,6 +1288,18 @@ async function bevestigen(){
     })
   }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
 
+  // WhatsApp-bevestiging (alleen actief zodra de salon dit heeft
+  // aanstaan én Twilio/Meta-goedkeuring binnen is -- de Worker zelf
+  // controleert dit en doet gewoon niks als het nog niet zover is,
+  // dus dit is veilig om altijd aan te roepen).
+  if(nieuweAfspraak?.id){
+    fetch('https://kronr-whatsapp.isaak-elia.workers.dev/afspraak-bevestiging',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({ salon_id:SALON_ID, afspraak_id:nieuweAfspraak.id })
+    }).catch(e=>console.warn('WhatsApp-bevestiging kon niet worden verstuurd:',e));
+  }
+
   // Toon bevestiging
   document.getElementById('cf-dienst').textContent=state.dienst;
   document.getElementById('cf-med').textContent=state.med;
