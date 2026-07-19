@@ -18,6 +18,17 @@ function escapeHtml(tekst) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// ── WhatsApp klik-link (gratis alternatief) ──────────────────────────────
+// Bouwt een wa.me-link met een vooraf ingevulde, door de gebruiker zelf
+// nog te verzenden tekst. Kost niks (geen Twilio/Meta-API), maar vereist
+// wel dat degene die klikt zelf op "versturen" tikt in WhatsApp.
+function bouwWhatsappLink(telefoonnummer, tekst) {
+  let schoon = (telefoonnummer || '').replace(/[^\d+]/g, '');
+  if (schoon.startsWith('06')) schoon = '31' + schoon.slice(1);
+  schoon = schoon.replace(/^\+/, '');
+  return `https://wa.me/${schoon}?text=${encodeURIComponent(tekst)}`;
+}
+
 // ── "Onthoud mij" ────────────────────────────────────────────────────────
 // De voorkeur zelf staat altijd in localStorage (klein, niet gevoelig) en
 // bepaalt of de eigenlijke sessie in localStorage (blijft na sluiten browser)

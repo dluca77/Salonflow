@@ -294,7 +294,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="detail-head">
       <div class="detail-av" id="d-av"></div>
       <div>
-        <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;" id="d-naam"></div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;" id="d-naam"></div>
+          <a id="d-whatsapp-btn" href="#" target="_blank" style="display:none;" title="WhatsApp deze klant">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 004.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.83 14.01c-.24.68-1.4 1.3-1.93 1.34-.51.05-1.02.24-3.43-.76-2.9-1.21-4.75-4.16-4.9-4.35-.14-.19-1.17-1.56-1.17-2.97 0-1.41.73-2.1.99-2.39.26-.29.56-.36.75-.36l.53.01c.17.01.4-.06.62.48.24.58.81 2 .88 2.14.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.13-.28.28-.12.55.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.21 1.37.28.14.44.12.6-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.53.72 1.79.85.26.13.44.19.5.3.06.11.06.62-.18 1.3z"/></svg>
+          </a>
+        </div>
         <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-top:3px;" id="d-sub"></div>
       </div>
     </div>
@@ -599,6 +604,14 @@ function showK(id){
   document.getElementById('d-av').innerHTML=k.foto_url?`<img src="${escapeHtml(k.foto_url)}" alt="${escapeHtml(k.naam)}">`:init;
   document.getElementById('d-naam').textContent=k.naam;
   document.getElementById('d-sub').textContent=(k.email||'')+(k.telefoon?' · '+k.telefoon:'');
+
+  const waBtn=document.getElementById('d-whatsapp-btn');
+  if(k.telefoon){
+    waBtn.href=bouwWhatsappLink(k.telefoon, `Hoi ${(k.naam||'').split(' ')[0]||''}, `);
+    waBtn.style.display='inline-flex';
+  } else {
+    waBtn.style.display='none';
+  }
   const s=vindStats(k);
   document.getElementById('d-omzet').textContent=s.omzet?'€'+s.omzet:'€0';
   document.getElementById('d-geslacht').textContent=k.geslacht?k.geslacht.charAt(0).toUpperCase()+k.geslacht.slice(1):'—';
