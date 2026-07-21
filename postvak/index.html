@@ -28,15 +28,20 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
 .lijst{border-right:1px solid var(--bd);background:var(--wh);overflow-y:auto;transition:background .2s,border-color .2s;}
 .zoek-wrap{padding:12px 16px;border-bottom:1px solid var(--bd);}
 .zoek-input{width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;background:var(--iv);color:var(--ink);transition:background .2s,border-color .2s;}
-.lijst-item{padding:16px 20px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .15s;animation:fadeIn .25s ease both;}
+.lijst-item{display:flex;gap:12px;align-items:flex-start;padding:16px 20px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .15s;animation:fadeIn .25s ease both;}
 .lijst-item:hover{background:var(--iv);}
 .lijst-item.actief{background:var(--iv);border-left:3px solid var(--gd);}
 .lijst-item.ongelezen .li-van{font-weight:700;}
+.li-check{flex-shrink:0;width:16px;height:16px;margin-top:2px;cursor:pointer;accent-color:var(--gd);}
+.li-content{flex:1;min-width:0;}
 .li-van{font-size:14px;color:var(--ink);margin-bottom:2px;}
 .li-onderwerp{font-size:13px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .li-datum{font-size:11px;color:var(--mu2);margin-top:4px;}
 .li-labels{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
 .label-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
+.bulk-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--iv);border-bottom:1px solid var(--bd);font-size:13px;color:var(--ink);transition:background .2s,border-color .2s;}
+.bulk-bar button{font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-family:inherit;color:var(--ink);transition:background .15s;}
+.bulk-bar button:hover{background:var(--iv);}
 .detail{padding:32px;animation:fadeIn .25s ease both;}
 .detail-leeg{padding:60px 32px;text-align:center;color:var(--mu2);font-size:14px;}
 .detail-onderwerp{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px;}
@@ -209,6 +214,7 @@ let HUIDIG_BERICHT_ID = null;
 let HUIDIGE_TAB = 'in';
 let HUIDIG_TEAMLID = null;
 let ZOEKTERM = '';
+let GESELECTEERD = new Set();
 
 const LABEL_OPTIES = [
   {naam:'Belangrijk', kleur:'#c0392b'},
@@ -229,6 +235,33 @@ function escapeHtml(tekst){
   return String(tekst)
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+// Sommige binnenkomende mail slaat de onderwerpregel op zoals die letterlijk
+// in de e-mail-header staat (RFC 2047 "encoded word", bv.
+// "=?UTF-8?Q?Welkom_bij_Kronr?="), i.p.v. al gedecodeerd. Decodeer dat hier
+// bij het tonen, zodat je nooit meer rauwe =?UTF-8?...?=-tekst ziet.
+function decodeMimeOnderwerp(tekst){
+  if(!tekst) return tekst;
+  try{
+    return tekst.replace(/=\?([^?]+)\?([QqBb])\?([^?]*)\?=\s*/g, (heel, charset, enc, deel)=>{
+      let bytes;
+      if(enc.toUpperCase()==='B'){
+        bytes = Uint8Array.from(atob(deel), c=>c.charCodeAt(0));
+      } else {
+        const buf=[];
+        for(let i=0;i<deel.length;i++){
+          if(deel[i]==='_'){ buf.push(0x20); }
+          else if(deel[i]==='=' && i+2<deel.length){ buf.push(parseInt(deel.substr(i+1,2),16)); i+=2; }
+          else { buf.push(deel.charCodeAt(i)); }
+        }
+        bytes = Uint8Array.from(buf);
+      }
+      return new TextDecoder(charset).decode(bytes);
+    });
+  }catch(e){
+    return tekst;
+  }
 }
 
 function toonToast(bericht, type){
@@ -299,6 +332,7 @@ async function wisselTab(tab){
   document.getElementById('detail').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
   HUIDIG_BERICHT_ID = null;
   ZOEKTERM = '';
+  GESELECTEERD.clear();
 
   document.getElementById('lijst').classList.add('toon-mobiel');
   document.getElementById('detail').classList.remove('toon-mobiel');
@@ -342,6 +376,37 @@ function renderZoekbalk(){
   return `<div class="zoek-wrap"><input type="text" class="zoek-input" placeholder="Zoeken..." value="${ZOEKTERM.replace(/"/g,'&quot;')}" oninput="zetZoekterm(this.value)"></div>`;
 }
 
+function renderBulkBar(){
+  if(!GESELECTEERD.size) return '';
+  const naarArchief = HUIDIGE_TAB!=='archief';
+  return `<div class="bulk-bar">
+    <span>${GESELECTEERD.size} geselecteerd</span>
+    <div style="display:flex;gap:8px;">
+      <button onclick="archiveerGeselecteerd(${naarArchief})">${naarArchief?'Archiveren':'Terugzetten naar Postvak IN'}</button>
+      <button onclick="deselecteerAlles()">Deselecteren</button>
+    </div>
+  </div>`;
+}
+
+function toggleGeselecteerd(id, aan){
+  if(aan) GESELECTEERD.add(id); else GESELECTEERD.delete(id);
+  renderLijst();
+}
+
+function deselecteerAlles(){
+  GESELECTEERD.clear();
+  renderLijst();
+}
+
+async function archiveerGeselecteerd(naarArchief){
+  const ids = Array.from(GESELECTEERD);
+  if(!ids.length) return;
+  await sb.from('kronr_berichten').update({gearchiveerd:naarArchief}).in('id', ids);
+  toonToast(naarArchief?`${ids.length} bericht(en) gearchiveerd.`:`${ids.length} bericht(en) teruggezet.`, 'ok');
+  GESELECTEERD.clear();
+  await laadBerichten();
+}
+
 function renderLijst(){
   const lijstEl = document.getElementById('lijst');
   const zoekbalkHtml = renderZoekbalk();
@@ -356,9 +421,11 @@ function renderLijst(){
       const datum = new Date(v.verzonden_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
       return `
       <div class="lijst-item ${v.id===HUIDIG_BERICHT_ID?'actief':''}" onclick="toonVerzonden('${v.id}')">
-        <div class="li-van">Aan: ${escapeHtml(v.naar_email)}</div>
-        <div class="li-onderwerp">${escapeHtml(v.onderwerp)||'(geen onderwerp)'}</div>
-        <div class="li-datum">${datum}</div>
+        <div class="li-content">
+          <div class="li-van">Aan: ${escapeHtml(v.naar_email)}</div>
+          <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(v.onderwerp))||'(geen onderwerp)'}</div>
+          <div class="li-datum">${datum}</div>
+        </div>
       </div>`;
     }).join('');
     return;
@@ -366,21 +433,24 @@ function renderLijst(){
 
   const gefilterd = BERICHTEN.filter(b=>!ZOEKTERM || (b.onderwerp||'').toLowerCase().includes(ZOEKTERM) || (b.van_email||'').toLowerCase().includes(ZOEKTERM) || (b.van_naam||'').toLowerCase().includes(ZOEKTERM) || (b.inhoud||'').toLowerCase().includes(ZOEKTERM));
   if(!gefilterd.length){
-    lijstEl.innerHTML=zoekbalkHtml+`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${ZOEKTERM?'Niks gevonden.':(HUIDIGE_TAB==='archief'?'Nog niks gearchiveerd.':'Nog geen berichten.')}</div>`;
+    lijstEl.innerHTML=zoekbalkHtml+renderBulkBar()+`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${ZOEKTERM?'Niks gevonden.':(HUIDIGE_TAB==='archief'?'Nog niks gearchiveerd.':'Nog geen berichten.')}</div>`;
     return;
   }
-  lijstEl.innerHTML = zoekbalkHtml+gefilterd.map(b=>{
+  lijstEl.innerHTML = zoekbalkHtml+renderBulkBar()+gefilterd.map(b=>{
     const datum = new Date(b.ontvangen_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     const labels = (b.labels||[]);
     return `
     <div class="lijst-item ${b.id===HUIDIG_BERICHT_ID?'actief':''} ${!b.gelezen?'ongelezen':''}" onclick="toonBericht('${b.id}')">
-      <div class="li-van">${escapeHtml(b.van_naam||b.van_email)} ${b.beantwoord?'✓':''}</div>
-      <div class="li-onderwerp">${escapeHtml(b.onderwerp)||'(geen onderwerp)'}</div>
-      <div class="li-datum">${datum}</div>
-      ${labels.length?`<div class="li-labels">${labels.map(l=>{
-        const optie = LABEL_OPTIES.find(o=>o.naam===l);
-        return `<span class="label-pill" style="background:${optie?optie.kleur:'#999'}22;color:${optie?optie.kleur:'#999'};">${escapeHtml(l)}</span>`;
-      }).join('')}</div>`:''}
+      <input type="checkbox" class="li-check" ${GESELECTEERD.has(b.id)?'checked':''} onclick="event.stopPropagation()" onchange="toggleGeselecteerd('${b.id}',this.checked)">
+      <div class="li-content">
+        <div class="li-van">${escapeHtml(b.van_naam||b.van_email)} ${b.beantwoord?'✓':''}</div>
+        <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(b.onderwerp))||'(geen onderwerp)'}</div>
+        <div class="li-datum">${datum}</div>
+        ${labels.length?`<div class="li-labels">${labels.map(l=>{
+          const optie = LABEL_OPTIES.find(o=>o.naam===l);
+          return `<span class="label-pill" style="background:${optie?optie.kleur:'#999'}22;color:${optie?optie.kleur:'#999'};">${escapeHtml(l)}</span>`;
+        }).join('')}</div>`:''}
+      </div>
     </div>`;
   }).join('');
 }
@@ -397,7 +467,7 @@ async function toonVerzonden(id){
   const datum = new Date(bericht.verzonden_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
   document.getElementById('detail').innerHTML = `
     <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
-    <div class="detail-onderwerp">${escapeHtml(bericht.onderwerp)||'(geen onderwerp)'}</div>
+    <div class="detail-onderwerp">${escapeHtml(decodeMimeOnderwerp(bericht.onderwerp))||'(geen onderwerp)'}</div>
     <div class="detail-van">Aan <strong>${escapeHtml(bericht.naar_email)}</strong> · ${datum}</div>
     <div class="detail-inhoud">${escapeHtml(bericht.inhoud)}</div>
   `;
@@ -424,7 +494,7 @@ async function toonBericht(id){
   const datum = new Date(bericht.ontvangen_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
   document.getElementById('detail').innerHTML = `
     <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
-    <div class="detail-onderwerp">${escapeHtml(bericht.onderwerp)||'(geen onderwerp)'}</div>
+    <div class="detail-onderwerp">${escapeHtml(decodeMimeOnderwerp(bericht.onderwerp))||'(geen onderwerp)'}</div>
     <div class="detail-van">Van <strong>${escapeHtml(bericht.van_naam||bericht.van_email)}</strong> (${escapeHtml(bericht.van_email)}) · ${datum}</div>
     <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">${renderLabelToggles(bericht)}</div>
     <div style="display:flex;gap:10px;margin-bottom:16px;">
