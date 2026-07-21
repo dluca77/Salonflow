@@ -8,8 +8,10 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--wh:#ffffff;--red:#c0392b;}
-body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:24px;}
 .kaart{background:var(--wh);border-radius:16px;padding:40px 32px;max-width:400px;width:100%;box-shadow:0 20px 60px rgba(15,13,11,.06);}
+.terug-link{font-size:13px;color:var(--mu);text-decoration:none;display:flex;align-items:center;gap:6px;}
+.terug-link:hover{color:var(--ink);}
 .logo{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--ink);text-align:center;margin-bottom:6px;}
 .logo em{color:var(--gd);font-style:normal;}
 .sub{font-size:13px;color:var(--mu);text-align:center;margin-bottom:28px;}
@@ -58,6 +60,8 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
 
   <div class="msg" id="msg"></div>
 </div>
+
+<a href="https://kronr.nl/" class="terug-link">← Terug naar Kronr</a>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
