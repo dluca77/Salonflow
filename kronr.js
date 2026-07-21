@@ -351,3 +351,13 @@ async function uitloggen() {
 function metLocatie(query) {
   return HUIDIGE_LOCATIE_ID ? query.eq('locatie_id', HUIDIGE_LOCATIE_ID) : query;
 }
+
+// PWA: maakt Kronr installeerbaar als app ("Toevoegen aan beginscherm").
+// Draait stil op de achtergrond, geen effect op de rest van de pagina.
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch((e) => {
+      console.warn('Service worker registratie mislukt:', e);
+    });
+  });
+}
