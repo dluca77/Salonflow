@@ -124,6 +124,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* Betaal knop */
 .bon-actions{padding:12px 18px 16px;display:flex;gap:8px;}
 .btn-clear{padding:14px;background:transparent;border:1px solid var(--bd);color:var(--mu);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.tb-btn{padding:8px 14px;background:transparent;border:1px solid var(--bd2);color:var(--ink2);font-size:11px;letter-spacing:0.5px;cursor:pointer;font-family:'Inter',sans-serif;border-radius:6px;transition:all 0.15s;}
+.tb-btn:hover{background:var(--wm);}
 .btn-clear:hover{background:var(--iv);}
 .btn-pay{flex:1;padding:14px;background:var(--ink);color:var(--iv);border:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
 .btn-pay:hover{background:var(--ink2);}
@@ -229,6 +231,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="tb-logo">Kronr<em>.</em></div>
     <div class="tb-title">Kassa</div>
     <div class="tb-spacer"></div>
+    <button class="tb-btn" onclick="openDagafsluiting()">Dag afsluiten</button>
     <div class="clock" id="clock"></div>
   </div>
 
@@ -346,6 +349,28 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   </div>
 </div>
 
+<!-- Dagafsluiting -->
+<div class="mbg" id="m-dagafsluiting" onclick="if(event.target===this)closeM('m-dagafsluiting')">
+  <div class="modal">
+    <div class="mt">Dag afsluiten</div>
+    <div class="msub">Systeemtotaal vandaag, per betaalmethode. Tel de kasla en vul het werkelijke contante bedrag in.</div>
+    <div id="daf-loading" style="font-size:12px;color:var(--mu);padding:8px 0;">Totalen laden...</div>
+    <div id="daf-totalen" style="display:none;">
+      <div style="display:flex;flex-direction:column;gap:6px;font-size:13px;margin-bottom:14px;">
+        <div style="display:flex;justify-content:space-between;"><span>Pin</span><strong id="daf-pin">€0</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span>Contant (systeem)</span><strong id="daf-contant">€0</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span>iDEAL</span><strong id="daf-ideal">€0</strong></div>
+        <div style="display:flex;justify-content:space-between;"><span>Cadeaubon</span><strong id="daf-cadeaubon">€0</strong></div>
+      </div>
+      <input class="fi" id="daf-geteld" type="number" min="0" step="0.01" placeholder="Geteld contant bedrag (€)">
+      <input class="fi" id="daf-notitie" type="text" placeholder="Notitie (optioneel)">
+      <div id="daf-verschil-preview" style="font-size:12px;color:var(--mu);margin:6px 0;"></div>
+      <div class="cb-err" id="daf-err"></div>
+      <button class="btsv" onclick="bevestigDagafsluiting()">Dag afsluiten</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let bon=[], pm='pin', allDiensten=[], allMedewerkers=[], huidigeMedewerkerId='', huidigeAfspraakId=null;
 
@@ -403,6 +428,12 @@ async function koppelAfspraak(afspraakId){
   if(a.diensten?.naam && typeof a.diensten.prijs==='number'){
     add(a.diensten.naam, a.diensten.prijs, 'dienst');
   }
+
+  // Eventuele extra diensten die bij het boeken zijn bijgevoegd, ook op de
+  // bon zetten -- deze hebben geen aanbetaling/abonnement, dus worden hier
+  // gewoon als losse regel afgerekend (zie 2026-07-extra-diensten-migratie.sql).
+  const{data:extras}=await sb.rpc('get_extra_diensten_voor_afspraken',{p_afspraak_ids:[afspraakId]});
+  (extras||[]).forEach(e=>add(e.naam, e.prijs, 'dienst'));
 }
 
 function ontkoppelAfspraak(){
@@ -710,6 +741,73 @@ function newBon(){
   ontkoppelAfspraak();
   document.getElementById('m-success').classList.remove('on');
   document.body.style.overflow='';
+}
+
+let dafTotalen=null;
+
+async function openDagafsluiting(){
+  openM('m-dagafsluiting');
+  document.getElementById('daf-loading').style.display='block';
+  document.getElementById('daf-totalen').style.display='none';
+  document.getElementById('daf-err').textContent='';
+  document.getElementById('daf-geteld').value='';
+  document.getElementById('daf-notitie').value='';
+
+  const{data,error}=await sb.rpc('bekijk_kassa_dag_totalen',{
+    p_salon_id:SALON_ID, p_locatie_id:HUIDIGE_LOCATIE_ID||null
+  });
+  document.getElementById('daf-loading').style.display='none';
+
+  if(error||!data||!data[0]){
+    document.getElementById('daf-err').textContent='Kon totalen niet ophalen: '+(error?.message||'onbekende fout');
+    return;
+  }
+  dafTotalen=data[0];
+  document.getElementById('daf-pin').textContent='€'+Number(dafTotalen.systeem_pin).toFixed(2);
+  document.getElementById('daf-contant').textContent='€'+Number(dafTotalen.systeem_contant).toFixed(2);
+  document.getElementById('daf-ideal').textContent='€'+Number(dafTotalen.systeem_ideal).toFixed(2);
+  document.getElementById('daf-cadeaubon').textContent='€'+Number(dafTotalen.systeem_cadeaubon).toFixed(2);
+  document.getElementById('daf-totalen').style.display='block';
+}
+
+document.addEventListener('input',(e)=>{
+  if(e.target && e.target.id==='daf-geteld' && dafTotalen){
+    const geteld=parseFloat(e.target.value);
+    const preview=document.getElementById('daf-verschil-preview');
+    if(isNaN(geteld)){preview.textContent='';return;}
+    const verschil=geteld-Number(dafTotalen.systeem_contant);
+    if(Math.abs(verschil)<0.01){preview.textContent='Klopt precies.';preview.style.color='var(--green)';}
+    else{
+      preview.textContent=(verschil>0?'€'+verschil.toFixed(2)+' te veel':'€'+Math.abs(verschil).toFixed(2)+' te weinig')+' t.o.v. het systeem.';
+      preview.style.color='var(--red)';
+    }
+  }
+});
+
+async function bevestigDagafsluiting(){
+  const geteld=parseFloat(document.getElementById('daf-geteld').value);
+  const errEl=document.getElementById('daf-err');
+  if(isNaN(geteld)||geteld<0){
+    errEl.textContent='Vul een geldig geteld bedrag in.';
+    return;
+  }
+  const notitie=document.getElementById('daf-notitie').value.trim()||null;
+  const eigenNaam=document.querySelector('.salon-naam')?.textContent||null;
+
+  const{data,error}=await sb.rpc('sluit_kassa_dag_af',{
+    p_salon_id:SALON_ID,
+    p_locatie_id:HUIDIGE_LOCATIE_ID||null,
+    p_geteld_contant:geteld,
+    p_notitie:notitie,
+    p_afgesloten_door_naam:eigenNaam
+  });
+  if(error){
+    errEl.textContent='Kon niet afsluiten: '+error.message;
+    return;
+  }
+  closeM('m-dagafsluiting');
+  const r=data[0];
+  alert('Dag afgesloten. Verschil: €'+Number(r.verschil).toFixed(2));
 }
 
 function tick(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});}

@@ -219,6 +219,10 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div class="dienst-grid" id="dienst-grid">
         <div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Laden...</div>
       </div>
+      <div id="extra-diensten-wrap" style="display:none;margin-top:20px;">
+        <div class="step-sub" style="margin-bottom:10px;">Nog iets erbij? (optioneel, wordt ter plekke afgerekend)</div>
+        <div class="dienst-grid" id="extra-diensten-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
+      </div>
       <button class="btn-next" id="btn1" onclick="goStep(2)" disabled>Volgende →</button>
     </div>
 
@@ -374,7 +378,49 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null};
+let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[]};
+
+// Totale duur/prijs incl. eventuele extra diensten (voor beschikbaarheids-
+// check en het getoonde totaalbedrag) -- de hoofddienst blijft alleen
+// bepalend voor aanbetaling/abonnement/no-show-kaartvereiste.
+function totaleDuur(){ return state.duur + state.extra_diensten.reduce((s,e)=>s+e.duur_min,0); }
+function totalePrijsExclAanbetaling(){ return state.prijs + state.extra_diensten.reduce((s,e)=>s+e.prijs,0); }
+
+function renderExtraDienstenGrid(){
+  const wrap=document.getElementById('extra-diensten-wrap');
+  const grid=document.getElementById('extra-diensten-grid');
+  if(!state.dienst_id){ wrap.style.display='none'; return; }
+  const opties=(window.ALLE_DIENSTEN||[]).filter(d=>d.id!==state.dienst_id);
+  if(!opties.length){ wrap.style.display='none'; return; }
+  wrap.style.display='block';
+  grid.innerHTML=opties.map(d=>{
+    const geselecteerd=state.extra_diensten.some(e=>e.id===d.id);
+    return `<div class="dienst-card${geselecteerd?' selected':''}" style="padding:12px;" onclick="toggleExtraDienst('${d.id}','${jsAttr(d.naam)}',${d.prijs},${d.duur_min})">
+      <div class="dc-naam" style="font-size:13px;">${escapeHtml(d.naam)}</div>
+      <div class="dc-prijs" style="font-size:14px;">+€${d.prijs}</div>
+      <div class="dc-duur" style="font-size:11px;">+${d.duur_min} min</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleExtraDienst(id,naam,prijs,duur_min){
+  const idx=state.extra_diensten.findIndex(e=>e.id===id);
+  if(idx>=0) state.extra_diensten.splice(idx,1);
+  else state.extra_diensten.push({id,naam,prijs,duur_min});
+  renderExtraDienstenGrid();
+  updateSamenvattingMetExtras();
+}
+
+function updateSamenvattingMetExtras(){
+  document.getElementById('sum-duur').textContent=totaleDuur()+' min';
+  // Alleen het volledige (niet-abonnement) totaal aanpassen -- als er een
+  // abonnement-tegoed wordt ingezet voor de hoofddienst, blijft dat €0-label
+  // ongewijzigd staan (extra diensten worden dan gewoon los bijgerekend,
+  // niet gedekt door het abonnement).
+  if(!state.gebruikt_abonnement_id){
+    document.getElementById('sum-prijs').textContent='€'+totalePrijsExclAanbetaling();
+  }
+}
 
 function berekenAanbetalingBedrag(prijs,type,bedrag){
   if(type==='percentage') return Math.round(prijs*bedrag/100*100)/100;
@@ -620,6 +666,8 @@ async function init(){
     }).join('')
     :`<div style="grid-column:1/-1;padding:32px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Geen diensten beschikbaar</div>`;
 
+  window.ALLE_DIENSTEN=diensten;
+
   // Medewerkers
   const medewerkers=mRes.data||[];
   window.BOEKEN_MEDEWERKERS=medewerkers;
@@ -682,6 +730,8 @@ function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
   document.querySelectorAll('.dienst-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
   state.dienst=naam;state.prijs=prijs;state.duur=duur;state.dienst_id=id;
+  state.extra_diensten=[];
+  renderExtraDienstenGrid();
   state.aanb_type = (window.SALON_STRIPE_ACTIEF && aanbType) ? aanbType : null;
   state.aanb_bedrag = state.aanb_type ? berekenAanbetalingBedrag(prijs,aanbType,aanbBedrag) : 0;
   state.vereist_kaart_dienst = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
@@ -912,7 +962,7 @@ async function berekenBeschikbareSlots(datum){
   const medewerkersMetVerlof=new Set((verlofResult.data||[]).map(v=>v.medewerker_id));
   const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
 
-  const duurBenodigd=state.duur||30;
+  const duurBenodigd=totaleDuur()||30;
   const stapGrootte=30;
   const nu=new Date();
 
@@ -1257,7 +1307,7 @@ async function bevestigen(){
   // tijd tussen bekijken en bevestigen net is ingenomen.
   let toeTeWijzenMedewerkerId=state.med_id||null;
   if(!toeTeWijzenMedewerkerId){
-    toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, state.duur);
+    toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, totaleDuur());
     if(!toeTeWijzenMedewerkerId){
       btn.disabled=false;btn.textContent='Afspraak bevestigen';
       errEl.textContent='Deze tijd is helaas net door iemand anders geboekt. Kies een andere tijd.';
@@ -1273,7 +1323,7 @@ async function bevestigen(){
     dienst_id:state.dienst_id||null,
     medewerker_id:toeTeWijzenMedewerkerId,
     datum_tijd:dt.toISOString(),
-    duur_min:state.duur,
+    duur_min:totaleDuur(),
     status:'gepland',
     klant_naam:naam,
     klant_email:email,
@@ -1288,6 +1338,19 @@ async function bevestigen(){
     console.error('Fout bij aanmaken afspraak:', error);
     errEl.textContent='Deze tijd is helaas niet meer beschikbaar. Kies een andere tijd.';
     errEl.style.display='block';return;
+  }
+
+  // Extra diensten (optioneel bijgeboekt naast de hoofddienst) koppelen aan
+  // de zojuist aangemaakte afspraak. Non-fataal: als dit om wat voor reden
+  // dan ook mislukt, blijft de hoofdboeking gewoon staan -- de salon ziet
+  // in het ergste geval een paar minuten extra duur niet terug, maar de
+  // klant heeft wel gewoon een geldige afspraak.
+  if(state.extra_diensten.length && nieuweAfspraak){
+    const{error:extraErr}=await sb.rpc('voeg_extra_diensten_toe',{
+      p_afspraak_id:nieuweAfspraak.id,
+      p_dienst_ids:state.extra_diensten.map(e=>e.id)
+    });
+    if(extraErr) console.warn('Kon extra diensten niet koppelen:',extraErr);
   }
 
   // Aanbetaling en/of verplichte kaartgegevens? Dan eerst naar Stripe

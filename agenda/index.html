@@ -1003,6 +1003,13 @@ function showPop(a,card){
   }
   document.getElementById('p-datum').textContent=dag.charAt(0).toUpperCase()+dag.slice(1)+', '+ft(ah,am)+' – '+ft(eh,em);
   document.getElementById('p-svc').textContent=a.diensten?.naam||a.bloktijd_type||'—';
+  if(a.id && a.type!=='bloktijd'){
+    sb.rpc('get_extra_diensten_voor_afspraken',{p_afspraak_ids:[a.id]}).then(({data:extras})=>{
+      if(extras && extras.length){
+        document.getElementById('p-svc').textContent += ' + '+extras.map(e=>e.naam).join(', ');
+      }
+    });
+  }
   document.getElementById('p-med').textContent=a.medewerkers?.naam||'—';
   document.getElementById('p-dur').textContent=dur+' minuten';
   const notitie=a.notities||a.interne_opmerking||'';
