@@ -216,6 +216,22 @@ try{
   document.body.innerHTML='<div style="padding:60px;text-align:center;color:#c0392b;font-size:14px;max-width:500px;margin:0 auto;">'+e.message+'</div>';
 }
 
+// Veiligheid: salonnaam/type/e-mail komen van zelfregistrerende salons
+// (BUITEN Kronr's controle) en mogen dus nooit ongefilterd als HTML
+// worden ingevoegd -- dat zou een salon-eigenaar met een kwaadaardige
+// salonnaam de kans geven om script uit te voeren in dit interne
+// beheerpaneel, gezien door Kronr-personeel.
+function escapeHtml(tekst){
+  if(tekst===null||tekst===undefined) return '';
+  return String(tekst)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function jsAttr(tekst){
+  const jsVeilig=String(tekst===null||tekst===undefined?'':tekst).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  return escapeHtml(jsVeilig);
+}
+
 let ALLE_SALONS = [];
 const PLAN_LABELS = {free:'Gratis',starter:'Starter',pro:'Pro',business:'Business'};
 const PLAN_KLEUREN = {free:'#a09890',starter:'#2d6a4f',pro:'#8c6d3f',business:'#1a1714'};
@@ -300,7 +316,7 @@ function renderAlerts(){
     proefEl.innerHTML = proefAlert.map(s=>{
       const dagenOver = Math.max(0, Math.ceil(14 - (nu-new Date(s.created_at))/(1000*3600*24)));
       return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12.5px;cursor:pointer;" onclick="toonDetail('${s.id}')">
-        <span>${s.naam||'(naamloos)'}</span><span style="color:var(--red);font-weight:600;">${dagenOver} dag${dagenOver===1?'':'en'} over</span>
+        <span>${escapeHtml(s.naam)||'(naamloos)'}</span><span style="color:var(--red);font-weight:600;">${dagenOver} dag${dagenOver===1?'':'en'} over</span>
       </div>`;
     }).join('');
   }
@@ -326,7 +342,7 @@ function renderAlerts(){
       const laatste = LAATSTE_ACTIVITEIT[s.id];
       const label = laatste ? new Date(laatste).toLocaleDateString('nl-NL',{day:'numeric',month:'short'}) : 'Nooit';
       return `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12.5px;cursor:pointer;" onclick="toonDetail('${s.id}')">
-        <span>${s.naam||'(naamloos)'}</span><span style="color:var(--mu);">Laatste afspraak: ${label}</span>
+        <span>${escapeHtml(s.naam)||'(naamloos)'}</span><span style="color:var(--mu);">Laatste afspraak: ${label}</span>
       </div>`;
     }).join('');
   }
@@ -501,10 +517,10 @@ function renderTabel(){
     const plan = s.plan||'free';
     return `
     <tr class="salon-rij" onclick="toonDetail('${s.id}')">
-      <td><strong>${s.naam||'(naamloos)'}</strong></td>
-      <td>${s.type_bedrijf||'—'}</td>
-      <td>${s.email||'—'}</td>
-      <td><span class="plan-badge plan-${plan}">${PLAN_LABELS[plan]||plan}</span></td>
+      <td><strong>${escapeHtml(s.naam)||'(naamloos)'}</strong></td>
+      <td>${escapeHtml(s.type_bedrijf)||'—'}</td>
+      <td>${escapeHtml(s.email)||'—'}</td>
+      <td><span class="plan-badge plan-${escapeHtml(plan)}">${escapeHtml(PLAN_LABELS[plan]||plan)}</span></td>
       <td>${datum}</td>
     </tr>`;
   }).join('');
@@ -532,8 +548,8 @@ async function toonDetail(salonId){
   const notities = notitiesRes.data||[];
 
   document.getElementById('detail-inhoud').innerHTML = `
-    <div class="detail-naam">${salon.naam||'(naamloos)'}</div>
-    <div class="detail-sub">${salon.type_bedrijf||'—'} · Aangemeld ${datum} ${salon.gepauzeerd?'· <span style="color:var(--red);font-weight:600;">Gepauzeerd</span>':''}</div>
+    <div class="detail-naam">${escapeHtml(salon.naam)||'(naamloos)'}</div>
+    <div class="detail-sub">${escapeHtml(salon.type_bedrijf)||'—'} · Aangemeld ${datum} ${salon.gepauzeerd?'· <span style="color:var(--red);font-weight:600;">Gepauzeerd</span>':''}</div>
 
     <div class="detail-stats">
       <div class="detail-stat"><div class="detail-stat-label">Totaal afspraken</div><div class="detail-stat-val">${afsprakenRes.count||0}</div></div>
@@ -544,11 +560,11 @@ async function toonDetail(salonId){
 
     <div class="detail-veld">
       <label class="detail-label">Salonnaam</label>
-      <input class="detail-input" id="d-naam" value="${(salon.naam||'').replace(/"/g,'&quot;')}">
+      <input class="detail-input" id="d-naam" value="${escapeHtml(salon.naam)}">
     </div>
     <div class="detail-veld">
       <label class="detail-label">E-mailadres</label>
-      <input class="detail-input" id="d-email" value="${(salon.email||'').replace(/"/g,'&quot;')}">
+      <input class="detail-input" id="d-email" value="${escapeHtml(salon.email)}">
     </div>
     <div class="detail-veld">
       <label class="detail-label">Pakket</label>
@@ -572,7 +588,7 @@ async function toonDetail(salonId){
       <div style="margin-top:14px;">
         ${notities.length ? notities.map(n=>`
           <div style="background:var(--wh);border:1px solid var(--bd);border-radius:8px;padding:10px 12px;margin-bottom:8px;font-size:12.5px;color:var(--ink);">
-            <div>${(n.tekst||'').replace(/</g,'&lt;')}</div>
+            <div>${escapeHtml(n.tekst)}</div>
             <div style="color:var(--mu2);font-size:11px;margin-top:6px;">${new Date(n.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'})}</div>
           </div>`).join('') : '<div style="color:var(--mu2);font-size:12px;">Nog geen notities.</div>'}
       </div>

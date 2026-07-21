@@ -365,8 +365,8 @@ async function laadVerlofAanvragen(){
   lijst.innerHTML=aanvragen.map(v=>`
     <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);">
       <div>
-        <div style="font-size:13px;font-weight:600;">${v.medewerkers?.naam||'Onbekend'} · ${v.type}</div>
-        <div style="font-size:11px;color:var(--mu);">${fmtVerlofDatum(v.van_datum)} t/m ${fmtVerlofDatum(v.tot_datum)}${v.notitie?' · '+v.notitie:''}</div>
+        <div style="font-size:13px;font-weight:600;">${escapeHtml(v.medewerkers?.naam)||'Onbekend'} · ${v.type}</div>
+        <div style="font-size:11px;color:var(--mu);">${fmtVerlofDatum(v.van_datum)} t/m ${fmtVerlofDatum(v.tot_datum)}${v.notitie?' · '+escapeHtml(v.notitie):''}</div>
       </div>
       <div style="display:flex;gap:6px;">
         <button onclick="behandelVerlof('${v.id}','goedgekeurd')" style="padding:6px 12px;background:var(--green);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Goedkeuren</button>
@@ -405,7 +405,7 @@ function render(){
       <div class="mc-top">
         <div class="mc-av">${init}</div>
         <div>
-          <div class="mc-name">${m.naam}</div>
+          <div class="mc-name">${escapeHtml(m.naam)}</div>
           <div class="mc-role">${m.rol}</div>
           <div class="mc-status">
             <div class="mc-dot" style="background:${actief?'var(--green)':'var(--mu2)'}"></div>

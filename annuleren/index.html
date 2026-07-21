@@ -111,7 +111,7 @@ function toonDetails(a){
     <p class="card-sub">Weet je zeker dat je deze afspraak wilt annuleren? Dit kan niet ongedaan worden gemaakt.</p>
     <div class="detail-box">
       <div class="detail-row"><span class="detail-label">Naam</span><span class="detail-value">${escapeHtml(a.klant_naam)||'-'}</span></div>
-      <div class="detail-row"><span class="detail-label">Dienst</span><span class="detail-value">${a.dienst_naam||'-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Dienst</span><span class="detail-value">${escapeHtml(a.dienst_naam)||'-'}</span></div>
       <div class="detail-row"><span class="detail-label">Datum</span><span class="detail-value">${fmtDatum(a.datum_tijd)}</span></div>
     </div>
     <button class="btn btn-cancel" id="btn-annuleer">Ja, annuleer mijn afspraak</button>
@@ -125,8 +125,8 @@ function toonTeLaat(a){
   card.innerHTML=`
     <div class="state-icon">⏱</div>
     <div class="card-title" style="text-align:center;">Online annuleren is niet meer mogelijk</div>
-    <p class="msg-center">${a.salon_naam||'De salon'} laat annuleren toe tot ${urenTekst} van tevoren. Je afspraak op ${fmtDatum(a.datum_tijd)} valt binnen die termijn.</p>
-    ${a.salon_telefoon?`<a class="btn btn-call" href="tel:${a.salon_telefoon.replace(/\s+/g,'')}" style="display:block;text-align:center;text-decoration:none;margin-top:16px;">Bel ${a.salon_naam||'de salon'}: ${a.salon_telefoon}</a>`:`<p class="msg-center" style="margin-top:10px;">Neem rechtstreeks contact op met de salon om dit te bespreken.</p>`}
+    <p class="msg-center">${escapeHtml(a.salon_naam)||'De salon'} laat annuleren toe tot ${urenTekst} van tevoren. Je afspraak op ${fmtDatum(a.datum_tijd)} valt binnen die termijn.</p>
+    ${a.salon_telefoon?`<a class="btn btn-call" href="tel:${escapeHtml(a.salon_telefoon.replace(/\s+/g,''))}" style="display:block;text-align:center;text-decoration:none;margin-top:16px;">Bel ${escapeHtml(a.salon_naam)||'de salon'}: ${escapeHtml(a.salon_telefoon)}</a>`:`<p class="msg-center" style="margin-top:10px;">Neem rechtstreeks contact op met de salon om dit te bespreken.</p>`}
   `;
 }
 

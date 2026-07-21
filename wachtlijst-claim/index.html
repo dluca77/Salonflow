@@ -104,7 +104,7 @@ function toonDetails(e){
     <p class="card-sub">Bevestig hieronder dat je deze plek wilt claimen.</p>
     <div class="detail-box">
       <div class="detail-row"><span class="detail-label">Naam</span><span class="detail-value">${escapeHtml(e.klant_naam)||'-'}</span></div>
-      <div class="detail-row"><span class="detail-label">Dienst</span><span class="detail-value">${e.dienst_naam||'-'}</span></div>
+      <div class="detail-row"><span class="detail-label">Dienst</span><span class="detail-value">${escapeHtml(e.dienst_naam)||'-'}</span></div>
       <div class="detail-row"><span class="detail-label">Datum</span><span class="detail-value">${fmtDatum(e.voorgestelde_datum_tijd)}</span></div>
     </div>
     <button class="btn btn-claim" id="btn-claim">Ja, ik wil deze plek!</button>

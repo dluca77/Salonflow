@@ -240,7 +240,7 @@ async function laadPrijsAdvies(){
   const cacheKey='kronr_prijsadvies_'+SALON_ID+'_'+wk(new Date());
 
   const toon=(suggesties)=>{
-    body.innerHTML=suggesties.slice(0,3).map(s=>`<div class="ai-insight">${s.tekst}</div>`).join('');
+    body.innerHTML=suggesties.slice(0,3).map(s=>`<div class="ai-insight">${escapeHtml(s.tekst)}</div>`).join('');
   };
 
   const regelGebaseerd=(data)=>{
@@ -432,7 +432,7 @@ async function loadData(){
       ${medStats.length?medStats.map(m=>`
         <div class="tc-row">
           <div>
-            <div class="tc-name">${m.naam}</div>
+            <div class="tc-name">${escapeHtml(m.naam)}</div>
             <div class="tc-sub">${m.apts} afspraken · ${m.rol}</div>
           </div>
           <div>
@@ -448,7 +448,7 @@ async function loadData(){
       ${topDiensten.length?topDiensten.map(d=>`
         <div class="tc-row">
           <div>
-            <div class="tc-name">${d.naam}</div>
+            <div class="tc-name">${escapeHtml(d.naam)}</div>
             <div class="tc-sub">${d.count}× geboekt</div>
           </div>
           <div>

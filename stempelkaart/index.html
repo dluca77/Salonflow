@@ -58,6 +58,20 @@ const SB_URL='https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
+// Salongegevens (zoals de omschrijving van de beloning) worden door de
+// salon-eigenaar zelf ingesteld en zijn dus niet-vertrouwde invoer --
+// moet ge-escaped voordat het in innerHTML terechtkomt.
+function escapeHtml(tekst) {
+  if (tekst === null || tekst === undefined) return '';
+  return String(tekst)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+}
+function jsAttr(tekst){
+  const jsVeilig=String(tekst===null||tekst===undefined?'':tekst).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  return escapeHtml(jsVeilig);
+}
+
 const params=new URLSearchParams(location.search);
 const SALON_ID=params.get('salon');
 const card=document.getElementById('card');
@@ -111,11 +125,11 @@ function toonKaart(info){
     <div class="stamps-row">${stampsHtml}</div>
     ${info.vol && info.open_code ? `
       <div class="reward-box">
-        <div style="font-size:13px;color:var(--mu);">🎉 Je hebt <strong>${info.beloning||'een beloning'}</strong> verdiend!</div>
-        <div class="reward-code">${info.open_code}</div>
+        <div style="font-size:13px;color:var(--mu);">🎉 Je hebt <strong>${escapeHtml(info.beloning)||'een beloning'}</strong> verdiend!</div>
+        <div class="reward-code">${escapeHtml(info.open_code)}</div>
         <div style="font-size:11px;color:var(--mu);">Toon deze code aan de salon om 'm in te wisselen.</div>
       </div>
-    ` : `<p class="msg-center">Nog ${info.stempels_nodig-info.stempels_huidig} te gaan voor: ${info.beloning||'je beloning'}!</p>`}
+    ` : `<p class="msg-center">Nog ${info.stempels_nodig-info.stempels_huidig} te gaan voor: ${escapeHtml(info.beloning)||'je beloning'}!</p>`}
     <button class="btn btn-back" onclick="location.reload()">Ander e-mailadres proberen</button>
   `;
 }

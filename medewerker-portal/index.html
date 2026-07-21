@@ -122,7 +122,7 @@ async function laadRooster(){
     <div class="apt-row">
       <div>
         <div class="apt-datum">${fmtDatum(a.datum_tijd)} · ${new Date(a.datum_tijd).toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})}</div>
-        <div class="apt-svc">${a.diensten?.naam||a.bloktijd_type||'Afspraak'}${a.klant_naam?' · '+escapeHtml(a.klant_naam):''}</div>
+        <div class="apt-svc">${escapeHtml(a.diensten?.naam)||a.bloktijd_type||'Afspraak'}${a.klant_naam?' · '+escapeHtml(a.klant_naam):''}</div>
       </div>
     </div>`).join('');
 
@@ -140,7 +140,7 @@ async function laadVerlof(){
     <div class="verlof-row">
       <div>
         <div class="verlof-datums">${fmtDatum(v.van_datum)} t/m ${fmtDatum(v.tot_datum)}</div>
-        <div class="verlof-type">${v.type}${v.notitie?' · '+v.notitie:''}</div>
+        <div class="verlof-type">${v.type}${v.notitie?' · '+escapeHtml(v.notitie):''}</div>
       </div>
       <span class="badge badge-${v.status}">${v.status}</span>
     </div>`).join('');
