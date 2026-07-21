@@ -136,6 +136,12 @@ tr.salon-rij:hover{background:var(--iv);}
     <div id="marketing-kaarten" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;"></div>
   </div>
 
+  <div class="grafiek-kaart" style="margin-bottom:24px;">
+    <div class="grafiek-titel">📧 Interesse-inschrijvingen (pre-launch)</div>
+    <p style="font-size:12.5px;color:var(--mu);margin-bottom:16px;">Bezoekers die zich hebben ingeschreven voor een seintje zodra Kronr live gaat.</p>
+    <div id="interesse-lijst" style="max-height:320px;overflow-y:auto;"><div style="color:var(--mu2);font-size:12px;padding:8px 0;">Laden...</div></div>
+  </div>
+
   <input type="text" class="zoekbalk" id="zoekveld" placeholder="Zoek op salonnaam of e-mail..." oninput="renderTabel()">
 
   <div class="tabel-wrap">
@@ -255,6 +261,7 @@ async function init(){
 
     document.body.style.opacity='1';
     await laadSalons();
+    laadInteresseInschrijvingen();
   }catch(e){
     document.body.style.opacity='1';
     document.body.innerHTML='<div style="padding:60px;text-align:center;color:var(--red);font-size:14px;">Er ging iets mis bij het laden: '+e.message+'</div>';
@@ -349,6 +356,24 @@ function renderAlerts(){
 }
 
 let MARKETING_SEGMENTEN = {};
+
+async function laadInteresseInschrijvingen(){
+  const el = document.getElementById('interesse-lijst');
+  const{data,error}=await sb.from('launch_interesse').select('email,created_at').order('created_at',{ascending:false});
+  if(error){
+    el.innerHTML='<div style="color:var(--red);font-size:12px;padding:8px 0;">Kon inschrijvingen niet laden: '+escapeHtml(error.message)+'</div>';
+    return;
+  }
+  if(!data.length){
+    el.innerHTML='<div style="color:var(--mu2);font-size:12px;padding:8px 0;">Nog geen inschrijvingen.</div>';
+    return;
+  }
+  el.innerHTML = `<div style="font-size:12.5px;color:var(--mu);margin-bottom:10px;">${data.length} inschrijving${data.length===1?'':'en'}</div>` +
+    data.map(r=>{
+      const datum = new Date(r.created_at).toLocaleDateString('nl-NL',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'});
+      return `<div style="display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid var(--bd);font-size:12.5px;"><span>${escapeHtml(r.email)}</span><span style="color:var(--mu);white-space:nowrap;">${datum}</span></div>`;
+    }).join('');
+}
 
 function renderMarketing(){
   const nu = new Date();
