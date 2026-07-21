@@ -378,7 +378,7 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[]};
+let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false};
 
 // Totale duur/prijs incl. eventuele extra diensten (voor beschikbaarheids-
 // check en het getoonde totaalbedrag) -- de hoofddienst blijft alleen
@@ -638,11 +638,13 @@ async function init(){
   async function laadDienstenEnMedewerkers(){
     let dQuery=sb.from('diensten').select('*,abonnement_plannen(id,naam,prijs_per_maand,credits_per_maand,actief)').eq('salon_id',SALON_ID).eq('actief',true);
     let mQuery=sb.from('medewerkers').select('id,salon_id,naam,rol,kleur,actief,locatie_id').eq('salon_id',SALON_ID).eq('actief',true);
+    let rQuery=sb.from('ruimtes').select('id,salon_id,naam,actief,locatie_id').eq('salon_id',SALON_ID).eq('actief',true);
     if(HUIDIGE_BOEK_LOCATIE_ID){
       dQuery=dQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
       mQuery=mQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
     }
-    const[dRes,mRes]=await Promise.all([dQuery.order('naam'), mQuery.order('naam')]);
+    const[dRes,mRes,rRes]=await Promise.all([dQuery.order('naam'), mQuery.order('naam'), rQuery.order('naam')]);
+    window.BOEKEN_RUIMTES=rRes.data||[];
 
     const diensten=dRes.data||[];
   window.DIENSTEN_MET_ABO={};
@@ -655,7 +657,7 @@ async function init(){
       const vereistKaart = window.SALON_STRIPE_ACTIEF && d.vereist_kaartgegevens;
       const abo = window.DIENSTEN_MET_ABO[d.id];
       return `
-      <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart})">
+      <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart},${!!d.vereist_ruimte})">
         <div class="dc-naam">${escapeHtml(d.naam)}</div>
         <div class="dc-prijs">€${d.prijs}</div>
         <div class="dc-duur">${d.duur_min} min</div>
@@ -726,10 +728,11 @@ function goStep(n){
 }
 
 // ── SELECTIES ─────────────────────────────────────────────────────────────────
-function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
+function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte){
   document.querySelectorAll('.dienst-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
   state.dienst=naam;state.prijs=prijs;state.duur=duur;state.dienst_id=id;
+  state.vereist_ruimte=!!vereistRuimte;
   state.extra_diensten=[];
   renderExtraDienstenGrid();
   state.aanb_type = (window.SALON_STRIPE_ACTIEF && aanbType) ? aanbType : null;
@@ -940,14 +943,18 @@ async function berekenBeschikbareSlots(datum){
   // afspraken (terecht, want die tabel bevat klantgegevens), maar deze
   // functie geeft alleen tijd/duur/medewerker terug, geen namen of
   // contactgegevens, dus is veilig voor de publieke boekingswidget.
-  const[{data,error:queryError},verlofResult]=await Promise.all([
+  const alleRuimteIds=(window.BOEKEN_RUIMTES||[]).map(r=>r.id);
+  const ruimteNodig=state.vereist_ruimte && alleRuimteIds.length>0;
+
+  const[{data,error:queryError},verlofResult,ruimteResult]=await Promise.all([
     sb.rpc('get_bezette_tijden',{
       p_salon_id:SALON_ID,
       p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
       p_datum_start:dagStart.toISOString(),
       p_datum_eind:dagEind.toISOString()
     }),
-    sb.rpc('get_verlof_op_datum',{p_salon_id:SALON_ID,p_datum:datum.toISOString().slice(0,10)})
+    sb.rpc('get_verlof_op_datum',{p_salon_id:SALON_ID,p_datum:datum.toISOString().slice(0,10)}),
+    ruimteNodig ? sb.rpc('get_bezette_ruimtes',{p_salon_id:SALON_ID,p_datum_start:dagStart.toISOString(),p_datum_eind:dagEind.toISOString()}) : Promise.resolve({data:[]})
   ]);
   window.__laatsteBeschikbaarheidQueryFout = queryError || null;
   if(queryError){
@@ -957,6 +964,20 @@ async function berekenBeschikbareSlots(datum){
     console.error('Kon verlof niet ophalen voor beschikbaarheidscheck:', verlofResult.error);
   }
   const bestaandeAfspraken=data||[];
+  const bezetteRuimtes=ruimteResult.data||[];
+
+  // Is minstens 1 ruimte vrij voor dit tijdslot? (alleen relevant als de
+  // gekozen dienst vereist_ruimte heeft EN de salon ruimtes heeft
+  // ingesteld -- anders wordt er niet op ruimte gecontroleerd.)
+  function heeftVrijeRuimte(slotStart, slotEind){
+    if(!ruimteNodig) return true;
+    return alleRuimteIds.some(rid=>!bezetteRuimtes.some(b=>{
+      if(b.ruimte_id!==rid) return false;
+      const bStart=new Date(b.datum_tijd);
+      const bEind=new Date(bStart.getTime()+(b.duur_min||30)*60000);
+      return slotStart<bEind && slotEind>bStart;
+    }));
+  }
   // Medewerkers met goedgekeurd verlof/ziekte op deze dag: behandel als
   // volledig bezet, zodat de online boekingswidget ze niet meer aanbiedt.
   const medewerkersMetVerlof=new Set((verlofResult.data||[]).map(v=>v.medewerker_id));
@@ -1000,6 +1021,10 @@ async function berekenBeschikbareSlots(datum){
       });
     }
 
+    if(!overlapt && ruimteNodig && !heeftVrijeRuimte(slotStart, slotEind)){
+      overlapt=true;
+    }
+
     const isVerleden=slotStart<nu;
     const uu=String(Math.floor(m/60)).padStart(2,'0');
     const mm=String(m%60).padStart(2,'0');
@@ -1041,6 +1066,35 @@ async function vindBeschikbareMedewerker(dt, duurMin){
       return dt<aEind && slotEind>aStart;
     });
     if(!overlapt) return medewerkerId;
+  }
+  return null;
+}
+
+// Zoekt, vlak voor het definitief aanmaken van de afspraak, een vrije
+// ruimte -- alleen relevant als de gekozen dienst vereist_ruimte heeft.
+// Verse controle (net als vindBeschikbareMedewerker) i.p.v. te vertrouwen
+// op de check die bij het kiezen van de tijd is gedaan.
+async function vindBeschikbareRuimte(dt, duurMin){
+  const alleRuimteIds=(window.BOEKEN_RUIMTES||[]).map(r=>r.id);
+  if(!alleRuimteIds.length) return null;
+
+  const dagStart=new Date(dt);dagStart.setHours(0,0,0,0);
+  const dagEind=new Date(dt);dagEind.setHours(23,59,59,999);
+
+  const{data}=await sb.rpc('get_bezette_ruimtes',{
+    p_salon_id:SALON_ID, p_datum_start:dagStart.toISOString(), p_datum_eind:dagEind.toISOString()
+  });
+  const bezetteRuimtes=data||[];
+  const slotEind=new Date(dt.getTime()+duurMin*60000);
+
+  for(const ruimteId of alleRuimteIds){
+    const overlapt=bezetteRuimtes.some(b=>{
+      if(b.ruimte_id!==ruimteId) return false;
+      const bStart=new Date(b.datum_tijd);
+      const bEind=new Date(bStart.getTime()+(b.duur_min||30)*60000);
+      return dt<bEind && slotEind>bStart;
+    });
+    if(!overlapt) return ruimteId;
   }
   return null;
 }
@@ -1316,12 +1370,26 @@ async function bevestigen(){
     }
   }
 
+  // Vereist deze dienst een ruimte? Zelfde 'verse controle vlak vóór het
+  // opslaan'-redenering als bij medewerkers hierboven.
+  let toeTeWijzenRuimteId=null;
+  if(state.vereist_ruimte && (window.BOEKEN_RUIMTES||[]).length){
+    toeTeWijzenRuimteId=await vindBeschikbareRuimte(dt, totaleDuur());
+    if(!toeTeWijzenRuimteId){
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Er is helaas geen ruimte meer vrij op deze tijd. Kies een andere tijd.';
+      errEl.style.display='block';
+      return;
+    }
+  }
+
   const naam=voor+(achter?' '+achter:'');
   const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
     salon_id:SALON_ID||null,
     locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
     dienst_id:state.dienst_id||null,
     medewerker_id:toeTeWijzenMedewerkerId,
+    ruimte_id:toeTeWijzenRuimteId,
     datum_tijd:dt.toISOString(),
     duur_min:totaleDuur(),
     status:'gepland',

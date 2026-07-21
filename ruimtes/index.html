@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kronr | Producten</title>
+<title>Kronr | Ruimtes</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
@@ -36,7 +36,6 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .mob-x{background:transparent;border:none;color:rgba(255,255,255,.4);font-size:20px;cursor:pointer;}
 .mob-item{display:flex;align-items:center;gap:10px;padding:10px;color:rgba(255,255,255,.45);font-size:13px;text-decoration:none;border-radius:8px;margin-bottom:2px;border-left:2px solid transparent;}
 .mob-item.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
-.mob-item svg{width:16px;height:16px;flex-shrink:0;}
 .mob-foot{padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
 .hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 .main{margin-left:212px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
@@ -47,21 +46,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .tb-spacer{flex:1;}
 .btn-add{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--ink);color:var(--iv);font-size:10px;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
 .btn-add:hover{background:var(--ink2);}
-.content{flex:1;overflow-y:auto;padding:20px;max-width:1200px;margin:0 auto;width:100%;}
+.content{flex:1;overflow-y:auto;padding:20px;max-width:900px;margin:0 auto;width:100%;}
 .content::-webkit-scrollbar{width:3px;}
 .content::-webkit-scrollbar-thumb{background:var(--bd);}
-.lage-voorraad-banner{background:rgba(192,57,43,0.08);border-left:3px solid var(--red);padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:16px;display:none;}
+.intro-banner{background:var(--wm);border-left:3px solid var(--gd);padding:14px 16px;font-size:13px;color:var(--ink2);margin-bottom:16px;line-height:1.5;}
 .prod-table{background:var(--wh);border:1px solid var(--bd);margin-bottom:80px;}
-.pt-head{display:grid;grid-template-columns:1fr 90px 100px 100px;padding:10px 18px;border-bottom:1px solid var(--bd);background:var(--iv);}
-.pt-head-cell{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);}
-.pt-row{display:grid;grid-template-columns:1fr 90px 100px 100px;padding:14px 18px;border-bottom:1px solid var(--bd);align-items:center;transition:background 0.1s;}
+.pt-row{display:grid;grid-template-columns:1fr 100px 100px;padding:14px 18px;border-bottom:1px solid var(--bd);align-items:center;}
 .pt-row:last-child{border-bottom:none;}
-.pt-row:hover{background:var(--iv);}
 .pt-naam{font-size:13px;font-weight:500;}
-.pt-prijs{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--gd);}
-.pt-voorraad{font-size:13px;}
-.pt-voorraad.laag{color:var(--red);font-weight:700;}
-.pt-acties{display:flex;gap:8px;}
 .pt-btn{background:transparent;border:1px solid var(--bd2);border-radius:6px;padding:6px 10px;font-size:11px;cursor:pointer;color:var(--ink2);}
 .pt-btn:hover{background:var(--wm);}
 .empty-state{padding:60px 20px;text-align:center;}
@@ -77,7 +69,6 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .fl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
 .fi{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;}
 .fi:focus{border-color:var(--gd);}
-.fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
 .btsv{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background 0.2s;}
 .btsv:hover{background:var(--ink2);}
 .err-box{display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);}
@@ -86,8 +77,6 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   .sidebar{display:none;}.main{margin-left:0;}
   .hbg{display:flex;}.tb-logo{display:block;}.tb-title{display:none;}
   .topbar{padding:0 14px;}.content{padding:14px;}
-  .pt-head,.pt-row{grid-template-columns:1fr 80px 90px;}
-  .pt-head-cell:nth-child(4),.pt-row .pt-acties{display:none;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -104,9 +93,9 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="/klanten/" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Klanten</span></a>
   <a href="/kassa/" class="si" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Kassa</span></a>
   <a href="/medewerkers/" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span>Medewerkers</span></a>
-  <a href="/ruimtes/" class="si" title="Ruimtes"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg><span>Ruimtes</span></a>
+  <a href="/ruimtes/" class="si on" title="Ruimtes"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg><span>Ruimtes</span></a>
   <a href="/diensten/" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span>Diensten</span></a>
-  <a href="/producten/" class="si on" title="Producten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.91 8.84L8.56 21.19a2 2 0 01-2.83 0L2 17.46a2 2 0 010-2.83L14.34 2.29a1 1 0 01.7-.29H21a1 1 0 011 1v6.65a1 1 0 01-.29.7z"/></svg><span>Producten</span></a>
+  <a href="/producten/" class="si" title="Producten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.91 8.84L8.56 21.19a2 2 0 01-2.83 0L2 17.46a2 2 0 010-2.83L14.34 2.29a1 1 0 01.7-.29H21a1 1 0 011 1v6.65a1 1 0 01-.29.7z"/></svg><span>Producten</span></a>
   <a href="/rapportages/" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Rapportages</span></a>
   <a href="/instellingen/" class="si" title="Instellingen" style="margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;margin-bottom:2px;"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Instellingen</span></a>
   <div class="sb-foot" onclick="uitloggen()"><div class="sb-av"><span class="salon-init">??</span></div><div><div class="salon-naam" style="color:#fff;font-size:13px;">Laden...</div><div style="font-size:11px;">Uitloggen</div></div></div>
@@ -120,8 +109,9 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="/klanten/" class="mob-item">Klanten</a>
   <a href="/kassa/" class="mob-item">Kassa</a>
   <a href="/medewerkers/" class="mob-item">Medewerkers</a>
+  <a href="/ruimtes/" class="mob-item on">Ruimtes</a>
   <a href="/diensten/" class="mob-item">Diensten</a>
-  <a href="/producten/" class="mob-item on">Producten</a>
+  <a href="/producten/" class="mob-item">Producten</a>
   <a href="/rapportages/" class="mob-item">Rapportages</a>
   <a href="/instellingen/" class="mob-item" style="margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;">Instellingen</a>
 </div>
@@ -130,140 +120,95 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <div class="topbar">
     <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div class="tb-logo">Kronr<em>.</em></div>
-    <div class="tb-title">Producten</div>
+    <div class="tb-title">Ruimtes</div>
     <div class="tb-spacer"></div>
-    <button class="btn-add" onclick="openNieuwProduct()">+ Product</button>
+    <button class="btn-add" onclick="openNieuweRuimte()">+ Ruimte</button>
   </div>
 
   <div class="content">
-    <div class="lage-voorraad-banner" id="lage-voorraad-banner"></div>
+    <div class="intro-banner">Voor salons waar niet de medewerker, maar de ruimte (behandelkamer, massagebed, sauna) de beperkende factor is -- bv. spa's en wellness. Zet bij een dienst in Diensten 'vereist een ruimte' aan zodra je hier ruimtes hebt toegevoegd; de boekingswidget houdt dan rekening met ruimte-beschikbaarheid naast (of in plaats van) medewerker-beschikbaarheid.</div>
     <div class="prod-table">
-      <div class="pt-head">
-        <div class="pt-head-cell">Product</div>
-        <div class="pt-head-cell">Prijs</div>
-        <div class="pt-head-cell">Voorraad</div>
-        <div class="pt-head-cell">Acties</div>
-      </div>
-      <div id="prod-rows"><div class="empty-state"><div class="empty-text">Laden...</div></div></div>
+      <div id="ruimte-rows"><div class="empty-state"><div class="empty-text">Laden...</div></div></div>
     </div>
   </div>
 </div>
 </div>
 
-<!-- Nieuw/bewerk product modal -->
-<div class="mbg" id="m-product" onclick="if(event.target===this)closeM('m-product')">
+<div class="mbg" id="m-ruimte" onclick="if(event.target===this)closeM('m-ruimte')">
   <div class="modal">
     <div class="mh"></div>
-    <div class="mt" id="p-modal-titel">Nieuw product</div>
-    <div class="msub">Voor verkoop via de kassa</div>
-    <div class="err-box" id="p-err"></div>
-    <input type="hidden" id="p-id">
-    <div class="fr"><label class="fl">Naam</label><input class="fi" id="p-naam" type="text" placeholder="bijv. Shampoo 250ml"></div>
-    <div class="fg">
-      <div class="fr"><label class="fl">Prijs (€)</label><input class="fi" id="p-prijs" type="number" min="0" step="0.5" placeholder="15"></div>
-      <div class="fr"><label class="fl">Voorraad (aantal)</label><input class="fi" id="p-voorraad" type="number" min="0" step="1" placeholder="20"></div>
-    </div>
-    <div class="fr"><label class="fl">Waarschuwen bij voorraad onder</label><input class="fi" id="p-drempel" type="number" min="0" step="1" placeholder="3"></div>
+    <div class="mt" id="r-modal-titel">Nieuwe ruimte</div>
+    <div class="msub">Bv. 'Behandelkamer 1', 'Massagebed A', 'Sauna'</div>
+    <div class="err-box" id="r-err"></div>
+    <input type="hidden" id="r-id">
+    <div class="fr"><label class="fl">Naam</label><input class="fi" id="r-naam" type="text" placeholder="bijv. Behandelkamer 1"></div>
     <div class="fr">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
-        <input type="checkbox" id="p-actief" style="width:16px;height:16px;" checked>
-        Actief (te koop in de kassa)
+        <input type="checkbox" id="r-actief" style="width:16px;height:16px;" checked>
+        Actief (beschikbaar om op te boeken)
       </label>
     </div>
-    <button class="btsv" onclick="slaProductOp()">Opslaan</button>
+    <button class="btsv" onclick="slaRuimteOp()">Opslaan</button>
   </div>
 </div>
 
 <script>
-let PRODUCTEN=[];
+let RUIMTES=[];
 
-async function laadProducten(){
-  const{data,error}=await sb.from('producten').select('*').eq('salon_id',SALON_ID).order('naam');
-  PRODUCTEN=data||[];
-  renderProducten();
-  laadLageVoorraadBanner();
+async function laadRuimtes(){
+  const{data}=await sb.from('ruimtes').select('*').eq('salon_id',SALON_ID).order('naam');
+  RUIMTES=data||[];
+  renderRuimtes();
 }
 
-function renderProducten(){
-  const rows=document.getElementById('prod-rows');
-  if(!PRODUCTEN.length){
-    rows.innerHTML=`<div class="empty-state"><div class="empty-text">Nog geen producten</div><div class="empty-sub">Voeg je eerste product toe om te verkopen via de kassa.</div></div>`;
+function renderRuimtes(){
+  const rows=document.getElementById('ruimte-rows');
+  if(!RUIMTES.length){
+    rows.innerHTML=`<div class="empty-state"><div class="empty-text">Nog geen ruimtes</div><div class="empty-sub">Voeg ruimtes toe als jouw salon op ruimte-beschikbaarheid boekt (bv. behandelkamers).</div></div>`;
     return;
   }
-  rows.innerHTML=PRODUCTEN.map(p=>{
-    const laag=p.voorraad_aantal<=p.lage_voorraad_drempel;
-    return `<div class="pt-row">
-      <div class="pt-naam">${escapeHtml(p.naam)}${p.actief?'':' <span style="color:var(--mu2);font-size:11px;">(inactief)</span>'}</div>
-      <div class="pt-prijs">€${p.prijs}</div>
-      <div class="pt-voorraad${laag?' laag':''}">${p.voorraad_aantal}${laag?' ⚠':''}</div>
-      <div class="pt-acties">
-        <button class="pt-btn" onclick="openBewerkProduct('${p.id}')">Bewerken</button>
-      </div>
-    </div>`;
-  }).join('');
+  rows.innerHTML=RUIMTES.map(r=>`<div class="pt-row">
+    <div class="pt-naam">${escapeHtml(r.naam)}${r.actief?'':' <span style="color:var(--mu2);font-size:11px;">(inactief)</span>'}</div>
+    <div></div>
+    <div><button class="pt-btn" onclick="openBewerkRuimte('${r.id}')">Bewerken</button></div>
+  </div>`).join('');
 }
 
-function laadLageVoorraadBanner(){
-  const laag=PRODUCTEN.filter(p=>p.actief && p.voorraad_aantal<=p.lage_voorraad_drempel);
-  const banner=document.getElementById('lage-voorraad-banner');
-  if(!laag.length){ banner.style.display='none'; return; }
-  banner.style.display='block';
-  banner.textContent='⚠ Lage voorraad: '+laag.map(p=>p.naam+' ('+p.voorraad_aantal+')').join(', ');
+function openNieuweRuimte(){
+  document.getElementById('r-modal-titel').textContent='Nieuwe ruimte';
+  document.getElementById('r-id').value='';
+  document.getElementById('r-naam').value='';
+  document.getElementById('r-actief').checked=true;
+  document.getElementById('r-err').style.display='none';
+  openM('m-ruimte');
 }
 
-function openNieuwProduct(){
-  document.getElementById('p-modal-titel').textContent='Nieuw product';
-  document.getElementById('p-id').value='';
-  document.getElementById('p-naam').value='';
-  document.getElementById('p-prijs').value='';
-  document.getElementById('p-voorraad').value='';
-  document.getElementById('p-drempel').value='3';
-  document.getElementById('p-actief').checked=true;
-  document.getElementById('p-err').style.display='none';
-  openM('m-product');
+function openBewerkRuimte(id){
+  const r=RUIMTES.find(x=>x.id===id);
+  if(!r) return;
+  document.getElementById('r-modal-titel').textContent='Ruimte bewerken';
+  document.getElementById('r-id').value=r.id;
+  document.getElementById('r-naam').value=r.naam;
+  document.getElementById('r-actief').checked=r.actief;
+  document.getElementById('r-err').style.display='none';
+  openM('m-ruimte');
 }
 
-function openBewerkProduct(id){
-  const p=PRODUCTEN.find(x=>x.id===id);
-  if(!p) return;
-  document.getElementById('p-modal-titel').textContent='Product bewerken';
-  document.getElementById('p-id').value=p.id;
-  document.getElementById('p-naam').value=p.naam;
-  document.getElementById('p-prijs').value=p.prijs;
-  document.getElementById('p-voorraad').value=p.voorraad_aantal;
-  document.getElementById('p-drempel').value=p.lage_voorraad_drempel;
-  document.getElementById('p-actief').checked=p.actief;
-  document.getElementById('p-err').style.display='none';
-  openM('m-product');
-}
+async function slaRuimteOp(){
+  const id=document.getElementById('r-id').value;
+  const naam=document.getElementById('r-naam').value.trim();
+  const actief=document.getElementById('r-actief').checked;
+  const errEl=document.getElementById('r-err');
+  if(!naam){ errEl.textContent='Vul een naam in.'; errEl.style.display='block'; return; }
 
-async function slaProductOp(){
-  const id=document.getElementById('p-id').value;
-  const naam=document.getElementById('p-naam').value.trim();
-  const prijs=parseFloat(document.getElementById('p-prijs').value);
-  const voorraad=parseInt(document.getElementById('p-voorraad').value);
-  const drempel=parseInt(document.getElementById('p-drempel').value)||3;
-  const actief=document.getElementById('p-actief').checked;
-  const errEl=document.getElementById('p-err');
-
-  if(!naam || isNaN(prijs) || prijs<0 || isNaN(voorraad) || voorraad<0){
-    errEl.textContent='Vul een geldige naam, prijs en voorraadaantal in.';
-    errEl.style.display='block';
-    return;
-  }
-
-  const payload={salon_id:SALON_ID,naam,prijs,voorraad_aantal:voorraad,lage_voorraad_drempel:drempel,actief};
+  const payload={salon_id:SALON_ID,naam,actief};
   const{error}=id
-    ? await sb.from('producten').update(payload).eq('id',id)
-    : await sb.from('producten').insert(payload);
+    ? await sb.from('ruimtes').update(payload).eq('id',id)
+    : await sb.from('ruimtes').insert(payload);
 
-  if(error){
-    errEl.textContent='Kon niet opslaan: '+error.message;
-    errEl.style.display='block';
-    return;
-  }
-  closeM('m-product');
-  laadProducten();
+  if(error){ errEl.textContent='Kon niet opslaan: '+error.message; errEl.style.display='block'; return; }
+  closeM('m-ruimte');
+  laadRuimtes();
 }
 
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
@@ -271,10 +216,7 @@ function closeSB(){document.getElementById('sb').classList.remove('on');document
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
 function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
 
-// Hergebruikt het 'kassa'-recht (geen apart 'producten'-recht in het
-// rechten-schema van medewerkers) -- wie bij de kassa mag, mag ook de
-// voorraad inzien/beheren.
-kronrInit(laadProducten,'kassa');
+kronrInit(laadRuimtes,'medewerkers');
 </script>
 </body>
 </html>

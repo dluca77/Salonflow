@@ -154,6 +154,7 @@ select.fi{cursor:pointer;}
   <a href="/klanten/" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Klanten</span></a>
   <a href="/kassa/" class="si" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Kassa</span></a>
   <a href="/medewerkers/" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span>Medewerkers</span></a>
+  <a href="/ruimtes/" class="si" title="Ruimtes"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg><span>Ruimtes</span></a>
   <a href="/diensten/" class="si on" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span>Diensten</span></a>
   <a href="/rapportages/" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Rapportages</span></a>
   <a href="/instellingen/" class="si" title="Instellingen" style="margin-top:auto;border-top:1px solid rgba(255,255,255,.08);padding-top:14px;margin-bottom:2px;"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg><span>Instellingen</span></a>
@@ -258,6 +259,13 @@ select.fi{cursor:pointer;}
       <input class="fi" id="d-terugkeer-weken" type="number" min="1" step="1" placeholder="bv. 5 (leeg = geen herinnering)">
       <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant krijgt na dit aantal weken na een afgeronde afspraak automatisch een mail met boekingslink. Vereist dat 'Terugkeer-herinneringen' aanstaat in Instellingen.</div>
     </div>
+    <div class="fr">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="d-vereist-ruimte" style="width:16px;height:16px;">
+        Vereist een ruimte (bv. spa/behandelkamer)
+      </label>
+      <div style="font-size:11px;color:var(--mu);margin-top:4px;">De boekingswidget houdt dan ook rekening met beschikbare ruimtes (zie Ruimtes) naast medewerker-beschikbaarheid.</div>
+    </div>
     <button class="btsv" id="btn-dienst-opslaan" onclick="slaDienstOp()">Dienst opslaan</button>
   </div>
 </div>
@@ -303,6 +311,12 @@ select.fi{cursor:pointer;}
     <div class="fr">
       <label class="fl">Terugkeer-herinnering na (weken, optioneel)</label>
       <input class="fi" id="ab-terugkeer-weken" type="number" min="1" step="1" placeholder="bv. 5 (leeg = geen herinnering)">
+    </div>
+    <div class="fr">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="ab-vereist-ruimte" style="width:16px;height:16px;">
+        Vereist een ruimte (bv. spa/behandelkamer)
+      </label>
     </div>
     <div class="fr" id="ab-abo-wrap" style="display:none;">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
@@ -543,6 +557,7 @@ async function slaDienstOp(){
     vereist_kaartgegevens:document.getElementById('d-kaart').checked,
     prijs_incl_btw:document.getElementById('d-incl-btw').checked,
     terugkeer_weken:parseInt(document.getElementById('d-terugkeer-weken').value)||null,
+    vereist_ruimte:document.getElementById('d-vereist-ruimte').checked,
     locatie_id:HUIDIGE_LOCATIE_ID||null
   });
 
@@ -553,6 +568,7 @@ async function slaDienstOp(){
   ['d-naam','d-prijs','d-duur','d-omschr','d-aanb-bedrag','d-terugkeer-weken'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('d-stempel').checked=false;
   document.getElementById('d-kaart').checked=false;
+  document.getElementById('d-vereist-ruimte').checked=false;
   document.getElementById('d-incl-btw').checked=true;
   document.getElementById('d-aanb-type').value='';
   closeM('m-new');
@@ -585,6 +601,7 @@ function openAanbetalingModal(id){
   document.getElementById('ab-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
   document.getElementById('ab-kaart').checked=d.vereist_kaartgegevens||false;
   document.getElementById('ab-terugkeer-weken').value=d.terugkeer_weken||'';
+  document.getElementById('ab-vereist-ruimte').checked=d.vereist_ruimte||false;
   const magStripeFeature = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief');
   document.getElementById('ab-kaart-wrap').style.display = magStripeFeature ? 'block' : 'none';
   document.getElementById('ab-abo-wrap').style.display = magStripeFeature ? 'block' : 'none';
@@ -639,7 +656,8 @@ async function slaAanbetalingOp(){
     telt_voor_stempel:telStempel,
     vereist_kaartgegevens:vereistKaart,
     prijs_incl_btw:document.getElementById('ab-incl-btw').checked,
-    terugkeer_weken:parseInt(document.getElementById('ab-terugkeer-weken').value)||null
+    terugkeer_weken:parseInt(document.getElementById('ab-terugkeer-weken').value)||null,
+    vereist_ruimte:document.getElementById('ab-vereist-ruimte').checked
   }).eq('id',huidigAanbetalingDienstId);
 
   if(error){
