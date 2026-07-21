@@ -66,6 +66,19 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 .fr{margin-bottom:16px;}
 .fr:last-child{margin-bottom:0;}
+
+/* ── Plan-badge & vergrendelde features (consistente upsell-stijl,
+   overal hetzelfde patroon: badge + gedimd kader + korte uitleg + CTA) ── */
+.plan-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;flex-shrink:0;}
+.plan-badge.business{background:#f3ede4;color:var(--gd2);border:1px solid var(--gd);}
+.plan-badge.pro{background:#eef1f8;color:#3a4a8c;border:1px solid #7a8bd6;}
+.locked-feature{margin-top:8px;padding:22px 20px;background:var(--iv);border:1px dashed var(--bd2);border-radius:10px;}
+.locked-feature-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.locked-feature-lock{font-size:15px;line-height:1;}
+.locked-feature-title{font-size:13px;font-weight:600;color:var(--ink);}
+.locked-feature-desc{font-size:12px;color:var(--mu);line-height:1.55;margin-bottom:14px;}
+.locked-feature-cta{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--ink);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-family:inherit;}
+.locked-feature-cta:hover{opacity:.9;}
 .fl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:7px;display:block;}
 .fi{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;border-radius:6px;}
 .fi:focus{border-color:var(--gd);}
@@ -238,8 +251,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
 
-      <div id="slug-sectie-upsell" style="display:none;margin-top:8px;padding:14px 16px;background:var(--iv);border:1px solid var(--bd);border-radius:8px;font-size:12px;color:var(--mu);">
-        ✨ Nog geen eigen website? Met het <strong>Business</strong>-pakket krijg je een kant-en-klare Kronr-pagina met je eigen link, zonder dat je zelf iets hoeft te bouwen. <a href="/instellingen/#abonnement" style="color:var(--gd);font-weight:600;">Bekijk pakketten →</a>
+      <div id="slug-sectie-upsell" style="display:none;">
+        <div class="locked-feature">
+          <div class="locked-feature-head">
+            <span class="locked-feature-lock">🔒</span>
+            <span class="locked-feature-title">Eigen Kronr-pagina</span>
+            <span class="plan-badge business">Business</span>
+          </div>
+          <div class="locked-feature-desc">Heb je nog geen eigen website? Met het Business-pakket krijg je direct een kant-en-klare boekingspagina op jouw eigen kronr.nl-link (met je logo en naam) -- zonder dat je zelf iets hoeft te bouwen.</div>
+          <button class="locked-feature-cta" onclick="setTab('abonnement')">Upgrade naar Business →</button>
+        </div>
       </div>
 
       <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
@@ -414,7 +435,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </div>
       <div id="locaties-sectie-upsell" style="display:none;">
         <div class="sec-title">Locaties</div>
-        <div class="sec-sub">Meerdere vestigingen beheren is een Business-functie. <a href="#abonnement" onclick="setTab('abonnement')" style="color:var(--gd);">Upgrade naar Business</a> om dit te gebruiken.</div>
+        <div class="sec-sub">Beheer je vestigingen, elk met een eigen team, dienstenmenu en agenda.</div>
+        <div class="locked-feature">
+          <div class="locked-feature-head">
+            <span class="locked-feature-lock">🔒</span>
+            <span class="locked-feature-title">Meerdere locaties</span>
+            <span class="plan-badge business">Business</span>
+          </div>
+          <div class="locked-feature-desc">Meerdere vestigingen beheren -- elk met een eigen team, dienstenmenu en agenda -- is een Business-functie. Klanten en cadeaubonnen/abonnementen blijven salon-breed werken op elke locatie.</div>
+          <button class="locked-feature-cta" onclick="setTab('abonnement')">Upgrade naar Business →</button>
+        </div>
       </div>
     </div>
 
@@ -540,12 +570,30 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
       <div id="boekhouding-sectie-upsell" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
         <div class="sec-title">Boekhoudkoppeling</div>
-        <div class="sec-sub">Automatisch boeken naar Moneybird is een Pro-functie. <a href="#abonnement" onclick="setTab('abonnement')" style="color:var(--gd);">Upgrade naar Pro</a> om dit te gebruiken.</div>
+        <div class="sec-sub">Koppel Moneybird om elke kassa-betaling automatisch als factuur/mutatie te laten aanmaken.</div>
+        <div class="locked-feature">
+          <div class="locked-feature-head">
+            <span class="locked-feature-lock">🔒</span>
+            <span class="locked-feature-title">Moneybird-koppeling</span>
+            <span class="plan-badge pro">Pro</span>
+          </div>
+          <div class="locked-feature-desc">Automatisch boeken naar Moneybird is een Pro-functie. Elke kassa-betaling wordt dan zelf als factuur/mutatie aangemaakt, zonder handmatig overtypen.</div>
+          <button class="locked-feature-cta" onclick="setTab('abonnement')">Upgrade naar Pro →</button>
+        </div>
       </div>
 
       <div id="stripe-connect-sectie-upsell" style="display:none;margin-top:32px;padding-top:24px;border-top:1px solid var(--bd);">
         <div class="sec-title">Aanbetaling bij boeken</div>
-        <div class="sec-sub">Klanten laten aanbetalen bij het boeken (via je eigen Stripe-account) is een Business-functie. <a href="#abonnement" onclick="setTab('abonnement')" style="color:var(--gd);">Upgrade naar Business</a> om dit te gebruiken.</div>
+        <div class="sec-sub">Ontvang aanbetalingen van klanten rechtstreeks op je eigen Stripe-account, en bescherm je tegen no-shows.</div>
+        <div class="locked-feature">
+          <div class="locked-feature-head">
+            <span class="locked-feature-lock">🔒</span>
+            <span class="locked-feature-title">Aanbetaling &amp; no-show-bescherming</span>
+            <span class="plan-badge business">Business</span>
+          </div>
+          <div class="locked-feature-desc">Klanten laten aanbetalen bij het boeken (via je eigen Stripe-account), en kaartgegevens vastleggen om een no-show-fee te kunnen incasseren, is een Business-functie.</div>
+          <button class="locked-feature-cta" onclick="setTab('abonnement')">Upgrade naar Business →</button>
+        </div>
       </div>
     </div>
 
