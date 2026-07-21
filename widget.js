@@ -118,7 +118,7 @@
   function openWidget(){
     if(!iframeLoaded){
       var iframe = document.createElement('iframe');
-      iframe.src = BASE_URL + '/boeken.html?salon=' + encodeURIComponent(SALON_ID) + '&embed=1';
+      iframe.src = BASE_URL + '/boeken/?salon=' + encodeURIComponent(SALON_ID) + '&embed=1';
       iframe.setAttribute('title', 'Afspraak maken');
       body.appendChild(iframe);
       iframeLoaded = true;
