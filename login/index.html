@@ -546,6 +546,12 @@ async function schrijfInPrelaunch() {
     msg.textContent = 'Bedankt! We laten het je weten zodra we live gaan.';
     msg.style.color = 'var(--green)';
     input.value = '';
+    // Bevestigingsmail is 'best effort' -- als dit faalt blijft de
+    // inschrijving zelf gewoon geldig, dat merkt de bezoeker niet.
+    fetch('https://kronr-mail.isaak-elia.workers.dev/interesse-bevestiging', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email.toLowerCase() })
+    }).catch(() => {});
   }
   msg.style.display = 'block';
 }
