@@ -12,31 +12,50 @@ html[data-thema="donker"]{--ink:#f2ede6;--mu:#a89e93;--mu2:#7a7168;--iv:#231f1c;
 html{transition:background .2s;}
 body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacity:0;transition:opacity .2s,background .2s,color .2s;}
 .topbar{min-height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;row-gap:8px;transition:background .2s,border-color .2s;}
-@media(max-width:700px){
+@media(max-width:800px){
   .topbar{padding:10px 14px;}
-  .topbar .tabs{order:3;width:100%;justify-content:center;}
+  .topbar .tabs{display:none;}
+  .hamburger-btn{display:flex !important;}
+  .logo{display:none;}
+  .mobiel-folder-titel{display:block !important;}
 }
 .logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);}
 .logo em{color:var(--gd);font-style:normal;}
+.mobiel-folder-titel{display:none;font-family:'Playfair Display',serif;font-size:17px;font-weight:800;color:var(--ink);}
 .uitloggen{font-size:13px;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;transition:color .15s;}
 .icon-btn{background:none;border:none;cursor:pointer;color:var(--mu);padding:6px;border-radius:8px;display:flex;align-items:center;transition:background .15s,color .15s;}
 .icon-btn:hover{background:var(--iv);color:var(--ink);}
+.hamburger-btn{display:none;}
+.brand-wrap{display:flex;align-items:center;gap:8px;position:relative;}
+.folder-menu{display:none;position:absolute;top:calc(100% + 10px);left:0;background:var(--wh);border:1px solid var(--bd);border-radius:12px;box-shadow:0 14px 34px rgba(15,13,11,.14);padding:6px;min-width:230px;z-index:60;transition:background .2s,border-color .2s;}
+.folder-menu.open{display:block;}
+.folder-menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--mu);transition:background .15s,color .15s;}
+.folder-menu-item svg{flex-shrink:0;}
+.folder-menu-item:hover{background:var(--iv);}
+.folder-menu-item.actief{background:var(--iv);color:var(--gd);}
 .tab-knop{font-size:13px;font-weight:600;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;padding:8px 14px;border-radius:8px;transition:background .15s,color .15s;}
 .tab-knop.actief{background:var(--iv);color:var(--ink);}
 .tab-knop:hover:not(.actief){background:var(--iv);}
 .layout{display:grid;grid-template-columns:340px 1fr;max-width:1200px;margin:0 auto;min-height:calc(100vh - 60px);}
 .lijst{border-right:1px solid var(--bd);background:var(--wh);overflow-y:auto;transition:background .2s,border-color .2s;}
-.zoek-wrap{padding:12px 16px;border-bottom:1px solid var(--bd);}
-.zoek-input{width:100%;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;font-size:13px;font-family:inherit;background:var(--iv);color:var(--ink);transition:background .2s,border-color .2s;}
-.lijst-item{display:flex;gap:12px;align-items:flex-start;padding:16px 20px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .15s;animation:fadeIn .25s ease both;}
+.zoek-wrap{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bd);}
+.select-alle-cb{width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:var(--gd);}
+.zoek-input-wrap{position:relative;flex:1;min-width:0;}
+.zoek-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mu2);pointer-events:none;}
+.zoek-input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--bd);border-radius:10px;font-size:13px;font-family:inherit;background:var(--iv);color:var(--ink);transition:background .2s,border-color .2s;}
+.lijst-item{display:flex;gap:10px;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .15s;animation:fadeIn .25s ease both;}
 .lijst-item:hover{background:var(--iv);}
 .lijst-item.actief{background:var(--iv);border-left:3px solid var(--gd);}
-.lijst-item.ongelezen .li-van{font-weight:700;}
-.li-check{flex-shrink:0;width:16px;height:16px;margin-top:2px;cursor:pointer;accent-color:var(--gd);}
+.li-check{flex-shrink:0;width:16px;height:16px;margin-top:5px;cursor:pointer;accent-color:var(--gd);}
+.li-dot{width:7px;height:7px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:7px;visibility:hidden;}
+.lijst-item.ongelezen .li-dot{visibility:visible;}
 .li-content{flex:1;min-width:0;}
-.li-van{font-size:14px;color:var(--ink);margin-bottom:2px;}
-.li-onderwerp{font-size:13px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.li-datum{font-size:11px;color:var(--mu2);margin-top:4px;}
+.li-top-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.li-van{font-size:14px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.lijst-item.ongelezen .li-van{font-weight:700;}
+.li-onderwerp{font-size:13px;color:var(--ink);font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.li-preview{font-size:12.5px;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.li-datum{font-size:11px;color:var(--mu2);flex-shrink:0;}
 .li-labels{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
 .label-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
 .bulk-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--iv);border-bottom:1px solid var(--bd);font-size:13px;color:var(--ink);transition:background .2s,border-color .2s;}
@@ -87,7 +106,27 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
 <body>
 
 <div class="topbar">
-  <div class="logo">Kronr<em>.</em></div>
+  <div class="brand-wrap">
+    <button class="icon-btn hamburger-btn" id="hamburger-btn" onclick="wisselFolderMenu()" title="Mappen" aria-label="Mappen">
+      <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+    </button>
+    <div class="logo">Kronr<em>.</em></div>
+    <div class="mobiel-folder-titel" id="mobiel-folder-titel">Postvak IN</div>
+    <div class="folder-menu" id="folder-menu">
+      <div class="folder-menu-item actief" id="fm-in" onclick="kiesFolderMenu('in')">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+        <span>Postvak IN</span>
+      </div>
+      <div class="folder-menu-item" id="fm-uit" onclick="kiesFolderMenu('uit')">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        <span>Postvak UIT</span>
+      </div>
+      <div class="folder-menu-item" id="fm-archief" onclick="kiesFolderMenu('archief')">
+        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="5" rx="1"/><path d="M4 9v9a2 2 0 002 2h12a2 2 0 002-2V9"/><path d="M10 13h4"/></svg>
+        <span>Archief</span>
+      </div>
+    </div>
+  </div>
   <div class="tabs" style="display:flex;gap:4px;">
     <button class="tab-knop actief" id="tab-in" onclick="wisselTab('in')">Postvak IN</button>
     <button class="tab-knop" id="tab-uit" onclick="wisselTab('uit')">Postvak UIT</button>
@@ -325,10 +364,34 @@ function toonSkeletons(){
   `).join('');
 }
 
+const FOLDER_TITELS = {in:'Postvak IN', uit:'Postvak UIT', archief:'Archief'};
+
+function wisselFolderMenu(){
+  document.getElementById('folder-menu').classList.toggle('open');
+}
+function sluitFolderMenu(){
+  document.getElementById('folder-menu').classList.remove('open');
+}
+function kiesFolderMenu(tab){
+  sluitFolderMenu();
+  wisselTab(tab);
+}
+document.addEventListener('click', (e)=>{
+  const menu = document.getElementById('folder-menu');
+  const hamburger = document.getElementById('hamburger-btn');
+  if(!menu || !menu.classList.contains('open')) return;
+  if(!menu.contains(e.target) && e.target!==hamburger && !hamburger.contains(e.target)){
+    sluitFolderMenu();
+  }
+});
+
 async function wisselTab(tab){
   HUIDIGE_TAB = tab;
   document.querySelectorAll('.tab-knop').forEach(t=>t.classList.remove('actief'));
   document.getElementById('tab-'+tab).classList.add('actief');
+  document.querySelectorAll('.folder-menu-item').forEach(t=>t.classList.remove('actief'));
+  document.getElementById('fm-'+tab).classList.add('actief');
+  document.getElementById('mobiel-folder-titel').textContent = FOLDER_TITELS[tab];
   document.getElementById('detail').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
   HUIDIG_BERICHT_ID = null;
   ZOEKTERM = '';
@@ -372,8 +435,33 @@ function zetZoekterm(waarde){
   renderLijst();
 }
 
+function gefilterdeBerichten(){
+  return BERICHTEN.filter(b=>!ZOEKTERM || (b.onderwerp||'').toLowerCase().includes(ZOEKTERM) || (b.van_email||'').toLowerCase().includes(ZOEKTERM) || (b.van_naam||'').toLowerCase().includes(ZOEKTERM) || (b.inhoud||'').toLowerCase().includes(ZOEKTERM));
+}
+
 function renderZoekbalk(){
-  return `<div class="zoek-wrap"><input type="text" class="zoek-input" placeholder="Zoeken..." value="${ZOEKTERM.replace(/"/g,'&quot;')}" oninput="zetZoekterm(this.value)"></div>`;
+  const toonSelectAlles = HUIDIGE_TAB!=='uit';
+  let selectAlleHtml = '';
+  if(toonSelectAlles){
+    const ids = gefilterdeBerichten().map(b=>b.id);
+    const aantalGeselecteerd = ids.filter(id=>GESELECTEERD.has(id)).length;
+    const alleGeselecteerd = ids.length>0 && aantalGeselecteerd===ids.length;
+    selectAlleHtml = `<input type="checkbox" class="select-alle-cb" id="select-alle-cb" title="Alles selecteren" ${alleGeselecteerd?'checked':''} onchange="wisselAllesSelecteren(this.checked)">`;
+  }
+  return `<div class="zoek-wrap">
+    ${selectAlleHtml}
+    <div class="zoek-input-wrap">
+      <svg class="zoek-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+      <input type="text" class="zoek-input" placeholder="Zoeken..." value="${ZOEKTERM.replace(/"/g,'&quot;')}" oninput="zetZoekterm(this.value)">
+    </div>
+  </div>`;
+}
+
+function wisselAllesSelecteren(aan){
+  const ids = gefilterdeBerichten().map(b=>b.id);
+  if(aan) ids.forEach(id=>GESELECTEERD.add(id));
+  else ids.forEach(id=>GESELECTEERD.delete(id));
+  renderLijst();
 }
 
 function renderBulkBar(){
@@ -419,19 +507,23 @@ function renderLijst(){
     }
     lijstEl.innerHTML = zoekbalkHtml+gefilterd.map(v=>{
       const datum = new Date(v.verzonden_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+      const preview = (v.inhoud||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
       return `
       <div class="lijst-item ${v.id===HUIDIG_BERICHT_ID?'actief':''}" onclick="toonVerzonden('${v.id}')">
         <div class="li-content">
-          <div class="li-van">Aan: ${escapeHtml(v.naar_email)}</div>
+          <div class="li-top-row">
+            <span class="li-van">Aan: ${escapeHtml(v.naar_email)}</span>
+            <span class="li-datum">${datum}</span>
+          </div>
           <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(v.onderwerp))||'(geen onderwerp)'}</div>
-          <div class="li-datum">${datum}</div>
+          ${preview?`<div class="li-preview">${escapeHtml(preview)}</div>`:''}
         </div>
       </div>`;
     }).join('');
     return;
   }
 
-  const gefilterd = BERICHTEN.filter(b=>!ZOEKTERM || (b.onderwerp||'').toLowerCase().includes(ZOEKTERM) || (b.van_email||'').toLowerCase().includes(ZOEKTERM) || (b.van_naam||'').toLowerCase().includes(ZOEKTERM) || (b.inhoud||'').toLowerCase().includes(ZOEKTERM));
+  const gefilterd = gefilterdeBerichten();
   if(!gefilterd.length){
     lijstEl.innerHTML=zoekbalkHtml+renderBulkBar()+`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${ZOEKTERM?'Niks gevonden.':(HUIDIGE_TAB==='archief'?'Nog niks gearchiveerd.':'Nog geen berichten.')}</div>`;
     return;
@@ -439,13 +531,18 @@ function renderLijst(){
   lijstEl.innerHTML = zoekbalkHtml+renderBulkBar()+gefilterd.map(b=>{
     const datum = new Date(b.ontvangen_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     const labels = (b.labels||[]);
+    const preview = (b.inhoud||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
     return `
     <div class="lijst-item ${b.id===HUIDIG_BERICHT_ID?'actief':''} ${!b.gelezen?'ongelezen':''}" onclick="toonBericht('${b.id}')">
       <input type="checkbox" class="li-check" ${GESELECTEERD.has(b.id)?'checked':''} onclick="event.stopPropagation()" onchange="toggleGeselecteerd('${b.id}',this.checked)">
+      <span class="li-dot"></span>
       <div class="li-content">
-        <div class="li-van">${escapeHtml(b.van_naam||b.van_email)} ${b.beantwoord?'✓':''}</div>
+        <div class="li-top-row">
+          <span class="li-van">${escapeHtml(b.van_naam||b.van_email)} ${b.beantwoord?'✓':''}</span>
+          <span class="li-datum">${datum}</span>
+        </div>
         <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(b.onderwerp))||'(geen onderwerp)'}</div>
-        <div class="li-datum">${datum}</div>
+        ${preview?`<div class="li-preview">${escapeHtml(preview)}</div>`:''}
         ${labels.length?`<div class="li-labels">${labels.map(l=>{
           const optie = LABEL_OPTIES.find(o=>o.naam===l);
           return `<span class="label-pill" style="background:${optie?optie.kleur:'#999'}22;color:${optie?optie.kleur:'#999'};">${escapeHtml(l)}</span>`;
@@ -453,6 +550,13 @@ function renderLijst(){
       </div>
     </div>`;
   }).join('');
+
+  const selAlleCb = document.getElementById('select-alle-cb');
+  if(selAlleCb){
+    const ids = gefilterd.map(b=>b.id);
+    const aantalGeselecteerd = ids.filter(id=>GESELECTEERD.has(id)).length;
+    selAlleCb.indeterminate = aantalGeselecteerd>0 && aantalGeselecteerd<ids.length;
+  }
 }
 
 async function toonVerzonden(id){
