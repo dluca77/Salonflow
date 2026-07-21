@@ -356,6 +356,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
 
+      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+        <div class="fr">
+          <label class="fl" style="display:flex;align-items:center;gap:8px;">
+            <input type="checkbox" id="s-terugkeer-actief" style="width:16px;height:16px;">
+            Terugkeer-herinneringen versturen
+          </label>
+          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klanten krijgen automatisch een mail met boekingslink zodra het bij een dienst ingestelde aantal weken (zie Diensten) sinds hun laatste afgeronde afspraak is verstreken. Stel per dienst in na hoeveel weken via Diensten → dienst bewerken.</div>
+        </div>
+      </div>
+
       <button class="btn-sv" id="btn-profiel" onclick="slaProfielOp()">Profiel opslaan</button>
       <div class="msg" id="msg-profiel"></div>
     </div>
@@ -649,6 +659,7 @@ window.addEventListener('message',function(e){
   document.getElementById('s-review-actief').checked = SALON.review_verzoek_actief || false;
   document.getElementById('s-review-link').value = SALON.google_review_link || '';
   wisselReviewUI();
+  document.getElementById('s-terugkeer-actief').checked = SALON.terugkeer_herinnering_actief || false;
   document.getElementById('s-whatsapp-actief').checked = SALON.whatsapp_actief || false;
   document.getElementById('s-whatsapp-nummer').value = SALON.whatsapp_nummer || '';
   wisselWhatsappUI();
@@ -1158,7 +1169,8 @@ async function slaProfielOp(){
     review_verzoek_actief:reviewActief,
     google_review_link:reviewLink||null,
     whatsapp_actief:whatsappActief,
-    whatsapp_nummer:whatsappNummer||null
+    whatsapp_nummer:whatsappNummer||null,
+    terugkeer_herinnering_actief:document.getElementById('s-terugkeer-actief').checked
   };
 
   // Slug alleen opslaan/valideren als het Business-veld daadwerkelijk zichtbaar is

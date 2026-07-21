@@ -253,6 +253,11 @@ select.fi{cursor:pointer;}
         Kaartgegevens verplicht bij boeken (no-show-bescherming)
       </label>
     </div>
+    <div class="fr">
+      <label class="fl">Terugkeer-herinnering na (weken, optioneel)</label>
+      <input class="fi" id="d-terugkeer-weken" type="number" min="1" step="1" placeholder="bv. 5 (leeg = geen herinnering)">
+      <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant krijgt na dit aantal weken na een afgeronde afspraak automatisch een mail met boekingslink. Vereist dat 'Terugkeer-herinneringen' aanstaat in Instellingen.</div>
+    </div>
     <button class="btsv" id="btn-dienst-opslaan" onclick="slaDienstOp()">Dienst opslaan</button>
   </div>
 </div>
@@ -294,6 +299,10 @@ select.fi{cursor:pointer;}
         Kaartgegevens verplicht bij boeken (no-show-bescherming)
       </label>
       <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant legt bij het boeken een kaart vast (geen afschrijving). Bij een no-show kun je het ingestelde bedrag alsnog incasseren.</div>
+    </div>
+    <div class="fr">
+      <label class="fl">Terugkeer-herinnering na (weken, optioneel)</label>
+      <input class="fi" id="ab-terugkeer-weken" type="number" min="1" step="1" placeholder="bv. 5 (leeg = geen herinnering)">
     </div>
     <div class="fr" id="ab-abo-wrap" style="display:none;">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
@@ -533,6 +542,7 @@ async function slaDienstOp(){
     telt_voor_stempel:document.getElementById('d-stempel').checked,
     vereist_kaartgegevens:document.getElementById('d-kaart').checked,
     prijs_incl_btw:document.getElementById('d-incl-btw').checked,
+    terugkeer_weken:parseInt(document.getElementById('d-terugkeer-weken').value)||null,
     locatie_id:HUIDIGE_LOCATIE_ID||null
   });
 
@@ -540,7 +550,7 @@ async function slaDienstOp(){
 
   if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
 
-  ['d-naam','d-prijs','d-duur','d-omschr','d-aanb-bedrag'].forEach(id=>document.getElementById(id).value='');
+  ['d-naam','d-prijs','d-duur','d-omschr','d-aanb-bedrag','d-terugkeer-weken'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('d-stempel').checked=false;
   document.getElementById('d-kaart').checked=false;
   document.getElementById('d-incl-btw').checked=true;
@@ -574,6 +584,7 @@ function openAanbetalingModal(id){
   document.getElementById('ab-stempel').checked=d.telt_voor_stempel||false;
   document.getElementById('ab-stempel-wrap').style.display = SALON?.stempelkaart_actief ? 'block' : 'none';
   document.getElementById('ab-kaart').checked=d.vereist_kaartgegevens||false;
+  document.getElementById('ab-terugkeer-weken').value=d.terugkeer_weken||'';
   const magStripeFeature = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief');
   document.getElementById('ab-kaart-wrap').style.display = magStripeFeature ? 'block' : 'none';
   document.getElementById('ab-abo-wrap').style.display = magStripeFeature ? 'block' : 'none';
@@ -627,7 +638,8 @@ async function slaAanbetalingOp(){
     aanbetaling_bedrag:type?Number(bedragRaw):null,
     telt_voor_stempel:telStempel,
     vereist_kaartgegevens:vereistKaart,
-    prijs_incl_btw:document.getElementById('ab-incl-btw').checked
+    prijs_incl_btw:document.getElementById('ab-incl-btw').checked,
+    terugkeer_weken:parseInt(document.getElementById('ab-terugkeer-weken').value)||null
   }).eq('id',huidigAanbetalingDienstId);
 
   if(error){
