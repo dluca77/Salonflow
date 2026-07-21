@@ -455,6 +455,21 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-legal a{font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;}
 .footer-legal a:hover{color:rgba(255,255,255,.6);}
 
+/* ── FOOTER: blijf op de hoogte ── */
+.footer-notify{margin-top:22px;}
+.footer-notify-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px;font-weight:600;display:block;}
+.footer-notify-row{display:flex;gap:8px;max-width:340px;}
+.footer-notify-input{flex:1;min-width:0;padding:10px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;}
+.footer-notify-input::placeholder{color:rgba(255,255,255,.3);}
+.footer-notify-input:focus{outline:none;border-color:var(--gd);}
+.footer-notify-btn{padding:10px 18px;background:var(--gd);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;font-family:inherit;}
+.footer-notify-btn:hover{background:var(--gd2);}
+.footer-notify-btn:disabled{opacity:.5;cursor:default;}
+.footer-notify-msg{font-size:12.5px;margin-top:8px;color:rgba(255,255,255,.5);}
+.footer-notify-msg.ok{color:#4ade80;}
+.footer-notify-msg.err{color:#ff8a8a;}
+@media(max-width:480px){.footer-notify-row{flex-direction:column;}.footer-notify-btn{width:100%;}}
+
 
 /* ── MOBILE MENU ── */
 .mob-nav{position:fixed;inset:0;background:var(--ink);z-index:200;display:flex;flex-direction:column;padding:24px;transform:translateX(100%);transition:transform .3s ease;}
@@ -1116,6 +1131,14 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div>
         <div class="footer-logo">Kronr<em>.</em></div>
         <p class="footer-desc">Alles wat je nodig hebt om je salon soepel te laten draaien. Gebouwd door ondernemers, voor ondernemers.</p>
+        <form class="footer-notify" id="notify-form">
+          <label class="footer-notify-label" for="notify-email">Blijf op de hoogte</label>
+          <div class="footer-notify-row">
+            <input type="email" id="notify-email" class="footer-notify-input" placeholder="jouw@email.nl" required autocomplete="email">
+            <button type="submit" class="footer-notify-btn" id="notify-btn">Aanmelden</button>
+          </div>
+          <p class="footer-notify-msg" id="notify-msg" style="display:none;"></p>
+        </form>
       </div>
       <div>
         <div class="footer-col-title">Product</div>
@@ -1155,10 +1178,56 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
 // Nav scroll effect
 window.addEventListener('scroll',()=>{
   document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
+});
+
+// ── Blijf op de hoogte: e-mail-inschrijving voor de launch-aankondiging ──
+const notifySb=window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co','sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6');
+const NOTIFY_EMAIL_REGEX=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+document.getElementById('notify-form').addEventListener('submit', async(e)=>{
+  e.preventDefault();
+  const input=document.getElementById('notify-email');
+  const btn=document.getElementById('notify-btn');
+  const msg=document.getElementById('notify-msg');
+  const email=input.value.trim();
+
+  msg.style.display='none';
+  msg.classList.remove('ok','err');
+
+  if(!NOTIFY_EMAIL_REGEX.test(email)){
+    msg.textContent='Vul een geldig e-mailadres in.';
+    msg.classList.add('err');
+    msg.style.display='block';
+    return;
+  }
+
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{error}=await notifySb.from('launch_interesse').insert({email:email.toLowerCase()});
+
+  btn.disabled=false;btn.textContent='Aanmelden';
+
+  if(error){
+    // Duplicate-key (23505): dit e-mailadres staat al ingeschreven -- geen
+    // fout voor de bezoeker, gewoon bevestigen dat we ze al hebben.
+    if(error.code==='23505'){
+      msg.textContent='Dit e-mailadres staat al ingeschreven!';
+      msg.classList.add('ok');
+    } else {
+      msg.textContent='Er ging iets mis. Probeer het later opnieuw.';
+      msg.classList.add('err');
+    }
+  } else {
+    msg.textContent='Bedankt! We laten het je weten zodra we live gaan.';
+    msg.classList.add('ok');
+    input.value='';
+  }
+  msg.style.display='block';
 });
 
 const IDX_PRIJS_M = {starter:{bedrag:19,per:'per maand · 1 medewerker'}, pro:{bedrag:39,per:'per maand · t/m 5 medewerkers'}, business:{bedrag:69,per:'per maand · onbeperkt'}};
