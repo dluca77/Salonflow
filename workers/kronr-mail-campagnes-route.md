@@ -10,7 +10,7 @@ Request:
   "salon_naam": "Kapsalon Test",
   "onderwerp": "We missen je!",
   "inhoud": "Kom gauw weer langs, 15% korting deze maand.",
-  "ontvangers": [{"naam": "Fatima", "email": "fatima@mail.nl"}, ...]
+  "ontvangers": [{"naam": "Fatima", "email": "fatima@mail.nl", "afmeld_token": "uuid"}, ...]
 }
 ```
 
@@ -22,15 +22,15 @@ gepersonaliseerd. Belangrijk:
 - **Onderwerp/inhoud zijn vrije tekst van de salon-eigenaar** -- render
   dit als platte tekst in de mail-body (geen HTML-injectie toestaan als
   je het ooit naar HTML omzet).
-- **Afmeld-link**: voeg een simpele "Uitschrijven"-link toe onderaan elke
-  mail. Dit vereist een klein extra stukje wat nu nog niet gebouwd is:
-  een publieke pagina/RPC om `klanten.marketing_opt_out` op true te
-  zetten op basis van een token in de link (zelfde patroon als
-  annuleren.html/stempelkaart.html). Voor nu: verwijs desnoods naar
-  "Neem contact op met de salon om je uit te schrijven" totdat die
-  pagina gebouwd is -- juridisch is een opt-out-mogelijkheid wel
-  verplicht bij marketing-mail (AVG/telecommunicatiewet), dus dit moet
-  op korte termijn alsnog toegevoegd worden.
+- **Afmeld-link is AL GEBOUWD** (correctie t.o.v. een eerdere versie van
+  dit document, die hem nog als ontbrekend beschreef): `klanten.afmeld_token`,
+  de RPC `meld_af_marketing(p_token)` en de publieke pagina `afmelden/index.html`
+  bestaan al (zie `db/2026-07-afmelden-migratie.sql`). `klanten/index.html`
+  geeft `afmeld_token` ook al mee per ontvanger in de request hierboven --
+  deze Worker-route hoeft het dus alleen nog te GEBRUIKEN: bouw per
+  ontvanger de link `https://kronr.nl/afmelden/?token={ontvanger.afmeld_token}`
+  en zet die onderaan de mail. Er is geen aparte pagina meer nodig, alleen
+  deze regel in de route.
 
 ```
 Onderwerp: {onderwerp}
@@ -41,7 +41,7 @@ Body: Hoi {naam},
 —
 {salon_naam}
 
-Wil je geen marketing-e-mails meer ontvangen? [Uitschrijven] (nog te bouwen)
+Wil je geen marketing-e-mails meer ontvangen? Meld je af: https://kronr.nl/afmelden/?token={afmeld_token}
 ```
 
 Retourneer 200 OK als het versturen (grotendeels) gelukt is, of een

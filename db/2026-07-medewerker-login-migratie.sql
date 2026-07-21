@@ -118,13 +118,25 @@ security definer
 as $$
 declare
   v_id uuid;
+  v_email text;
+  v_jwt_email text;
 begin
-  select id into v_id
+  select id, email into v_id, v_email
   from medewerkers
   where uitnodiging_token = p_token and uitnodiging_status = 'uitgenodigd';
 
   if v_id is null then
     return false; -- token onbekend of al gebruikt
+  end if;
+
+  -- Beveiliging: het token is een gedeeld geheim (kan lekken via
+  -- doorgestuurde mail, gedeelde inbox, etc). Voorkom dat een account met
+  -- een ANDER e-mailadres dan de uitgenodigde medewerker zich hiermee kan
+  -- koppelen -- zelfde kwetsbaarheidsklasse als de eigenaar-auto-bootstrap
+  -- die eerder in postvak-login is gefixt.
+  v_jwt_email := auth.jwt() ->> 'email';
+  if v_jwt_email is null or lower(v_jwt_email) <> lower(v_email) then
+    raise exception 'Het e-mailadres van je account komt niet overeen met de uitnodiging';
   end if;
 
   update medewerkers set

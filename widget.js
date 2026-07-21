@@ -3,6 +3,9 @@
 
   // ── CONFIG ──────────────────────────────────────────────────────────────
   var BASE_URL = 'https://kronr.nl'; // pas aan naar je eigen domein indien nodig
+  var AI_WORKER_URL = 'https://kronr-ai.isaak-elia.workers.dev/klant-vraag';
+  var SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
+  var SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 
   // Voorkom dubbele injectie als het script per ongeluk 2x geladen wordt
   if(window.__kronrWidgetLoaded) return;
@@ -77,8 +80,26 @@
     "border-radius:50%;transition:background .15s, color .15s;flex-shrink:0;}",
     ".kw-close:hover{background:rgba(255,255,255,0.16);color:#faf8f4;}",
 
-    ".kw-panel-body{flex:1;min-height:0;}",
+    ".kw-tabs{display:flex;flex-shrink:0;background:#f0ece3;}",
+    ".kw-tab{flex:1;padding:10px 8px;border:none;background:none;font-family:'Inter',sans-serif;",
+    "font-size:12px;font-weight:600;color:#8a8378;cursor:pointer;border-bottom:2px solid transparent;}",
+    ".kw-tab.active{color:#1a1714;border-bottom-color:#8c6d3f;}",
+
+    ".kw-panel-body{flex:1;min-height:0;position:relative;}",
     ".kw-panel-body iframe{width:100%;height:100%;border:none;display:block;}",
+    ".kw-chat-pane{position:absolute;inset:0;display:none;flex-direction:column;}",
+    ".kw-chat-pane.active{display:flex;}",
+    ".kw-chat-msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;}",
+    ".kw-chat-bubble{max-width:82%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.4;}",
+    ".kw-chat-bubble.bot{background:#f0ece3;color:#1a1714;align-self:flex-start;border-bottom-left-radius:4px;}",
+    ".kw-chat-bubble.user{background:#1a1714;color:#faf8f4;align-self:flex-end;border-bottom-right-radius:4px;}",
+    ".kw-chat-hint{font-size:11px;color:#8a8378;padding:2px 14px 10px;}",
+    ".kw-chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(26,23,20,0.08);flex-shrink:0;}",
+    ".kw-chat-input{flex:1;border:1px solid rgba(26,23,20,0.15);border-radius:100px;padding:9px 14px;",
+    "font-family:'Inter',sans-serif;font-size:13px;outline:none;}",
+    ".kw-chat-send{border:none;background:#1a1714;color:#faf8f4;border-radius:100px;padding:0 16px;",
+    "font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;}",
+    ".kw-chat-send:disabled{opacity:.5;cursor:default;}",
 
     /* Mobiel: volledig scherm, schuift op vanaf onderin */
     "@media(max-width:600px){",
@@ -104,7 +125,21 @@
         '<div class="kw-brand"><div class="kw-brand-mark">K</div><div class="kw-brand-name">Kronr<span style="color:#c9a35f;">.</span></div></div>' +
         '<button class="kw-close" type="button" aria-label="Sluiten">&#10005;</button>' +
       '</div>' +
-      '<div class="kw-panel-body"></div>' +
+      '<div class="kw-tabs">' +
+        '<button class="kw-tab active" type="button" data-tab="boeken">Afspraak maken</button>' +
+        '<button class="kw-tab" type="button" data-tab="kai">Vraag stellen</button>' +
+      '</div>' +
+      '<div class="kw-panel-body">' +
+        '<div class="kw-chat-pane" data-pane="boeken" style="position:absolute;inset:0;display:flex;"></div>' +
+        '<div class="kw-chat-pane" data-pane="kai">' +
+          '<div class="kw-chat-msgs"></div>' +
+          '<div class="kw-chat-hint">Kai beantwoordt vragen over openingstijden, diensten en prijzen. Voor het boeken zelf, gebruik "Afspraak maken".</div>' +
+          '<div class="kw-chat-input-row">' +
+            '<input class="kw-chat-input" type="text" placeholder="Stel een vraag...">' +
+            '<button class="kw-chat-send" type="button">Stuur</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>' +
     '</div>';
   root.appendChild(wrap);
 
@@ -112,15 +147,131 @@
   var panel = wrap.querySelector('.kw-panel');
   var catcher = wrap.querySelector('.kw-catcher');
   var closeBtn = wrap.querySelector('.kw-close');
-  var body = wrap.querySelector('.kw-panel-body');
+  var boekPane = wrap.querySelector('[data-pane="boeken"]');
+  var kaiPane = wrap.querySelector('[data-pane="kai"]');
+  var tabs = wrap.querySelectorAll('.kw-tab');
+  var chatMsgs = wrap.querySelector('.kw-chat-msgs');
+  var chatInput = wrap.querySelector('.kw-chat-input');
+  var chatSend = wrap.querySelector('.kw-chat-send');
   var iframeLoaded = false;
+  var chatStarted = false;
+  var chatBusy = false;
+  var salonContext = null; // {salon_naam, adres, stad, telefoon, type_bedrijf, openingstijden, diensten, annuleer_cutoff_uren}
+  var salonContextPromise = null;
+
+  // Haalt dezelfde publieke salongegevens op als boeken/index.html (RLS
+  // staat anonieme leestoegang op deze specifieke, niet-gevoelige kolommen
+  // toe). Nodig omdat de /klant-vraag Worker-route geen eigen salon_id-
+  // lookup doet -- die verwacht dat de aanroeper deze data al meestuurt.
+  function haalSalonContext(){
+    if(salonContextPromise) return salonContextPromise;
+    var salonUrl = SB_URL + '/rest/v1/salons?id=eq.' + encodeURIComponent(SALON_ID) +
+      '&select=naam,type_bedrijf,telefoon,adres,stad,openingstijden,annuleer_cutoff_uren';
+    var dienstenUrl = SB_URL + '/rest/v1/diensten?salon_id=eq.' + encodeURIComponent(SALON_ID) +
+      '&actief=eq.true&select=naam,prijs,duur_min';
+    var restHeaders = { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY };
+
+    salonContextPromise = Promise.all([
+      fetch(salonUrl, { headers: restHeaders }).then(function(r){ return r.json(); }),
+      fetch(dienstenUrl, { headers: restHeaders }).then(function(r){ return r.json(); })
+    ]).then(function(results){
+      var salon = (results[0] && results[0][0]) || {};
+      var diensten = results[1] || [];
+      salonContext = {
+        salon_naam: salon.naam || null,
+        adres: salon.adres || null,
+        stad: salon.stad || null,
+        telefoon: salon.telefoon || null,
+        type_bedrijf: salon.type_bedrijf || null,
+        openingstijden: salon.openingstijden || null,
+        diensten: diensten,
+        annuleer_cutoff_uren: salon.annuleer_cutoff_uren || null
+      };
+      return salonContext;
+    }).catch(function(){
+      salonContext = {};
+      return salonContext;
+    });
+    return salonContextPromise;
+  }
+
+  function switchTab(name){
+    tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab') === name); });
+    boekPane.classList.toggle('active', name === 'boeken');
+    boekPane.style.display = name === 'boeken' ? 'flex' : 'none';
+    kaiPane.classList.toggle('active', name === 'kai');
+    if(name === 'kai' && !chatStarted){
+      chatStarted = true;
+      addChatBubble('bot', 'Hoi! Ik ben Kai. Vraag me gerust naar openingstijden, diensten of prijzen bij deze salon.');
+      chatInput.focus();
+      haalSalonContext(); // vast op de achtergrond laden, voordat de eerste vraag gesteld wordt
+    }
+  }
+  tabs.forEach(function(t){
+    t.addEventListener('click', function(){ switchTab(t.getAttribute('data-tab')); });
+  });
+
+  function addChatBubble(role, text){
+    var b = document.createElement('div');
+    b.className = 'kw-chat-bubble ' + (role === 'user' ? 'user' : 'bot');
+    b.textContent = text;
+    chatMsgs.appendChild(b);
+    chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    return b;
+  }
+
+  function sendChatMessage(){
+    var vraag = chatInput.value.trim();
+    if(!vraag || chatBusy) return;
+    chatInput.value = '';
+    addChatBubble('user', vraag);
+    chatBusy = true;
+    chatSend.disabled = true;
+    var loadingBubble = addChatBubble('bot', '...');
+
+    haalSalonContext().then(function(ctx){
+      return fetch(AI_WORKER_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          vraag: vraag,
+          salon_naam: ctx.salon_naam,
+          adres: ctx.adres,
+          stad: ctx.stad,
+          telefoon: ctx.telefoon,
+          type_bedrijf: ctx.type_bedrijf,
+          openingstijden: ctx.openingstijden,
+          diensten: ctx.diensten,
+          annuleer_cutoff_uren: ctx.annuleer_cutoff_uren
+        })
+      });
+    }).then(function(r){
+      if(!r.ok) throw new Error('bad status');
+      return r.json();
+    }).then(function(data){
+      loadingBubble.textContent = data.antwoord || 'Sorry, daar kan ik nu geen antwoord op geven. Neem contact op met de salon.';
+    }).catch(function(){
+      loadingBubble.textContent = 'Kai is even niet bereikbaar. Neem gerust rechtstreeks contact op met de salon, of maak direct een afspraak via het tabblad "Afspraak maken".';
+    }).finally(function(){
+      chatBusy = false;
+      chatSend.disabled = false;
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    });
+  }
+  chatSend.addEventListener('click', sendChatMessage);
+  chatInput.addEventListener('keydown', function(e){
+    if(e.key === 'Enter') sendChatMessage();
+  });
 
   function openWidget(){
     if(!iframeLoaded){
       var iframe = document.createElement('iframe');
       iframe.src = BASE_URL + '/boeken/?salon=' + encodeURIComponent(SALON_ID) + '&embed=1';
       iframe.setAttribute('title', 'Afspraak maken');
-      body.appendChild(iframe);
+      iframe.style.width = '100%';
+      iframe.style.height = '100%';
+      iframe.style.border = 'none';
+      boekPane.appendChild(iframe);
       iframeLoaded = true;
     }
     panel.classList.add('open');

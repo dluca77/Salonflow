@@ -52,7 +52,22 @@ create policy "stempel_codes_update_own_salon" on klant_stempel_codes
     salon_id in (select id from salons where owner_id = auth.uid())
   );
 
--- 4) RPC: stempelstatus opvragen (en zo nodig een nieuwe code aanmaken) ---
+-- 4a) Rate-limiting voor de publieke lookup hieronder ----------------------
+-- Zonder dit kan iemand die klant-e-mailadressen kent/raadt onbeperkt
+-- stempelkaarten + beloningscodes van andere klanten opvragen (IDOR-achtig
+-- misbruik van een geraden e-mailadres als enige 'credential'). Dit beperkt
+-- het aantal opvragingen per salon+e-mail per uur.
+create table if not exists stempelkaart_lookup_pogingen (
+  id bigint generated always as identity primary key,
+  salon_id uuid not null,
+  email text not null,
+  poging_op timestamptz not null default now()
+);
+
+create index if not exists stempelkaart_lookup_pogingen_idx
+  on stempelkaart_lookup_pogingen(salon_id, email, poging_op);
+
+-- 4b) RPC: stempelstatus opvragen (en zo nodig een nieuwe code aanmaken) ---
 -- SECURITY DEFINER omdat dit ook publiek aanroepbaar moet zijn vanaf de
 -- klant-facing stempelkaart.html (net als get_afspraak_via_token) --
 -- geeft alleen het strikt noodzakelijke terug, geen brede tabeltoegang.
@@ -75,7 +90,23 @@ declare
   v_ingewisseld_cycli integer;
   v_huidig integer;
   v_code text;
+  v_pogingen integer;
 begin
+  -- Rate limit: max 5 opvragingen per salon+e-mail per uur. Voorkomt
+  -- geautomatiseerd aftasten van beloningscodes met geraden e-mailadressen.
+  delete from stempelkaart_lookup_pogingen where poging_op < now() - interval '1 day';
+
+  select count(*) into v_pogingen
+  from stempelkaart_lookup_pogingen
+  where salon_id = p_salon_id and lower(email) = lower(p_email)
+    and poging_op > now() - interval '1 hour';
+
+  if v_pogingen >= 5 then
+    raise exception 'Te veel pogingen, probeer het over een uur opnieuw';
+  end if;
+
+  insert into stempelkaart_lookup_pogingen (salon_id, email) values (p_salon_id, lower(p_email));
+
   select s.stempel_aantal_nodig, s.stempel_beloning
     into v_nodig, v_beloning
   from salons s

@@ -890,17 +890,26 @@ async function berekenBeschikbareSlots(datum){
   // afspraken (terecht, want die tabel bevat klantgegevens), maar deze
   // functie geeft alleen tijd/duur/medewerker terug, geen namen of
   // contactgegevens, dus is veilig voor de publieke boekingswidget.
-  const{data,error:queryError}=await sb.rpc('get_bezette_tijden',{
-    p_salon_id:SALON_ID,
-    p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
-    p_datum_start:dagStart.toISOString(),
-    p_datum_eind:dagEind.toISOString()
-  });
+  const[{data,error:queryError},verlofResult]=await Promise.all([
+    sb.rpc('get_bezette_tijden',{
+      p_salon_id:SALON_ID,
+      p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+      p_datum_start:dagStart.toISOString(),
+      p_datum_eind:dagEind.toISOString()
+    }),
+    sb.rpc('get_verlof_op_datum',{p_salon_id:SALON_ID,p_datum:datum.toISOString().slice(0,10)})
+  ]);
   window.__laatsteBeschikbaarheidQueryFout = queryError || null;
   if(queryError){
     console.error('Kon bestaande afspraken niet ophalen voor beschikbaarheidscheck:', queryError);
   }
+  if(verlofResult.error){
+    console.error('Kon verlof niet ophalen voor beschikbaarheidscheck:', verlofResult.error);
+  }
   const bestaandeAfspraken=data||[];
+  // Medewerkers met goedgekeurd verlof/ziekte op deze dag: behandel als
+  // volledig bezet, zodat de online boekingswidget ze niet meer aanbiedt.
+  const medewerkersMetVerlof=new Set((verlofResult.data||[]).map(v=>v.medewerker_id));
   const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
 
   const duurBenodigd=state.duur||30;
@@ -910,6 +919,7 @@ async function berekenBeschikbareSlots(datum){
   // Overlapt deze specifieke medewerker (of 'geen medewerker toegewezen',
   // voor bloktijden e.d.) met het voorgestelde tijdslot?
   function medewerkerOverlapt(medewerkerId, slotStart, slotEind){
+    if(medewerkersMetVerlof.has(medewerkerId)) return true;
     return bestaandeAfspraken.some(a=>{
       if(a.medewerker_id!==medewerkerId) return false;
       const aStart=new Date(a.datum_tijd);
@@ -959,16 +969,21 @@ async function vindBeschikbareMedewerker(dt, duurMin){
   const dagStart=new Date(dt);dagStart.setHours(0,0,0,0);
   const dagEind=new Date(dt);dagEind.setHours(23,59,59,999);
 
-  const{data}=await sb.rpc('get_bezette_tijden',{
-    p_salon_id:SALON_ID,
-    p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
-    p_datum_start:dagStart.toISOString(),
-    p_datum_eind:dagEind.toISOString()
-  });
+  const[{data},verlofResult]=await Promise.all([
+    sb.rpc('get_bezette_tijden',{
+      p_salon_id:SALON_ID,
+      p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+      p_datum_start:dagStart.toISOString(),
+      p_datum_eind:dagEind.toISOString()
+    }),
+    sb.rpc('get_verlof_op_datum',{p_salon_id:SALON_ID,p_datum:dt.toISOString().slice(0,10)})
+  ]);
   const bestaandeAfspraken=data||[];
+  const medewerkersMetVerlof=new Set((verlofResult.data||[]).map(v=>v.medewerker_id));
   const slotEind=new Date(dt.getTime()+duurMin*60000);
 
   for(const medewerkerId of alleMedewerkerIds){
+    if(medewerkersMetVerlof.has(medewerkerId)) continue;
     const overlapt=bestaandeAfspraken.some(a=>{
       if(a.medewerker_id!==medewerkerId) return false;
       const aStart=new Date(a.datum_tijd);

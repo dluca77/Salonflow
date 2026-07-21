@@ -370,7 +370,7 @@ async function loadData(){
     grid.innerHTML=`<div class="svc-loading">Nog geen diensten.<br><a href="/diensten/" style="color:var(--gd);text-decoration:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Diensten toevoegen →</a></div>`;
   } else {
     grid.innerHTML=allDiensten.map(d=>`
-      <div class="svc" onclick="add('${jsAttr(d.naam)}',${d.prijs},'dienst',${d.prijs_incl_btw!==false})">
+      <div class="svc" onclick="add('${jsAttr(d.naam)}',${d.prijs},'dienst',${d.prijs_incl_btw!==false},'${d.id}')">
         <div class="svc-name">${escapeHtml(d.naam)}</div>
         <div class="svc-prijs">€${d.prijs}</div>
         <div class="svc-dur">${d.duur_min} min</div>
@@ -428,7 +428,7 @@ function medewerkerInit(id){
 let cadeaubonActief=null; // {id, code, saldo, bedrag_te_gebruiken}
 let cbBedragGekozen=0;
 
-function add(naam,prijs,type,inclBtw=true){
+function add(naam,prijs,type,inclBtw=true,dienstId=null){
   if(!huidigeMedewerkerId){
     document.getElementById('med-warn').style.display='block';
     document.getElementById('med-select').focus();
@@ -436,7 +436,7 @@ function add(naam,prijs,type,inclBtw=true){
   }
   const e=bon.find(i=>i.naam===naam && i.medewerker_id===huidigeMedewerkerId && i.type===type);
   if(e){e.qty++;e.total+=prijs;}
-  else bon.push({naam,prijs,qty:1,total:prijs,type:type||'dienst',inclBtw,medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId)});
+  else bon.push({naam,prijs,qty:1,total:prijs,type:type||'dienst',inclBtw,dienst_id:dienstId,medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId)});
   renderBon();
 }
 
@@ -633,36 +633,39 @@ async function betaal(){
   const btn=document.getElementById('btn-pay');
   btn.disabled=true;btn.textContent='Verwerken...';
 
-  const {data:betaling,error:betErr}=await sb.from('betalingen').insert({
-    salon_id:SALON_ID,bedrag:t.totaal,methode:methodeOpslaan,status:'betaald',
-    afspraak_id:huidigeAfspraakId||null,
-    cadeaubon_code:cadeaubonActief?cadeaubonActief.code:null,
-    cadeaubon_bedrag_gebruikt:cadeaubonActief?t.cbGebruikt:null,
-    locatie_id:HUIDIGE_LOCATIE_ID||null
-  }).select().single();
+  // Alle schrijfacties lopen via 1 server-side RPC (verwerk_kassa_betaling)
+  // die dienstprijzen zelf opnieuw opzoekt in `diensten` i.p.v. het
+  // clientbedrag te vertrouwen, en de betaling/verkoop-regels/cadeaubon-
+  // mutaties atomisch verwerkt. Zie db/2026-07-kassa-server-side-migratie.sql.
+  const items=bon.filter(i=>i.type!=='cadeaubon_verkoop').map(i=>({
+    dienst_id:i.dienst_id||null,
+    naam:i.naam,
+    type:i.type||'dienst',
+    prijs:i.prijs,
+    aantal:i.qty,
+    medewerker_id:i.medewerker_id||null
+  }));
+  const nieuweCadeaubonnen=bon.filter(i=>i.type==='cadeaubon_verkoop').map(cb=>({
+    bedrag:cb.total,
+    koper_naam:cb.cb_koper_naam||null,
+    koper_email:cb.cb_koper_email||null
+  }));
 
-  const nieuweCadeaubonCodes=[];
+  const{data:rpcData,error:rpcErr}=await sb.rpc('verwerk_kassa_betaling',{
+    p_salon_id:SALON_ID,
+    p_locatie_id:HUIDIGE_LOCATIE_ID||null,
+    p_methode:methodeOpslaan,
+    p_afspraak_id:huidigeAfspraakId||null,
+    p_items:items,
+    p_cadeaubon_code_gebruikt:cadeaubonActief?cadeaubonActief.code:null,
+    p_cadeaubon_bedrag_gebruikt:cadeaubonActief?t.cbGebruikt:null,
+    p_nieuwe_cadeaubonnen:nieuweCadeaubonnen
+  });
 
-  if(!betErr && betaling){
-    const items=bon.map(i=>({
-      salon_id:SALON_ID,
-      betaling_id:betaling.id,
-      medewerker_id:i.medewerker_id||null,
-      naam:i.naam,
-      type:i.type||'dienst',
-      prijs:i.prijs,
-      aantal:i.qty,
-      totaal:i.total,
-      locatie_id:HUIDIGE_LOCATIE_ID||null
-    }));
-    const{error:itemsErr}=await sb.from('verkoop_items').insert(items);
-    if(itemsErr) console.warn('Kon verkoop-regels niet opslaan (commissie klopt dan niet voor deze bon):',itemsErr);
+  const betaling=rpcData&&rpcData[0]?{id:rpcData[0].betaling_id}:null;
+  const nieuweCadeaubonCodes=rpcData&&rpcData[0]?(rpcData[0].nieuwe_codes||[]):[];
 
-    if(huidigeAfspraakId){
-      const{error:aptErr}=await sb.from('afspraken').update({status:'afgerond'}).eq('id',huidigeAfspraakId);
-      if(aptErr) console.warn('Kon afspraak niet op afgerond zetten:',aptErr);
-    }
-
+  if(!rpcErr && betaling){
     // Boekhoudkoppeling: op de achtergrond synchroniseren, blokkeert de
     // kassa niet en laat de bon nooit mislukken als dit faalt -- eventuele
     // fouten worden zichtbaar in instellingen (boekhouding_laatste_sync_fout).
@@ -673,31 +676,11 @@ async function betaal(){
         body:JSON.stringify({salon_id:SALON_ID, betaling_id:betaling.id})
       }).catch(e=>console.warn('Moneybird-synchronisatie kon niet gestart worden:',e));
     }
-
-    // Nieuwe cadeaubon(nen) aanmaken -- pas NA succesvolle betaling, zodat
-    // er nooit een onbetaalde cadeaubon actief kan worden.
-    const cbVerkopen=bon.filter(i=>i.type==='cadeaubon_verkoop');
-    for(const cb of cbVerkopen){
-      const code=genereerCbCode();
-      const{error:cbErr}=await sb.from('cadeaubonnen').insert({
-        salon_id:SALON_ID,code,bedrag_origineel:cb.total,resterend_bedrag:cb.total,
-        gekocht_door_naam:cb.cb_koper_naam||null,gekocht_door_email:cb.cb_koper_email||null
-      });
-      if(!cbErr) nieuweCadeaubonCodes.push({code,bedrag:cb.total});
-      else console.warn('Kon cadeaubon niet aanmaken:',cbErr);
-    }
-
-    // Gebruikte cadeaubon (inwisselen) afschrijven
-    if(cadeaubonActief){
-      const nieuwSaldo=Math.max(0,cadeaubonActief.saldo-t.cbGebruikt);
-      const{error:cbUpdateErr}=await sb.from('cadeaubonnen').update({
-        resterend_bedrag:nieuwSaldo,
-        status:nieuwSaldo<=0?'ingewisseld':'actief'
-      }).eq('id',cadeaubonActief.id);
-      if(cbUpdateErr) console.warn('Kon cadeaubon-saldo niet bijwerken:',cbUpdateErr);
-    }
-  } else if(betErr){
-    console.warn('Kon betaling niet opslaan:',betErr);
+  } else if(rpcErr){
+    console.warn('Kon betaling niet verwerken:',rpcErr);
+    btn.disabled=false;btn.textContent='Afrekenen';
+    alert('Kon de betaling niet verwerken: '+(rpcErr.message||'onbekende fout')+'. Er is niets afgeschreven.');
+    return;
   }
 
   btn.disabled=false;btn.textContent='Afrekenen';
