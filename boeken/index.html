@@ -373,7 +373,7 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,gebruikt_abonnement_id:null};
+let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null};
 
 function berekenAanbetalingBedrag(prijs,type,bedrag){
   if(type==='percentage') return Math.round(prijs*bedrag/100*100)/100;
@@ -645,6 +645,7 @@ function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
   state.aanb_bedrag = state.aanb_type ? berekenAanbetalingBedrag(prijs,aanbType,aanbBedrag) : 0;
   state.vereist_kaart = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
   state.gebruikt_abonnement_id = null;
+  state.gebruikt_abonnement_email = null;
   document.getElementById('sum-dienst').textContent=naam;
   document.getElementById('sum-prijs').textContent='€'+prijs;
   document.getElementById('sum-duur').textContent=duur+' min';
@@ -687,6 +688,7 @@ async function checkAbonnementTegoed(){
   }
 
   state.gebruikt_abonnement_id=info.abonnement_id;
+  state.gebruikt_abonnement_email=email;
   document.getElementById('abo-panel-check').style.display='none';
   document.getElementById('abo-panel-gevonden').style.display='block';
   document.getElementById('abo-credits-tekst').textContent=info.credits_resterend+'x';
@@ -696,6 +698,7 @@ async function checkAbonnementTegoed(){
 
 function verwijderAbonnementGebruik(){
   state.gebruikt_abonnement_id=null;
+  state.gebruikt_abonnement_email=null;
   document.getElementById('abo-panel-check').style.display='block';
   document.getElementById('abo-panel-gevonden').style.display='none';
   document.getElementById('sum-prijs').textContent='€'+state.prijs;
@@ -1170,7 +1173,7 @@ async function bevestigen(){
   // gelijktijdige boekingen hetzelfde laatste tegoed dubbel gebruiken) --
   // pas als dat lukt, de afspraak aanmaken met de koppeling erbij.
   if(state.gebruikt_abonnement_id){
-    const{data:gelukt,error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id});
+    const{data:gelukt,error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id,p_email:state.gebruikt_abonnement_email});
     if(credErr || !gelukt){
       state.gebruikt_abonnement_id=null;
       btn.disabled=false;btn.textContent='Afspraak bevestigen';
