@@ -199,12 +199,17 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
     </div>
 
     <!-- PRE-LAUNCH: registreren nog niet mogelijk -->
-    <div class="form-section" id="sectie-prelaunch" style="text-align:center;padding:8px 0 4px;">
-      <p style="font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:24px;">
+    <div class="form-section" id="sectie-prelaunch" style="padding:8px 0 4px;">
+      <p style="font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:22px;text-align:center;">
         Kronr is bijna klaar, maar nog niet volledig live — nieuwe accounts kunnen we
-        nog niet aanmaken. Schrijf je in en we laten je weten zodra het zover is.
+        nog niet aanmaken. Laat je e-mailadres achter en we laten je weten zodra het zover is.
       </p>
-      <a href="/#notify-form" class="btn-main" style="text-decoration:none;display:inline-flex;">Blijf op de hoogte →</a>
+      <div class="frow">
+        <label class="flabel">E-mailadres</label>
+        <input class="finput" type="email" id="prelaunch-email" placeholder="jij@bedrijf.nl" autocomplete="email">
+      </div>
+      <button class="btn-main" id="btn-prelaunch" onclick="schrijfInPrelaunch()">Blijf op de hoogte</button>
+      <p id="prelaunch-msg" style="display:none;font-size:13px;margin-top:12px;text-align:center;"></p>
     </div>
 
     <!-- REGISTREREN -->
@@ -508,6 +513,43 @@ async function registreer() {
   leegMsg();
 }
 
+// ── PRE-LAUNCH: interesse-inschrijving ──
+const PRELAUNCH_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+async function schrijfInPrelaunch() {
+  const input = document.getElementById('prelaunch-email');
+  const btn = document.getElementById('btn-prelaunch');
+  const msg = document.getElementById('prelaunch-msg');
+  const email = input.value.trim();
+
+  msg.style.display = 'none';
+
+  if (!PRELAUNCH_EMAIL_REGEX.test(email)) {
+    msg.textContent = 'Vul een geldig e-mailadres in.';
+    msg.style.color = 'var(--red)';
+    msg.style.display = 'block';
+    return;
+  }
+
+  btn.disabled = true; btn.textContent = 'Bezig...';
+  const { error } = await sb.from('launch_interesse').insert({ email: email.toLowerCase() });
+  btn.disabled = false; btn.textContent = 'Blijf op de hoogte';
+
+  if (error) {
+    if (error.code === '23505') {
+      msg.textContent = 'Dit e-mailadres staat al ingeschreven!';
+      msg.style.color = 'var(--green)';
+    } else {
+      msg.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
+      msg.style.color = 'var(--red)';
+    }
+  } else {
+    msg.textContent = 'Bedankt! We laten het je weten zodra we live gaan.';
+    msg.style.color = 'var(--green)';
+    input.value = '';
+  }
+  msg.style.display = 'block';
+}
+
 // ── GOOGLE ──
 async function loginGoogle() {
   // Google-inloggen maakt bij Supabase automatisch een nieuw account aan
@@ -536,6 +578,7 @@ async function resetWw(e) {
 document.addEventListener('keydown', e => {
   if (e.key !== 'Enter') return;
   if (document.getElementById('sectie-login').classList.contains('visible')) login();
+  else if (PRE_LAUNCH) schrijfInPrelaunch();
   else registreer();
 });
 
