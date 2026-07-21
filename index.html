@@ -156,12 +156,12 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 }
 
 /* ── STATS BAR ── */
-.stats-bar{background:var(--ink);padding:32px 24px;}
-.stats-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.08);}
+.stats-bar{padding:60px 24px;}
+.stats-inner{max-width:1200px;margin:0 auto;border-radius:16px;overflow:hidden;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.12);}
 .stat-item{padding:28px 32px;background:var(--ink);text-align:center;}
-.stat-num{font-family:'Inter',sans-serif;font-size:40px;font-weight:700;color:var(--white);line-height:1;letter-spacing:-1px;}
+.stat-num{font-family:'Inter',sans-serif;font-size:32px;font-weight:700;color:var(--white);line-height:1;letter-spacing:-1px;}
 .stat-num span{color:var(--gd);font-weight:400;}
-.stat-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.4);margin-top:8px;font-weight:500;}
+.stat-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);margin-top:8px;font-weight:500;}
 
 /* ── SECTIONS ── */
 .section{padding:100px 24px;}
@@ -179,10 +179,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
     radial-gradient(circle at 105% 115%, rgba(140,109,63,0.24) 0%, transparent 45%),
     var(--iv);
 }
-.vw-watermark-text{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-family:'Playfair Display',serif;font-weight:700;font-size:min(22vw,340px);color:var(--gd);opacity:0.05;white-space:nowrap;pointer-events:none;z-index:0;user-select:none;}
 .vw-watermark-kai{position:absolute;bottom:-8%;right:1%;width:340px;height:340px;object-fit:contain;opacity:0.08;pointer-events:none;z-index:0;max-width:30%;}
 @media(max-width:768px){
-  .vw-watermark-text{font-size:min(30vw,220px);}
   .vw-watermark-kai{width:200px;height:200px;bottom:-6%;right:1%;max-width:45%;}
 }
 .voor-wie.vw-glow-visible::before,.voor-wie.vw-glow-visible::after{opacity:1;}
@@ -198,7 +196,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .vw-pill{appearance:none;background:var(--white);border:1px solid var(--bd);border-radius:99px;padding:12px 24px;font-family:inherit;font-size:14.5px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;opacity:0;transform:translateY(10px);}
 .vw-pills.vw-visible .vw-pill{opacity:1;transform:translateY(0);}
 .vw-pill:hover{border-color:var(--gd);color:var(--ink);}
-.vw-pill.active{background:var(--gd);border-color:var(--gd);color:var(--white);}
+.vw-pill.active{background:var(--ink);border-color:var(--ink);color:var(--white);}
 
 .vw-layout{margin-top:0;max-height:0;overflow:hidden;opacity:0;transform:translateY(14px);transition:max-height .55s ease,opacity .45s ease,transform .45s ease,margin-top .55s ease;}
 .vw-layout.vw-visible{max-height:900px;opacity:1;transform:translateY(0);margin-top:28px;}
@@ -225,7 +223,7 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
   .vw-kai-intro-bubble{font-size:14px;padding:13px 16px;}
   .vw-pills{gap:8px;margin-top:24px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;-webkit-mask-image:linear-gradient(to right,transparent 0,black 20px,black calc(100% - 32px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,black 20px,black calc(100% - 32px),transparent 100%);}
   .vw-pills::-webkit-scrollbar{display:none;}
-  .vw-pill{padding:10px 16px;font-size:13px;flex-shrink:0;white-space:nowrap;}
+  .vw-pill{padding:12px 20px;font-size:15px;flex-shrink:0;white-space:nowrap;}
   .vw-panel{grid-template-columns:1fr;padding:28px 22px;gap:24px;border-radius:14px;}
   .vw-panel-visual{min-height:280px;padding:20px;}
 }
@@ -449,7 +447,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-desc{font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:260px;}
 .footer-col-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:16px;font-weight:600;}
 .footer-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
-.footer-links a{font-size:14px;color:rgba(255,255,255,.5);text-decoration:none;transition:color .2s;}
+.footer-links a{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6;text-decoration:none;transition:color .2s;}
 .footer-links a:hover{color:var(--white);}
 .footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;align-items:center;justify-content:space-between;}
 .footer-copy{font-size:13px;color:rgba(255,255,255,.3);}
@@ -719,7 +717,6 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 
 <!-- VOOR WIE -->
 <section class="section voor-wie" id="voor-wie">
-  <div class="vw-watermark-text">Kronr.</div>
   <img src="images/kai-mascotte.png" alt="" class="vw-watermark-kai">
   <div class="section-inner">
     <div class="section-label">Voor wie is Kronr?</div>
