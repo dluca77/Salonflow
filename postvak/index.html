@@ -7,76 +7,115 @@
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{--ink:#0f0d0b;--mu:#6b6058;--mu2:#a09890;--iv:#faf8f4;--bd:#e2d9ce;--gd:#8c6d3f;--wh:#ffffff;--red:#c0392b;--green:#2d6a4f;}
-html[data-thema="donker"]{--ink:#f2ede6;--mu:#a89e93;--mu2:#7a7168;--iv:#231f1c;--bd:#3a352f;--gd:#c9a876;--wh:#1a1613;--red:#e57373;--green:#6fbf8f;}
-html{transition:background .2s;}
-body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacity:0;transition:opacity .2s,background .2s,color .2s;}
-.topbar{min-height:60px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;padding:10px 24px;position:sticky;top:0;z-index:10;flex-wrap:wrap;gap:10px;row-gap:8px;transition:background .2s,border-color .2s;}
-@media(max-width:800px){
-  .topbar{padding:10px 14px;}
-  .topbar .tabs{display:none;}
-  .hamburger-btn{display:flex !important;}
-  .logo{display:none;}
-  .mobiel-folder-titel{display:block !important;}
+:root{
+  --sidebar-bg:#1C1917; --sidebar-text:#F3EEE3; --sidebar-mu:#A69C8E; --sidebar-hover:rgba(255,255,255,.08); --sidebar-active:rgba(255,255,255,.1);
+  --content-bg:#F3EEE3; --list-bg:#FBF8F2; --wh:#ffffff;
+  --accent:#C9A876; --ink:#1C1917; --mu:#8b8177; --mu2:#A69C8E;
+  --bd:#E2D9C6; --bd2:#EFE6D6;
+  --red:#c0392b; --green:#2d6a4f;
 }
-.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;color:var(--ink);}
-.logo em{color:var(--gd);font-style:normal;}
-.mobiel-folder-titel{display:none;font-family:'Playfair Display',serif;font-size:17px;font-weight:800;color:var(--ink);}
-.uitloggen{font-size:13px;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;transition:color .15s;}
+html[data-thema="donker"]{
+  --content-bg:#17140f; --list-bg:#1f1a15; --wh:#241f19;
+  --ink:#f2ede6; --mu:#a89e93; --mu2:#7a7168;
+  --bd:#332c24; --bd2:#2a241d;
+  --red:#e57373; --green:#6fbf8f;
+}
+html,body{height:100%;}
+html{transition:background .2s;}
+body{font-family:'Inter',sans-serif;background:var(--content-bg);overflow:hidden;opacity:0;transition:opacity .2s,background .2s,color .2s;}
+.app{display:flex;height:100vh;}
+
+/* ── Sidebar (altijd donker, ongeacht licht/donker-modus) ── */
+.sidebar{width:200px;flex:0 0 200px;background:var(--sidebar-bg);color:var(--sidebar-text);display:flex;flex-direction:column;padding:24px 16px;gap:26px;}
+.sidebar-logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:800;padding:0 8px;}
+.sidebar-logo em{color:var(--accent);font-style:normal;}
+.sidebar-nav{display:flex;flex-direction:column;gap:4px;}
+.sidebar-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:8px;font-size:14px;cursor:pointer;color:var(--sidebar-mu);text-decoration:none;background:none;border:none;font-family:inherit;transition:background .15s,color .15s;}
+.sidebar-item:hover{background:var(--sidebar-hover);color:var(--sidebar-text);}
+.sidebar-item.actief{background:var(--sidebar-active);color:var(--sidebar-text);font-weight:600;}
+.sidebar-badge{background:var(--accent);color:#1C1917;font-size:11px;font-weight:700;border-radius:10px;padding:2px 8px;display:none;}
+.sidebar-badge.on{display:inline-block;}
+.sidebar-bottom{margin-top:auto;display:flex;flex-direction:column;gap:2px;}
+.sidebar-bottom .sidebar-item{font-size:13px;}
+
+/* ── Icoon/tekst-knoppen ── */
 .icon-btn{background:none;border:none;cursor:pointer;color:var(--mu);padding:6px;border-radius:8px;display:flex;align-items:center;transition:background .15s,color .15s;}
-.icon-btn:hover{background:var(--iv);color:var(--ink);}
-.hamburger-btn{display:none;}
-.brand-wrap{display:flex;align-items:center;gap:8px;position:relative;}
-.folder-menu{display:none;position:absolute;top:calc(100% + 10px);left:0;background:var(--wh);border:1px solid var(--bd);border-radius:12px;box-shadow:0 14px 34px rgba(15,13,11,.14);padding:6px;min-width:230px;z-index:60;transition:background .2s,border-color .2s;}
-.folder-menu.open{display:block;}
-.folder-menu-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:8px;cursor:pointer;font-size:13.5px;font-weight:600;color:var(--mu);transition:background .15s,color .15s;}
-.folder-menu-item svg{flex-shrink:0;}
-.folder-menu-item:hover{background:var(--iv);}
-.folder-menu-item.actief{background:var(--iv);color:var(--gd);}
-.tab-knop{font-size:13px;font-weight:600;color:var(--mu);cursor:pointer;background:none;border:none;font-family:inherit;padding:8px 14px;border-radius:8px;transition:background .15s,color .15s;}
-.tab-knop.actief{background:var(--iv);color:var(--ink);}
-.tab-knop:hover:not(.actief){background:var(--iv);}
-.layout{display:grid;grid-template-columns:340px 1fr;max-width:1200px;margin:0 auto;min-height:calc(100vh - 60px);}
-.lijst{border-right:1px solid var(--bd);background:var(--wh);overflow-y:auto;transition:background .2s,border-color .2s;}
-.zoek-wrap{display:flex;align-items:center;gap:10px;padding:12px 16px;border-bottom:1px solid var(--bd);}
-.select-alle-cb{width:18px;height:18px;flex-shrink:0;cursor:pointer;accent-color:var(--gd);}
-.zoek-input-wrap{position:relative;flex:1;min-width:0;}
-.zoek-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mu2);pointer-events:none;}
-.zoek-input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--bd);border-radius:10px;font-size:13px;font-family:inherit;background:var(--iv);color:var(--ink);transition:background .2s,border-color .2s;}
-.lijst-item{display:flex;gap:10px;align-items:flex-start;padding:14px 20px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .15s;animation:fadeIn .25s ease both;}
-.lijst-item:hover{background:var(--iv);}
-.lijst-item.actief{background:var(--iv);border-left:3px solid var(--gd);}
-.li-check{flex-shrink:0;width:16px;height:16px;margin-top:5px;cursor:pointer;accent-color:var(--gd);}
-.li-dot{width:7px;height:7px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:7px;visibility:hidden;}
-.lijst-item.ongelezen .li-dot{visibility:visible;}
+.icon-btn:hover{background:var(--bd2);color:var(--ink);}
+.btn-dark{background:var(--sidebar-bg);color:var(--sidebar-text);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:10px 16px;transition:opacity .15s;}
+.btn-dark:hover{opacity:.88;}
+.btn-dark:disabled{opacity:.5;cursor:default;}
+.btn-licht{background:var(--wh);color:var(--ink);border:1px solid var(--bd);border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:10px 16px;transition:background .15s;}
+.btn-licht:hover{background:var(--bd2);}
+
+/* ── Middenkolom: mailclient (lijst + leespaneel) ── */
+.mailclient{display:flex;flex:1;min-width:0;}
+.lijst-panel{width:360px;flex:0 0 360px;border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--list-bg);transition:background .2s,border-color .2s;}
+.lijst-header{padding:20px 20px 14px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--bd);}
+.lijst-header-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.lijst-titel{font-size:17px;font-weight:700;color:var(--ink);}
+.btn-nieuw-mobiel{display:none;width:32px;height:32px;border-radius:50%;background:var(--sidebar-bg);color:var(--sidebar-text);border:none;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0;}
+.zoek-input-wrap{position:relative;}
+.zoek-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--mu);pointer-events:none;}
+.zoek-input{width:100%;padding:9px 12px 9px 32px;border:1px solid var(--bd);border-radius:10px;font-size:13px;font-family:inherit;background:var(--wh);color:var(--ink);transition:background .2s,border-color .2s;}
+.chips-rij{display:none;gap:8px;overflow-x:auto;padding-bottom:2px;}
+.chip{flex:0 0 auto;font-size:13px;font-weight:600;background:var(--wh);color:var(--mu);border:1px solid var(--bd);border-radius:16px;padding:6px 14px;white-space:nowrap;cursor:pointer;transition:background .15s,color .15s;}
+.chip.actief{background:var(--sidebar-bg);color:var(--sidebar-text);border-color:var(--sidebar-bg);}
+.alles-select-rij{display:flex;align-items:center;gap:10px;}
+.alles-select-rij span{font-size:13px;color:var(--mu2);}
+.cb-custom{appearance:none;-webkit-appearance:none;width:18px;height:18px;border-radius:4px;border:1.5px solid var(--accent);background:var(--wh);cursor:pointer;flex-shrink:0;position:relative;margin:0;transition:background .15s,border-color .15s;}
+.cb-custom:checked{background:var(--sidebar-bg);border-color:var(--sidebar-bg);}
+.cb-custom:checked::after{content:'';position:absolute;left:5px;top:1px;width:5px;height:9px;border:solid #F3EEE3;border-width:0 2px 2px 0;transform:rotate(45deg);}
+.cb-custom:indeterminate{background:var(--sidebar-bg);border-color:var(--sidebar-bg);}
+.cb-custom:indeterminate::after{content:'';position:absolute;left:3px;top:7px;width:10px;height:2px;background:#F3EEE3;}
+.bulk-bar{display:none;align-items:center;gap:10px;background:var(--sidebar-bg);border-radius:8px;padding:8px 12px;}
+.bulk-bar.on{display:flex;}
+.bulk-bar-count{font-size:13px;color:#F3EEE3;font-weight:600;flex-shrink:0;}
+.bulk-bar-acties{margin-left:auto;display:flex;gap:6px;}
+.bulk-bar-acties button{font-size:12px;color:#F3EEE3;background:rgba(255,255,255,.12);border:none;border-radius:6px;padding:6px 10px;cursor:pointer;font-family:inherit;white-space:nowrap;}
+.bulk-bar-acties button.annuleer{background:none;color:var(--sidebar-mu);}
+
+.lijst-scroll{flex:1;overflow-y:auto;}
+.lijst-item{display:flex;gap:12px;padding:16px 20px;border-bottom:1px solid var(--bd2);cursor:default;transition:background .15s;animation:fadeIn .2s ease both;}
+.lijst-item.actief{background:var(--bd2);}
+.li-open{display:flex;gap:12px;flex:1;min-width:0;cursor:pointer;}
+.li-avatar{width:36px;height:36px;border-radius:50%;flex:0 0 36px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;}
 .li-content{flex:1;min-width:0;}
-.li-top-row{display:flex;justify-content:space-between;align-items:baseline;gap:10px;}
+.li-top-row{display:flex;justify-content:space-between;align-items:baseline;gap:8px;}
 .li-van{font-size:14px;color:var(--ink);min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .lijst-item.ongelezen .li-van{font-weight:700;}
 .li-onderwerp{font-size:13px;color:var(--ink);font-weight:500;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.li-preview{font-size:12.5px;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.li-datum{font-size:11px;color:var(--mu2);flex-shrink:0;}
+.lijst-item.ongelezen .li-onderwerp{font-weight:600;}
+.li-preview{font-size:13px;color:var(--mu);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.li-datum{font-size:12px;color:var(--mu2);flex-shrink:0;}
+.li-dot{width:8px;height:8px;border-radius:50%;background:var(--accent);flex-shrink:0;margin-top:6px;visibility:hidden;}
+.lijst-item.ongelezen .li-dot{visibility:visible;}
 .li-labels{display:flex;gap:4px;margin-top:6px;flex-wrap:wrap;}
 .label-pill{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;}
-.bulk-bar{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:var(--iv);border-bottom:1px solid var(--bd);font-size:13px;color:var(--ink);transition:background .2s,border-color .2s;}
-.bulk-bar button{font-size:12px;padding:6px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-family:inherit;color:var(--ink);transition:background .15s;}
-.bulk-bar button:hover{background:var(--iv);}
-.detail{padding:32px;animation:fadeIn .25s ease both;}
-.detail-leeg{padding:60px 32px;text-align:center;color:var(--mu2);font-size:14px;}
-.detail-onderwerp{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--ink);margin-bottom:8px;}
-.detail-van{font-size:13px;color:var(--mu);margin-bottom:16px;}
-.detail-inhoud{font-size:14.5px;color:var(--ink);line-height:1.7;background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:20px;margin-bottom:24px;transition:background .2s,border-color .2s;}
-.detail-inhoud p{margin:0 0 10px;}
+
+.detail{flex:1;display:flex;flex-direction:column;background:var(--content-bg);min-width:0;transition:background .2s;}
+.detail-scroll{flex:1;overflow-y:auto;}
+.detail-leeg{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mu2);font-size:14px;}
+.detail-terug{display:none;background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;align-items:center;gap:6px;font-family:inherit;padding:14px 20px 0;}
+.detail-head{padding:32px 40px;border-bottom:1px solid var(--bd);}
+.detail-onderwerp{font-size:22px;font-weight:700;color:var(--ink);margin-bottom:16px;line-height:1.3;}
+.detail-van-rij{display:flex;align-items:center;gap:12px;}
+.detail-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;}
+.detail-van-naam{font-size:14px;font-weight:600;color:var(--ink);}
+.detail-van-email{font-size:13px;color:var(--mu);}
+.detail-tijd{margin-left:auto;font-size:13px;color:var(--mu2);flex-shrink:0;}
+.detail-acties-rij{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px;}
+.detail-acties-rij button{font-size:12px;padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-family:inherit;color:var(--ink);transition:background .15s;}
+.detail-acties-rij button:hover{background:var(--bd2);}
+.detail-labels-rij{display:flex;gap:6px;flex-wrap:wrap;margin-top:14px;}
+.detail-body{padding:32px 40px;font-size:15px;line-height:1.7;color:var(--ink);white-space:pre-line;}
+.detail-footer{padding:20px 40px;border-top:1px solid var(--bd);display:flex;gap:10px;flex-wrap:wrap;}
+.reply-box{padding:0 40px 32px;}
 .rt-toolbar{display:flex;gap:4px;margin-bottom:8px;}
 .rt-toolbar button{width:30px;height:30px;border:1px solid var(--bd);background:var(--wh);border-radius:6px;cursor:pointer;font-size:13px;color:var(--ink);transition:background .15s;}
-.rt-toolbar button:hover{background:var(--iv);}
-.rt-editor{width:100%;min-height:140px;border:1px solid var(--bd);border-radius:10px;padding:14px;font-family:inherit;font-size:14px;background:var(--wh);color:var(--ink);overflow-y:auto;transition:background .2s,border-color .2s;}
+.rt-toolbar button:hover{background:var(--bd2);}
+.rt-editor{width:100%;min-height:120px;border:1px solid var(--bd);border-radius:10px;padding:14px;font-family:inherit;font-size:14px;background:var(--wh);color:var(--ink);overflow-y:auto;transition:background .2s,border-color .2s;}
 .rt-editor:empty:before{content:attr(data-placeholder);color:var(--mu2);}
-.rt-editor a{color:var(--gd);}
-.btn-reply{margin-top:10px;padding:11px 22px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;transition:opacity .15s,transform .1s;}
-.btn-reply:hover{opacity:.9;}
-.btn-reply:active{transform:scale(.98);}
-.btn-reply:disabled{opacity:.5;cursor:default;}
+.rt-editor a{color:var(--accent);}
 .reply-msg{font-size:13px;margin-top:10px;display:none;}
 .reply-msg.fout{color:var(--red);}
 .reply-msg.ok{color:var(--green);}
@@ -84,79 +123,118 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
 .sjabloon-select{font-size:12px;padding:7px 10px;border-radius:6px;border:1px solid var(--bd);font-family:inherit;background:var(--wh);color:var(--ink);}
 .label-toggle{font-size:11px;padding:4px 10px;border-radius:20px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-family:inherit;transition:all .15s;}
 .label-toggle.aan{color:var(--wh);}
+
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
-.skel{background:linear-gradient(90deg,var(--bd) 25%,var(--iv) 50%,var(--bd) 75%);background-size:200% 100%;animation:skelPuls 1.4s ease infinite;border-radius:6px;}
+.skel{background:linear-gradient(90deg,var(--bd) 25%,var(--bd2) 50%,var(--bd) 75%);background-size:200% 100%;animation:skelPuls 1.4s ease infinite;border-radius:6px;}
 @keyframes skelPuls{0%{background-position:200% 0;}100%{background-position:-200% 0;}}
-.skel-item{padding:16px 20px;border-bottom:1px solid var(--bd);}
+.skel-item{padding:16px 20px;border-bottom:1px solid var(--bd2);}
 .skel-lijn{height:12px;margin-bottom:8px;}
 #toast-wrap{position:fixed;bottom:20px;right:20px;z-index:200;display:flex;flex-direction:column;gap:10px;}
-.toast{background:var(--ink);color:var(--wh);padding:12px 18px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.15);animation:toastIn .25s ease both;max-width:320px;}
+.toast{background:var(--sidebar-bg);color:var(--sidebar-text);padding:12px 18px;border-radius:10px;font-size:13px;box-shadow:0 8px 24px rgba(0,0,0,.15);animation:toastIn .25s ease both;max-width:320px;}
 .toast.fout{background:var(--red);}
 .toast.ok{background:var(--green);}
 @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.mobiel-menu-btn{display:none;}
+.mobiel-menu{display:none;position:absolute;top:54px;right:14px;background:var(--wh);border:1px solid var(--bd);border-radius:12px;box-shadow:0 14px 34px rgba(15,13,11,.16);padding:6px;min-width:190px;z-index:90;}
+.mobiel-menu.open{display:block;}
+.mobiel-menu-item{display:block;padding:10px 12px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--ink);cursor:pointer;text-decoration:none;background:none;border:none;font-family:inherit;width:100%;text-align:left;}
+.mobiel-menu-item:hover{background:var(--bd2);}
+
 @media(max-width:800px){
-  .layout{grid-template-columns:1fr;}
-  .lijst{display:none;}
-  .lijst.toon-mobiel{display:block;}
+  .sidebar{display:none;}
+  .mailclient{position:relative;}
+  .lijst-panel{width:100%;flex:1;display:none;}
+  .lijst-panel.toon-mobiel{display:flex;}
   .detail{display:none;}
-  .detail.toon-mobiel{display:block;}
+  .detail.toon-mobiel{display:flex;}
+  .detail-terug{display:flex;}
+  .detail-head{padding:20px;}
+  .detail-body{padding:20px;}
+  .detail-footer{padding:16px 20px;}
+  .reply-box{padding:0 20px 24px;}
+  .btn-nieuw-desktop{display:none;}
+  .btn-nieuw-mobiel{display:flex;}
+  .mobiel-menu-btn{display:flex;}
+  .chips-rij{display:flex;}
+  .li-avatar{width:40px;height:40px;flex:0 0 40px;font-size:14px;}
+  .lijst-item{padding:14px 16px;}
 }
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="brand-wrap">
-    <button class="icon-btn hamburger-btn" id="hamburger-btn" onclick="wisselFolderMenu()" title="Mappen" aria-label="Mappen">
-      <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
-    </button>
-    <div class="logo">Kronr<em>.</em></div>
-    <div class="mobiel-folder-titel" id="mobiel-folder-titel">Postvak IN</div>
-    <div class="folder-menu" id="folder-menu">
-      <div class="folder-menu-item actief" id="fm-in" onclick="kiesFolderMenu('in')">
-        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 12h-6l-2 3h-4l-2-3H2"/><path d="M5.45 5.11L2 12v6a2 2 0 002 2h16a2 2 0 002-2v-6l-3.45-6.89A2 2 0 0016.76 4H7.24a2 2 0 00-1.79 1.11z"/></svg>
+<div class="app">
+  <div class="sidebar">
+    <div class="sidebar-logo">Kronr<em>.</em></div>
+    <div class="sidebar-nav">
+      <button class="sidebar-item actief" id="side-in" onclick="wisselTab('in')">
         <span>Postvak IN</span>
+        <span class="sidebar-badge" id="side-badge-in"></span>
+      </button>
+      <button class="sidebar-item" id="side-uit" onclick="wisselTab('uit')"><span>Postvak UIT</span></button>
+      <button class="sidebar-item" id="side-archief" onclick="wisselTab('archief')"><span>Archief</span></button>
+      <a class="sidebar-item" href="/admin/"><span>Beheer</span></a>
+    </div>
+    <div class="sidebar-bottom">
+      <button class="sidebar-item" onclick="toonInstellingen()">Instellingen</button>
+      <button class="sidebar-item" onclick="wisselThema()">Donkere modus</button>
+      <button class="sidebar-item" onclick="uitloggen()">Uitloggen</button>
+    </div>
+  </div>
+
+  <div class="mailclient">
+    <div class="lijst-panel toon-mobiel" id="lijst-panel">
+      <div class="lijst-header">
+        <div class="lijst-header-top">
+          <div class="lijst-titel" id="lijst-titel">Postvak IN</div>
+          <button class="btn-dark btn-nieuw-desktop" onclick="toonNieuwBericht()">+ Nieuw</button>
+          <button class="btn-nieuw-mobiel" onclick="toonNieuwBericht()" title="Nieuw bericht" aria-label="Nieuw bericht">+</button>
+          <button class="icon-btn mobiel-menu-btn" onclick="wisselMobielMenu()" title="Meer" aria-label="Meer">
+            <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+          </button>
+        </div>
+        <div class="zoek-input-wrap">
+          <svg class="zoek-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          <input type="text" class="zoek-input" id="zoek-input" placeholder="Zoeken..." oninput="zetZoekterm(this.value)">
+        </div>
+        <div class="chips-rij" id="chips-rij">
+          <div class="chip actief" id="chip-in" onclick="wisselTab('in')">Postvak IN</div>
+          <div class="chip" id="chip-uit" onclick="wisselTab('uit')">Postvak UIT</div>
+          <div class="chip" id="chip-archief" onclick="wisselTab('archief')">Archief</div>
+        </div>
+        <div class="alles-select-rij" id="alles-select-rij">
+          <input type="checkbox" class="cb-custom" id="select-alle-cb" title="Alles selecteren" onchange="wisselAllesSelecteren(this.checked)">
+          <span>Alles selecteren</span>
+        </div>
+        <div class="bulk-bar" id="bulk-bar"></div>
       </div>
-      <div class="folder-menu-item" id="fm-uit" onclick="kiesFolderMenu('uit')">
-        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
-        <span>Postvak UIT</span>
+      <div class="lijst-scroll" id="lijst">
+        <div class="skel-item"><div class="skel skel-lijn" style="width:60%;"></div><div class="skel skel-lijn" style="width:85%;"></div></div>
+        <div class="skel-item"><div class="skel skel-lijn" style="width:50%;"></div><div class="skel skel-lijn" style="width:75%;"></div></div>
+        <div class="skel-item"><div class="skel skel-lijn" style="width:65%;"></div><div class="skel skel-lijn" style="width:80%;"></div></div>
       </div>
-      <div class="folder-menu-item" id="fm-archief" onclick="kiesFolderMenu('archief')">
-        <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="5" rx="1"/><path d="M4 9v9a2 2 0 002 2h12a2 2 0 002-2V9"/><path d="M10 13h4"/></svg>
-        <span>Archief</span>
+    </div>
+
+    <div class="detail" id="detail">
+      <button class="detail-terug" onclick="terugNaarLijst()">← <span id="detail-terug-titel">Postvak IN</span></button>
+      <div class="detail-scroll" id="detail-scroll">
+        <div class="detail-leeg">Selecteer een bericht om te lezen.</div>
       </div>
     </div>
   </div>
-  <div class="tabs" style="display:flex;gap:4px;">
-    <button class="tab-knop actief" id="tab-in" onclick="wisselTab('in')">Postvak IN</button>
-    <button class="tab-knop" id="tab-uit" onclick="wisselTab('uit')">Postvak UIT</button>
-    <button class="tab-knop" id="tab-archief" onclick="wisselTab('archief')">Archief</button>
-  </div>
-  <div style="display:flex;align-items:center;gap:14px;">
-    <a href="/admin/" class="uitloggen" style="text-decoration:none;">Beheer</a>
-    <button onclick="toonNieuwBericht()" style="font-size:13px;font-weight:600;color:var(--wh);background:var(--ink);border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-family:inherit;transition:opacity .15s;">+ Nieuw bericht</button>
-    <button class="icon-btn" onclick="wisselThema()" id="thema-knop" title="Donkere modus">
-      <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3a6 6 0 009 9 9 9 0 11-9-9z"/></svg>
-    </button>
-    <button class="uitloggen" onclick="toonInstellingen()">Instellingen</button>
-    <button class="uitloggen" onclick="uitloggen()">Uitloggen</button>
-  </div>
 </div>
 
-<div class="layout">
-  <div class="lijst toon-mobiel" id="lijst">
-    <div class="skel-item"><div class="skel skel-lijn" style="width:60%;"></div><div class="skel skel-lijn" style="width:85%;"></div></div>
-    <div class="skel-item"><div class="skel skel-lijn" style="width:50%;"></div><div class="skel skel-lijn" style="width:75%;"></div></div>
-    <div class="skel-item"><div class="skel skel-lijn" style="width:65%;"></div><div class="skel skel-lijn" style="width:80%;"></div></div>
-  </div>
-  <div class="detail" id="detail">
-    <div class="detail-leeg">Selecteer een bericht om te lezen.</div>
-  </div>
+<div class="mobiel-menu" id="mobiel-menu">
+  <button class="mobiel-menu-item" onclick="sluitMobielMenu();toonInstellingen()">Instellingen</button>
+  <a class="mobiel-menu-item" href="/admin/">Beheer</a>
+  <button class="mobiel-menu-item" onclick="wisselThema()">Donkere modus</button>
+  <button class="mobiel-menu-item" onclick="uitloggen()">Uitloggen</button>
 </div>
 
 <!-- Instellingen-scherm -->
 <div id="instellingen-overlay" style="display:none;position:fixed;inset:0;background:rgba(15,13,11,.4);z-index:100;align-items:center;justify-content:center;padding:24px;">
-  <div style="background:var(--wh);border-radius:14px;padding:28px;max-width:420px;width:100%;">
+  <div style="background:var(--wh);border-radius:14px;padding:28px;max-width:420px;width:100%;max-height:90vh;overflow-y:auto;">
     <div style="font-family:'Playfair Display',serif;font-size:19px;font-weight:800;color:var(--ink);margin-bottom:16px;">Instellingen</div>
     <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;">Jouw naam</label>
     <p style="font-size:12.5px;color:var(--mu);margin-bottom:8px;">Verstuurde mail gebruikt automatisch de Kronr-huisstijl, met "Met vriendelijke groet, [jouw naam], Kronr" onderaan.</p>
@@ -167,7 +245,7 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
       <div id="sjablonen-lijst" style="margin-bottom:10px;"></div>
       <input type="text" id="sj-naam" placeholder="Naam sjabloon" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:12.5px;margin-bottom:6px;background:var(--wh);color:var(--ink);">
       <textarea id="sj-inhoud" placeholder="Inhoud van het sjabloon..." style="width:100%;min-height:70px;border:1px solid var(--bd);border-radius:8px;padding:9px 11px;font-family:inherit;font-size:12.5px;resize:vertical;background:var(--wh);color:var(--ink);"></textarea>
-      <button onclick="voegSjabloonToe()" style="margin-top:8px;padding:9px 14px;background:var(--wh);color:var(--ink);border:1px solid var(--bd);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">+ Sjabloon opslaan</button>
+      <button onclick="voegSjabloonToe()" class="btn-licht" style="margin-top:8px;">+ Sjabloon opslaan</button>
     </div>
 
     <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
@@ -177,8 +255,8 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
     </div>
 
     <div style="display:flex;gap:10px;margin-top:20px;">
-      <button onclick="slaNaamOp()" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Opslaan</button>
-      <button onclick="sluitInstellingen()" style="padding:11px 18px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);">Sluiten</button>
+      <button onclick="slaNaamOp()" class="btn-dark" style="flex:1;">Opslaan</button>
+      <button onclick="sluitInstellingen()" class="btn-licht">Sluiten</button>
     </div>
     <div class="reply-msg" id="instellingen-msg" style="margin-top:10px;"></div>
   </div>
@@ -191,10 +269,10 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
     <div id="mfa-qr" style="margin:0 auto 14px;"></div>
     <p style="font-size:11.5px;color:var(--mu);margin-bottom:14px;word-break:break-all;">Lukt scannen niet? Voer handmatig in: <strong id="mfa-secret"></strong></p>
     <label style="font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;text-align:left;">Voer de 6-cijferige code in</label>
-    <input type="text" id="mfa-code" maxlength="6" inputmode="numeric" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:18px;text-align:center;letter-spacing:4px;margin-bottom:12px;" placeholder="123456">
+    <input type="text" id="mfa-code" maxlength="6" inputmode="numeric" style="width:100%;border:1px solid var(--bd);border-radius:8px;padding:11px 12px;font-family:inherit;font-size:18px;text-align:center;letter-spacing:4px;margin-bottom:12px;background:var(--wh);color:var(--ink);" placeholder="123456">
     <div style="display:flex;gap:10px;">
-      <button onclick="bevestigMfaInschrijving()" id="mfa-bevestig-btn" style="flex:1;padding:11px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Bevestigen</button>
-      <button onclick="annuleerMfaInschrijving()" style="padding:11px 16px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);">Annuleren</button>
+      <button onclick="bevestigMfaInschrijving()" id="mfa-bevestig-btn" class="btn-dark" style="flex:1;">Bevestigen</button>
+      <button onclick="annuleerMfaInschrijving()" class="btn-licht">Annuleren</button>
     </div>
     <div class="reply-msg" id="mfa-msg" style="margin-top:10px;"></div>
   </div>
@@ -223,8 +301,8 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;opacit
     <div class="rt-editor" id="nb-inhoud" contenteditable="true" data-placeholder="Typ je bericht..."></div>
 
     <div style="display:flex;gap:10px;margin-top:14px;">
-      <button onclick="verstuurNieuwBericht()" id="nb-btn" class="btn-reply" style="flex:1;margin-top:0;">Versturen</button>
-      <button onclick="sluitNieuwBericht()" style="padding:11px 18px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;cursor:pointer;font-family:inherit;color:var(--ink);">Annuleren</button>
+      <button onclick="verstuurNieuwBericht()" id="nb-btn" class="btn-dark" style="flex:1;">Versturen</button>
+      <button onclick="sluitNieuwBericht()" class="btn-licht">Annuleren</button>
     </div>
     <div class="reply-msg" id="nb-msg" style="margin-top:10px;"></div>
   </div>
@@ -254,12 +332,16 @@ let HUIDIGE_TAB = 'in';
 let HUIDIG_TEAMLID = null;
 let ZOEKTERM = '';
 let GESELECTEERD = new Set();
+let ONGELEZEN_AANTAL = 0;
 
 const LABEL_OPTIES = [
   {naam:'Belangrijk', kleur:'#c0392b'},
   {naam:'Vraag', kleur:'#2d6a4f'},
   {naam:'Opvolgen', kleur:'#8c6d3f'},
 ];
+
+const FOLDER_TITELS = {in:'Postvak IN', uit:'Postvak UIT', archief:'Archief'};
+const AVATAR_KLEUREN = ['#8B6B47','#1C1917','#7C8B6B','#6E5439','#9C7A4E'];
 
 // ── Toast-meldingen (i.p.v. alert()) ──
 // Veiligheid: klant-/afzender-gegevens (naam, onderwerp, inhoud van
@@ -303,6 +385,17 @@ function decodeMimeOnderwerp(tekst){
   }
 }
 
+function initiaal(naam){
+  const s=String(naam||'').trim();
+  return s ? s[0].toUpperCase() : '?';
+}
+function avatarKleur(tekst){
+  let hash=0;
+  const s=String(tekst||'');
+  for(let i=0;i<s.length;i++){ hash = (hash*31 + s.charCodeAt(i))|0; }
+  return AVATAR_KLEUREN[Math.abs(hash)%AVATAR_KLEUREN.length];
+}
+
 function toonToast(bericht, type){
   const wrap = document.getElementById('toast-wrap');
   const el = document.createElement('div');
@@ -325,6 +418,22 @@ function wisselThema(){
     document.documentElement.setAttribute('data-thema','donker');
   }
 })();
+
+// ── Mobiel overflow-menu (instellingen/beheer/thema/uitloggen) ──
+function wisselMobielMenu(){
+  document.getElementById('mobiel-menu').classList.toggle('open');
+}
+function sluitMobielMenu(){
+  document.getElementById('mobiel-menu').classList.remove('open');
+}
+document.addEventListener('click', (e)=>{
+  const menu = document.getElementById('mobiel-menu');
+  const knop = document.querySelector('.mobiel-menu-btn');
+  if(!menu.classList.contains('open')) return;
+  if(!menu.contains(e.target) && e.target!==knop && !knop.contains(e.target)){
+    sluitMobielMenu();
+  }
+});
 
 async function init(){
   try{
@@ -364,43 +473,37 @@ function toonSkeletons(){
   `).join('');
 }
 
-const FOLDER_TITELS = {in:'Postvak IN', uit:'Postvak UIT', archief:'Archief'};
-
-function wisselFolderMenu(){
-  document.getElementById('folder-menu').classList.toggle('open');
+async function verversOngelezenBadge(){
+  const{count}=await sb.from('kronr_berichten').select('id',{count:'exact',head:true}).eq('gearchiveerd',false).eq('gelezen',false);
+  ONGELEZEN_AANTAL = count||0;
+  const badge = document.getElementById('side-badge-in');
+  badge.textContent = ONGELEZEN_AANTAL;
+  badge.classList.toggle('on', ONGELEZEN_AANTAL>0);
 }
-function sluitFolderMenu(){
-  document.getElementById('folder-menu').classList.remove('open');
-}
-function kiesFolderMenu(tab){
-  sluitFolderMenu();
-  wisselTab(tab);
-}
-document.addEventListener('click', (e)=>{
-  const menu = document.getElementById('folder-menu');
-  const hamburger = document.getElementById('hamburger-btn');
-  if(!menu || !menu.classList.contains('open')) return;
-  if(!menu.contains(e.target) && e.target!==hamburger && !hamburger.contains(e.target)){
-    sluitFolderMenu();
-  }
-});
 
 async function wisselTab(tab){
   HUIDIGE_TAB = tab;
-  document.querySelectorAll('.tab-knop').forEach(t=>t.classList.remove('actief'));
-  document.getElementById('tab-'+tab).classList.add('actief');
-  document.querySelectorAll('.folder-menu-item').forEach(t=>t.classList.remove('actief'));
-  document.getElementById('fm-'+tab).classList.add('actief');
-  document.getElementById('mobiel-folder-titel').textContent = FOLDER_TITELS[tab];
-  document.getElementById('detail').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
+  sluitMobielMenu();
+
+  document.querySelectorAll('.sidebar-item[id^="side-"]').forEach(t=>t.classList.remove('actief'));
+  document.getElementById('side-'+tab).classList.add('actief');
+  document.querySelectorAll('.chip').forEach(t=>t.classList.remove('actief'));
+  document.getElementById('chip-'+tab).classList.add('actief');
+  document.getElementById('lijst-titel').textContent = FOLDER_TITELS[tab];
+  document.getElementById('detail-terug-titel').textContent = FOLDER_TITELS[tab];
+  document.getElementById('alles-select-rij').style.display = tab==='uit' ? 'none' : 'flex';
+
+  document.getElementById('zoek-input').value = '';
+  document.getElementById('detail-scroll').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
   HUIDIG_BERICHT_ID = null;
   ZOEKTERM = '';
   GESELECTEERD.clear();
 
-  document.getElementById('lijst').classList.add('toon-mobiel');
+  document.getElementById('lijst-panel').classList.add('toon-mobiel');
   document.getElementById('detail').classList.remove('toon-mobiel');
 
   toonSkeletons();
+  renderBulkBar();
 
   if(tab==='uit'){
     await laadVerzonden();
@@ -418,6 +521,7 @@ async function laadBerichten(){
   }
   BERICHTEN = data||[];
   renderLijst();
+  verversOngelezenBadge();
 }
 
 async function laadVerzonden(){
@@ -439,24 +543,6 @@ function gefilterdeBerichten(){
   return BERICHTEN.filter(b=>!ZOEKTERM || (b.onderwerp||'').toLowerCase().includes(ZOEKTERM) || (b.van_email||'').toLowerCase().includes(ZOEKTERM) || (b.van_naam||'').toLowerCase().includes(ZOEKTERM) || (b.inhoud||'').toLowerCase().includes(ZOEKTERM));
 }
 
-function renderZoekbalk(){
-  const toonSelectAlles = HUIDIGE_TAB!=='uit';
-  let selectAlleHtml = '';
-  if(toonSelectAlles){
-    const ids = gefilterdeBerichten().map(b=>b.id);
-    const aantalGeselecteerd = ids.filter(id=>GESELECTEERD.has(id)).length;
-    const alleGeselecteerd = ids.length>0 && aantalGeselecteerd===ids.length;
-    selectAlleHtml = `<input type="checkbox" class="select-alle-cb" id="select-alle-cb" title="Alles selecteren" ${alleGeselecteerd?'checked':''} onchange="wisselAllesSelecteren(this.checked)">`;
-  }
-  return `<div class="zoek-wrap">
-    ${selectAlleHtml}
-    <div class="zoek-input-wrap">
-      <svg class="zoek-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
-      <input type="text" class="zoek-input" placeholder="Zoeken..." value="${ZOEKTERM.replace(/"/g,'&quot;')}" oninput="zetZoekterm(this.value)">
-    </div>
-  </div>`;
-}
-
 function wisselAllesSelecteren(aan){
   const ids = gefilterdeBerichten().map(b=>b.id);
   if(aan) ids.forEach(id=>GESELECTEERD.add(id));
@@ -464,21 +550,37 @@ function wisselAllesSelecteren(aan){
   renderLijst();
 }
 
+function updateSelectAlleCheckbox(){
+  const cb = document.getElementById('select-alle-cb');
+  const ids = gefilterdeBerichten().map(b=>b.id);
+  const aantal = ids.filter(id=>GESELECTEERD.has(id)).length;
+  cb.checked = ids.length>0 && aantal===ids.length;
+  cb.indeterminate = aantal>0 && aantal<ids.length;
+}
+
 function renderBulkBar(){
-  if(!GESELECTEERD.size) return '';
+  const bar = document.getElementById('bulk-bar');
+  if(!GESELECTEERD.size || HUIDIGE_TAB==='uit'){
+    bar.classList.remove('on');
+    bar.innerHTML='';
+    return;
+  }
   const naarArchief = HUIDIGE_TAB!=='archief';
-  return `<div class="bulk-bar">
-    <span>${GESELECTEERD.size} geselecteerd</span>
-    <div style="display:flex;gap:8px;">
-      <button onclick="archiveerGeselecteerd(${naarArchief})">${naarArchief?'Archiveren':'Terugzetten naar Postvak IN'}</button>
-      <button onclick="deselecteerAlles()">Deselecteren</button>
-    </div>
-  </div>`;
+  bar.classList.add('on');
+  bar.innerHTML = `
+    <span class="bulk-bar-count">${GESELECTEERD.size} geselecteerd</span>
+    <div class="bulk-bar-acties">
+      <button onclick="archiveerGeselecteerd(${naarArchief})">${naarArchief?'Archiveer':'Terugzetten'}</button>
+      <button onclick="verwijderGeselecteerd()">Verwijder</button>
+      <button class="annuleer" onclick="deselecteerAlles()">Annuleer</button>
+    </div>`;
 }
 
 function toggleGeselecteerd(id, aan){
   if(aan) GESELECTEERD.add(id); else GESELECTEERD.delete(id);
-  renderLijst();
+  renderBulkBar();
+  updateSelectAlleCheckbox();
+  const el = document.querySelector(`.lijst-item[data-id="${id}"]`);
 }
 
 function deselecteerAlles(){
@@ -495,28 +597,42 @@ async function archiveerGeselecteerd(naarArchief){
   await laadBerichten();
 }
 
+async function verwijderGeselecteerd(){
+  const ids = Array.from(GESELECTEERD);
+  if(!ids.length) return;
+  if(!confirm(`${ids.length} bericht(en) permanent verwijderen? Dit kan niet ongedaan worden gemaakt.`)) return;
+  const{error}=await sb.from('kronr_berichten').delete().in('id', ids);
+  if(error){ toonToast('Kon niet verwijderen: '+error.message,'fout'); return; }
+  toonToast(`${ids.length} bericht(en) verwijderd.`,'ok');
+  GESELECTEERD.clear();
+  await laadBerichten();
+}
+
 function renderLijst(){
   const lijstEl = document.getElementById('lijst');
-  const zoekbalkHtml = renderZoekbalk();
 
   if(HUIDIGE_TAB==='uit'){
     const gefilterd = VERZONDEN.filter(v=>!ZOEKTERM || (v.onderwerp||'').toLowerCase().includes(ZOEKTERM) || (v.naar_email||'').toLowerCase().includes(ZOEKTERM) || (v.inhoud||'').toLowerCase().includes(ZOEKTERM));
     if(!gefilterd.length){
-      lijstEl.innerHTML=zoekbalkHtml+`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${ZOEKTERM?'Niks gevonden.':'Nog niks verstuurd.'}</div>`;
+      lijstEl.innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${ZOEKTERM?'Niks gevonden.':'Nog niks verstuurd.'}</div>`;
       return;
     }
-    lijstEl.innerHTML = zoekbalkHtml+gefilterd.map(v=>{
+    lijstEl.innerHTML = gefilterd.map(v=>{
       const datum = new Date(v.verzonden_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
       const preview = (v.inhoud||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+      const kleur = avatarKleur(v.naar_email);
       return `
-      <div class="lijst-item ${v.id===HUIDIG_BERICHT_ID?'actief':''}" onclick="toonVerzonden('${v.id}')">
-        <div class="li-content">
-          <div class="li-top-row">
-            <span class="li-van">Aan: ${escapeHtml(v.naar_email)}</span>
-            <span class="li-datum">${datum}</span>
+      <div class="lijst-item ${v.id===HUIDIG_BERICHT_ID?'actief':''}">
+        <div class="li-open" onclick="toonVerzonden('${v.id}')">
+          <div class="li-avatar" style="background:${kleur};">${initiaal(v.naar_email)}</div>
+          <div class="li-content">
+            <div class="li-top-row">
+              <span class="li-van">Aan: ${escapeHtml(v.naar_email)}</span>
+              <span class="li-datum">${datum}</span>
+            </div>
+            <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(v.onderwerp))||'(geen onderwerp)'}</div>
+            ${preview?`<div class="li-preview">${escapeHtml(preview)}</div>`:''}
           </div>
-          <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(v.onderwerp))||'(geen onderwerp)'}</div>
-          ${preview?`<div class="li-preview">${escapeHtml(preview)}</div>`:''}
         </div>
       </div>`;
     }).join('');
@@ -524,39 +640,39 @@ function renderLijst(){
   }
 
   const gefilterd = gefilterdeBerichten();
+  renderBulkBar();
+  updateSelectAlleCheckbox();
   if(!gefilterd.length){
-    lijstEl.innerHTML=zoekbalkHtml+renderBulkBar()+`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${ZOEKTERM?'Niks gevonden.':(HUIDIGE_TAB==='archief'?'Nog niks gearchiveerd.':'Nog geen berichten.')}</div>`;
+    lijstEl.innerHTML=`<div style="padding:24px;text-align:center;color:var(--mu2);font-size:12px;">${ZOEKTERM?'Niks gevonden.':(HUIDIGE_TAB==='archief'?'Nog niks gearchiveerd.':'Nog geen berichten.')}</div>`;
     return;
   }
-  lijstEl.innerHTML = zoekbalkHtml+renderBulkBar()+gefilterd.map(b=>{
+  lijstEl.innerHTML = gefilterd.map(b=>{
     const datum = new Date(b.ontvangen_op).toLocaleDateString('nl-NL',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
     const labels = (b.labels||[]);
     const preview = (b.inhoud||'').replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+    const naam = b.van_naam||b.van_email;
+    const kleur = avatarKleur(naam);
     return `
-    <div class="lijst-item ${b.id===HUIDIG_BERICHT_ID?'actief':''} ${!b.gelezen?'ongelezen':''}" onclick="toonBericht('${b.id}')">
-      <input type="checkbox" class="li-check" ${GESELECTEERD.has(b.id)?'checked':''} onclick="event.stopPropagation()" onchange="toggleGeselecteerd('${b.id}',this.checked)">
-      <span class="li-dot"></span>
-      <div class="li-content">
-        <div class="li-top-row">
-          <span class="li-van">${escapeHtml(b.van_naam||b.van_email)} ${b.beantwoord?'✓':''}</span>
-          <span class="li-datum">${datum}</span>
+    <div class="lijst-item ${b.id===HUIDIG_BERICHT_ID?'actief':''} ${!b.gelezen?'ongelezen':''}" data-id="${b.id}">
+      <input type="checkbox" class="cb-custom li-check" ${GESELECTEERD.has(b.id)?'checked':''} onclick="event.stopPropagation()" onchange="toggleGeselecteerd('${b.id}',this.checked)">
+      <div class="li-open" onclick="toonBericht('${b.id}')">
+        <div class="li-avatar" style="background:${kleur};">${initiaal(naam)}</div>
+        <div class="li-content">
+          <div class="li-top-row">
+            <span class="li-van">${escapeHtml(naam)} ${b.beantwoord?'✓':''}</span>
+            <span class="li-datum">${datum}</span>
+          </div>
+          <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(b.onderwerp))||'(geen onderwerp)'}</div>
+          ${preview?`<div class="li-preview">${escapeHtml(preview)}</div>`:''}
+          ${labels.length?`<div class="li-labels">${labels.map(l=>{
+            const optie = LABEL_OPTIES.find(o=>o.naam===l);
+            return `<span class="label-pill" style="background:${optie?optie.kleur:'#999'}22;color:${optie?optie.kleur:'#999'};">${escapeHtml(l)}</span>`;
+          }).join('')}</div>`:''}
         </div>
-        <div class="li-onderwerp">${escapeHtml(decodeMimeOnderwerp(b.onderwerp))||'(geen onderwerp)'}</div>
-        ${preview?`<div class="li-preview">${escapeHtml(preview)}</div>`:''}
-        ${labels.length?`<div class="li-labels">${labels.map(l=>{
-          const optie = LABEL_OPTIES.find(o=>o.naam===l);
-          return `<span class="label-pill" style="background:${optie?optie.kleur:'#999'}22;color:${optie?optie.kleur:'#999'};">${escapeHtml(l)}</span>`;
-        }).join('')}</div>`:''}
+        <span class="li-dot"></span>
       </div>
     </div>`;
   }).join('');
-
-  const selAlleCb = document.getElementById('select-alle-cb');
-  if(selAlleCb){
-    const ids = gefilterd.map(b=>b.id);
-    const aantalGeselecteerd = ids.filter(id=>GESELECTEERD.has(id)).length;
-    selAlleCb.indeterminate = aantalGeselecteerd>0 && aantalGeselecteerd<ids.length;
-  }
 }
 
 async function toonVerzonden(id){
@@ -564,16 +680,24 @@ async function toonVerzonden(id){
   const bericht = VERZONDEN.find(v=>v.id===id);
   if(!bericht) return;
 
-  document.getElementById('lijst').classList.remove('toon-mobiel');
+  document.getElementById('lijst-panel').classList.remove('toon-mobiel');
   document.getElementById('detail').classList.add('toon-mobiel');
   renderLijst();
 
   const datum = new Date(bericht.verzonden_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
-  document.getElementById('detail').innerHTML = `
-    <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
-    <div class="detail-onderwerp">${escapeHtml(decodeMimeOnderwerp(bericht.onderwerp))||'(geen onderwerp)'}</div>
-    <div class="detail-van">Aan <strong>${escapeHtml(bericht.naar_email)}</strong> · ${datum}</div>
-    <div class="detail-inhoud">${escapeHtml(bericht.inhoud)}</div>
+  const kleur = avatarKleur(bericht.naar_email);
+  document.getElementById('detail-scroll').innerHTML = `
+    <div class="detail-head">
+      <div class="detail-onderwerp">${escapeHtml(decodeMimeOnderwerp(bericht.onderwerp))||'(geen onderwerp)'}</div>
+      <div class="detail-van-rij">
+        <div class="detail-avatar" style="background:${kleur};">${initiaal(bericht.naar_email)}</div>
+        <div>
+          <div class="detail-van-naam">Aan ${escapeHtml(bericht.naar_email)}</div>
+        </div>
+        <div class="detail-tijd">${datum}</div>
+      </div>
+    </div>
+    <div class="detail-body">${escapeHtml(bericht.inhoud)}</div>
   `;
 }
 
@@ -589,23 +713,34 @@ async function toonBericht(id){
   const bericht = BERICHTEN.find(b=>b.id===id);
   if(!bericht) return;
 
-  document.getElementById('lijst').classList.remove('toon-mobiel');
+  document.getElementById('lijst-panel').classList.remove('toon-mobiel');
   document.getElementById('detail').classList.add('toon-mobiel');
 
   renderLijst();
 
   const sjabloonOpties = SJABLONEN.map(s=>`<option value="${s.id}">${s.naam}</option>`).join('');
   const datum = new Date(bericht.ontvangen_op).toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long',hour:'2-digit',minute:'2-digit'});
-  document.getElementById('detail').innerHTML = `
-    <button onclick="terugNaarLijst()" style="background:none;border:none;color:var(--mu);font-size:13px;cursor:pointer;margin-bottom:20px;display:flex;align-items:center;gap:6px;">← Terug naar lijst</button>
-    <div class="detail-onderwerp">${escapeHtml(decodeMimeOnderwerp(bericht.onderwerp))||'(geen onderwerp)'}</div>
-    <div class="detail-van">Van <strong>${escapeHtml(bericht.van_naam||bericht.van_email)}</strong> (${escapeHtml(bericht.van_email)}) · ${datum}</div>
-    <div style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap;">${renderLabelToggles(bericht)}</div>
-    <div style="display:flex;gap:10px;margin-bottom:16px;">
-      <button onclick="wisselBeantwoord('${id}',${!bericht.beantwoord})" style="font-size:12px;padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:${bericht.beantwoord?'var(--iv)':'var(--wh)'};cursor:pointer;font-family:inherit;color:var(--ink);">${bericht.beantwoord?'✓ Beantwoord':'Markeer als beantwoord'}</button>
-      <button onclick="wisselArchief('${id}',${!bericht.gearchiveerd})" style="font-size:12px;padding:7px 12px;border-radius:6px;border:1px solid var(--bd);background:var(--wh);cursor:pointer;font-family:inherit;color:var(--ink);">${bericht.gearchiveerd?'Terugzetten naar Postvak IN':'Archiveren'}</button>
+  const naam = bericht.van_naam||bericht.van_email;
+  const kleur = avatarKleur(naam);
+  document.getElementById('detail-scroll').innerHTML = `
+    <div class="detail-head">
+      <div class="detail-onderwerp">${escapeHtml(decodeMimeOnderwerp(bericht.onderwerp))||'(geen onderwerp)'}</div>
+      <div class="detail-van-rij">
+        <div class="detail-avatar" style="background:${kleur};">${initiaal(naam)}</div>
+        <div>
+          <div class="detail-van-naam">${escapeHtml(naam)}</div>
+          <div class="detail-van-email">${escapeHtml(bericht.van_email)}</div>
+        </div>
+        <div class="detail-tijd">${datum}</div>
+      </div>
+      <div class="detail-labels-rij">${renderLabelToggles(bericht)}</div>
+      <div class="detail-acties-rij">
+        <button onclick="wisselBeantwoord('${id}',${!bericht.beantwoord})">${bericht.beantwoord?'✓ Beantwoord':'Markeer als beantwoord'}</button>
+        <button onclick="wisselArchief('${id}',${!bericht.gearchiveerd})">${bericht.gearchiveerd?'Terugzetten naar Postvak IN':'Archiveren'}</button>
+        <button onclick="doorsturen('${id}')">Doorsturen</button>
+      </div>
     </div>
-    <div class="detail-inhoud">${escapeHtml(bericht.inhoud).replace(/\n/g,'<br>')}</div>
+    <div class="detail-body">${escapeHtml(bericht.inhoud)}</div>
     <div class="reply-box">
       <div class="sjabloon-rij">
         <label style="font-size:12px;font-weight:600;color:var(--ink);">Antwoorden</label>
@@ -620,7 +755,7 @@ async function toonBericht(id){
         <button type="button" onclick="voegLinkToe('reply-tekst')">🔗</button>
       </div>
       <div class="rt-editor" id="reply-tekst" contenteditable="true" data-placeholder="Typ je antwoord..."></div>
-      <button class="btn-reply" id="btn-reply" onclick="verstuurAntwoord()">Antwoord versturen</button>
+      <button class="btn-dark" id="btn-reply" onclick="verstuurAntwoord()" style="margin-top:10px;">Beantwoorden</button>
       <div class="reply-msg" id="reply-msg"></div>
     </div>
   `;
@@ -629,6 +764,7 @@ async function toonBericht(id){
     await sb.from('kronr_berichten').update({gelezen:true}).eq('id',id);
     bericht.gelezen = true;
     renderLijst();
+    verversOngelezenBadge();
   }
 }
 
@@ -673,13 +809,24 @@ async function wisselArchief(id, nieuweStatus){
   await sb.from('kronr_berichten').update({gearchiveerd:nieuweStatus}).eq('id',id);
   toonToast(nieuweStatus?'Gearchiveerd.':'Teruggezet naar Postvak IN.','ok');
   await laadBerichten();
-  document.getElementById('detail').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
-  document.getElementById('lijst').classList.remove('toon-mobiel');
+  document.getElementById('detail-scroll').innerHTML='<div class="detail-leeg">Selecteer een bericht om te lezen.</div>';
+  document.getElementById('lijst-panel').classList.remove('toon-mobiel');
   document.getElementById('detail').classList.add('toon-mobiel');
 }
 
+function doorsturen(id){
+  const bericht = BERICHTEN.find(b=>b.id===id);
+  if(!bericht) return;
+  toonNieuwBericht();
+  const onderwerp = decodeMimeOnderwerp(bericht.onderwerp)||'';
+  document.getElementById('nb-onderwerp').value = 'Fwd: '+onderwerp;
+  document.getElementById('nb-inhoud').innerHTML =
+    `<p>---------- Doorgestuurd bericht ----------<br>Van: ${escapeHtml(bericht.van_naam||bericht.van_email)} (${escapeHtml(bericht.van_email)})<br>Onderwerp: ${escapeHtml(onderwerp)}</p>` +
+    `<p>${escapeHtml(bericht.inhoud).replace(/\n/g,'<br>')}</p>`;
+}
+
 function terugNaarLijst(){
-  document.getElementById('lijst').classList.add('toon-mobiel');
+  document.getElementById('lijst-panel').classList.add('toon-mobiel');
   document.getElementById('detail').classList.remove('toon-mobiel');
 }
 
@@ -723,10 +870,11 @@ async function verstuurAntwoord(){
     toonToast('Fout: '+e.message,'fout');
   }
 
-  btn.disabled=false;btn.textContent='Antwoord versturen';
+  btn.disabled=false;btn.textContent='Beantwoorden';
 }
 
 function toonInstellingen(){
+  sluitMobielMenu();
   document.getElementById('naam-tekst').value = HUIDIG_TEAMLID?.naam || '';
   document.getElementById('instellingen-msg').style.display='none';
   renderSjablonenLijst();
@@ -786,6 +934,7 @@ async function verwijderSjabloon(id){
 }
 
 function toonNieuwBericht(){
+  sluitMobielMenu();
   document.getElementById('nb-naar').value='';
   document.getElementById('nb-onderwerp').value='';
   document.getElementById('nb-inhoud').innerHTML='';
@@ -848,12 +997,12 @@ async function laadMfaStatus(){
   const actieveFactor = (data.totp||[]).find(f=>f.status==='verified');
   if(actieveFactor){
     statusEl.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--iv);border-radius:8px;padding:10px 14px;">
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--bd2);border-radius:8px;padding:10px 14px;">
         <span style="font-size:13px;color:var(--green);font-weight:600;">✓ Ingeschakeld</span>
         <button onclick="schakelMfaUit('${actieveFactor.id}')" style="background:none;border:none;color:var(--red);font-size:12.5px;cursor:pointer;font-family:inherit;">Uitschakelen</button>
       </div>`;
   } else {
-    statusEl.innerHTML = `<button onclick="startMfaInschrijving()" style="width:100%;padding:10px;background:var(--wh);color:var(--ink);border:1px solid var(--bd);border-radius:8px;font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;">Inschakelen</button>`;
+    statusEl.innerHTML = `<button onclick="startMfaInschrijving()" class="btn-licht" style="width:100%;">Inschakelen</button>`;
   }
 }
 
