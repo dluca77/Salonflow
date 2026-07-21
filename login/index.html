@@ -198,6 +198,15 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
       </button>
     </div>
 
+    <!-- PRE-LAUNCH: registreren nog niet mogelijk -->
+    <div class="form-section" id="sectie-prelaunch" style="text-align:center;padding:8px 0 4px;">
+      <p style="font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:24px;">
+        Kronr is bijna klaar, maar nog niet volledig live — nieuwe accounts kunnen we
+        nog niet aanmaken. Schrijf je in en we laten je weten zodra het zover is.
+      </p>
+      <a href="/#notify-form" class="btn-main" style="text-decoration:none;display:inline-flex;">Blijf op de hoogte →</a>
+    </div>
+
     <!-- REGISTREREN -->
     <div class="form-section" id="sectie-reg">
       <div class="frow">
@@ -277,6 +286,12 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
 const SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 
+// Pre-launch: nieuwe accounts (via het formulier of via Google) mogen nog
+// niet aangemaakt worden, alleen inloggen op bestaande accounts blijft
+// werken. Zet dit op false zodra Kronr écht live gaat -- verder geen
+// andere code hoeft dan te wijzigen.
+const PRE_LAUNCH = true;
+
 // Zelfde opslag-adapter als kronr.js: leest live de 'kronr_remember' vlag,
 // zodat de sessie na inloggen op de juiste plek staat voor alle andere pagina's.
 function kronrStorage() {
@@ -316,6 +331,7 @@ if (window.location.hash.includes('access_token')) {
 function toonLogin() {
   document.getElementById('sectie-login').classList.add('visible');
   document.getElementById('sectie-reg').classList.remove('visible');
+  document.getElementById('sectie-prelaunch').classList.remove('visible');
   document.getElementById('tab-login').classList.add('active');
   document.getElementById('tab-reg').classList.remove('active');
   document.getElementById('form-title').textContent = 'Welkom terug';
@@ -324,12 +340,13 @@ function toonLogin() {
 }
 
 function toonRegistreer() {
-  document.getElementById('sectie-reg').classList.add('visible');
+  document.getElementById('sectie-reg').classList.toggle('visible', !PRE_LAUNCH);
+  document.getElementById('sectie-prelaunch').classList.toggle('visible', PRE_LAUNCH);
   document.getElementById('sectie-login').classList.remove('visible');
   document.getElementById('tab-reg').classList.add('active');
   document.getElementById('tab-login').classList.remove('active');
-  document.getElementById('form-title').textContent = 'Begin vandaag gratis';
-  document.getElementById('form-sub').textContent = 'Maak je Kronr account aan, geen creditcard nodig';
+  document.getElementById('form-title').textContent = PRE_LAUNCH ? 'Bijna zover' : 'Begin vandaag gratis';
+  document.getElementById('form-sub').textContent = PRE_LAUNCH ? 'We laten je weten zodra je terecht kan' : 'Maak je Kronr account aan, geen creditcard nodig';
   leegMsg();
 }
 
@@ -403,6 +420,7 @@ function checkWwSterkte(){
 }
 
 async function registreer() {
+  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden -- schrijf je in op de homepage voor een seintje zodra we live gaan.');
   const contactNaam = document.getElementById('r-contactnaam').value.trim();
   const naam  = document.getElementById('r-naam').value.trim();
   const type  = document.getElementById('r-type').value;
@@ -492,6 +510,10 @@ async function registreer() {
 
 // ── GOOGLE ──
 async function loginGoogle() {
+  // Google-inloggen maakt bij Supabase automatisch een nieuw account aan
+  // als het e-mailadres nog niet bestaat -- tijdens de pre-launch mag dat
+  // net zo min als via het gewone registratieformulier.
+  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden -- schrijf je in op de homepage voor een seintje zodra we live gaan.');
   localStorage.setItem('kronr_remember', '1');
   await sb.auth.signInWithOAuth({
     provider: 'google',
