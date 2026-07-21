@@ -79,6 +79,53 @@ function verbergOnboardingChecklist() {
   if (el) el.remove();
 }
 
+// ── Website-upsell-nudge: proactief in beeld i.p.v. passief wachten tot
+// iemand het toevallig tegenkomt in Instellingen. Alleen relevant voor
+// salons die nog geen Business zitten (en dus nog geen eigen Kronr-pagina
+// kunnen gebruiken). Los dismissbaar van de stappen-checklist hierboven. ──
+async function toonWebsiteUpsellNudge() {
+  if (SALON.plan === 'business') return; // heeft de functie al
+  if (localStorage.getItem(onboardingStorageKey('website_upsell_verborgen')) === '1') return;
+
+  const kaart = document.createElement('div');
+  kaart.id = 'website-upsell-nudge';
+  kaart.style.cssText = 'grid-column:1/-1;background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px 22px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;';
+  kaart.innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;min-width:0;">
+      <div style="font-size:22px;flex-shrink:0;">✨</div>
+      <div style="min-width:0;">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px;">
+          <span style="font-size:13.5px;font-weight:600;color:var(--ink);">Heb je nog geen eigen website?</span>
+          <span style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;background:#f3ede4;color:var(--gd2);border:1px solid var(--gd);">Business</span>
+        </div>
+        <div style="font-size:12px;color:var(--mu);line-height:1.5;">Met Business krijg je direct een kant-en-klare boekingspagina op jouw eigen kronr.nl-link -- zonder dat je zelf iets hoeft te bouwen.</div>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
+      <a href="/instellingen/#abonnement" onclick="localStorage.setItem('${onboardingStorageKey('website_upsell_verborgen')}','1')" style="padding:9px 16px;background:var(--ink);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">Bekijk Business →</a>
+      <button onclick="verbergWebsiteUpsellNudge()" style="background:none;border:none;color:var(--mu);cursor:pointer;font-size:12px;white-space:nowrap;">Niet nu</button>
+    </div>`;
+
+  const content = document.querySelector('.content');
+  const checklist = document.getElementById('onboarding-checklist');
+  const trialBanner = document.getElementById('trial-banner');
+  if (content) {
+    if (checklist) {
+      checklist.insertAdjacentElement('afterend', kaart);
+    } else if (trialBanner && trialBanner.style.display !== 'none') {
+      trialBanner.insertAdjacentElement('afterend', kaart);
+    } else {
+      content.insertBefore(kaart, content.firstChild.nextSibling);
+    }
+  }
+}
+
+function verbergWebsiteUpsellNudge() {
+  localStorage.setItem(onboardingStorageKey('website_upsell_verborgen'), '1');
+  const el = document.getElementById('website-upsell-nudge');
+  if (el) el.remove();
+}
+
 // ── Kai-begroeting (alleen bij de allereerste keer op het dashboard) ──
 function toonKaiBegroeting() {
   if (localStorage.getItem(onboardingStorageKey('kai_gezien')) === '1') return;
@@ -211,5 +258,6 @@ function stopRondleiding() {
 // ── Alles samen opstarten ──
 async function initOnboarding() {
   await toonOnboardingChecklist();
+  await toonWebsiteUpsellNudge();
   toonKaiBegroeting();
 }
