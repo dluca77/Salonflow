@@ -355,7 +355,7 @@ const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
 const params=new URLSearchParams(location.search);
-const SALON_ID=params.get('salon');
+let SALON_ID=params.get('salon');
 const IS_EMBED=params.get('embed')==='1';
 if(IS_EMBED) document.body.classList.add('embed');
 
@@ -502,12 +502,27 @@ function wisselBoekLocatie(id){
   if(window.laadDienstenEnMedewerkers) window.laadDienstenEnMedewerkers();
 }
 
+const UUID_REGEX=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 async function init(){
   vulLandcodeDropdown();
   zetLiveEmailValidatie();
   if(!SALON_ID){
     document.getElementById('brand-name').textContent='Ongeldige link';
     return;
+  }
+
+  // Zowel de UUID (uit de widget-embedcode) als de leesbare slug (zoals
+  // gebruikt op s/index.html) moeten hier werken -- anders werkt een link
+  // die iemand kopieert van de gehoste pagina niet op de losse boekingspagina.
+  if(!UUID_REGEX.test(SALON_ID)){
+    const{data:slugData}=await sb.rpc('get_salon_via_slug',{p_slug:SALON_ID});
+    const slugInfo=Array.isArray(slugData)?slugData[0]:slugData;
+    if(!slugInfo){
+      document.getElementById('brand-name').textContent='Ongeldige link';
+      return;
+    }
+    SALON_ID=slugInfo.id;
   }
 
   const[sRes,locRes]=await Promise.all([
