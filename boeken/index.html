@@ -550,7 +550,7 @@ async function init(){
   // Diensten
   async function laadDienstenEnMedewerkers(){
     let dQuery=sb.from('diensten').select('*,abonnement_plannen(id,naam,prijs_per_maand,credits_per_maand,actief)').eq('salon_id',SALON_ID).eq('actief',true);
-    let mQuery=sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true);
+    let mQuery=sb.from('medewerkers').select('id,salon_id,naam,rol,kleur,actief,locatie_id').eq('salon_id',SALON_ID).eq('actief',true);
     if(HUIDIGE_BOEK_LOCATIE_ID){
       dQuery=dQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
       mQuery=mQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
