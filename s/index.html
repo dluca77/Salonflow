@@ -141,6 +141,15 @@ function toonContent(salon){
 
   document.getElementById('laden-state').style.display='none';
   document.getElementById('content').style.display='block';
+
+  // Kai-chatwidget (widget.js) laden voor deze salon -- geeft bezoekers
+  // op deze gehoste pagina ook de mogelijkheid om vragen te stellen
+  // (openingstijden/diensten/prijzen) naast het al aanwezige boekingsformulier.
+  const widgetScript=document.createElement('script');
+  widgetScript.src='https://kronr.nl/widget.js';
+  widgetScript.setAttribute('data-salon', salon.id);
+  widgetScript.setAttribute('data-label', 'Vraag stellen');
+  document.body.appendChild(widgetScript);
 }
 
 function toonFout(tekst){

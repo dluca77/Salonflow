@@ -33,6 +33,8 @@ create or replace function _kronr_medewerker_recht_ok(p_salon_id uuid, p_module 
 returns boolean
 language sql
 stable
+security definer
+set search_path = public
 as $$
   select
     not exists (
