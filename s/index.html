@@ -66,7 +66,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 
 <div id="fout-state" class="state" style="display:none;">
   <div style="font-size:32px;">⚠</div>
-  <p style="font-size:14px;color:var(--mu);max-width:320px;">Deze pagina kon niet gevonden worden. Controleer of je de juiste link hebt.</p>
+  <p id="fout-tekst" style="font-size:14px;color:var(--mu);max-width:320px;">Deze pagina kon niet gevonden worden. Controleer of je de juiste link hebt.</p>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -80,7 +80,7 @@ const slug=params.get('salon');
 
 async function init(){
   if(!slug){
-    toonFout();
+    toonFout('Deze pagina kon niet gevonden worden. Controleer of je de juiste link hebt.');
     return;
   }
 
@@ -88,13 +88,16 @@ async function init(){
   const salon=Array.isArray(data)?data[0]:data;
 
   if(error||!salon){
-    toonFout();
+    toonFout('Deze pagina kon niet gevonden worden. Controleer of je de juiste link hebt.');
     return;
   }
 
-  // Deze gehoste pagina is een functie van het Business-pakket
+  // Deze gehoste pagina is een functie van het Business-pakket -- dit is
+  // GEEN "link klopt niet"-situatie, dus een eigen duidelijke melding
+  // i.p.v. dezelfde generieke "niet gevonden"-tekst (die de eigenaar op
+  // het verkeerde been zet alsof de link zelf stuk is).
   if(salon.plan!=='business'){
-    toonFout();
+    toonFout('Deze gehoste boekingspagina is een Business-functie. Upgrade het abonnement van deze salon om hem te gebruiken.');
     return;
   }
 
@@ -131,7 +134,8 @@ function toonContent(salon){
   document.getElementById('content').style.display='block';
 }
 
-function toonFout(){
+function toonFout(tekst){
+  document.getElementById('fout-tekst').textContent=tekst;
   document.getElementById('laden-state').style.display='none';
   document.getElementById('fout-state').style.display='flex';
 }

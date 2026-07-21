@@ -689,7 +689,8 @@ function buildAptCard(a,i){
   const card=document.createElement('div');
   card.className=`apt c${i%8}${isBloktijd?' bloktijd':''}${status==='geannuleerd'?' geannuleerd':''}`;
   card.style.top=tp+'px';card.style.height=hp+'px';
-  card.draggable=!a._herhaald && !(typeof isAlleenBekijken==='function' && isAlleenBekijken('agenda'));
+  const magSlepen=!a._herhaald && !(typeof isAlleenBekijken==='function' && isAlleenBekijken('agenda'));
+  card.draggable=false; // native HTML5 drag-and-drop uit -- zie mousedown-handler hieronder
 
   // Status badge indien groter
   const statusHtml=hp>52?`<div class="apt-status" style="color:${STATUS_COLORS[status]}">${STATUS_LABELS[status]}</div>`:'';
@@ -697,19 +698,69 @@ function buildAptCard(a,i){
 
   card.onclick=e=>{e.stopPropagation();showPop(a,card);};
 
-  // Desktop drag & drop
-  card.addEventListener('dragstart',e=>{
-    card.classList.add('dragging');
-    e.dataTransfer.setData('text/plain',a.id);
-    e.dataTransfer.effectAllowed='move';
+  // Desktop drag & drop -- eigen implementatie i.p.v. native HTML5 DnD.
+  // Native drag-and-drop rendert zijn eigen sleep-schaduw, die in Chrome/
+  // Windows merkbaar achter de cursor aan hobbelt en "hakkerig" aanvoelt.
+  // Deze aanpak spiegelt de touch-implementatie hieronder: een los
+  // ghost-element dat we zelf met left/top positioneren op elke
+  // mousemove, wat een vloeiende sleepbeweging geeft.
+  const MOUSE_DRAG_DREMPEL=4; // pixels -- voorkomt dat een gewone klik als sleep wordt gezien
+  card.addEventListener('mousedown',e=>{
+    if(e.button!==0 || !magSlepen) return;
+    let ghost=null, dragging=false;
+    const startX=e.clientX, startY=e.clientY;
+
+    const onMove=ev=>{
+      if(!dragging){
+        if(Math.abs(ev.clientX-startX)<MOUSE_DRAG_DREMPEL && Math.abs(ev.clientY-startY)<MOUSE_DRAG_DREMPEL) return;
+        dragging=true;
+        card.classList.add('dragging');
+        ghost=document.createElement('div');
+        ghost.className='apt-ghost '+card.className.replace('apt ','');
+        ghost.innerHTML=card.innerHTML;
+        ghost.style.width=card.offsetWidth+'px';
+        ghost.style.height=card.offsetHeight+'px';
+        document.body.appendChild(ghost);
+      }
+      ghost.style.left=ev.clientX+'px';
+      ghost.style.top=ev.clientY+'px';
+
+      document.querySelectorAll('.gl.touch-over').forEach(el=>el.classList.remove('touch-over'));
+      ghost.style.display='none';
+      const el=document.elementFromPoint(ev.clientX,ev.clientY);
+      ghost.style.display='';
+      if(el&&el.classList.contains('gl')) el.classList.add('touch-over');
+    };
+
+    const onUp=ev=>{
+      document.removeEventListener('mousemove',onMove);
+      document.removeEventListener('mouseup',onUp);
+      card.classList.remove('dragging');
+      document.querySelectorAll('.gl.touch-over').forEach(el=>el.classList.remove('touch-over'));
+      if(!dragging) return; // gewone klik, geen sleep -- card.onclick handelt dat al af
+      if(ghost) ghost.remove();
+
+      const target=document.elementFromPoint(ev.clientX,ev.clientY);
+      if(target&&target.classList.contains('gl')&&target.dataset.slot!==undefined){
+        const col=target.closest('.day-col');
+        if(col&&col.dataset.date){
+          const s=parseInt(target.dataset.slot);
+          const sh=SH+Math.floor(s/4);
+          const sm=(s%4)*15;
+          onDrop(col.dataset.date,sh,sm,{dataTransfer:{getData:()=>a.id}});
+        }
+      }
+    };
+
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onUp);
   });
-  card.addEventListener('dragend',()=>card.classList.remove('dragging'));
 
   // Touch drag & drop (mobiel)
   let touchGhost=null, touchStartX=0, touchStartY=0, touchDragTimer=null;
 
   card.addEventListener('touchstart',e=>{
-    if(a._herhaald) return;
+    if(!magSlepen) return;
     if(touchDragTimer){clearTimeout(touchDragTimer);touchDragTimer=null;} // veiligheidsklep tegen resten van een vorige tik
     const touch=e.touches[0];
     touchStartX=touch.clientX;
