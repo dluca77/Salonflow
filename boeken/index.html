@@ -277,6 +277,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="form-row"><label class="form-label">Achternaam</label><input class="form-input" id="inp-achter" type="text" placeholder="de Vries"></div>
       </div>
       <div class="form-row"><label class="form-label">E-mailadres</label><input class="form-input" id="inp-email" type="email" placeholder="naam@email.nl"></div>
+      <div id="noshow-risico-msg" style="display:none;padding:10px 14px;margin:-6px 0 14px;font-size:12.5px;color:var(--gd2);background:rgba(140,109,63,.06);border-left:3px solid var(--gd);border-radius:0 8px 8px 0;">Voor deze boeking vragen we een kaart vast te leggen ter bevestiging.</div>
       <div class="form-row">
         <label class="form-label">Telefoonnummer</label>
         <div style="display:flex;gap:8px;">
@@ -373,7 +374,7 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null};
+let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null};
 
 function berekenAanbetalingBedrag(prijs,type,bedrag){
   if(type==='percentage') return Math.round(prijs*bedrag/100*100)/100;
@@ -487,12 +488,37 @@ function zetLiveEmailValidatie(){
     // rood pas bij weg-klikken (blur), zodat het niet bestraffend aanvoelt.
   });
 
-  el.addEventListener('blur',()=>{
+  el.addEventListener('blur',async()=>{
     const v=el.value.trim();
     el.classList.remove('geldig','ongeldig');
     if(!v) return; // leeg veld: geen kleur, dat vangt de submit-validatie al af
-    el.classList.add(EMAIL_REGEX.test(v)?'geldig':'ongeldig');
+    const geldig=EMAIL_REGEX.test(v);
+    el.classList.add(geldig?'geldig':'ongeldig');
+    if(geldig) await checkNoshowRisico(v);
   });
+}
+
+// Klanten met herhaalde no-shows bij deze salon moeten voortaan altijd
+// een kaart vastleggen, ook als de gekozen dienst dat zelf niet vereist --
+// dit overschrijft state.vereist_kaart alleen als Stripe actief is (zonder
+// Stripe kan er toch geen kaart vastgelegd worden).
+async function checkNoshowRisico(email){
+  const msgEl=document.getElementById('noshow-risico-msg');
+  if(!window.SALON_STRIPE_ACTIEF || !SALON_ID) return;
+  try{
+    const{data}=await sb.rpc('check_noshow_risico',{p_salon_id:SALON_ID,p_email:email});
+    // Alleen ooit AANzetten op basis van risico -- nooit terugzetten naar
+    // false, want de dienst zelf kan een kaart al onafhankelijk vereisen
+    // (state.vereist_kaart_dienst) en die vlag mogen we niet overschrijven.
+    if(data){
+      state.vereist_kaart=true;
+      msgEl.style.display='block';
+    } else if(!state.vereist_kaart_dienst){
+      msgEl.style.display='none';
+    }
+  }catch(e){
+    console.warn('Kon no-show-risico niet checken:',e);
+  }
 }
 
 let HUIDIGE_BOEK_LOCATIE_ID=null;
@@ -658,9 +684,11 @@ function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart){
   state.dienst=naam;state.prijs=prijs;state.duur=duur;state.dienst_id=id;
   state.aanb_type = (window.SALON_STRIPE_ACTIEF && aanbType) ? aanbType : null;
   state.aanb_bedrag = state.aanb_type ? berekenAanbetalingBedrag(prijs,aanbType,aanbBedrag) : 0;
-  state.vereist_kaart = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
+  state.vereist_kaart_dienst = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
+  state.vereist_kaart = state.vereist_kaart_dienst;
   state.gebruikt_abonnement_id = null;
   state.gebruikt_abonnement_email = null;
+  document.getElementById('noshow-risico-msg').style.display='none';
   document.getElementById('sum-dienst').textContent=naam;
   document.getElementById('sum-prijs').textContent='€'+prijs;
   document.getElementById('sum-duur').textContent=duur+' min';
