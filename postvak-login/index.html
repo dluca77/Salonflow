@@ -13,9 +13,6 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
 .logo{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--ink);text-align:center;margin-bottom:6px;}
 .logo em{color:var(--gd);font-style:normal;}
 .sub{font-size:13px;color:var(--mu);text-align:center;margin-bottom:28px;}
-.tabs{display:flex;gap:4px;background:var(--iv);border-radius:8px;padding:4px;margin-bottom:24px;}
-.tab{flex:1;padding:9px;text-align:center;font-size:13px;font-weight:600;border-radius:6px;cursor:pointer;color:var(--mu);}
-.tab.actief{background:var(--wh);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.08);}
 .frow{margin-bottom:16px;}
 .flabel{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px;display:block;}
 .finput{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);border-radius:8px;font-family:inherit;}
@@ -31,12 +28,7 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
 
 <div class="kaart">
   <div class="logo">Kronr<em>.</em></div>
-  <div class="sub">Postvak IN — hallo@kronr.nl</div>
-
-  <div class="tabs" id="login-tabs">
-    <div class="tab actief" id="tab-login" onclick="toonLogin()">Inloggen</div>
-    <div class="tab" id="tab-reg" onclick="toonRegistreer()">Eerste keer</div>
-  </div>
+  <div class="sub">Postvak IN — alleen voor het Kronr-team</div>
 
   <div id="sectie-login">
     <div class="frow">
@@ -64,27 +56,6 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
     <button class="btn-main" id="btn-mfa" onclick="bevestigMfaInloggen()">Bevestigen</button>
   </div>
 
-  <div id="sectie-reg" style="display:none;">
-    <div class="frow">
-      <label class="flabel">Jouw naam</label>
-      <input class="finput" type="text" id="r-naam" placeholder="Isaak">
-    </div>
-    <div class="frow">
-      <label class="flabel">E-mailadres</label>
-      <input class="finput" type="email" id="r-email" placeholder="hallo@kronr.nl">
-    </div>
-    <div class="frow">
-      <label class="flabel">Wachtwoord</label>
-      <div style="position:relative;">
-        <input class="finput" type="password" id="r-pass" placeholder="Minimaal 8 tekens" style="padding-right:44px;">
-        <button type="button" onclick="wisselWwZichtbaar('r-pass',this)" style="position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:4px;color:var(--mu);">
-          <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-        </button>
-      </div>
-    </div>
-    <button class="btn-main" id="btn-reg" onclick="registreren()">Account aanmaken</button>
-  </div>
-
   <div class="msg" id="msg"></div>
 </div>
 
@@ -109,21 +80,6 @@ function wisselWwZichtbaar(veldId, knop){
     : `<svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17.94 17.94A10.94 10.94 0 0112 20c-7 0-11-8-11-8a18.6 18.6 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`;
 }
 
-function toonLogin(){
-  document.getElementById('sectie-login').style.display='block';
-  document.getElementById('sectie-reg').style.display='none';
-  document.getElementById('tab-login').classList.add('actief');
-  document.getElementById('tab-reg').classList.remove('actief');
-  leegMsg();
-}
-function toonRegistreer(){
-  document.getElementById('sectie-login').style.display='none';
-  document.getElementById('sectie-reg').style.display='block';
-  document.getElementById('tab-reg').classList.add('actief');
-  document.getElementById('tab-login').classList.remove('actief');
-  leegMsg();
-}
-
 async function inloggen(){
   const email = document.getElementById('l-email').value.trim();
   const pass = document.getElementById('l-pass').value;
@@ -146,7 +102,6 @@ async function inloggen(){
   if(levels.currentLevel !== levels.nextLevel){
     document.getElementById('sectie-login').style.display='none';
     document.getElementById('sectie-mfa').style.display='block';
-    document.getElementById('login-tabs').style.display='none';
     leegMsg();
     btn.disabled=false;btn.textContent='Inloggen';
     return;
@@ -187,23 +142,14 @@ async function bevestigMfaInloggen(){
 }
 
 // Gedeelde afronding ná een geslaagde login (met of zonder 2FA):
-// controleren of dit account een teamlid is (met bootstrap voor de
-// allereerste keer), en doorsturen naar het beheer-dashboard.
+// controleren of dit account een teamlid is. GEEN auto-aanmaak meer --
+// teamleden worden alleen door Kronr zelf via SQL toegevoegd, nooit
+// via deze pagina. Zonder deze grens kon vroeger elk account dat hier
+// inlogde zichzelf automatisch tot 'eigenaar' maken.
 async function voltooiInloggen(btn, oorspronkelijkeTekst){
   const{data:{session}} = await sb.auth.getSession();
-  const email = session.user.email;
 
-  let{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
-
-  if(!teamlid){
-    const naam = localStorage.getItem('postvak_naam_'+email) || email.split('@')[0];
-    const{error:insertError}=await sb.from('kronr_team').insert({auth_user_id:session.user.id, naam, email, rol:'eigenaar'});
-    if(!insertError){
-      localStorage.removeItem('postvak_naam_'+email);
-      const opnieuw = await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
-      teamlid = opnieuw.data;
-    }
-  }
+  const{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
 
   if(!teamlid){
     await sb.auth.signOut();
@@ -212,37 +158,6 @@ async function voltooiInloggen(btn, oorspronkelijkeTekst){
   }
 
   window.location.href = '/admin/';
-}
-
-async function registreren(){
-  const naam = document.getElementById('r-naam').value.trim();
-  const email = document.getElementById('r-email').value.trim();
-  const pass = document.getElementById('r-pass').value;
-  if(!naam||!email||!pass) return toonMsg('Vul alle velden in.');
-  if(pass.length<8) return toonMsg('Wachtwoord moet minimaal 8 tekens zijn.');
-
-  const btn=document.getElementById('btn-reg');
-  btn.disabled=true;btn.textContent='Bezig...';
-
-  const{data,error}=await sb.auth.signUp({email,password:pass,options:{emailRedirectTo:'https://kronr.nl/postvak-login/'}});
-  if(error){
-    btn.disabled=false;btn.textContent='Account aanmaken';
-    return toonMsg('Registratie mislukt: '+error.message);
-  }
-
-  if(data.user && Array.isArray(data.user.identities) && data.user.identities.length===0){
-    btn.disabled=false;btn.textContent='Account aanmaken';
-    return toonMsg('Dit e-mailadres is al geregistreerd. Log in.');
-  }
-
-  // Naam bewaren voor als deze persoon straks voor het eerst inlogt --
-  // op het moment van registreren is er nog GEEN actieve sessie (moet
-  // eerst de e-mail bevestigen), dus het teamlid-record kan pas dan
-  // pas écht worden aangemaakt.
-  localStorage.setItem('postvak_naam_'+email, naam);
-
-  btn.disabled=false;btn.textContent='Account aanmaken';
-  toonMsg('Account aangemaakt! Check je e-mail om te bevestigen, log daarna in.','ok');
 }
 </script>
 </body>
