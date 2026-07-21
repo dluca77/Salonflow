@@ -18,6 +18,14 @@ function escapeHtml(tekst) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
+// Voor waarden die in een JS-stringliteral terechtkomen dat zelf weer
+// binnen een dubbel-aangehaald HTML-attribuut staat, bv:
+// onclick="fn(this,'${jsAttr(x)}')"
+function jsAttr(tekst) {
+  const jsVeilig = String(tekst === null || tekst === undefined ? '' : tekst).replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+  return escapeHtml(jsVeilig);
+}
+
 // ── WhatsApp klik-link (gratis alternatief) ──────────────────────────────
 // Bouwt een wa.me-link met een vooraf ingevulde, door de gebruiker zelf
 // nog te verzenden tekst. Kost niks (geen Twilio/Meta-API), maar vereist

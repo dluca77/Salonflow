@@ -60,6 +60,10 @@ function escapeHtml(tekst){
     .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
     .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
+function jsAttr(tekst){
+  const jsVeilig=String(tekst===null||tekst===undefined?'':tekst).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  return escapeHtml(jsVeilig);
+}
 
 async function init(){
   if(!token){
@@ -84,7 +88,7 @@ async function init(){
     <input class="fi" id="inp-ww" type="password" placeholder="Minimaal 8 tekens">
     <label class="fl">Herhaal wachtwoord</label>
     <input class="fi" id="inp-ww2" type="password" placeholder="Zelfde wachtwoord">
-    <button class="btn btn-prim" id="btn-activeer" onclick="activeer('${info.email.replace(/'/g,"\\'")}')">Account activeren</button>
+    <button class="btn btn-prim" id="btn-activeer" onclick="activeer('${jsAttr(info.email)}')">Account activeren</button>
     <div class="err" id="err"></div>
   `;
 }

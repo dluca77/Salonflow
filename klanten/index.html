@@ -739,8 +739,8 @@ async function openGeblokkeerdOverzicht(){
   lijstEl.innerHTML=data.map(item=>`
     <div class="geblokkeerd-item">
       <div>
-        <div class="geblokkeerd-item-info">${item.email||item.telefoon||'Onbekend'}</div>
-        ${item.reden?`<div class="geblokkeerd-item-reden">${item.reden}</div>`:''}
+        <div class="geblokkeerd-item-info">${escapeHtml(item.email||item.telefoon||'Onbekend')}</div>
+        ${item.reden?`<div class="geblokkeerd-item-reden">${escapeHtml(item.reden)}</div>`:''}
       </div>
       <button class="btn-deblokkeer" onclick="deblokkeerVanuitOverzicht('${item.id}')">Deblokkeer</button>
     </div>

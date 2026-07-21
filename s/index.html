@@ -78,6 +78,15 @@ const sb=window.supabase.createClient(SB_URL,SB_KEY);
 const params=new URLSearchParams(location.search);
 const slug=params.get('salon');
 
+// Veiligheid: salon-gegevens komen uit zelf-registratie door de eigenaar
+// en zijn dus onbetrouwbare input zodra ze in innerHTML terechtkomen.
+function escapeHtml(tekst){
+  if(tekst===null||tekst===undefined) return '';
+  return String(tekst)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
 async function init(){
   if(!slug){
     toonFout('Deze pagina kon niet gevonden worden. Controleer of je de juiste link hebt.');
@@ -111,17 +120,17 @@ function toonContent(salon){
 
   const logoBox=document.getElementById('logo-box');
   if(salon.logo_url){
-    logoBox.innerHTML=`<img src="${salon.logo_url}" alt="${salon.naam}">`;
+    logoBox.innerHTML=`<img src="${escapeHtml(salon.logo_url)}" alt="${escapeHtml(salon.naam)}">`;
   } else {
     logoBox.textContent=salon.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
   }
 
   const infoItems=[];
   if(salon.adres||salon.stad){
-    infoItems.push(`<div class="info-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${[salon.adres,salon.stad].filter(Boolean).join(', ')}</div>`);
+    infoItems.push(`<div class="info-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHtml([salon.adres,salon.stad].filter(Boolean).join(', '))}</div>`);
   }
   if(salon.telefoon){
-    infoItems.push(`<div class="info-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>${salon.telefoon}</div>`);
+    infoItems.push(`<div class="info-item"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg>${escapeHtml(salon.telefoon)}</div>`);
   }
   document.getElementById('info-row').innerHTML=infoItems.join('');
 

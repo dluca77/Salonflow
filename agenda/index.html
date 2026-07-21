@@ -694,7 +694,7 @@ function buildAptCard(a,i){
 
   // Status badge indien groter
   const statusHtml=hp>52?`<div class="apt-status" style="color:${STATUS_COLORS[status]}">${STATUS_LABELS[status]}</div>`:'';
-  card.innerHTML=`<div class="apt-t">${ft(ah,am)} – ${ft(eh,em)}</div><div class="apt-n">${naam}</div>${hp>40&&sv?`<div class="apt-s">${sv}</div>`:''}${statusHtml}`;
+  card.innerHTML=`<div class="apt-t">${ft(ah,am)} – ${ft(eh,em)}</div><div class="apt-n">${escapeHtml(naam)}</div>${hp>40&&sv?`<div class="apt-s">${escapeHtml(sv)}</div>`:''}${statusHtml}`;
 
   card.onclick=e=>{e.stopPropagation();showPop(a,card);};
 

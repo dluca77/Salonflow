@@ -359,6 +359,20 @@ const SALON_ID=params.get('salon');
 const IS_EMBED=params.get('embed')==='1';
 if(IS_EMBED) document.body.classList.add('embed');
 
+// Veiligheid: salon/dienst/medewerker-namen komen van zelf-registrerende
+// salon-eigenaren en worden hier aan elke anonieme bezoeker getoond, dus
+// altijd escapen voordat ze in innerHTML terechtkomen.
+function escapeHtml(tekst){
+  if(tekst===null||tekst===undefined) return '';
+  return String(tekst)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function jsAttr(tekst){
+  const jsVeilig=String(tekst===null||tekst===undefined?'':tekst).replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+  return escapeHtml(jsVeilig);
+}
+
 let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,gebruikt_abonnement_id:null};
 
 function berekenAanbetalingBedrag(prijs,type,bedrag){
@@ -505,7 +519,7 @@ async function init(){
   if(locaties.length>1){
     HUIDIGE_BOEK_LOCATIE_ID=locaties[0].id;
     document.getElementById('locatie-picker').style.display='block';
-    document.getElementById('locatie-select').innerHTML=locaties.map(l=>`<option value="${l.id}">${l.naam}</option>`).join('');
+    document.getElementById('locatie-select').innerHTML=locaties.map(l=>`<option value="${escapeHtml(l.id)}">${escapeHtml(l.naam)}</option>`).join('');
   } else if(locaties.length===1){
     HUIDIGE_BOEK_LOCATIE_ID=locaties[0].id;
   }
@@ -528,8 +542,8 @@ async function init(){
     document.getElementById('brand-type').textContent=salon.type_bedrijf||'';
     document.title=salon.naam+' | Afspraak maken';
     document.getElementById('salon-info').innerHTML=`
-      ${salon.adres?`<div class="salon-info-item"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${salon.adres}${salon.stad?', '+salon.stad:''}</div>`:''}
-      ${salon.telefoon?`<div class="salon-info-item"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>${salon.telefoon}</div>`:''}
+      ${salon.adres?`<div class="salon-info-item"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>${escapeHtml(salon.adres)}${salon.stad?', '+escapeHtml(salon.stad):''}</div>`:''}
+      ${salon.telefoon?`<div class="salon-info-item"><svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z"/></svg>${escapeHtml(salon.telefoon)}</div>`:''}
     `;
   }
 
@@ -554,8 +568,8 @@ async function init(){
       const vereistKaart = window.SALON_STRIPE_ACTIEF && d.vereist_kaartgegevens;
       const abo = window.DIENSTEN_MET_ABO[d.id];
       return `
-      <div class="dienst-card" onclick="selectDienst(this,'${d.naam.replace(/'/g,"\\'")}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart})">
-        <div class="dc-naam">${d.naam}</div>
+      <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart})">
+        <div class="dc-naam">${escapeHtml(d.naam)}</div>
         <div class="dc-prijs">€${d.prijs}</div>
         <div class="dc-duur">${d.duur_min} min</div>
         ${heeftAanbetaling?`<div class="dc-aanbetaling">Aanbetaling vereist: €${aanbEuro}</div>`:''}
@@ -576,10 +590,10 @@ async function init(){
     </div>
     ${medewerkers.map(m=>{
       const init=m.naam.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
-      return`<div class="med-card" onclick="selectMed(this,'${m.naam.replace(/'/g,"\\'")}','${m.id}')">
-        <div class="med-av">${init}</div>
-        <div class="med-naam">${m.naam.split(' ')[0]}</div>
-        <div class="med-rol">${m.rol}</div>
+      return`<div class="med-card" onclick="selectMed(this,'${jsAttr(m.naam)}','${m.id}')">
+        <div class="med-av">${escapeHtml(init)}</div>
+        <div class="med-naam">${escapeHtml(m.naam.split(' ')[0])}</div>
+        <div class="med-rol">${escapeHtml(m.rol)}</div>
       </div>`;
     }).join('')}
   `;

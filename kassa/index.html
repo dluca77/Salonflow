@@ -360,15 +360,15 @@ async function loadData(){
 
   const medSel=document.getElementById('med-select');
   medSel.innerHTML='<option value="">Kies medewerker...</option>'+
-    allMedewerkers.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
+    allMedewerkers.map(m=>`<option value="${m.id}">${escapeHtml(m.naam)}</option>`).join('');
 
   const grid=document.getElementById('svc-grid');
   if(!allDiensten.length){
     grid.innerHTML=`<div class="svc-loading">Nog geen diensten.<br><a href="/diensten/" style="color:var(--gd);text-decoration:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Diensten toevoegen →</a></div>`;
   } else {
     grid.innerHTML=allDiensten.map(d=>`
-      <div class="svc" onclick="add('${d.naam.replace(/'/g,"\\'")}',${d.prijs},'dienst',${d.prijs_incl_btw!==false})">
-        <div class="svc-name">${d.naam}</div>
+      <div class="svc" onclick="add('${jsAttr(d.naam)}',${d.prijs},'dienst',${d.prijs_incl_btw!==false})">
+        <div class="svc-name">${escapeHtml(d.naam)}</div>
         <div class="svc-prijs">€${d.prijs}</div>
         <div class="svc-dur">${d.duur_min} min</div>
       </div>`).join('');
@@ -448,8 +448,8 @@ function renderBon(){
   list.innerHTML=bon.map((i,idx)=>`
     <div class="bon-item">
       <div class="bon-qty" onclick="addQty(${idx})">${i.qty}×</div>
-      <div class="bon-med-tag${i.medewerker_id?'':' geen'}" title="${i.medewerker_naam||'Geen medewerker'}">${i.medewerker_id?medewerkerInit(i.medewerker_id):'?'}</div>
-      <div class="bon-name">${i.naam}${i.type==='cadeaubon_verkoop'?' <span style="color:var(--gd);font-size:10px;">(cadeaubon)</span>':''}</div>
+      <div class="bon-med-tag${i.medewerker_id?'':' geen'}" title="${escapeHtml(i.medewerker_naam||'Geen medewerker')}">${i.medewerker_id?escapeHtml(medewerkerInit(i.medewerker_id)):'?'}</div>
+      <div class="bon-name">${escapeHtml(i.naam)}${i.type==='cadeaubon_verkoop'?' <span style="color:var(--gd);font-size:10px;">(cadeaubon)</span>':''}</div>
       <div class="bon-price">€${i.total}</div>
       <div class="bon-del" onclick="del(${idx})">×</div>
     </div>`).join('');
@@ -700,7 +700,7 @@ async function betaal(){
   btn.disabled=false;btn.textContent='Afrekenen';
 
   document.getElementById('suc-sub').textContent=methodeLabel+' · €'+t.totaal.toFixed(2);
-  let receiptHtml=bon.map(i=>`<div class="rrow"><span>${i.naam}</span><span>€${i.total}</span></div>`).join('')+
+  let receiptHtml=bon.map(i=>`<div class="rrow"><span>${escapeHtml(i.naam)}</span><span>€${i.total}</span></div>`).join('')+
     `<div class="rrow"><span>BTW 21%</span><span>€${t.btw.toFixed(2)}</span></div>`;
   if(cadeaubonActief){
     receiptHtml+=`<div class="rrow"><span>Betaald met cadeaubon ${cadeaubonActief.code}</span><span>-€${t.cbGebruikt.toFixed(2)}</span></div>`;
