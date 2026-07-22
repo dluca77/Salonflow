@@ -47,7 +47,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
     <div class="card-title">Jouw stempelkaart</div>
     <p class="card-sub">Vul je e-mailadres in om je stempels te bekijken.</p>
     <input class="fi" id="inp-email" type="email" placeholder="jouw@email.nl" autocomplete="email">
-    <button class="btn btn-prim" id="btn-zoek" onclick="zoekStempelkaart()">Bekijk mijn stempelkaart</button>
+    <button class="btn btn-prim" id="btn-zoek" onclick="vraagCodeAan()">Verstuur verificatiecode</button>
     <div id="err" style="display:none;color:var(--red);font-size:12px;text-align:center;margin-top:10px;"></div>
   </div>
 </div>
@@ -75,12 +75,14 @@ function jsAttr(tekst){
 const params=new URLSearchParams(location.search);
 const SALON_ID=params.get('salon');
 const card=document.getElementById('card');
+const AI_MAIL_WORKER_URL='https://kronr-mail.isaak-elia.workers.dev/stempelkaart-code';
+let geverifieerdEmail=null;
 
 document.getElementById('inp-email').addEventListener('keydown',e=>{
-  if(e.key==='Enter') zoekStempelkaart();
+  if(e.key==='Enter') vraagCodeAan();
 });
 
-async function zoekStempelkaart(){
+async function vraagCodeAan(){
   const email=document.getElementById('inp-email').value.trim();
   const errEl=document.getElementById('err');
   errEl.style.display='none';
@@ -97,15 +99,69 @@ async function zoekStempelkaart(){
   }
 
   const btn=document.getElementById('btn-zoek');
-  btn.disabled=true;btn.textContent='Zoeken...';
+  btn.disabled=true;btn.textContent='Bezig...';
 
-  const{data,error}=await sb.rpc('get_stempelkaart',{p_salon_id:SALON_ID,p_email:email});
+  // Stap 1: code aanmaken (server-side, rate-limited)
+  const{data:code,error}=await sb.rpc('vraag_stempelkaart_code_aan',{p_salon_id:SALON_ID,p_email:email});
+
+  if(error){
+    btn.disabled=false;btn.textContent='Verstuur verificatiecode';
+    errEl.textContent=error.message.includes('Te veel')?error.message:'Kon geen code versturen. Probeer het later opnieuw.';
+    errEl.style.display='block';
+    return;
+  }
+
+  // Stap 2: code laten mailen (non-fataal als dit misgaat qua UI-flow --
+  // de code bestaat al server-side, dus we tonen de invoerstap sowieso;
+  // als het mailtje echt niet aankomt, kan de klant het gewoon opnieuw
+  // aanvragen).
+  fetch(AI_MAIL_WORKER_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({salon_id:SALON_ID, email, code})
+  }).catch(()=>{});
+
+  geverifieerdEmail=email;
+  btn.disabled=false;btn.textContent='Verstuur verificatiecode';
+  toonCodeInvoer(email);
+}
+
+function toonCodeInvoer(email){
+  card.innerHTML=`
+    <div class="card-title">Check je e-mail</div>
+    <p class="card-sub">We hebben een 6-cijferige code gestuurd naar ${escapeHtml(email)}. Vul 'm hieronder in.</p>
+    <input class="fi" id="inp-code" type="text" inputmode="numeric" maxlength="6" placeholder="123456" style="text-align:center;font-size:20px;letter-spacing:6px;">
+    <button class="btn btn-prim" id="btn-bevestig" onclick="bevestigCode()">Bevestigen</button>
+    <button class="btn btn-back" onclick="location.reload()">Ander e-mailadres proberen</button>
+    <div id="err" style="display:none;color:var(--red);font-size:12px;text-align:center;margin-top:10px;"></div>
+  `;
+  document.getElementById('inp-code').focus();
+  document.getElementById('inp-code').addEventListener('keydown',e=>{
+    if(e.key==='Enter') bevestigCode();
+  });
+}
+
+async function bevestigCode(){
+  const code=document.getElementById('inp-code').value.trim();
+  const errEl=document.getElementById('err');
+  errEl.style.display='none';
+
+  if(!/^\d{6}$/.test(code)){
+    errEl.textContent='Vul de 6-cijferige code in.';
+    errEl.style.display='block';
+    return;
+  }
+
+  const btn=document.getElementById('btn-bevestig');
+  btn.disabled=true;btn.textContent='Controleren...';
+
+  const{data,error}=await sb.rpc('bevestig_stempelkaart_code',{p_salon_id:SALON_ID,p_email:geverifieerdEmail,p_code:code});
   const info=Array.isArray(data)?data[0]:data;
 
-  btn.disabled=false;btn.textContent='Bekijk mijn stempelkaart';
+  btn.disabled=false;btn.textContent='Bevestigen';
 
-  if(error||!info||info.stempels_nodig===0){
-    errEl.textContent='Deze salon heeft geen stempelkaart-programma, of er is iets misgegaan.';
+  if(error||!info){
+    errEl.textContent='Ongeldige of verlopen code. Probeer het opnieuw.';
     errEl.style.display='block';
     return;
   }
