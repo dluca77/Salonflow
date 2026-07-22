@@ -70,6 +70,8 @@ function fmtDatum(iso){
   return d.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})+' om '+d.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
 }
 
+let isLes=false;
+
 async function init(){
   if(!token){
     toonFout('Ongeldige link. Controleer of je de volledige link uit de e-mail hebt geopend.');
@@ -77,11 +79,25 @@ async function init(){
   }
 
   const{data,error}=await sb.rpc('get_wachtlijst_via_token',{p_token:token});
-  const entry=Array.isArray(data)?data[0]:data;
+  let entry=Array.isArray(data)?data[0]:data;
 
   if(error||!entry||!entry.voorgestelde_datum_tijd){
-    toonFout('Deze plek kon niet gevonden worden. Mogelijk is de link verlopen.');
-    return;
+    // Geen 1-op-1-wachtlijst-plek met dit token -- kan een groepsles-
+    // wachtlijst-token zijn (les_boekingen/lessen_wachtlijst-migratie).
+    const{data:lesData,error:lesError}=await sb.rpc('get_lessen_wachtlijst_via_token',{p_token:token});
+    const lesEntry=Array.isArray(lesData)?lesData[0]:lesData;
+    if(lesError||!lesEntry||!lesEntry.datum_tijd){
+      toonFout('Deze plek kon niet gevonden worden. Mogelijk is de link verlopen.');
+      return;
+    }
+    isLes=true;
+    entry={
+      klant_naam:lesEntry.klant_naam,
+      dienst_naam:lesEntry.dienst_naam,
+      voorgestelde_datum_tijd:lesEntry.datum_tijd,
+      status:lesEntry.status,
+      voorgesteld_op:lesEntry.voorgesteld_op
+    };
   }
 
   if(entry.status==='vervuld'){
@@ -116,7 +132,8 @@ async function bevestigClaim(){
   const btn=document.getElementById('btn-claim');
   btn.disabled=true;btn.textContent='Bezig...';
 
-  const{data,error}=await sb.rpc('claim_wachtlijst_plek',{p_token:token});
+  const rpcNaam=isLes?'claim_lessen_wachtlijst_plek':'claim_wachtlijst_plek';
+  const{data,error}=await sb.rpc(rpcNaam,{p_token:token});
 
   if(error||!data?.success){
     toonFout(data?.error||'Claimen is niet gelukt. Probeer het later opnieuw of neem contact op met de salon.');

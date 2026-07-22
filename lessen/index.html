@@ -345,7 +345,7 @@ async function openLesDetail(id){
         </div>
         <div style="display:flex;align-items:center;gap:8px;">
           <span class="attendee-status">${b.status}</span>
-          ${b.status==='gepland'?`<a class="pt-btn" href="/kassa/?les_boeking=${b.id}" style="text-decoration:none;">Afrekenen</a><button class="pt-btn" onclick="markeerNoShow('${b.id}')">No-show</button>`:''}
+          ${b.status==='gepland'?`<a class="pt-btn" href="/kassa/?les_boeking=${b.id}" style="text-decoration:none;">Afrekenen</a><button class="pt-btn" onclick="markeerNoShow('${b.id}')">No-show</button><button class="pt-btn" onclick="annuleerLesBoeking('${b.id}')">Annuleren</button>`:''}
           ${b.status==='aanwezig'?`<span style="font-size:11px;color:var(--green);">Afgerekend ✓</span>`:''}
         </div>
       </div>`).join('');
@@ -356,6 +356,37 @@ async function openLesDetail(id){
 async function markeerNoShow(boekingId){
   await sb.from('les_boekingen').update({status:'no-show'}).eq('id',boekingId);
   openLesDetail(huidigLesId);
+}
+
+async function annuleerLesBoeking(boekingId){
+  if(!confirm('Deze boeking annuleren? De plek komt vrij en wordt eventueel aangeboden aan de wachtlijst.')) return;
+  await sb.from('les_boekingen').update({status:'geannuleerd'}).eq('id',boekingId);
+  openLesDetail(huidigLesId);
+  checkLessenWachtlijstMatch(huidigLesId);
+}
+
+async function checkLessenWachtlijstMatch(lesId){
+  try{
+    const{data}=await sb.rpc('vind_lessen_wachtlijst_match',{p_les_id:lesId});
+    const match=Array.isArray(data)?data[0]:data;
+    if(!match?.gevonden) return;
+
+    const les=LESSEN.find(x=>x.id===lesId);
+    await fetch('https://kronr-mail.isaak-elia.workers.dev/wachtlijst-plek',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email:match.klant_email,
+        klant_naam:match.klant_naam,
+        salon_naam:SALON?.naam||'',
+        dienst_naam:les?.diensten?.naam||'',
+        datum_tijd:les?.datum_tijd,
+        claim_token:match.claim_token
+      })
+    });
+  }catch(e){
+    console.warn('Wachtlijst-melding voor les kon niet worden verstuurd:',e);
+  }
 }
 
 async function annuleerLes(){

@@ -222,6 +222,15 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div id="groepsles-keuze-wrap" style="display:none;margin-top:20px;">
         <div class="step-sub" style="margin-bottom:10px;" id="groepsles-keuze-titel">Kies een lesmoment</div>
         <div class="dienst-grid" id="groepsles-keuze-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));"></div>
+        <div id="lw-form" style="display:none;margin-top:16px;padding:16px;background:var(--iv);border:1px solid var(--bd);border-radius:10px;">
+          <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Zet me op de wachtlijst</div>
+          <p style="font-size:12px;color:var(--mu);margin-bottom:14px;">We mailen je zodra er een plek vrijkomt voor dit lesmoment.</p>
+          <div class="form-row"><label class="form-label">Naam</label><input class="form-input" id="lw-naam" type="text" placeholder="Jasmijn de Vries"></div>
+          <div class="form-row"><label class="form-label">E-mailadres</label><input class="form-input" id="lw-email" type="email" placeholder="naam@email.nl"></div>
+          <div class="form-row"><label class="form-label">Telefoonnummer (optioneel)</label><input class="form-input" id="lw-telefoon" type="tel" placeholder="06-12345678"></div>
+          <div id="lw-err" style="display:none;padding:8px 12px;border-left:3px solid var(--red);font-size:12px;margin:10px 0;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+          <button class="btn-next" id="lw-btn" onclick="verstuurLessenWachtlijst()" style="margin-top:6px;">Zet me op de wachtlijst</button>
+        </div>
       </div>
       <div id="variant-keuze-wrap" style="display:none;margin-top:20px;">
         <div class="step-sub" style="margin-bottom:10px;" id="variant-keuze-titel">Kies een optie</div>
@@ -945,12 +954,62 @@ async function selectGroepslesDienst(el,naam,id,prijs){
     const tijdStr=dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
     const vrij=l.capaciteit-l.aantal_geboekt;
     const vol=vrij<=0;
-    return `<div class="dienst-card${vol?' vol':''}" ${vol?'':`onclick="kiesLes(this,'${l.id}','${jsAttr(datumStr)}','${tijdStr}',${l.duur_min})"`} ${vol?'style="opacity:.5;cursor:default;"':''}>
+    return `<div class="dienst-card${vol?' vol':''}" ${vol?`onclick="toonLessenWachtlijst(this,'${l.id}','${jsAttr(datumStr)}','${tijdStr}')"`:`onclick="kiesLes(this,'${l.id}','${jsAttr(datumStr)}','${tijdStr}',${l.duur_min})"`}>
       <div class="dc-naam">${escapeHtml(datumStr)}</div>
       <div class="dc-prijs">${tijdStr}</div>
-      <div class="dc-duur">${vol?'Vol':vrij+' van de '+l.capaciteit+' plekken vrij'}${l.medewerker_naam?' · '+escapeHtml(l.medewerker_naam):''}</div>
+      <div class="dc-duur">${vol?'Vol -- klik voor wachtlijst':vrij+' van de '+l.capaciteit+' plekken vrij'}${l.medewerker_naam?' · '+escapeHtml(l.medewerker_naam):''}</div>
     </div>`;
   }).join('');
+}
+
+function toonLessenWachtlijst(el,lesId,datumStr,tijdStr){
+  document.querySelectorAll('#groepsles-keuze-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.wachtlijst_les_id=lesId;
+  const form=document.getElementById('lw-form');
+  form.style.display='block';
+  document.getElementById('lw-err').style.display='none';
+  form.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+async function verstuurLessenWachtlijst(){
+  const naam=document.getElementById('lw-naam').value.trim();
+  const email=document.getElementById('lw-email').value.trim();
+  const telefoon=document.getElementById('lw-telefoon').value.trim();
+  const errEl=document.getElementById('lw-err');
+  const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  if(!naam||!emailRegex.test(email)){
+    errEl.textContent='Vul je naam en een geldig e-mailadres in.';
+    errEl.style.display='block';
+    return;
+  }
+  errEl.style.display='none';
+
+  const btn=document.getElementById('lw-btn');
+  btn.disabled=true;btn.textContent='Bezig...';
+
+  const{error}=await sb.rpc('voeg_toe_lessen_wachtlijst',{
+    p_les_id:state.wachtlijst_les_id,
+    p_klant_naam:naam,
+    p_klant_email:email,
+    p_klant_telefoon:telefoon||null
+  });
+
+  btn.disabled=false;btn.textContent='Zet me op de wachtlijst';
+
+  if(error){
+    errEl.textContent='Er ging iets mis. Probeer het opnieuw.';
+    errEl.style.display='block';
+    return;
+  }
+
+  document.getElementById('lw-form').innerHTML=`
+    <div style="text-align:center;padding:8px 0;">
+      <div style="font-size:20px;margin-bottom:8px;">✓</div>
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px;">Je staat op de wachtlijst!</div>
+      <div style="font-size:12px;color:var(--mu);">We mailen je zodra er een plek vrijkomt.</div>
+    </div>`;
 }
 
 function kiesLes(el,lesId,datumStr,tijdStr,duurMin){
