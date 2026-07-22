@@ -56,6 +56,7 @@ returns table(
 language plpgsql
 security definer
 as $$
+#variable_conflict use_column
 declare
   v_pin numeric; v_contant numeric; v_ideal numeric; v_cadeaubon numeric;
   v_verschil numeric;
