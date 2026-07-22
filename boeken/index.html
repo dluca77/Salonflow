@@ -1564,7 +1564,7 @@ async function bevestigen(){
       const traject=Array.isArray(trajectData)?trajectData[0]:trajectData;
       if(!trajectErr && traject){
         trajectId=traject.id;
-        trajectSessieNummer=traject.voltooide_sessies+1;
+        trajectSessieNummer=traject.geboekte_sessies;
       }
     }catch(e){
       console.warn('Kon traject niet vinden/aanmaken:',e);
