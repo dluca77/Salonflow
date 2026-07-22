@@ -757,6 +757,13 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <button class="vw-pill" data-industry="massage" role="tab" aria-selected="false">Massage</button>
       <button class="vw-pill" data-industry="wenkbrauw" role="tab" aria-selected="false">Wenkbrauw & wimpers</button>
       <button class="vw-pill" data-industry="rijschool" role="tab" aria-selected="false">Rijscholen</button>
+      <button class="vw-pill" data-industry="pt" role="tab" aria-selected="false">Personal trainers</button>
+      <button class="vw-pill" data-industry="klimhal" role="tab" aria-selected="false">Klimhal & boksschool</button>
+      <button class="vw-pill" data-industry="hondentrainer" role="tab" aria-selected="false">Hondentrainers</button>
+      <button class="vw-pill" data-industry="fotografie" role="tab" aria-selected="false">Fotografie</button>
+      <button class="vw-pill" data-industry="garage" role="tab" aria-selected="false">Garages</button>
+      <button class="vw-pill" data-industry="coworking" role="tab" aria-selected="false">Vergaderruimtes</button>
+      <button class="vw-pill" data-industry="dietist" role="tab" aria-selected="false">Diëtisten</button>
       <button class="vw-pill" data-industry="anders" role="tab" aria-selected="false">Anders</button>
     </div>
 
@@ -1433,6 +1440,85 @@ idxSetPeriod('yearly');
         <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Rijles - Milan</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">15:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Rijles - Fenna</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">16:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tussentijdse toets</div></div>
+      </div>`
+    },
+    pt: {
+      title: 'Personal trainers',
+      desc: 'Van 1-op-1 sessies tot een kleine bootcamp-groep: Kronr regelt beide zonder dat jij tussen twee systemen hoeft te schakelen.',
+      benefits: ['1-op-1 sessies én groepslessen (bootcamp) in dezelfde agenda', 'Strakke capaciteitsbewaking bij groepstrainingen', 'Klanthistorie en voortgang per klant bijgehouden'],
+      kai: 'Je bootcamp van zaterdag zit op 6 van de 8 plekken.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">08:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">1-op-1 - Rik</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Bootcamp (6/8)</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:30</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">1-op-1 - Anouk</div></div>
+      </div>`
+    },
+    klimhal: {
+      title: 'Klimhal & boksschool',
+      desc: 'Groepslessen met een vaste capaciteit, plus losse instapmomenten -- Kronr bewaakt beide zonder dat een les ooit overboekt raakt.',
+      benefits: ['Groepslessen met capaciteit, automatisch bewaakt', 'Klanten boeken zelf een plek via de widget', 'Losse dagkaarten of instapmomenten los van de lessen te verkopen'],
+      kai: 'De boksles van 19:00 is nu vol. Wil je een extra les inplannen?',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Boksles - 19:00 (12/12)</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Jayden</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Noa</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Geboekt</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Wachtlijst</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">2 wachtend</div></div>
+      </div>`
+    },
+    hondentrainer: {
+      title: 'Hondentrainers',
+      desc: 'Een puppycursus loopt in groepjes, een gedragsprobleem vraagt om 1-op-1 aandacht. Kronr plant allebei moeiteloos.',
+      benefits: ['Groepscursussen (bv. puppytraining) met capaciteit bewaakt', '1-op-1 gedragstrainingen in dezelfde agenda', 'Voortgang en bijzonderheden per hond bijgehouden'],
+      kai: 'De puppycursus van dinsdag heeft nog 3 plekken vrij.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Puppycursus (5/8)</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">1-op-1 - Buddy</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">14:30</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">1-op-1 - Rex</div></div>
+      </div>`
+    },
+    fotografie: {
+      title: 'Fotografie & videografie',
+      desc: 'Een sessie die niet doorgaat kost je een halve dag. Kronr beschermt je agenda met een verplichte aanbetaling bij het boeken.',
+      benefits: ['Aanbetaling verplicht bij het boeken, geen verrassingen', 'Lange, variabele sessieduur eenvoudig inplannen', 'Klantgegevens en wensen per shoot bewaard'],
+      kai: 'Deze shoot heeft nog geen aanbetaling. Zal ik een herinnering sturen?',
+      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-tattoo.jpg" alt="Kronr agenda voor fotografie en videografie" loading="lazy"></div>`
+    },
+    garage: {
+      title: 'Garages & autobedrijven',
+      desc: 'Niet elke medewerker, maar elke brug is de bottleneck. Kronr plant op basis van wat bij jou écht de beperkende factor is.',
+      benefits: ['Plannen op ruimte/werkplek in plaats van alleen op medewerker', 'Onderdelen en producten los verkopen via de kassa', 'Variabele, langere behandelduur eenvoudig in te schatten'],
+      kai: 'Brug 2 is morgen de hele dag volgeboekt, brug 1 heeft nog ruimte.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">APK - Brug 1</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Onderhoud - Brug 2</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Banden - Brug 1</div></div>
+      </div>`
+    },
+    coworking: {
+      title: 'Vergaderruimtes & co-working',
+      desc: 'Geen medewerker nodig, wel een ruimte die niet dubbel geboekt mag worden. Kronr bewaakt de capaciteit per ruimte, per tijdslot.',
+      benefits: ['Ruimtes nooit dubbel geboekt, ook niet bij drukte', 'Klanten boeken zelf online een tijdslot', 'Facturatie en betalingen in één overzicht'],
+      kai: 'Vergaderruimte B is vanmiddag nog vrij van 14:00 tot 16:00.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Ruimte A</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Ruimte C</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Ruimte B - vrij</div></div>
+      </div>`
+    },
+    dietist: {
+      title: 'Diëtisten & voedingscoaches',
+      desc: 'Een traject van meerdere maanden vraagt om overzicht, niet chaos. Kronr houdt voortgang en vervolgafspraken bij.',
+      benefits: ['Trajecten met meerdere sessies overzichtelijk bijgehouden', 'Terugkerende consulten automatisch ingepland', 'Klantnotities en voortgang altijd direct bij de hand'],
+      kai: 'Dit traject zit op sessie 4 van de 8. Zal ik de volgende inplannen?',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">09:30</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Intake</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sessie 4/8</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Sessie 2/6</div></div>
       </div>`
     },
     anders: {
