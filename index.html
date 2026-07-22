@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kronr: Salonbeheer zonder gedoe</title>
 <link rel="icon" type="image/svg+xml" href="favicon.svg">
-<meta name="description" content="Agenda, boekingen, betalingen en klantbeheer in één overzichtelijke app. Gebouwd voor kappers, nagelstudio's en schoonheidsspecialisten die minder tijd aan administratie willen besteden.">
+<meta name="description" content="Agenda, boekingen, betalingen en klantbeheer in één overzichtelijke app. Gebouwd voor kappers, nagelstudio's, schoonheidsspecialisten, sportscholen en meer die minder tijd aan administratie willen besteden.">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -750,6 +750,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <button class="vw-pill" data-industry="beauty" role="tab" aria-selected="false">Beauty</button>
       <button class="vw-pill" data-industry="spa" role="tab" aria-selected="false">Spa</button>
       <button class="vw-pill" data-industry="tattoo" role="tab" aria-selected="false">Tattoo</button>
+      <button class="vw-pill" data-industry="sport" role="tab" aria-selected="false">Sport & fitness</button>
+      <button class="vw-pill" data-industry="dieren" role="tab" aria-selected="false">Dierenverzorging</button>
       <button class="vw-pill" data-industry="anders" role="tab" aria-selected="false">Anders</button>
     </div>
 
@@ -1348,6 +1350,30 @@ idxSetPeriod('yearly');
       benefits: ['Aanbetaling verplicht bij boeking', 'Lange sessies eenvoudig inplannen', 'Intake- en referentiefoto\'s veilig bewaard'],
       kai: 'Deze klant heeft nog geen aanbetaling gedaan. Wil je een herinnering sturen?',
       visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-tattoo.jpg" alt="Kronr klantkaart voor tattoo en piercing" loading="lazy"></div>`
+    },
+    sport: {
+      title: 'Sport & fitness',
+      desc: 'Een yogales, bootcamp of spinclass boek je niet 1-op-1, maar met een hele groep tegelijk. Kronr bewaakt de capaciteit, zodat een les nooit overboekt raakt.',
+      benefits: ['Groepslessen met vaste capaciteit, automatisch bewaakt', 'Klanten boeken zelf een plek via de widget, geen dubbele boekingen mogelijk', 'Instructeur en ruimte gekoppeld per les, no-shows apart te registreren'],
+      kai: 'De les van 18:00 zit nog op 8 van de 12 plekken. Zal ik hem extra onder de aandacht brengen?',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Yoga - woensdag 18:00 (8/12)</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Sophie</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Daan</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Geboekt</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Nieuwe plek</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Vrij</div></div>
+      </div>`
+    },
+    dieren: {
+      title: 'Dierenverzorging',
+      desc: 'Een chihuahua trimmen kost geen uur, een Bernese Mountain Dog wel. Kronr rekent automatisch de juiste prijs en tijd per formaat.',
+      benefits: ['Staffelprijzen per hondenmaat of ras, automatisch juiste tarief bij het boeken', 'Klantkaart met temperament, allergieën en trimvoorkeuren per huisdier', 'Herhaalafspraken (elke 6-8 weken) eenvoudig in te plannen'],
+      kai: 'Buddy (grote maat) staat gepland om 10:00 - 45 minuten ingepland op basis van zijn ras.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Buddy (groot)</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Milo (klein)</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Rex (middel)</div></div>
+      </div>`
     },
     anders: {
       title: 'Elke andere branche',
