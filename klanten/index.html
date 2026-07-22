@@ -284,6 +284,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     </div>
     <div class="fr"><label class="fl">Notitie</label><textarea class="fi" id="k-notitie" rows="2" placeholder="Allergieën, voorkeuren..."></textarea></div>
     <div class="fr"><label class="fl">Geboortedatum (optioneel)</label><input class="fi" id="k-geboortedatum" type="date"></div>
+    <div id="k-custom-velden-wrap"></div>
     <div class="fr">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
         <input type="checkbox" id="k-opt-out" style="width:16px;height:16px;">
@@ -319,6 +320,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="dr"><span class="dr-l">Favoriete dienst</span><span class="dr-v" id="d-sv">—</span></div>
       <div class="dr"><span class="dr-l">Notities</span><span class="dr-v" id="d-notitie" style="color:var(--mu);font-weight:300;">—</span></div>
     </div>
+    <div id="d-custom-velden" style="border:1px solid var(--bd);border-top:none;"></div>
     <div id="d-block-status" style="display:none;padding:10px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:6px;margin-bottom:12px;font-size:12px;color:#c0392b;"></div>
 
     <div id="d-stempel-sectie" style="display:none;margin-bottom:14px;padding:14px 16px;background:var(--wm);border-radius:8px;">
@@ -384,12 +386,16 @@ let KLANTEN=[], activeF='alle', activeQ='', activeG='alle', activeSort='naam-az'
 
 let AFSPRAAK_STATS={}; // key: email of naam (lowercase) -> {bezoeken, omzet, laatste, favoriet}
 
+let ALLE_CUSTOM_VELDEN=[];
+
 async function loadData(){
-  const [{data,error},{data:aData}]=await Promise.all([
+  const [{data,error},{data:aData},{data:cvData}]=await Promise.all([
     sb.from('klanten').select('*').eq('salon_id',SALON_ID).order('naam'),
-    sb.from('afspraken').select('klant_naam,klant_email,datum_tijd,status,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','afgerond')
+    sb.from('afspraken').select('klant_naam,klant_email,datum_tijd,status,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','afgerond'),
+    sb.from('custom_veld_definities').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('volgorde').order('created_at')
   ]);
   KLANTEN=data||[];
+  ALLE_CUSTOM_VELDEN=cvData||[];
   AFSPRAAK_STATS=bouwAfspraakStats(aData||[]);
   // Sidebar initials
   const nm=document.querySelector('.salon-naam')?.textContent||'';
@@ -603,6 +609,45 @@ function render(){
   }).join('');
 }
 
+function renderCustomVeldenInDetail(k){
+  const wrap=document.getElementById('d-custom-velden');
+  if(!wrap) return;
+  const waarden=k.custom_velden||{};
+  if(!ALLE_CUSTOM_VELDEN.length){ wrap.innerHTML=''; return; }
+  wrap.innerHTML=ALLE_CUSTOM_VELDEN.map(v=>{
+    let weergave='—';
+    const ruw=waarden[v.id];
+    if(v.type==='checkbox') weergave = ruw ? 'Ja' : 'Nee';
+    else if(ruw!==undefined && ruw!==null && ruw!=='') weergave = escapeHtml(String(ruw));
+    return `<div class="dr"><span class="dr-l">${escapeHtml(v.naam)}</span><span class="dr-v" style="color:var(--mu);font-weight:300;">${weergave}</span></div>`;
+  }).join('');
+}
+
+function renderCustomVeldenInForm(waarden){
+  const wrap=document.getElementById('k-custom-velden-wrap');
+  if(!wrap) return;
+  waarden=waarden||{};
+  if(!ALLE_CUSTOM_VELDEN.length){ wrap.innerHTML=''; return; }
+  wrap.innerHTML=ALLE_CUSTOM_VELDEN.map(v=>{
+    const huidig=waarden[v.id];
+    if(v.type==='checkbox'){
+      return `<div class="fr"><label class="fl" style="display:flex;align-items:center;gap:8px;"><input type="checkbox" class="cv-input" data-veld-id="${v.id}" ${huidig?'checked':''} style="width:16px;height:16px;">${escapeHtml(v.naam)}</label></div>`;
+    }
+    const inputType = v.type==='getal' ? 'number' : 'text';
+    return `<div class="fr"><label class="fl">${escapeHtml(v.naam)}</label><input class="fi cv-input" data-veld-id="${v.id}" type="${inputType}" value="${huidig!==undefined&&huidig!==null?escapeHtml(String(huidig)):''}"></div>`;
+  }).join('');
+}
+
+function verzamelCustomVeldenUitForm(){
+  const waarden={};
+  document.querySelectorAll('#k-custom-velden-wrap .cv-input').forEach(el=>{
+    const veldId=el.dataset.veldId;
+    if(el.type==='checkbox') waarden[veldId]=el.checked;
+    else if(el.value!=='') waarden[veldId]= el.type==='number' ? Number(el.value) : el.value;
+  });
+  return waarden;
+}
+
 function showK(id){
   const k=KLANTEN.find(x=>x.id===id);if(!k)return;
   currentDetailId=id;
@@ -627,6 +672,7 @@ function showK(id){
   document.getElementById('d-last').textContent=s.laatste?new Date(s.laatste).toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'}):'Nog geen bezoek';
   document.getElementById('d-sv').textContent=s.favoriet||'—';
   document.getElementById('d-notitie').textContent=k.notities||'—';
+  renderCustomVeldenInDetail(k);
   checkBlokkadeStatus(k);
   toonStempelkaart(k);
 
@@ -775,6 +821,7 @@ function editK(){
   document.getElementById('k-notitie').value=k.notities||'';
   document.getElementById('k-geboortedatum').value=k.geboortedatum||'';
   document.getElementById('k-opt-out').checked=k.marketing_opt_out||false;
+  renderCustomVeldenInForm(k.custom_velden);
   FOTO_URL=k.foto_url||null;
   const prev=document.getElementById('foto-preview');
   if(FOTO_URL){ prev.innerHTML=`<img src="${FOTO_URL}" alt="Foto">`; }
@@ -787,6 +834,7 @@ function resetKlantForm(){
   ['k-voor','k-achter','k-tel','k-email','k-notitie','k-geboortedatum'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('k-geslacht').value='';
   document.getElementById('k-opt-out').checked=false;
+  renderCustomVeldenInForm({});
   document.getElementById('foto-preview').innerHTML='?';
   document.getElementById('foto-upload-label').textContent='Foto toevoegen';
   FOTO_URL=null;
@@ -842,7 +890,8 @@ async function slaKlantOp(){
   const naam=voor+(achter?' '+achter:'');
   const geboortedatum=document.getElementById('k-geboortedatum').value||null;
   const optOut=document.getElementById('k-opt-out').checked;
-  const payload={naam,email:email||null,telefoon:tel||null,notities:notitie||null,geslacht,foto_url:FOTO_URL,geboortedatum,marketing_opt_out:optOut};
+  const customVelden=verzamelCustomVeldenUitForm();
+  const payload={naam,email:email||null,telefoon:tel||null,notities:notitie||null,geslacht,foto_url:FOTO_URL,geboortedatum,marketing_opt_out:optOut,custom_velden:customVelden};
   let error;
   if(editingId){
     ({error}=await sb.from('klanten').update(payload).eq('id',editingId));

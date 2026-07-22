@@ -215,6 +215,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <button class="settings-tab" data-tab="account" onclick="setTab('account')">Account</button>
       <button class="settings-tab" data-tab="beveiliging" onclick="setTab('beveiliging')">Beveiliging</button>
       <button class="settings-tab" data-tab="locaties" onclick="setTab('locaties')">Locaties</button>
+      <button class="settings-tab" data-tab="klantvelden" onclick="setTab('klantvelden')">Klantvelden</button>
       <button class="settings-tab" data-tab="abonnement" onclick="setTab('abonnement')">Abonnement</button>
     </div>
 
@@ -243,6 +244,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         <select class="fi" id="s-type">
           <option>Kapper</option><option>Barbier</option><option>Nagelstudio</option>
           <option>Schoonheidssalon</option><option>Massagesalon</option><option>Wellness</option>
+          <option>Hondentrimsalon</option><option>Tattoo-studio</option>
+          <option>Fysiotherapie</option><option>Sportschool/PT</option>
           <option>Overig</option>
         </select>
       </div>
@@ -465,6 +468,25 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </div>
     </div>
 
+    <div class="section" id="tab-klantvelden" data-tabpanel="klantvelden" style="display:none;">
+      <div class="sec-title">Klantvelden</div>
+      <div class="sec-sub">Voeg eigen velden toe aan je klantprofiel -- bijvoorbeeld hondenras/gewicht voor een trimsalon, huidtype voor een schoonheidssalon, of allergieën voor een massagepraktijk. Deze velden verschijnen dan bij elke klant in Klanten.</div>
+
+      <div id="klantvelden-lijst" style="margin:20px 0;"></div>
+
+      <div style="padding:16px;background:var(--iv);border:1px solid var(--bd);border-radius:8px;">
+        <div style="font-size:12px;font-weight:600;margin-bottom:10px;">Nieuw veld toevoegen</div>
+        <input class="fi" id="cv-naam" type="text" placeholder="Naam (bv. Hondenras)">
+        <select class="fi" id="cv-type">
+          <option value="tekst">Tekst</option>
+          <option value="getal">Getal</option>
+          <option value="checkbox">Aan/uit (checkbox)</option>
+        </select>
+        <button class="btn-sv" onclick="voegCustomVeldToe()">Veld toevoegen</button>
+        <div class="msg" id="msg-klantveld"></div>
+      </div>
+    </div>
+
     <div class="section" id="tab-abonnement" data-tabpanel="abonnement" style="display:none;">
       <div class="sec-title">Abonnement</div>
       <div class="sec-sub">Je huidige Kronr-pakket en facturering.</div>
@@ -679,6 +701,7 @@ window.addEventListener('message',function(e){
     document.getElementById('stripe-connect-sectie-upsell').style.display='block';
     document.getElementById('locaties-sectie-upsell').style.display='block';
   }
+  laadCustomVelden();
 
   if(SALON.plan==='business' || SALON.plan==='pro'){
     document.getElementById('boekhouding-sectie-business').style.display='block';
@@ -960,6 +983,60 @@ async function toggleLocatieActief(id, huidigActief){
   }
   await sb.from('locaties').update({actief:!huidigActief}).eq('id',id);
   await laadLocaties();
+}
+
+// ── KLANTVELDEN (custom-veld-definities) ──
+let ALLE_CUSTOM_VELDEN=[];
+
+async function laadCustomVelden(){
+  const{data}=await sb.from('custom_veld_definities').select('*').eq('salon_id',SALON_ID).order('volgorde').order('created_at');
+  ALLE_CUSTOM_VELDEN=data||[];
+  renderCustomVeldenLijst();
+}
+
+function renderCustomVeldenLijst(){
+  const lijst=document.getElementById('klantvelden-lijst');
+  if(!lijst) return;
+  if(!ALLE_CUSTOM_VELDEN.length){
+    lijst.innerHTML='<div style="font-size:12px;color:var(--mu);">Nog geen eigen velden.</div>';
+    return;
+  }
+  const typeLabel={tekst:'Tekst', getal:'Getal', checkbox:'Aan/uit'};
+  lijst.innerHTML=ALLE_CUSTOM_VELDEN.map(v=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bd);">
+      <div>
+        <div style="font-size:13px;font-weight:600;">${escapeHtml(v.naam)}${v.actief===false?' <span style="color:var(--mu2);font-weight:400;">(inactief)</span>':''}</div>
+        <div style="font-size:11px;color:var(--mu);">${typeLabel[v.type]||v.type}</div>
+      </div>
+      <button class="btn-sec" onclick="toggleCustomVeldActief('${v.id}',${v.actief!==false})">${v.actief!==false?'Deactiveren':'Activeren'}</button>
+    </div>`).join('');
+}
+
+async function voegCustomVeldToe(){
+  const naam=document.getElementById('cv-naam').value.trim();
+  const type=document.getElementById('cv-type').value;
+
+  if(!naam){ showMsg('msg-klantveld','Vul een naam in voor het veld.'); return; }
+
+  const{error}=await sb.from('custom_veld_definities').insert({
+    salon_id:SALON_ID, naam, type, volgorde: ALLE_CUSTOM_VELDEN.length
+  });
+
+  if(error){ showMsg('msg-klantveld','Fout: '+error.message); return; }
+
+  document.getElementById('cv-naam').value='';
+  showMsg('msg-klantveld','Veld toegevoegd.','ok');
+  await laadCustomVelden();
+}
+
+async function toggleCustomVeldActief(id, huidigActief){
+  await sb.from('custom_veld_definities').update({actief:!huidigActief}).eq('id',id);
+  await laadCustomVelden();
+}
+
+function escapeHtml(tekst){
+  if(tekst===null||tekst===undefined) return '';
+  return String(tekst).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
 }
 
 function toonConnectStatus(){

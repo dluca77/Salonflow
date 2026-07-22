@@ -433,7 +433,7 @@ async function loadData(){
 }
 
 async function koppelAfspraak(afspraakId){
-  const{data:a,error}=await sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('id',afspraakId).single();
+  const{data:a,error}=await sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs),dienst_varianten(naam,prijs)').eq('id',afspraakId).single();
   if(error||!a){
     console.warn('Kon gekoppelde afspraak niet laden:',error);
     return;
@@ -447,7 +447,12 @@ async function koppelAfspraak(afspraakId){
     document.getElementById('med-select').value=a.medewerker_id;
   }
 
-  if(a.diensten?.naam && typeof a.diensten.prijs==='number'){
+  // Bij een variant (staffelprijs, bv. hondenmaat) de variant-naam/prijs
+  // gebruiken i.p.v. de basisprijs van de dienst -- anders reken je bij
+  // het afrekenen per ongeluk de verkeerde (basis-)prijs af.
+  if(a.dienst_variant_id && a.dienst_varianten?.naam && typeof a.dienst_varianten.prijs==='number'){
+    add(`${a.diensten?.naam||'Dienst'} (${a.dienst_varianten.naam})`, a.dienst_varianten.prijs, 'dienst');
+  } else if(a.diensten?.naam && typeof a.diensten.prijs==='number'){
     add(a.diensten.naam, a.diensten.prijs, 'dienst');
   }
 

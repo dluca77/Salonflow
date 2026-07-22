@@ -219,6 +219,10 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div class="dienst-grid" id="dienst-grid">
         <div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Laden...</div>
       </div>
+      <div id="variant-keuze-wrap" style="display:none;margin-top:20px;">
+        <div class="step-sub" style="margin-bottom:10px;" id="variant-keuze-titel">Kies een optie</div>
+        <div class="dienst-grid" id="variant-keuze-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
+      </div>
       <div id="extra-diensten-wrap" style="display:none;margin-top:20px;">
         <div class="step-sub" style="margin-bottom:10px;">Nog iets erbij? (optioneel, wordt ter plekke afgerekend)</div>
         <div class="dienst-grid" id="extra-diensten-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
@@ -378,7 +382,7 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false};
+let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false};
 
 // Totale duur/prijs incl. eventuele extra diensten (voor beschikbaarheids-
 // check en het getoonde totaalbedrag) -- de hoofddienst blijft alleen
@@ -643,19 +647,32 @@ async function init(){
       dQuery=dQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
       mQuery=mQuery.eq('locatie_id',HUIDIGE_BOEK_LOCATIE_ID);
     }
-    const[dRes,mRes,rRes]=await Promise.all([dQuery.order('naam'), mQuery.order('naam'), rQuery.order('naam')]);
+    const[dRes,mRes,rRes,vRes]=await Promise.all([dQuery.order('naam'), mQuery.order('naam'), rQuery.order('naam'), sb.from('dienst_varianten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('volgorde')]);
     window.BOEKEN_RUIMTES=rRes.data||[];
 
     const diensten=dRes.data||[];
   window.DIENSTEN_MET_ABO={};
   diensten.forEach(d=>{ const p=(d.abonnement_plannen||[]).find(x=>x.actief); if(p) window.DIENSTEN_MET_ABO[d.id]=p; });
 
+  window.DIENST_VARIANTEN={};
+  (vRes.data||[]).forEach(v=>{ (window.DIENST_VARIANTEN[v.dienst_id]=window.DIENST_VARIANTEN[v.dienst_id]||[]).push(v); });
+
   document.getElementById('dienst-grid').innerHTML=diensten.length
     ?diensten.map(d=>{
       const heeftAanbetaling = window.SALON_STRIPE_ACTIEF && d.aanbetaling_type;
-      const aanbEuro = heeftAanbetaling ? berekenAanbetalingBedrag(d.prijs, d.aanbetaling_type, d.aanbetaling_bedrag) : 0;
       const vereistKaart = window.SALON_STRIPE_ACTIEF && d.vereist_kaartgegevens;
       const abo = window.DIENSTEN_MET_ABO[d.id];
+      const varianten = window.DIENST_VARIANTEN[d.id];
+      if(varianten && varianten.length){
+        const laagstePrijs = Math.min(...varianten.map(v=>v.prijs));
+        return `
+        <div class="dienst-card" onclick="toonVariantKeuze(this,'${jsAttr(d.naam)}','${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart},${!!d.vereist_ruimte})">
+          <div class="dc-naam">${escapeHtml(d.naam)}</div>
+          <div class="dc-prijs">Vanaf €${laagstePrijs}</div>
+          <div class="dc-duur">Kies een optie</div>
+        </div>`;
+      }
+      const aanbEuro = heeftAanbetaling ? berekenAanbetalingBedrag(d.prijs, d.aanbetaling_type, d.aanbetaling_bedrag) : 0;
       return `
       <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart},${!!d.vereist_ruimte})">
         <div class="dc-naam">${escapeHtml(d.naam)}</div>
@@ -728,10 +745,38 @@ function goStep(n){
 }
 
 // ── SELECTIES ─────────────────────────────────────────────────────────────────
-function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte){
+let huidigVariantKeuzeEl=null;
+
+function toonVariantKeuze(el,naam,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte){
   document.querySelectorAll('.dienst-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
+  huidigVariantKeuzeEl=el;
+  document.getElementById('extra-diensten-wrap').style.display='none';
+  document.getElementById('btn1').disabled=true;
+
+  const varianten=(window.DIENST_VARIANTEN&&window.DIENST_VARIANTEN[id])||[];
+  document.getElementById('variant-keuze-titel').textContent=`Kies een optie voor "${naam}"`;
+  document.getElementById('variant-keuze-grid').innerHTML=varianten.map(v=>`
+    <div class="dienst-card" onclick="selectVariant(this,'${jsAttr(naam)}',${v.prijs},${v.duur_min},'${id}','${v.id}','${aanbType||''}',${aanbBedrag||0},${vereistKaart},${!!vereistRuimte})">
+      <div class="dc-naam">${escapeHtml(v.naam)}</div>
+      <div class="dc-prijs">€${v.prijs}</div>
+      <div class="dc-duur">${v.duur_min} min</div>
+    </div>`).join('');
+  document.getElementById('variant-keuze-wrap').style.display='block';
+}
+
+function selectVariant(el,naam,prijs,duur,dienstId,variantId,aanbType,aanbBedrag,vereistKaart,vereistRuimte){
+  document.querySelectorAll('#variant-keuze-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  selectDienst(huidigVariantKeuzeEl,naam,prijs,duur,dienstId,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId);
+}
+
+function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId){
+  document.querySelectorAll('#dienst-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  if(!variantId) document.getElementById('variant-keuze-wrap').style.display='none';
   state.dienst=naam;state.prijs=prijs;state.duur=duur;state.dienst_id=id;
+  state.dienst_variant_id=variantId||null;
   state.vereist_ruimte=!!vereistRuimte;
   state.extra_diensten=[];
   renderExtraDienstenGrid();
@@ -1388,6 +1433,7 @@ async function bevestigen(){
     salon_id:SALON_ID||null,
     locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
     dienst_id:state.dienst_id||null,
+    dienst_variant_id:state.dienst_variant_id||null,
     medewerker_id:toeTeWijzenMedewerkerId,
     ruimte_id:toeTeWijzenRuimteId,
     datum_tijd:dt.toISOString(),

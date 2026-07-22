@@ -343,6 +343,34 @@ select.fi{cursor:pointer;}
   </div>
 </div>
 
+<!-- Varianten (staffelprijzen) modal -->
+<div class="mbg" id="m-varianten" onclick="if(event.target===this)closeM('m-varianten')">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt">Varianten: <span id="vr-dienst-naam"></span></div>
+    <div class="msub">Voor diensten waarbij de prijs/duur verschilt (bv. hondenmaat, haarlengte). Voeg hier de varianten toe -- de klant kiest er dan één bij het boeken. Zonder varianten werkt deze dienst zoals voorheen met de vaste prijs/duur hierboven.</div>
+    <div id="vr-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
+
+    <div id="vr-lijst" style="margin-bottom:16px;"></div>
+
+    <div style="padding:16px;background:var(--iv);border:1px solid var(--bd);border-radius:8px;">
+      <div style="font-size:12px;font-weight:600;margin-bottom:10px;">Variant toevoegen</div>
+      <input class="fi" id="vr-naam" type="text" placeholder="Naam (bv. Klein hondje)">
+      <div class="fr" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+        <div>
+          <label class="fl">Prijs (€)</label>
+          <input class="fi" id="vr-prijs" type="number" min="0" step="0.5">
+        </div>
+        <div>
+          <label class="fl">Duur (min)</label>
+          <input class="fi" id="vr-duur" type="number" min="5" step="5">
+        </div>
+      </div>
+      <button class="btn-sv" onclick="voegVariantToe()">Variant toevoegen</button>
+    </div>
+  </div>
+</div>
+
 <script>
 let DIENSTEN=[], activeTab='Alle', PRIJSADVIES_SUGGESTIES=null;
 
@@ -436,15 +464,19 @@ async function laadPrijsAdviesVoorDiensten(){
 }
 
 let ABO_PLANNEN={}; // per dienst_id: het plan-record (of undefined als er geen is)
+let DIENST_VARIANTEN={}; // per dienst_id: array van varianten (staffelprijzen)
 
 async function loadData(){
-  const[dR,aR]=await Promise.all([
+  const[dR,aR,vR]=await Promise.all([
     metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).order('categorie').order('naam'),
-    sb.from('abonnement_plannen').select('*').eq('salon_id',SALON_ID)
+    sb.from('abonnement_plannen').select('*').eq('salon_id',SALON_ID),
+    sb.from('dienst_varianten').select('*').eq('salon_id',SALON_ID).order('volgorde').order('created_at')
   ]);
   DIENSTEN=dR.data||[];
   ABO_PLANNEN={};
   (aR.data||[]).forEach(p=>{ ABO_PLANNEN[p.dienst_id]=p; });
+  DIENST_VARIANTEN={};
+  (vR.data||[]).forEach(v=>{ (DIENST_VARIANTEN[v.dienst_id]=DIENST_VARIANTEN[v.dienst_id]||[]).push(v); });
 
   const nm=document.querySelector('.salon-naam')?.textContent||'';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=nm.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??');
@@ -501,6 +533,7 @@ function renderRows(){
         ${d.beschrijving?`<div class="dt-desc">${escapeHtml(d.beschrijving)}</div>`:''}
         ${advies?`<div class="dt-advies"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>${escapeHtml(advies.tekst)}</div>`:''}
         ${alleenBekijken ? '' : `<div class="dt-advies" style="color:var(--mu);cursor:pointer;" onclick="openAanbetalingModal('${d.id}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>${labelDelen.join(' · ')} (wijzigen)</div>`}
+        ${alleenBekijken ? '' : `<div class="dt-advies" style="color:var(--mu);cursor:pointer;" onclick="openVariantenModal('${d.id}')"><svg width="11" height="11" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M3 12h18M3 18h18"/></svg>Varianten${(DIENST_VARIANTEN[d.id]||[]).filter(v=>v.actief!==false).length?' ('+(DIENST_VARIANTEN[d.id]||[]).filter(v=>v.actief!==false).length+')':''}</div>`}
       </div>
       <div class="dt-prijs">€${d.prijs}</div>
       <div class="dt-duur">${d.duur_min?d.duur_min+' min':'—'}</div>
@@ -573,6 +606,70 @@ async function slaDienstOp(){
   document.getElementById('d-aanb-type').value='';
   closeM('m-new');
   await loadData();
+}
+
+// ── VARIANTEN (staffelprijzen) ──
+let huidigVariantenDienstId=null;
+
+function openVariantenModal(id){
+  const d=DIENSTEN.find(x=>x.id===id);if(!d)return;
+  huidigVariantenDienstId=id;
+  document.getElementById('vr-dienst-naam').textContent=d.naam;
+  document.getElementById('vr-naam').value='';
+  document.getElementById('vr-prijs').value='';
+  document.getElementById('vr-duur').value='';
+  document.getElementById('vr-err').style.display='none';
+  renderVariantenLijst();
+  openM('m-varianten');
+}
+
+function renderVariantenLijst(){
+  const lijst=document.getElementById('vr-lijst');
+  const varianten=DIENST_VARIANTEN[huidigVariantenDienstId]||[];
+  if(!varianten.length){
+    lijst.innerHTML='<div style="font-size:12px;color:var(--mu);">Nog geen varianten -- deze dienst gebruikt de vaste prijs/duur hierboven.</div>';
+    return;
+  }
+  lijst.innerHTML=varianten.map(v=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);">
+      <div>
+        <div style="font-size:13px;font-weight:600;">${escapeHtml(v.naam)}${v.actief===false?' <span style="color:var(--mu2);font-weight:400;">(inactief)</span>':''}</div>
+        <div style="font-size:11px;color:var(--mu);">€${v.prijs} · ${v.duur_min} min</div>
+      </div>
+      <button class="btn-sec" onclick="toggleVariantActief('${v.id}',${v.actief!==false})">${v.actief!==false?'Deactiveren':'Activeren'}</button>
+    </div>`).join('');
+}
+
+async function voegVariantToe(){
+  if(!huidigVariantenDienstId)return;
+  const naam=document.getElementById('vr-naam').value.trim();
+  const prijs=parseFloat(document.getElementById('vr-prijs').value);
+  const duur=parseInt(document.getElementById('vr-duur').value);
+  const errEl=document.getElementById('vr-err');
+
+  if(!naam){errEl.textContent='Vul een naam in voor de variant.';errEl.style.display='block';return;}
+  if(!prijs && prijs!==0){errEl.textContent='Vul een prijs in.';errEl.style.display='block';return;}
+  if(!duur){errEl.textContent='Vul een duur in (in minuten).';errEl.style.display='block';return;}
+  errEl.style.display='none';
+
+  const volgorde=(DIENST_VARIANTEN[huidigVariantenDienstId]||[]).length;
+  const{error}=await sb.from('dienst_varianten').insert({
+    dienst_id:huidigVariantenDienstId, salon_id:SALON_ID, naam, prijs, duur_min:duur, volgorde
+  });
+
+  if(error){errEl.textContent='Fout: '+error.message;errEl.style.display='block';return;}
+
+  document.getElementById('vr-naam').value='';
+  document.getElementById('vr-prijs').value='';
+  document.getElementById('vr-duur').value='';
+  await loadData();
+  renderVariantenLijst();
+}
+
+async function toggleVariantActief(id, huidigActief){
+  await sb.from('dienst_varianten').update({actief:!huidigActief}).eq('id',id);
+  await loadData();
+  renderVariantenLijst();
 }
 
 // ── AANBETALING (Stripe Connect, Business-only) ──
