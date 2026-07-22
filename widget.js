@@ -288,6 +288,21 @@
     if(e.key === 'Enter') sendChatMessage();
   });
 
+  // Mobiel toetsenbord duwt een 'position:fixed'-paneel soms uit beeld
+  // (bekend iOS Safari-gedrag). De visualViewport-API geeft de ECHTE
+  // zichtbare hoogte (exclusief toetsenbord); het paneel volgt die hoogte
+  // zodat het in beeld blijft i.p.v. omhoog/uit beeld te schuiven.
+  if(window.visualViewport){
+    window.visualViewport.addEventListener('resize', function(){
+      if(window.innerWidth > 600 || !panel.classList.contains('open')) return;
+      panel.style.height = window.visualViewport.height + 'px';
+      chatMsgs.scrollTop = chatMsgs.scrollHeight;
+    });
+  }
+  chatInput.addEventListener('focus', function(){
+    setTimeout(function(){ chatMsgs.scrollTop = chatMsgs.scrollHeight; }, 300);
+  });
+
   function openWidget(){
     ensureKaiGestart();
     panel.classList.add('open');
@@ -298,6 +313,7 @@
   }
 
   function closeWidget(){
+    panel.style.height = '';
     panel.classList.remove('open');
     catcher.classList.remove('open');
     btn.classList.remove('hidden');
