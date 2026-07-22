@@ -206,6 +206,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="/kassa/" class="si on" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Kassa</span></a>
   <a href="/medewerkers/" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span>Medewerkers</span></a>
   <a href="/ruimtes/" class="si" title="Ruimtes"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg><span>Ruimtes</span></a>
+  <a href="/lessen/" class="si" title="Lessen"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Lessen</span></a>
   <a href="/diensten/" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span>Diensten</span></a>
   <a href="/producten/" class="si" title="Producten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.91 8.84L8.56 21.19a2 2 0 01-2.83 0L2 17.46a2 2 0 010-2.83L14.34 2.29a1 1 0 01.7-.29H21a1 1 0 011 1v6.65a1 1 0 01-.29.7z"/></svg><span>Producten</span></a>
   <a href="/rapportages/" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Rapportages</span></a>
@@ -222,6 +223,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="/kassa/" class="mob-item on"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>Kassa</a>
   <a href="/medewerkers/" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg>Medewerkers</a>
   <a href="/ruimtes/" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg>Ruimtes</a>
+  <a href="/lessen/" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Lessen</a>
   <a href="/diensten/" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg>Diensten</a>
   <a href="/producten/" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.91 8.84L8.56 21.19a2 2 0 01-2.83 0L2 17.46a2 2 0 010-2.83L14.34 2.29a1 1 0 01.7-.29H21a1 1 0 011 1v6.65a1 1 0 01-.29.7z"/></svg>Producten</a>
   <a href="/rapportages/" class="mob-item"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Rapportages</a>
@@ -430,6 +432,28 @@ async function loadData(){
   if(afspraakId){
     await koppelAfspraak(afspraakId);
   }
+  // Of vanuit Lessen aangekomen om een groepsles-deelnemer af te rekenen?
+  const lesBoekingId=params.get('les_boeking');
+  if(lesBoekingId){
+    await koppelLesBoeking(lesBoekingId);
+  }
+}
+
+let huidigeLesBoekingId=null;
+
+async function koppelLesBoeking(lesBoekingId){
+  const{data:lb,error}=await sb.from('les_boekingen').select('*,lessen(dienst_id,diensten(naam,prijs))').eq('id',lesBoekingId).single();
+  if(error||!lb){
+    console.warn('Kon les-boeking niet laden:',error);
+    return;
+  }
+  huidigeLesBoekingId=lb.id;
+  document.getElementById('apt-banner').style.display='block';
+  document.getElementById('apt-banner-naam').textContent=lb.klant_naam||'klant';
+  const dienst=lb.lessen?.diensten;
+  if(dienst?.naam && typeof dienst.prijs==='number'){
+    add(dienst.naam+' (groepsles)', dienst.prijs, 'dienst');
+  }
 }
 
 async function koppelAfspraak(afspraakId){
@@ -465,6 +489,7 @@ async function koppelAfspraak(afspraakId){
 
 function ontkoppelAfspraak(){
   huidigeAfspraakId=null;
+  huidigeLesBoekingId=null;
   document.getElementById('apt-banner').style.display='none';
   history.replaceState(null,'','/kassa/');
 }
@@ -732,6 +757,10 @@ async function betaal(){
   const betaling=rpcData&&rpcData[0]?{id:rpcData[0].betaling_id}:null;
   const nieuweCadeaubonCodes=rpcData&&rpcData[0]?(rpcData[0].nieuwe_codes||[]):[];
 
+  if(!rpcErr && betaling && huidigeLesBoekingId){
+    await sb.from('les_boekingen').update({status:'aanwezig'}).eq('id',huidigeLesBoekingId);
+  }
+
   if(!rpcErr && betaling){
     // Boekhoudkoppeling: op de achtergrond synchroniseren, blokkeert de
     // kassa niet en laat de bon nooit mislukken als dit faalt -- eventuele
@@ -774,6 +803,7 @@ async function betaal(){
 
 function newBon(){
   bon=[];cadeaubonActief=null;renderBon();
+  huidigeLesBoekingId=null;
   ontkoppelAfspraak();
   document.getElementById('m-success').classList.remove('on');
   document.body.style.overflow='';

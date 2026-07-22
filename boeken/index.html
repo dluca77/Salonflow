@@ -219,6 +219,10 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div class="dienst-grid" id="dienst-grid">
         <div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Laden...</div>
       </div>
+      <div id="groepsles-keuze-wrap" style="display:none;margin-top:20px;">
+        <div class="step-sub" style="margin-bottom:10px;" id="groepsles-keuze-titel">Kies een lesmoment</div>
+        <div class="dienst-grid" id="groepsles-keuze-grid" style="grid-template-columns:repeat(auto-fill,minmax(200px,1fr));"></div>
+      </div>
       <div id="variant-keuze-wrap" style="display:none;margin-top:20px;">
         <div class="step-sub" style="margin-bottom:10px;" id="variant-keuze-titel">Kies een optie</div>
         <div class="dienst-grid" id="variant-keuze-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
@@ -239,7 +243,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="step-sub" style="margin-bottom:10px;">Nog iets erbij? (optioneel, wordt ter plekke afgerekend)</div>
         <div class="dienst-grid" id="extra-diensten-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
       </div>
-      <button class="btn-next" id="btn1" onclick="goStep(2)" disabled>Volgende →</button>
+      <button class="btn-next" id="btn1" onclick="vanStap1Volgende()" disabled>Volgende →</button>
     </div>
 
     <!-- Stap 2: Medewerker -->
@@ -316,7 +320,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div id="referentie-foto-preview" style="display:none;margin-top:10px;"><img src="" alt="Referentiefoto" style="max-width:160px;max-height:160px;border-radius:8px;border:1px solid var(--bd);"></div>
       </div>
       <button class="btn-next" id="btn-confirm" onclick="bevestigen()">Afspraak bevestigen</button>
-      <button class="btn-back" onclick="goStep(3)">← Terug</button>
+      <button class="btn-back" onclick="goStep(state.gekozen_les_id?1:3)">← Terug</button>
     </div>
 
     <!-- Stap 5: Bevestiging -->
@@ -404,7 +408,7 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false,referentie_foto_url:null,koppel_optie:false,wil_koppel:false,traject_sessies:null};
+let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false,referentie_foto_url:null,koppel_optie:false,wil_koppel:false,traject_sessies:null,gekozen_les_id:null};
 
 async function uploadReferentieFoto(input){
   const file=input.files[0];
@@ -713,6 +717,14 @@ async function init(){
       const vereistKaart = window.SALON_STRIPE_ACTIEF && d.vereist_kaartgegevens;
       const abo = window.DIENSTEN_MET_ABO[d.id];
       const varianten = window.DIENST_VARIANTEN[d.id];
+      if(d.is_groepsles){
+        return `
+        <div class="dienst-card" onclick="selectGroepslesDienst(this,'${jsAttr(d.naam)}','${d.id}')">
+          <div class="dc-naam">${escapeHtml(d.naam)}</div>
+          <div class="dc-prijs">€${d.prijs}</div>
+          <div class="dc-duur">Groepsles -- kies een lesmoment</div>
+        </div>`;
+      }
       if(varianten && varianten.length){
         const laagstePrijs = Math.min(...varianten.map(v=>v.prijs));
         return `
@@ -768,6 +780,23 @@ async function init(){
 }
 
 // ── STAP NAVIGATIE ─────────────────────────────────────────────────────────────
+function vanStap1Volgende(){
+  // Groepsles: medewerker- en datum/tijd-stap slaan we over, want de klant
+  // koos al een concreet lesmoment. Direct door naar de gegevens-stap.
+  if(state.gekozen_les_id){
+    goStep(4);
+    // goStep(n) markeert alle stappen <n als 'voltooid' (groen vinkje) --
+    // voor een overgeslagen stap 2/3 is dat misleidend (die zijn niet
+    // doorlopen, gewoon niet relevant). Toon ze als neutraal i.p.v. 'klaar'.
+    [2,3].forEach(i=>{
+      document.getElementById('sn'+i).classList.remove('done');
+      document.getElementById('sn'+i).textContent=i;
+    });
+    return;
+  }
+  goStep(2);
+}
+
 function goStep(n){
   document.querySelectorAll('.step-panel').forEach(p=>p.classList.remove('active'));
   document.getElementById('step'+n).classList.add('active');
@@ -878,6 +907,59 @@ function kiesKoppel(wilKoppel){
   state.wil_koppel=wilKoppel;
   document.getElementById('koppel-optie-alleen').classList.toggle('selected',!wilKoppel);
   document.getElementById('koppel-optie-koppel').classList.toggle('selected',wilKoppel);
+}
+
+// ── GROEPSLES ─────────────────────────────────────────────────────────────
+// Groepslessen slaan het normale medewerker/datum-tijd-traject over --
+// de klant kiest direct een concreet, al ingepland lesmoment (met vrije
+// plekken) en gaat daarna meteen door naar de gegevens-stap. Bewuste
+// scope-beperking (net als bij koppelbehandelingen): geen aanbetaling/
+// kaartgegevens/abonnement/extra-diensten-ondersteuning voor groepslessen
+// in deze eerste versie.
+async function selectGroepslesDienst(el,naam,id){
+  document.querySelectorAll('#dienst-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById('variant-keuze-wrap').style.display='none';
+  document.getElementById('koppel-keuze-wrap').style.display='none';
+  document.getElementById('extra-diensten-wrap').style.display='none';
+
+  state.dienst=naam; state.dienst_id=id; state.gekozen_les_id=null;
+  state.dienst_variant_id=null; state.koppel_optie=false; state.wil_koppel=false; state.traject_sessies=null;
+  document.getElementById('btn1').disabled=true;
+
+  const wrap=document.getElementById('groepsles-keuze-wrap');
+  const grid=document.getElementById('groepsles-keuze-grid');
+  grid.innerHTML='<div style="padding:16px;font-size:12px;color:var(--mu);">Lesmomenten laden...</div>';
+  wrap.style.display='block';
+
+  const{data,error}=await sb.rpc('get_beschikbare_lessen',{p_salon_id:SALON_ID,p_dienst_id:id});
+  if(error || !data || !data.length){
+    grid.innerHTML='<div style="padding:16px;font-size:12px;color:var(--mu);">Geen geplande lesmomenten gevonden. Neem contact op met de salon.</div>';
+    return;
+  }
+  grid.innerHTML=data.map(l=>{
+    const dt=new Date(l.datum_tijd);
+    const datumStr=dt.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'});
+    const tijdStr=dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+    const vrij=l.capaciteit-l.aantal_geboekt;
+    const vol=vrij<=0;
+    return `<div class="dienst-card${vol?' vol':''}" ${vol?'':`onclick="kiesLes(this,'${l.id}','${jsAttr(datumStr)}','${tijdStr}',${l.duur_min})"`} ${vol?'style="opacity:.5;cursor:default;"':''}>
+      <div class="dc-naam">${escapeHtml(datumStr)}</div>
+      <div class="dc-prijs">${tijdStr}</div>
+      <div class="dc-duur">${vol?'Vol':vrij+' van de '+l.capaciteit+' plekken vrij'}${l.medewerker_naam?' · '+escapeHtml(l.medewerker_naam):''}</div>
+    </div>`;
+  }).join('');
+}
+
+function kiesLes(el,lesId,datumStr,tijdStr,duurMin){
+  document.querySelectorAll('#groepsles-keuze-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  state.gekozen_les_id=lesId;
+  state.duur=duurMin;
+  document.getElementById('sum-dienst').textContent=state.dienst;
+  document.getElementById('sum-datum').textContent=datumStr+' om '+tijdStr;
+  document.getElementById('sum-duur').textContent=duurMin+' min';
+  document.getElementById('btn1').disabled=false;
 }
 
 async function checkAbonnementTegoed(){
@@ -1522,6 +1604,44 @@ async function bevestigen(){
     console.warn('Kon blokkeerstatus niet controleren, boeking gaat door:',e);
     // Bewust: als de check zelf faalt (bijv. netwerkfout), blokkeren we de boeking niet --
     // liever een enkele ongewenste boeking dan alle klanten onterecht weigeren.
+  }
+
+  // Groepsles: helemaal los pad van de normale 1-op-1-boeking. Geen
+  // medewerker/ruimte-toewijzing, geen aanbetaling/abonnement -- gewoon
+  // een plek reserveren in het al gekozen lesmoment via de atomaire
+  // boek_les-RPC (die zelf de capaciteit bewaakt).
+  if(state.gekozen_les_id){
+    const naamGroepsles=voor+(achter?' '+achter:'');
+    const{data:boeking,error:lesErr}=await sb.rpc('boek_les',{
+      p_les_id:state.gekozen_les_id, p_klant_naam:naamGroepsles,
+      p_klant_email:email, p_klant_telefoon:telSchoon||null
+    });
+    btn.disabled=false;btn.textContent='Afspraak bevestigen';
+    if(lesErr){
+      errEl.textContent=lesErr.message&&lesErr.message.includes('vol')?'Deze les zit helaas net vol geboekt. Kies een ander lesmoment.':'Deze les kon niet geboekt worden. Kies een ander lesmoment.';
+      errEl.style.display='block';
+      return;
+    }
+    fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        email, klant_naam:naamGroepsles, salon_naam:window.SALON_NAAM||'',
+        dienst_naam:state.dienst+' (groepsles)', datum_tijd:document.getElementById('sum-datum').textContent,
+        duur_min:state.duur
+      })
+    }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
+
+    document.getElementById('cf-dienst').textContent=state.dienst;
+    document.getElementById('cf-med').textContent='Groepsles';
+    document.getElementById('cf-datum').textContent=document.getElementById('sum-datum').textContent.split(' om ')[0];
+    document.getElementById('cf-tijd').textContent=document.getElementById('sum-datum').textContent.split(' om ')[1]||'';
+    document.getElementById('cf-prijs').textContent='€'+state.prijs;
+    document.getElementById('cf-traject-row').style.display='none';
+    document.getElementById('progress-bar').style.display='none';
+    if(IS_EMBED) document.getElementById('btn-embed-close').style.display='block';
+    goStep(5);
+    return;
   }
 
   // Abonnement-tegoed? Dan EERST atomisch verbruiken (voorkomt dat 2

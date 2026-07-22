@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Kronr | Ruimtes</title>
+<title>Kronr | Lessen</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/images/icons/apple-touch-icon.png">
@@ -51,9 +51,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .content::-webkit-scrollbar-thumb{background:var(--bd);}
 .intro-banner{background:var(--wm);border-left:3px solid var(--gd);padding:14px 16px;font-size:13px;color:var(--ink2);margin-bottom:16px;line-height:1.5;}
 .prod-table{background:var(--wh);border:1px solid var(--bd);margin-bottom:80px;}
-.pt-row{display:grid;grid-template-columns:1fr 100px 100px;padding:14px 18px;border-bottom:1px solid var(--bd);align-items:center;}
-.pt-row:last-child{border-bottom:none;}
-.pt-naam{font-size:13px;font-weight:500;}
+.les-row{display:grid;grid-template-columns:1fr 140px 110px 90px;padding:14px 18px;border-bottom:1px solid var(--bd);align-items:center;cursor:pointer;}
+.les-row:last-child{border-bottom:none;}
+.les-row:hover{background:var(--iv);}
+.les-naam{font-size:13px;font-weight:500;}
+.les-sub{font-size:11px;color:var(--mu);margin-top:2px;}
+.les-vol{color:var(--red);font-weight:600;}
 .pt-btn{background:transparent;border:1px solid var(--bd2);border-radius:6px;padding:6px 10px;font-size:11px;cursor:pointer;color:var(--ink2);}
 .pt-btn:hover{background:var(--wm);}
 .empty-state{padding:60px 20px;text-align:center;}
@@ -61,7 +64,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .empty-sub{font-size:12px;color:var(--mu2);}
 .mbg{display:none;position:fixed;inset:0;background:rgba(26,23,20,0.6);z-index:60;align-items:flex-end;justify-content:center;}
 .mbg.on{display:flex;}
-.modal{background:var(--wh);width:100%;max-width:480px;padding:24px 20px 40px;border-top:2px solid var(--gd);}
+.modal{background:var(--wh);width:100%;max-width:520px;padding:24px 20px 40px;border-top:2px solid var(--gd);max-height:90vh;overflow-y:auto;}
 .mh{width:32px;height:3px;background:var(--bd);margin:0 auto 20px;}
 .mt{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:4px;}
 .msub{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-bottom:20px;}
@@ -72,11 +75,16 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .btsv{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background 0.2s;}
 .btsv:hover{background:var(--ink2);}
 .err-box{display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);}
+.attendee-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--bd);font-size:13px;}
+.attendee-row:last-child{border-bottom:none;}
+.attendee-status{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);}
 @media(max-width:1024px){ .sidebar{width:180px;} .main{margin-left:212px;} }
 @media(max-width:768px){
   .sidebar{display:none;}.main{margin-left:0;}
   .hbg{display:flex;}.tb-logo{display:block;}.tb-title{display:none;}
   .topbar{padding:0 14px;}.content{padding:14px;}
+  .les-row{grid-template-columns:1fr 90px;}
+  .les-row>div:nth-child(3),.les-row>div:nth-child(4){display:none;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -93,8 +101,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="/klanten/" class="si" title="Klanten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Klanten</span></a>
   <a href="/kassa/" class="si" title="Kassa"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg><span>Kassa</span></a>
   <a href="/medewerkers/" class="si" title="Medewerkers"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20 7H4a2 2 0 00-2 2v10a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2z"/><path d="M16 21V5a2 2 0 00-2-2h-4a2 2 0 00-2 2v16"/></svg><span>Medewerkers</span></a>
-  <a href="/ruimtes/" class="si on" title="Ruimtes"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg><span>Ruimtes</span></a>
-  <a href="/lessen/" class="si" title="Lessen"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Lessen</span></a>
+  <a href="/ruimtes/" class="si" title="Ruimtes"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M3 21h18M5 21V7l8-4v18M19 21V11l-6-4"/></svg><span>Ruimtes</span></a>
+  <a href="/lessen/" class="si on" title="Lessen"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span>Lessen</span></a>
   <a href="/diensten/" class="si" title="Diensten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.59 13.41l-7.17 7.17a2 2 0 01-2.83 0L2 12V2h10l8.59 8.59a2 2 0 010 2.82z"/></svg><span>Diensten</span></a>
   <a href="/producten/" class="si" title="Producten"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M20.91 8.84L8.56 21.19a2 2 0 01-2.83 0L2 17.46a2 2 0 010-2.83L14.34 2.29a1 1 0 01.7-.29H21a1 1 0 011 1v6.65a1 1 0 01-.29.7z"/></svg><span>Producten</span></a>
   <a href="/rapportages/" class="si" title="Rapportages"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span>Rapportages</span></a>
@@ -110,8 +118,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <a href="/klanten/" class="mob-item">Klanten</a>
   <a href="/kassa/" class="mob-item">Kassa</a>
   <a href="/medewerkers/" class="mob-item">Medewerkers</a>
-  <a href="/ruimtes/" class="mob-item on">Ruimtes</a>
-  <a href="/lessen/" class="mob-item">Lessen</a>
+  <a href="/ruimtes/" class="mob-item">Ruimtes</a>
+  <a href="/lessen/" class="mob-item on">Lessen</a>
   <a href="/diensten/" class="mob-item">Diensten</a>
   <a href="/producten/" class="mob-item">Producten</a>
   <a href="/rapportages/" class="mob-item">Rapportages</a>
@@ -122,103 +130,252 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   <div class="topbar">
     <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div class="tb-logo">Kronr<em>.</em></div>
-    <div class="tb-title">Ruimtes</div>
+    <div class="tb-title">Lessen</div>
     <div class="tb-spacer"></div>
-    <button class="btn-add" onclick="openNieuweRuimte()">+ Ruimte</button>
+    <button class="btn-add" onclick="openNieuweLes()">+ Les</button>
   </div>
 
   <div class="content">
-    <div class="intro-banner">Voor salons waar niet de medewerker, maar de ruimte (behandelkamer, massagebed, sauna) de beperkende factor is -- bv. spa's en wellness. Zet bij een dienst in Diensten 'vereist een ruimte' aan zodra je hier ruimtes hebt toegevoegd; de boekingswidget houdt dan rekening met ruimte-beschikbaarheid naast (of in plaats van) medewerker-beschikbaarheid.</div>
+    <div class="intro-banner">Voor salons die groepslessen aanbieden (bv. yoga, groepstraining) i.p.v. 1-op-1-afspraken. Zet bij een dienst in Diensten 'dit is een groepsles' aan, en plan hier de losse lesmomenten in met een maximum aantal plekken. Klanten boeken via de boekingswidget een plek in een geplande les.</div>
     <div class="prod-table">
-      <div id="ruimte-rows"><div class="empty-state"><div class="empty-text">Laden...</div></div></div>
+      <div id="lessen-rows"><div class="empty-state"><div class="empty-text">Laden...</div></div></div>
     </div>
   </div>
 </div>
 </div>
 
-<div class="mbg" id="m-ruimte" onclick="if(event.target===this)closeM('m-ruimte')">
+<!-- Nieuwe les modal -->
+<div class="mbg" id="m-les" onclick="if(event.target===this)closeM('m-les')">
   <div class="modal">
     <div class="mh"></div>
-    <div class="mt" id="r-modal-titel">Nieuwe ruimte</div>
-    <div class="msub">Bv. 'Behandelkamer 1', 'Massagebed A', 'Sauna'</div>
-    <div class="err-box" id="r-err"></div>
-    <input type="hidden" id="r-id">
-    <div class="fr"><label class="fl">Naam</label><input class="fi" id="r-naam" type="text" placeholder="bijv. Behandelkamer 1"></div>
+    <div class="mt">Nieuwe les</div>
+    <div class="msub">Plan een concreet lesmoment in</div>
+    <div class="err-box" id="l-err"></div>
+    <div class="fr">
+      <label class="fl">Dienst (groepsles)</label>
+      <select class="fi" id="l-dienst" onchange="wisselLesDienst()"></select>
+    </div>
+    <div class="fr">
+      <label class="fl">Medewerker (optioneel)</label>
+      <select class="fi" id="l-medewerker"><option value="">Geen</option></select>
+    </div>
+    <div class="fr">
+      <label class="fl">Ruimte (optioneel)</label>
+      <select class="fi" id="l-ruimte"><option value="">Geen</option></select>
+    </div>
+    <div class="fr" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div>
+        <label class="fl">Datum</label>
+        <input class="fi" id="l-datum" type="date">
+      </div>
+      <div>
+        <label class="fl">Tijd</label>
+        <input class="fi" id="l-tijd" type="time">
+      </div>
+    </div>
+    <div class="fr" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+      <div>
+        <label class="fl">Duur (min)</label>
+        <input class="fi" id="l-duur" type="number" min="5" step="5">
+      </div>
+      <div>
+        <label class="fl">Capaciteit (max. plekken)</label>
+        <input class="fi" id="l-capaciteit" type="number" min="1" step="1" placeholder="bv. 12">
+      </div>
+    </div>
     <div class="fr">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
-        <input type="checkbox" id="r-actief" style="width:16px;height:16px;" checked>
-        Actief (beschikbaar om op te boeken)
+        <input type="checkbox" id="l-herhalen" onchange="document.getElementById('l-herhalen-wrap').style.display=this.checked?'block':'none'" style="width:16px;height:16px;">
+        Elke week herhalen
       </label>
+      <div id="l-herhalen-wrap" style="display:none;margin-top:8px;">
+        <label class="fl">Aantal weken (inclusief deze)</label>
+        <input class="fi" id="l-herhalen-weken" type="number" min="1" max="52" step="1" value="8">
+      </div>
     </div>
-    <button class="btsv" onclick="slaRuimteOp()">Opslaan</button>
+    <button class="btsv" onclick="slaLesOp()">Les inplannen</button>
+  </div>
+</div>
+
+<!-- Les-detail modal (aanwezigen) -->
+<div class="mbg" id="m-les-detail" onclick="if(event.target===this)closeM('m-les-detail')">
+  <div class="modal">
+    <div class="mh"></div>
+    <div class="mt" id="ld-titel">Les</div>
+    <div class="msub" id="ld-sub"></div>
+    <div class="err-box" id="ld-err"></div>
+    <div id="ld-aanwezigen"></div>
+    <button class="btsv" style="background:transparent;color:var(--red);border:1px solid var(--red);margin-top:16px;" onclick="annuleerLes()">Les annuleren</button>
   </div>
 </div>
 
 <script>
-let RUIMTES=[];
+let LESSEN=[], LES_DIENSTEN=[], LES_MEDEWERKERS=[], LES_RUIMTES=[], huidigLesId=null;
 
-async function laadRuimtes(){
-  const{data}=await sb.from('ruimtes').select('*').eq('salon_id',SALON_ID).order('naam');
-  RUIMTES=data||[];
-  renderRuimtes();
+async function laadLessen(){
+  const[lRes,dRes,mRes,rRes]=await Promise.all([
+    sb.from('lessen').select('*,diensten(naam,duur_min)').eq('salon_id',SALON_ID).eq('status','gepland').gte('datum_tijd',new Date(Date.now()-24*3600*1000).toISOString()).order('datum_tijd'),
+    sb.from('diensten').select('id,naam,duur_min').eq('salon_id',SALON_ID).eq('is_groepsles',true).eq('actief',true).order('naam'),
+    sb.from('medewerkers').select('id,naam').eq('salon_id',SALON_ID).eq('actief',true).order('naam'),
+    sb.from('ruimtes').select('id,naam').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
+  ]);
+  LESSEN=lRes.data||[];
+  LES_DIENSTEN=dRes.data||[];
+  LES_MEDEWERKERS=mRes.data||[];
+  LES_RUIMTES=rRes.data||[];
+
+  // Aantal boekingen per les ophalen (los, want les_boekingen is niet
+  // publiek leesbaar en heeft geen eenvoudige join-telling via PostgREST
+  // met RLS-restricties op de klantgegevens zelf).
+  for(const les of LESSEN){
+    const{data:boekingen}=await sb.from('les_boekingen').select('id,status').eq('les_id',les.id);
+    les._boekingen=(boekingen||[]).filter(b=>b.status!=='geannuleerd');
+  }
+  renderLessen();
+
+  document.getElementById('l-dienst').innerHTML=LES_DIENSTEN.length
+    ? LES_DIENSTEN.map(d=>`<option value="${d.id}" data-duur="${d.duur_min}">${escapeHtml(d.naam)}</option>`).join('')
+    : '<option value="">Eerst een dienst als groepsles markeren (zie Diensten)</option>';
+  document.getElementById('l-medewerker').innerHTML='<option value="">Geen</option>'+LES_MEDEWERKERS.map(m=>`<option value="${m.id}">${escapeHtml(m.naam)}</option>`).join('');
+  document.getElementById('l-ruimte').innerHTML='<option value="">Geen</option>'+LES_RUIMTES.map(r=>`<option value="${r.id}">${escapeHtml(r.naam)}</option>`).join('');
+  wisselLesDienst();
 }
 
-function renderRuimtes(){
-  const rows=document.getElementById('ruimte-rows');
-  if(!RUIMTES.length){
-    rows.innerHTML=`<div class="empty-state"><div class="empty-text">Nog geen ruimtes</div><div class="empty-sub">Voeg ruimtes toe als jouw salon op ruimte-beschikbaarheid boekt (bv. behandelkamers).</div></div>`;
+function wisselLesDienst(){
+  const sel=document.getElementById('l-dienst');
+  const opt=sel.options[sel.selectedIndex];
+  if(opt && opt.dataset.duur) document.getElementById('l-duur').value=opt.dataset.duur;
+}
+
+function renderLessen(){
+  const rows=document.getElementById('lessen-rows');
+  if(!LESSEN.length){
+    rows.innerHTML=`<div class="empty-state"><div class="empty-text">Nog geen lessen ingepland</div><div class="empty-sub">Markeer eerst een dienst als groepsles in Diensten, plan dan hier lesmomenten in.</div></div>`;
     return;
   }
-  rows.innerHTML=RUIMTES.map(r=>`<div class="pt-row">
-    <div class="pt-naam">${escapeHtml(r.naam)}${r.actief?'':' <span style="color:var(--mu2);font-size:11px;">(inactief)</span>'}</div>
-    <div></div>
-    <div><button class="pt-btn" onclick="openBewerkRuimte('${r.id}')">Bewerken</button></div>
-  </div>`).join('');
+  rows.innerHTML=LESSEN.map(l=>{
+    const dt=new Date(l.datum_tijd);
+    const datumStr=dt.toLocaleDateString('nl-NL',{weekday:'short',day:'numeric',month:'short'});
+    const tijdStr=dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
+    const aantal=l._boekingen.length;
+    const vol=aantal>=l.capaciteit;
+    return `<div class="les-row" onclick="openLesDetail('${l.id}')">
+      <div>
+        <div class="les-naam">${escapeHtml(l.diensten?.naam||'Les')}</div>
+        <div class="les-sub">${datumStr} om ${tijdStr}</div>
+      </div>
+      <div class="les-sub">${l.duur_min} min</div>
+      <div class="les-sub ${vol?'les-vol':''}">${aantal}/${l.capaciteit} geboekt</div>
+      <div><button class="pt-btn" onclick="event.stopPropagation();openLesDetail('${l.id}')">Bekijk</button></div>
+    </div>`;
+  }).join('');
 }
 
-function openNieuweRuimte(){
-  document.getElementById('r-modal-titel').textContent='Nieuwe ruimte';
-  document.getElementById('r-id').value='';
-  document.getElementById('r-naam').value='';
-  document.getElementById('r-actief').checked=true;
-  document.getElementById('r-err').style.display='none';
-  openM('m-ruimte');
+function openNieuweLes(){
+  document.getElementById('l-medewerker').value='';
+  document.getElementById('l-ruimte').value='';
+  document.getElementById('l-datum').value='';
+  document.getElementById('l-tijd').value='';
+  document.getElementById('l-capaciteit').value='';
+  document.getElementById('l-herhalen').checked=false;
+  document.getElementById('l-herhalen-wrap').style.display='none';
+  document.getElementById('l-herhalen-weken').value=8;
+  document.getElementById('l-err').style.display='none';
+  wisselLesDienst();
+  openM('m-les');
 }
 
-function openBewerkRuimte(id){
-  const r=RUIMTES.find(x=>x.id===id);
-  if(!r) return;
-  document.getElementById('r-modal-titel').textContent='Ruimte bewerken';
-  document.getElementById('r-id').value=r.id;
-  document.getElementById('r-naam').value=r.naam;
-  document.getElementById('r-actief').checked=r.actief;
-  document.getElementById('r-err').style.display='none';
-  openM('m-ruimte');
-}
+async function slaLesOp(){
+  const dienstId=document.getElementById('l-dienst').value;
+  const medewerkerId=document.getElementById('l-medewerker').value||null;
+  const ruimteId=document.getElementById('l-ruimte').value||null;
+  const datum=document.getElementById('l-datum').value;
+  const tijd=document.getElementById('l-tijd').value;
+  const duur=parseInt(document.getElementById('l-duur').value);
+  const capaciteit=parseInt(document.getElementById('l-capaciteit').value);
+  const herhalen=document.getElementById('l-herhalen').checked;
+  const herhalenWeken=herhalen?(parseInt(document.getElementById('l-herhalen-weken').value)||1):1;
+  const errEl=document.getElementById('l-err');
 
-async function slaRuimteOp(){
-  const id=document.getElementById('r-id').value;
-  const naam=document.getElementById('r-naam').value.trim();
-  const actief=document.getElementById('r-actief').checked;
-  const errEl=document.getElementById('r-err');
-  if(!naam){ errEl.textContent='Vul een naam in.'; errEl.style.display='block'; return; }
+  if(!dienstId){ errEl.textContent='Kies een dienst (of markeer er eerst één als groepsles).'; errEl.style.display='block'; return; }
+  if(!datum||!tijd){ errEl.textContent='Vul een datum en tijd in.'; errEl.style.display='block'; return; }
+  if(!duur){ errEl.textContent='Vul een duur in.'; errEl.style.display='block'; return; }
+  if(!capaciteit){ errEl.textContent='Vul een capaciteit in.'; errEl.style.display='block'; return; }
+  errEl.style.display='none';
 
-  const payload={salon_id:SALON_ID,naam,actief};
-  const{error}=id
-    ? await sb.from('ruimtes').update(payload).eq('id',id)
-    : await sb.from('ruimtes').insert(payload);
+  const[uur,min]=tijd.split(':').map(Number);
+  const basisDatum=new Date(datum+'T00:00:00');
 
+  const rijen=[];
+  for(let w=0;w<herhalenWeken;w++){
+    const dt=new Date(basisDatum);
+    dt.setDate(dt.getDate()+w*7);
+    dt.setHours(uur,min,0,0);
+    rijen.push({
+      salon_id:SALON_ID, dienst_id:dienstId, medewerker_id:medewerkerId, ruimte_id:ruimteId,
+      datum_tijd:dt.toISOString(), duur_min:duur, capaciteit
+    });
+  }
+
+  const{error}=await sb.from('lessen').insert(rijen);
   if(error){ errEl.textContent='Kon niet opslaan: '+error.message; errEl.style.display='block'; return; }
-  closeM('m-ruimte');
-  laadRuimtes();
+  closeM('m-les');
+  laadLessen();
+}
+
+async function openLesDetail(id){
+  const les=LESSEN.find(x=>x.id===id);
+  if(!les) return;
+  huidigLesId=id;
+  const dt=new Date(les.datum_tijd);
+  document.getElementById('ld-titel').textContent=les.diensten?.naam||'Les';
+  document.getElementById('ld-sub').textContent=dt.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})+' om '+dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})+' -- '+les._boekingen.length+'/'+les.capaciteit+' geboekt';
+  document.getElementById('ld-err').style.display='none';
+
+  const{data:boekingen}=await sb.from('les_boekingen').select('*').eq('les_id',id).order('created_at');
+  const lijst=document.getElementById('ld-aanwezigen');
+  if(!boekingen || !boekingen.length){
+    lijst.innerHTML='<div style="font-size:12px;color:var(--mu);padding:12px 0;">Nog niemand geboekt.</div>';
+  } else {
+    lijst.innerHTML=boekingen.map(b=>`
+      <div class="attendee-row">
+        <div>
+          <div>${escapeHtml(b.klant_naam)}</div>
+          <div style="font-size:11px;color:var(--mu);">${escapeHtml(b.klant_email)}</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <span class="attendee-status">${b.status}</span>
+          ${b.status==='gepland'?`<a class="pt-btn" href="/kassa/?les_boeking=${b.id}" style="text-decoration:none;">Afrekenen</a><button class="pt-btn" onclick="markeerNoShow('${b.id}')">No-show</button>`:''}
+          ${b.status==='aanwezig'?`<span style="font-size:11px;color:var(--green);">Afgerekend ✓</span>`:''}
+        </div>
+      </div>`).join('');
+  }
+  openM('m-les-detail');
+}
+
+async function markeerNoShow(boekingId){
+  await sb.from('les_boekingen').update({status:'no-show'}).eq('id',boekingId);
+  openLesDetail(huidigLesId);
+}
+
+async function annuleerLes(){
+  if(!huidigLesId) return;
+  if(!confirm('Deze les annuleren? Geboekte klanten worden hier niet automatisch over gemaild.')) return;
+  await sb.from('lessen').update({status:'geannuleerd'}).eq('id',huidigLesId);
+  closeM('m-les-detail');
+  laadLessen();
 }
 
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}
 function closeSB(){document.getElementById('sb').classList.remove('on');document.getElementById('ov').classList.remove('on');document.body.style.overflow='';}
 function openM(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
 function closeM(id){document.getElementById(id).classList.remove('on');document.body.style.overflow='';}
+function escapeHtml(tekst){
+  if(tekst===null||tekst===undefined) return '';
+  return String(tekst).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
 
-kronrInit(laadRuimtes,'medewerkers');
+kronrInit(laadLessen,'medewerkers');
 </script>
 </body>
 </html>
