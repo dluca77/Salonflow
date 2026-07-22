@@ -450,11 +450,26 @@ async function koppelLesBoeking(lesBoekingId){
   huidigeLesBoekingId=lb.id;
   document.getElementById('apt-banner').style.display='block';
   document.getElementById('apt-banner-naam').textContent=lb.klant_naam||'klant';
+
+  if(lb.lessen?.medewerker_id && allMedewerkers.some(m=>m.id===lb.lessen.medewerker_id)){
+    huidigeMedewerkerId=lb.lessen.medewerker_id;
+    document.getElementById('med-select').value=lb.lessen.medewerker_id;
+  }
+
   const dienst=lb.lessen?.diensten;
   if(dienst?.naam && typeof dienst.prijs==='number'){
-    add(dienst.naam+' (groepsles)', dienst.prijs, 'dienst');
+    if(huidigeMedewerkerId){
+      add(dienst.naam+' (groepsles)', dienst.prijs, 'dienst');
+    }else{
+      // Les heeft geen vaste medewerker -- vraag de kassamedewerker om er
+      // eerst een te kiezen, en zet de dienst dan alsnog op de bon.
+      pendingLesDienst={naam:dienst.naam+' (groepsles)',prijs:dienst.prijs};
+      document.getElementById('med-warn').style.display='block';
+      document.getElementById('med-select').focus();
+    }
   }
 }
+let pendingLesDienst=null;
 
 async function koppelAfspraak(afspraakId){
   const{data:a,error}=await sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs),dienst_varianten(naam,prijs)').eq('id',afspraakId).single();
@@ -490,6 +505,7 @@ async function koppelAfspraak(afspraakId){
 function ontkoppelAfspraak(){
   huidigeAfspraakId=null;
   huidigeLesBoekingId=null;
+  pendingLesDienst=null;
   document.getElementById('apt-banner').style.display='none';
   history.replaceState(null,'','/kassa/');
 }
@@ -497,6 +513,10 @@ function ontkoppelAfspraak(){
 function setMedewerker(){
   huidigeMedewerkerId=document.getElementById('med-select').value;
   document.getElementById('med-warn').style.display='none';
+  if(pendingLesDienst && huidigeMedewerkerId){
+    add(pendingLesDienst.naam, pendingLesDienst.prijs, 'dienst');
+    pendingLesDienst=null;
+  }
 }
 
 function medewerkerNaam(id){
