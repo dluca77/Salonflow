@@ -40,6 +40,7 @@ returns table(id uuid, geboekte_sessies integer, totaal_sessies integer)
 language plpgsql
 security definer
 as $$
+#variable_conflict use_column
 declare
   v_id uuid;
   v_geboekt integer;
