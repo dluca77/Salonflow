@@ -30,6 +30,8 @@ from (
 ) sub
 where sub.traject_id = bt.id;
 
+drop function if exists vind_of_maak_traject(uuid, text, uuid, text, integer);
+
 create or replace function vind_of_maak_traject(
   p_salon_id uuid, p_email text, p_dienst_id uuid,
   p_klant_naam text, p_totaal_sessies integer
