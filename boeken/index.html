@@ -294,6 +294,15 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         </div>
       </div>
       <div class="form-row"><label class="form-label">Opmerking (optioneel)</label><input class="form-input" id="inp-notitie" type="text" placeholder="Allergieën, wensen..."></div>
+      <div class="form-row">
+        <label class="form-label">Referentiefoto (optioneel)</label>
+        <div style="font-size:11px;color:var(--mu);margin-bottom:6px;">Bijvoorbeeld een tattoo-ontwerp of inspiratiefoto voor je afspraak.</div>
+        <label style="display:inline-block;padding:9px 16px;border:1px solid var(--bd);border-radius:8px;font-size:12px;cursor:pointer;" id="foto-upload-label">
+          <span id="foto-upload-tekst">Foto toevoegen</span>
+          <input type="file" id="referentie-foto-input" accept="image/*" style="display:none;" onchange="uploadReferentieFoto(this)">
+        </label>
+        <div id="referentie-foto-preview" style="display:none;margin-top:10px;"><img src="" alt="Referentiefoto" style="max-width:160px;max-height:160px;border-radius:8px;border:1px solid var(--bd);"></div>
+      </div>
       <button class="btn-next" id="btn-confirm" onclick="bevestigen()">Afspraak bevestigen</button>
       <button class="btn-back" onclick="goStep(3)">← Terug</button>
     </div>
@@ -382,7 +391,35 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false};
+let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false,referentie_foto_url:null};
+
+async function uploadReferentieFoto(input){
+  const file=input.files[0];
+  if(!file) return;
+  if(file.size>4*1024*1024){ alert('Bestand is groter dan 4MB.'); return; }
+
+  const label=document.getElementById('foto-upload-tekst');
+  label.innerHTML='<span class="spinner-inline"></span>';
+
+  const ext=file.name.split('.').pop();
+  const path=`${SALON_ID}/${Date.now()}.${ext}`;
+
+  const{error:upErr}=await sb.storage.from('boeking-referenties').upload(path,file,{upsert:true,cacheControl:'3600'});
+
+  if(upErr){
+    label.textContent='Foto toevoegen';
+    alert('Upload mislukt: '+upErr.message+'. Is de "boeking-referenties" storage bucket aangemaakt?');
+    return;
+  }
+
+  const{data}=sb.storage.from('boeking-referenties').getPublicUrl(path);
+  state.referentie_foto_url=data.publicUrl+'?t='+Date.now();
+
+  label.textContent='Andere foto kiezen';
+  const preview=document.getElementById('referentie-foto-preview');
+  preview.style.display='block';
+  preview.querySelector('img').src=state.referentie_foto_url;
+}
 
 // Totale duur/prijs incl. eventuele extra diensten (voor beschikbaarheids-
 // check en het getoonde totaalbedrag) -- de hoofddienst blijft alleen
@@ -1434,6 +1471,7 @@ async function bevestigen(){
     locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
     dienst_id:state.dienst_id||null,
     dienst_variant_id:state.dienst_variant_id||null,
+    referentie_foto_url:state.referentie_foto_url||null,
     medewerker_id:toeTeWijzenMedewerkerId,
     ruimte_id:toeTeWijzenRuimteId,
     datum_tijd:dt.toISOString(),
