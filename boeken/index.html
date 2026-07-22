@@ -404,15 +404,15 @@ async function uploadReferentieFoto(input){
   const ext=file.name.split('.').pop();
   const path=`${SALON_ID}/${Date.now()}.${ext}`;
 
-  const{error:upErr}=await sb.storage.from('boeking-referenties').upload(path,file,{upsert:true,cacheControl:'3600'});
+  const{error:upErr}=await sb.storage.from('referenties').upload(path,file,{upsert:true,cacheControl:'3600'});
 
   if(upErr){
     label.textContent='Foto toevoegen';
-    alert('Upload mislukt: '+upErr.message+'. Is de "boeking-referenties" storage bucket aangemaakt?');
+    alert('Upload mislukt: '+upErr.message+'. Is de "referenties" storage bucket aangemaakt?');
     return;
   }
 
-  const{data}=sb.storage.from('boeking-referenties').getPublicUrl(path);
+  const{data}=sb.storage.from('referenties').getPublicUrl(path);
   state.referentie_foto_url=data.publicUrl+'?t='+Date.now();
 
   label.textContent='Andere foto kiezen';
