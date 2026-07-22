@@ -754,6 +754,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <button class="vw-pill" data-industry="dieren" role="tab" aria-selected="false">Dierenverzorging</button>
       <button class="vw-pill" data-industry="fysio" role="tab" aria-selected="false">Fysio & paramedisch</button>
       <button class="vw-pill" data-industry="dans" role="tab" aria-selected="false">Dansscholen</button>
+      <button class="vw-pill" data-industry="massage" role="tab" aria-selected="false">Massage</button>
+      <button class="vw-pill" data-industry="wenkbrauw" role="tab" aria-selected="false">Wenkbrauw & wimpers</button>
+      <button class="vw-pill" data-industry="rijschool" role="tab" aria-selected="false">Rijscholen</button>
       <button class="vw-pill" data-industry="anders" role="tab" aria-selected="false">Anders</button>
     </div>
 
@@ -1399,6 +1402,37 @@ idxSetPeriod('yearly');
         <div class="mini-agenda-row"><div class="mini-agenda-time">Lieke</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">Tom</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Geboekt</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">Nieuwe plek</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Vrij</div></div>
+      </div>`
+    },
+    massage: {
+      title: 'Massagepraktijken',
+      desc: 'Een uur op de tafel is geld -- een no-show kost je dat uur dubbel. Kronr beschermt je agenda met aanbetalingen en herinneringen.',
+      benefits: ['Aanbetaling bij het boeken, geen verrassingen achteraf', 'Automatische herinneringen verminderen no-shows', 'Klantnotities (blessures, voorkeuren) altijd bij de hand'],
+      kai: 'Deze klant heeft al 2x niet afgezegd. Wil je een aanbetaling verplicht maken?',
+      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-spa.jpg" alt="Kronr agenda voor massagepraktijken" loading="lazy"></div>`
+    },
+    wenkbrauw: {
+      title: 'Wenkbrauw- & wimperstudio\'s',
+      desc: 'Korte afspraken, hoge frequentie -- en dus ook het meeste last van no-shows. Kronr vult je rooster en beschermt je tijd.',
+      benefits: ['Automatische herinneringen vlak voor de afspraak', 'Snel opeenvolgende sloten zonder overlap', 'Terugkerende klanten (elke 3-4 weken) makkelijk opnieuw inplannen'],
+      kai: 'Sanne komt om de 3 weken. Zal ik haar volgende afspraak alvast voorstellen?',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Wimpers</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:30</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Wenkbrauwen</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Wimpers</div></div>
+      </div>`
+    },
+    rijschool: {
+      title: 'Rijscholen',
+      desc: 'Elke leerling heeft zijn eigen instructeur, tempo en lespakket. Kronr houdt moeiteloos bij wie waar staat.',
+      benefits: ['Vaste instructeur-koppeling per leerling', 'Terugkerende lessen automatisch ingepland', 'Lespakketten en betalingen in één overzicht'],
+      kai: 'Milan heeft nog 4 lessen in zijn pakket. Zijn volgende les staat gepland voor donderdag.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Rijles - Milan</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">15:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Rijles - Fenna</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">16:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tussentijdse toets</div></div>
       </div>`
     },
     anders: {
