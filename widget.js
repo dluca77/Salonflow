@@ -71,9 +71,7 @@
     ".kw-panel-head{display:flex;align-items:center;justify-content:space-between;",
     "padding:14px 16px;background:#1a1714;flex-shrink:0;}",
     ".kw-brand{display:flex;align-items:center;gap:9px;}",
-    ".kw-brand-mark{width:24px;height:24px;background:#8c6d3f;display:flex;align-items:center;",
-    "justify-content:center;font-family:'Playfair Display',serif;color:#faf8f4;font-size:11px;font-weight:700;",
-    "border-radius:7px;flex-shrink:0;}",
+    ".kw-brand-mark{width:26px;height:26px;object-fit:cover;border-radius:50%;flex-shrink:0;background:#8c6d3f;}",
     ".kw-brand-name{font-family:'Playfair Display',serif;color:#faf8f4;font-size:14px;font-weight:700;letter-spacing:0.2px;}",
     ".kw-close{width:26px;height:26px;border:none;background:rgba(255,255,255,0.08);color:rgba(250,248,244,0.7);",
     "cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;",
@@ -96,7 +94,10 @@
     ".kw-chat-hint{font-size:11px;color:#8a8378;padding:2px 14px 10px;}",
     ".kw-chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(26,23,20,0.08);flex-shrink:0;}",
     ".kw-chat-input{flex:1;border:1px solid rgba(26,23,20,0.15);border-radius:100px;padding:9px 14px;",
-    "font-family:'Inter',sans-serif;font-size:13px;outline:none;}",
+    /* font-size MOET 16px zijn (niet lager) -- anders zoomt iOS Safari
+       automatisch in zodra dit veld focus krijgt, en de gebruiker moet
+       daarna handmatig weer uitzoomen om de rest van het gesprek te zien. */
+    "font-family:'Inter',sans-serif;font-size:16px;outline:none;}",
     ".kw-chat-send{border:none;background:#1a1714;color:#faf8f4;border-radius:100px;padding:0 16px;",
     "font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0;}",
     ".kw-chat-send:disabled{opacity:.5;cursor:default;}",
@@ -122,16 +123,16 @@
     '</button>' +
     '<div class="kw-panel">' +
       '<div class="kw-panel-head">' +
-        '<div class="kw-brand"><div class="kw-brand-mark">K</div><div class="kw-brand-name">Kronr<span style="color:#c9a35f;">.</span></div></div>' +
+        '<div class="kw-brand"><img class="kw-brand-mark" src="' + BASE_URL + '/images/kai-mascotte.png" alt="Kai"><div class="kw-brand-name">Kai</div></div>' +
         '<button class="kw-close" type="button" aria-label="Sluiten">&#10005;</button>' +
       '</div>' +
       '<div class="kw-tabs">' +
-        '<button class="kw-tab active" type="button" data-tab="boeken">Afspraak maken</button>' +
-        '<button class="kw-tab" type="button" data-tab="kai">Vraag stellen</button>' +
+        '<button class="kw-tab" type="button" data-tab="boeken">Afspraak maken</button>' +
+        '<button class="kw-tab active" type="button" data-tab="kai">Vraag stellen</button>' +
       '</div>' +
       '<div class="kw-panel-body">' +
-        '<div class="kw-chat-pane" data-pane="boeken" style="position:absolute;inset:0;display:flex;"></div>' +
-        '<div class="kw-chat-pane" data-pane="kai">' +
+        '<div class="kw-chat-pane" data-pane="boeken"></div>' +
+        '<div class="kw-chat-pane active" data-pane="kai">' +
           '<div class="kw-chat-msgs"></div>' +
           '<div class="kw-chat-hint">Kai beantwoordt vragen over openingstijden, diensten en prijzen. Voor het boeken zelf, gebruik "Afspraak maken".</div>' +
           '<div class="kw-chat-input-row">' +
@@ -195,16 +196,35 @@
     return salonContextPromise;
   }
 
+  function ensureBoekenGeladen(){
+    if(iframeLoaded) return;
+    var iframe = document.createElement('iframe');
+    iframe.src = BASE_URL + '/boeken/?salon=' + encodeURIComponent(SALON_ID) + '&embed=1';
+    iframe.setAttribute('title', 'Afspraak maken');
+    iframe.style.width = '100%';
+    iframe.style.height = '100%';
+    iframe.style.border = 'none';
+    boekPane.appendChild(iframe);
+    iframeLoaded = true;
+  }
+
+  function ensureKaiGestart(){
+    if(chatStarted) return;
+    chatStarted = true;
+    addChatBubble('bot', 'Hoi! Ik ben Kai. Vraag me gerust naar openingstijden, diensten of prijzen bij deze salon.');
+    haalSalonContext(); // vast op de achtergrond laden, voordat de eerste vraag gesteld wordt
+  }
+
   function switchTab(name){
     tabs.forEach(function(t){ t.classList.toggle('active', t.getAttribute('data-tab') === name); });
     boekPane.classList.toggle('active', name === 'boeken');
     boekPane.style.display = name === 'boeken' ? 'flex' : 'none';
     kaiPane.classList.toggle('active', name === 'kai');
-    if(name === 'kai' && !chatStarted){
-      chatStarted = true;
-      addChatBubble('bot', 'Hoi! Ik ben Kai. Vraag me gerust naar openingstijden, diensten of prijzen bij deze salon.');
+    if(name === 'boeken'){
+      ensureBoekenGeladen();
+    } else if(name === 'kai'){
+      ensureKaiGestart();
       chatInput.focus();
-      haalSalonContext(); // vast op de achtergrond laden, voordat de eerste vraag gesteld wordt
     }
   }
   tabs.forEach(function(t){
@@ -229,6 +249,9 @@
     chatSend.disabled = true;
     var loadingBubble = addChatBubble('bot', '...');
 
+    var nu = new Date();
+    var dagNamen = ['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
+
     haalSalonContext().then(function(ctx){
       return fetch(AI_WORKER_URL, {
         method: 'POST',
@@ -242,7 +265,9 @@
           type_bedrijf: ctx.type_bedrijf,
           openingstijden: ctx.openingstijden,
           diensten: ctx.diensten,
-          annuleer_cutoff_uren: ctx.annuleer_cutoff_uren
+          annuleer_cutoff_uren: ctx.annuleer_cutoff_uren,
+          vandaag_dag: dagNamen[nu.getDay()],
+          vandaag_datum: nu.toISOString().slice(0,10)
         })
       });
     }).then(function(r){
@@ -264,20 +289,12 @@
   });
 
   function openWidget(){
-    if(!iframeLoaded){
-      var iframe = document.createElement('iframe');
-      iframe.src = BASE_URL + '/boeken/?salon=' + encodeURIComponent(SALON_ID) + '&embed=1';
-      iframe.setAttribute('title', 'Afspraak maken');
-      iframe.style.width = '100%';
-      iframe.style.height = '100%';
-      iframe.style.border = 'none';
-      boekPane.appendChild(iframe);
-      iframeLoaded = true;
-    }
+    ensureKaiGestart();
     panel.classList.add('open');
     catcher.classList.add('open');
     btn.classList.add('hidden');
     document.body.style.overflow = 'hidden';
+    chatInput.focus();
   }
 
   function closeWidget(){
