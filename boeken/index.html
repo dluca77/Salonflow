@@ -719,7 +719,7 @@ async function init(){
       const varianten = window.DIENST_VARIANTEN[d.id];
       if(d.is_groepsles){
         return `
-        <div class="dienst-card" onclick="selectGroepslesDienst(this,'${jsAttr(d.naam)}','${d.id}')">
+        <div class="dienst-card" onclick="selectGroepslesDienst(this,'${jsAttr(d.naam)}','${d.id}',${d.prijs})">
           <div class="dc-naam">${escapeHtml(d.naam)}</div>
           <div class="dc-prijs">€${d.prijs}</div>
           <div class="dc-duur">Groepsles -- kies een lesmoment</div>
@@ -916,15 +916,17 @@ function kiesKoppel(wilKoppel){
 // scope-beperking (net als bij koppelbehandelingen): geen aanbetaling/
 // kaartgegevens/abonnement/extra-diensten-ondersteuning voor groepslessen
 // in deze eerste versie.
-async function selectGroepslesDienst(el,naam,id){
+async function selectGroepslesDienst(el,naam,id,prijs){
   document.querySelectorAll('#dienst-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
   document.getElementById('variant-keuze-wrap').style.display='none';
   document.getElementById('koppel-keuze-wrap').style.display='none';
   document.getElementById('extra-diensten-wrap').style.display='none';
 
-  state.dienst=naam; state.dienst_id=id; state.gekozen_les_id=null;
+  state.dienst=naam; state.dienst_id=id; state.prijs=prijs; state.gekozen_les_id=null;
   state.dienst_variant_id=null; state.koppel_optie=false; state.wil_koppel=false; state.traject_sessies=null;
+  document.getElementById('sum-dienst').textContent=naam;
+  document.getElementById('sum-prijs').textContent='€'+prijs;
   document.getElementById('btn1').disabled=true;
 
   const wrap=document.getElementById('groepsles-keuze-wrap');
