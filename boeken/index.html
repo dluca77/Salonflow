@@ -332,6 +332,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="cr"><span class="cr-label">Prijs</span><span class="cr-val" id="cf-prijs" style="color:var(--gd)"></span></div>
         <div class="cr" id="cf-aanbetaling-row" style="display:none;"><span class="cr-label">Aanbetaling</span><span class="cr-val" id="cf-aanbetaling"></span></div>
         <div class="cr" id="cf-kaart-row" style="display:none;"><span class="cr-label">Kaartgegevens</span><span class="cr-val" id="cf-kaart"></span></div>
+        <div class="cr" id="cf-traject-row" style="display:none;"><span class="cr-label">Traject</span><span class="cr-val" id="cf-traject"></span></div>
       </div>
       <p style="font-size:13px;color:var(--mu);line-height:1.7;font-weight:300;">Wil je de afspraak wijzigen of annuleren? Dat kan tot 24 uur van tevoren via de link in je bevestigingsmail.</p>
       <a id="cf-stempel-link" href="#" style="display:none;font-size:12px;color:var(--gd);text-decoration:none;font-weight:600;">✦ Bekijk je stempelkaart →</a>
@@ -403,7 +404,7 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false,referentie_foto_url:null,koppel_optie:false,wil_koppel:false};
+let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false,referentie_foto_url:null,koppel_optie:false,wil_koppel:false,traject_sessies:null};
 
 async function uploadReferentieFoto(input){
   const file=input.files[0];
@@ -724,7 +725,7 @@ async function init(){
       const aanbEuro = heeftAanbetaling ? berekenAanbetalingBedrag(d.prijs, d.aanbetaling_type, d.aanbetaling_bedrag) : 0;
       const koppelOptie = !!d.koppel_optie && !heeftAanbetaling && !vereistKaart && d.vereist_ruimte;
       return `
-      <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart},${!!d.vereist_ruimte},null,${koppelOptie})">
+      <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart},${!!d.vereist_ruimte},null,${koppelOptie},${d.traject_sessies||0})">
         <div class="dc-naam">${escapeHtml(d.naam)}</div>
         <div class="dc-prijs">€${d.prijs}</div>
         <div class="dc-duur">${d.duur_min} min</div>
@@ -821,7 +822,7 @@ function selectVariant(el,naam,prijs,duur,dienstId,variantId,aanbType,aanbBedrag
   selectDienst(huidigVariantKeuzeEl,naam,prijs,duur,dienstId,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId);
 }
 
-function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId,koppelOptie){
+function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId,koppelOptie,trajectSessies){
   document.querySelectorAll('#dienst-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
   if(!variantId) document.getElementById('variant-keuze-wrap').style.display='none';
@@ -830,6 +831,7 @@ function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,ver
   state.vereist_ruimte=!!vereistRuimte;
   state.koppel_optie=!!koppelOptie;
   state.wil_koppel=false;
+  state.traject_sessies=trajectSessies||null;
   state.extra_diensten=[];
   renderExtraDienstenGrid();
   const koppelWrap=document.getElementById('koppel-keuze-wrap');
@@ -1547,6 +1549,28 @@ async function bevestigen(){
   const naam=voor+(achter?' '+achter:'');
   let nieuweAfspraak, error;
 
+  // Traject (bv. tattoo-sessies, fysio-traject): op basis van het al
+  // ingevulde e-mailadres automatisch een bestaand actief traject vinden
+  // of een nieuwe starten -- geen aparte stap nodig voor de klant. Non-
+  // fataal: als dit om wat voor reden dan ook mislukt, gaat de boeking
+  // gewoon door zonder traject-koppeling.
+  let trajectId=null, trajectSessieNummer=null;
+  if(state.traject_sessies){
+    try{
+      const{data:trajectData,error:trajectErr}=await sb.rpc('vind_of_maak_traject',{
+        p_salon_id:SALON_ID, p_email:email, p_dienst_id:state.dienst_id,
+        p_klant_naam:naam, p_totaal_sessies:state.traject_sessies
+      });
+      const traject=Array.isArray(trajectData)?trajectData[0]:trajectData;
+      if(!trajectErr && traject){
+        trajectId=traject.id;
+        trajectSessieNummer=traject.voltooide_sessies+1;
+      }
+    }catch(e){
+      console.warn('Kon traject niet vinden/aanmaken:',e);
+    }
+  }
+
   if(state.wil_koppel){
     // Koppelbehandeling: 2 ruimtes ÉN 2 medewerkers tegelijk nodig, voor
     // dezelfde tijd/duur/dienst. Verse controle vlak vóór het opslaan
@@ -1578,7 +1602,9 @@ async function bevestigen(){
       klant_email:email,
       klant_telefoon:telSchoon||null,
       notities:notitie||null,
-      duo_groep_id:duoGroepId
+      duo_groep_id:duoGroepId,
+      traject_id:trajectId,
+      traject_sessienummer:trajectSessieNummer
     };
     const rijen=[
       {...basisRij, medewerker_id:medewerkerIds[0], ruimte_id:ruimteIds[0]},
@@ -1633,7 +1659,9 @@ async function bevestigen(){
       klant_email:email,
       klant_telefoon:telSchoon||null,
       notities:notitie||null,
-      gebruikt_abonnement_id:state.gebruikt_abonnement_id||null
+      gebruikt_abonnement_id:state.gebruikt_abonnement_id||null,
+      traject_id:trajectId,
+      traject_sessienummer:trajectSessieNummer
     }).select('id,annuleer_token').single();
     error=insertResult.error;
     nieuweAfspraak=insertResult.data;
@@ -1754,6 +1782,13 @@ async function bevestigen(){
   document.getElementById('cf-datum').textContent=state.datum;
   document.getElementById('cf-tijd').textContent=state.tijd;
   document.getElementById('cf-prijs').textContent='€'+state.prijs;
+  const trajectRow=document.getElementById('cf-traject-row');
+  if(trajectSessieNummer){
+    document.getElementById('cf-traject').textContent='Sessie '+trajectSessieNummer+' van '+state.traject_sessies;
+    trajectRow.style.display='flex';
+  } else {
+    trajectRow.style.display='none';
+  }
   zetStempelLink(email);
 
   document.getElementById('progress-bar').style.display='none';

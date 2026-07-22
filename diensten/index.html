@@ -273,6 +273,17 @@ select.fi{cursor:pointer;}
       </label>
       <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant kan bij het boeken kiezen voor 2 personen tegelijk -- reserveert dan automatisch 2 ruimtes en 2 medewerkers. Alleen zinvol i.c.m. 'Vereist een ruimte'. Werkt niet i.c.m. aanbetaling/kaartgegevens-vereisten.</div>
     </div>
+    <div class="fr">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="d-traject-actief" onchange="document.getElementById('d-traject-sessies-wrap').style.display=this.checked?'block':'none'" style="width:16px;height:16px;">
+        Dit is een traject van meerdere sessies (bv. tattoo, fysio)
+      </label>
+      <div id="d-traject-sessies-wrap" style="display:none;margin-top:8px;">
+        <label class="fl">Aantal sessies</label>
+        <input class="fi" id="d-traject-sessies" type="number" min="2" step="1" placeholder="bv. 3">
+        <div style="font-size:11px;color:var(--mu);margin-top:4px;">Bij het boeken herkent het systeem automatisch (op e-mailadres) of dit een vervolgsessie is van een lopend traject, en toont dan 'Sessie X van N'.</div>
+      </div>
+    </div>
     <button class="btsv" id="btn-dienst-opslaan" onclick="slaDienstOp()">Dienst opslaan</button>
   </div>
 </div>
@@ -331,6 +342,16 @@ select.fi{cursor:pointer;}
         Kan als koppelbehandeling geboekt worden (bv. koppelmassage)
       </label>
       <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant kan bij het boeken kiezen voor 2 personen tegelijk -- reserveert dan automatisch 2 ruimtes en 2 medewerkers. Alleen zinvol i.c.m. 'Vereist een ruimte'. Werkt niet i.c.m. aanbetaling/kaartgegevens-vereisten.</div>
+    </div>
+    <div class="fr">
+      <label class="fl" style="display:flex;align-items:center;gap:8px;">
+        <input type="checkbox" id="ab-traject-actief" onchange="document.getElementById('ab-traject-sessies-wrap').style.display=this.checked?'block':'none'" style="width:16px;height:16px;">
+        Dit is een traject van meerdere sessies (bv. tattoo, fysio)
+      </label>
+      <div id="ab-traject-sessies-wrap" style="display:none;margin-top:8px;">
+        <label class="fl">Aantal sessies</label>
+        <input class="fi" id="ab-traject-sessies" type="number" min="2" step="1" placeholder="bv. 3">
+      </div>
     </div>
     <div class="fr" id="ab-abo-wrap" style="display:none;">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
@@ -606,6 +627,7 @@ async function slaDienstOp(){
     terugkeer_weken:parseInt(document.getElementById('d-terugkeer-weken').value)||null,
     vereist_ruimte:document.getElementById('d-vereist-ruimte').checked,
     koppel_optie:document.getElementById('d-koppel-optie').checked,
+    traject_sessies:document.getElementById('d-traject-actief').checked?(parseInt(document.getElementById('d-traject-sessies').value)||null):null,
     locatie_id:HUIDIGE_LOCATIE_ID||null
   });
 
@@ -618,6 +640,9 @@ async function slaDienstOp(){
   document.getElementById('d-kaart').checked=false;
   document.getElementById('d-vereist-ruimte').checked=false;
   document.getElementById('d-koppel-optie').checked=false;
+  document.getElementById('d-traject-actief').checked=false;
+  document.getElementById('d-traject-sessies').value='';
+  document.getElementById('d-traject-sessies-wrap').style.display='none';
   document.getElementById('d-incl-btw').checked=true;
   document.getElementById('d-aanb-type').value='';
   closeM('m-new');
@@ -716,6 +741,9 @@ function openAanbetalingModal(id){
   document.getElementById('ab-terugkeer-weken').value=d.terugkeer_weken||'';
   document.getElementById('ab-vereist-ruimte').checked=d.vereist_ruimte||false;
   document.getElementById('ab-koppel-optie').checked=d.koppel_optie||false;
+  document.getElementById('ab-traject-actief').checked=!!d.traject_sessies;
+  document.getElementById('ab-traject-sessies').value=d.traject_sessies||'';
+  document.getElementById('ab-traject-sessies-wrap').style.display=d.traject_sessies?'block':'none';
   const magStripeFeature = (SALON?.plan==='business' && SALON?.stripe_connect_status==='actief');
   document.getElementById('ab-kaart-wrap').style.display = magStripeFeature ? 'block' : 'none';
   document.getElementById('ab-abo-wrap').style.display = magStripeFeature ? 'block' : 'none';
@@ -772,7 +800,8 @@ async function slaAanbetalingOp(){
     prijs_incl_btw:document.getElementById('ab-incl-btw').checked,
     terugkeer_weken:parseInt(document.getElementById('ab-terugkeer-weken').value)||null,
     vereist_ruimte:document.getElementById('ab-vereist-ruimte').checked,
-    koppel_optie:document.getElementById('ab-koppel-optie').checked
+    koppel_optie:document.getElementById('ab-koppel-optie').checked,
+    traject_sessies:document.getElementById('ab-traject-actief').checked?(parseInt(document.getElementById('ab-traject-sessies').value)||null):null
   }).eq('id',huidigAanbetalingDienstId);
 
   if(error){

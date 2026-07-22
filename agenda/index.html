@@ -521,7 +521,7 @@ async function loadData(){
   const s=new Date(cur);s.setDate(s.getDate()-60);
   const e=new Date(cur);e.setDate(e.getDate()+90);
   const[aR,mR,dR,wR]=await Promise.all([
-    metLocatie(sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs,duur_min),dienst_varianten(naam),referentie_foto_url').eq('salon_id',SALON_ID)).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
+    metLocatie(sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs,duur_min),dienst_varianten(naam),referentie_foto_url,behandeltrajecten(totaal_sessies)').eq('salon_id',SALON_ID)).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
     metLocatie(sb.from('medewerkers').select('*').eq('salon_id',SALON_ID)).eq('actief',true),
     metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).eq('actief',true),
     sb.from('wachtlijst').select('id,voorkeur_vanaf,voorkeur_tot').eq('salon_id',SALON_ID).eq('status','actief')
@@ -1011,7 +1011,8 @@ function showPop(a,card){
     waBtn.style.display='none';
   }
   document.getElementById('p-datum').textContent=dag.charAt(0).toUpperCase()+dag.slice(1)+', '+ft(ah,am)+' – '+ft(eh,em);
-  document.getElementById('p-svc').textContent=(a.diensten?.naam?a.diensten.naam+(a.dienst_varianten?.naam?' ('+a.dienst_varianten.naam+')':''):a.bloktijd_type)||'—';
+  const trajectTekst=(a.traject_id && a.traject_sessienummer && a.behandeltrajecten?.totaal_sessies)?' -- sessie '+a.traject_sessienummer+' van '+a.behandeltrajecten.totaal_sessies:'';
+  document.getElementById('p-svc').textContent=(a.diensten?.naam?a.diensten.naam+(a.dienst_varianten?.naam?' ('+a.dienst_varianten.naam+')':'')+trajectTekst:a.bloktijd_type)||'—';
   const fotoRow=document.getElementById('p-referentie-foto-row');
   if(a.referentie_foto_url){
     document.getElementById('p-referentie-foto').src=a.referentie_foto_url;
