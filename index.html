@@ -752,6 +752,8 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <button class="vw-pill" data-industry="tattoo" role="tab" aria-selected="false">Tattoo</button>
       <button class="vw-pill" data-industry="sport" role="tab" aria-selected="false">Sport & fitness</button>
       <button class="vw-pill" data-industry="dieren" role="tab" aria-selected="false">Dierenverzorging</button>
+      <button class="vw-pill" data-industry="fysio" role="tab" aria-selected="false">Fysio & paramedisch</button>
+      <button class="vw-pill" data-industry="dans" role="tab" aria-selected="false">Dansscholen</button>
       <button class="vw-pill" data-industry="anders" role="tab" aria-selected="false">Anders</button>
     </div>
 
@@ -1373,6 +1375,30 @@ idxSetPeriod('yearly');
         <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Buddy (groot)</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Milo (klein)</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Rex (middel)</div></div>
+      </div>`
+    },
+    fysio: {
+      title: 'Fysiotherapie & paramedisch',
+      desc: 'Een behandelplan onthouden voor 200 patiënten kan niemand. Kronr wel -- elke voortgang, notitie en vervolgafspraak staat direct bij de patiënt.',
+      benefits: ['Behandelnotities en voortgang per patiënt overzichtelijk bijgehouden', 'Terugkerende afspraken (bv. wekelijks) automatisch ingepland', 'Nette facturen voor eigen risico/declaratie, geen losse kwitantie meer nodig'],
+      kai: 'Meneer Bakker heeft nog 2 behandelingen in zijn traject van 6. Zal ik de volgende inplannen?',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Sessie 3/6</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Intake</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Sessie 5/6</div></div>
+      </div>`
+    },
+    dans: {
+      title: 'Dansscholen',
+      desc: 'Van proefles tot een heel seizoen: Kronr regelt de planning voor losse lessen én groepen die maandenlang samen dansen.',
+      benefits: ['Groepslessen per niveau of leeftijdscategorie, met capaciteit bewaakt', 'Klanten boeken zelf een plek via de widget, geen dubbele boekingen', 'Instructeur- en zaalplanning in één overzicht'],
+      kai: 'De beginnersles van donderdag zit bijna vol -- nog 2 plekken.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Salsa Beginners - do 19:00 (10/12)</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Lieke</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Tom</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Geboekt</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">Nieuwe plek</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Vrij</div></div>
       </div>`
     },
     anders: {
