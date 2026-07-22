@@ -1203,7 +1203,11 @@ window.addEventListener('scroll',()=>{
 });
 
 // ── Blijf op de hoogte: e-mail-inschrijving voor de launch-aankondiging ──
-const notifySb=window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co','sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6');
+// window.supabase kan ontbreken als de CDN-load faalt (ad-blocker, trage
+// verbinding, firewall) -- zonder deze guard gooide createClient() dan een
+// exception die de rest van dit hele scriptblok liet crashen, inclusief de
+// doelgroep-tabs, tellers en alle andere interactiviteit op de pagina.
+const notifySb=window.supabase ? window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co','sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6') : null;
 const NOTIFY_EMAIL_REGEX=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
 document.getElementById('notify-form').addEventListener('submit', async(e)=>{
@@ -1218,6 +1222,13 @@ document.getElementById('notify-form').addEventListener('submit', async(e)=>{
 
   if(!NOTIFY_EMAIL_REGEX.test(email)){
     msg.textContent='Vul een geldig e-mailadres in.';
+    msg.classList.add('err');
+    msg.style.display='block';
+    return;
+  }
+
+  if(!notifySb){
+    msg.textContent='Kon niet verbinden. Probeer het later opnieuw.';
     msg.classList.add('err');
     msg.style.display='block';
     return;
