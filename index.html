@@ -764,6 +764,9 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <button class="vw-pill" data-industry="garage" role="tab" aria-selected="false">Garages</button>
       <button class="vw-pill" data-industry="coworking" role="tab" aria-selected="false">Vergaderruimtes</button>
       <button class="vw-pill" data-industry="dietist" role="tab" aria-selected="false">Diëtisten</button>
+      <button class="vw-pill" data-industry="tandarts" role="tab" aria-selected="false">Tandartsen</button>
+      <button class="vw-pill" data-industry="dierenarts" role="tab" aria-selected="false">Dierenartsen</button>
+      <button class="vw-pill" data-industry="psycholoog" role="tab" aria-selected="false">Psychologen</button>
       <button class="vw-pill" data-industry="anders" role="tab" aria-selected="false">Anders</button>
     </div>
 
@@ -1519,6 +1522,42 @@ idxSetPeriod('yearly');
         <div class="mini-agenda-row"><div class="mini-agenda-time">09:30</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Intake</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sessie 4/8</div></div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Sessie 2/6</div></div>
+      </div>`
+    },
+    tandarts: {
+      title: 'Tandartsen',
+      desc: 'Voor de agenda, herinneringen en betalingen kan Kronr je praktijk prima ondersteunen -- let op: dit is geen vervanging voor een gespecialiseerd patiëntendossier-systeem.',
+      benefits: ['Agenda en online afspraken voor de praktijk', 'Automatische herinneringen om no-shows te voorkomen', 'Facturatie gekoppeld aan je boekhouding'],
+      kai: 'Er is morgen nog een gaatje om 11:00 bij dr. De Vries.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Controle</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Vulling</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Vrij</div></div>
+      </div>`
+    },
+    dierenarts: {
+      title: 'Dierenartsen',
+      desc: 'Voor de planning, herinneringen en kassa is Kronr geschikt -- voor medische dossiervoering gebruik je waarschijnlijk nog je gespecialiseerde software ernaast.',
+      benefits: ['Agenda per dierenarts en per behandelkamer', 'Herinneringen zodat klanten hun afspraak niet vergeten', 'Kassa en facturatie in hetzelfde overzicht'],
+      kai: 'Milo (kat) staat om 14:00 gepland voor een controle.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Vaccinatie - Rex</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Controle - Milo</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">15:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Operatie - Bo</div></div>
+      </div>`
+    },
+    psycholoog: {
+      title: 'Psychologen & therapeuten',
+      desc: 'Kronr regelt je agenda en herhaalafspraken -- de inhoudelijke, privacygevoelige dossiervoering laat je bewust buiten dit systeem.',
+      benefits: ['Vaste wekelijkse of tweewekelijkse afspraken automatisch ingepland', 'Geen kassa-verplichting nodig voor wie dat niet wil gebruiken', 'Facturen met eigen praktijkgegevens'],
+      kai: 'Uw cliënt van 15:00 heeft nog geen bevestiging gestuurd.',
+      visual: `<div class="mini-agenda">
+        <div class="mini-agenda-head">Agenda vandaag</div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Sessie</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sessie</div></div>
+        <div class="mini-agenda-row"><div class="mini-agenda-time">15:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Sessie</div></div>
       </div>`
     },
     anders: {
