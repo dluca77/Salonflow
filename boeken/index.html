@@ -934,9 +934,23 @@ async function selectGroepslesDienst(el,naam,id,prijs){
 
   state.dienst=naam; state.dienst_id=id; state.prijs=prijs; state.gekozen_les_id=null;
   state.dienst_variant_id=null; state.koppel_optie=false; state.wil_koppel=false; state.traject_sessies=null;
+  state.gebruikt_abonnement_id=null; state.gebruikt_abonnement_email=null;
   document.getElementById('sum-dienst').textContent=naam;
   document.getElementById('sum-prijs').textContent='€'+prijs;
   document.getElementById('btn1').disabled=true;
+
+  const aboPanel=document.getElementById('abo-panel');
+  const heeftAbo=window.DIENSTEN_MET_ABO && window.DIENSTEN_MET_ABO[id];
+  if(heeftAbo){
+    aboPanel.style.display='block';
+    document.getElementById('abo-panel-check').style.display='block';
+    document.getElementById('abo-panel-gevonden').style.display='none';
+    document.getElementById('abo-panel-nieuw').style.display='none';
+    document.getElementById('abo-check-email').value='';
+    document.getElementById('abo-check-err').style.display='none';
+  } else {
+    aboPanel.style.display='none';
+  }
 
   const wrap=document.getElementById('groepsles-keuze-wrap');
   const grid=document.getElementById('groepsles-keuze-grid');
@@ -1683,6 +1697,18 @@ async function bevestigen(){
       errEl.style.display='block';
       return;
     }
+
+    // Abonnementstegoed pas NA een gelukte boeking verbruiken -- boek_les
+    // bewaakt zelf de capaciteit en kan falen (les net vol), dus eerst de
+    // plek veiligstellen. Mislukt het verbruiken van het tegoed alsnog
+    // (zeldzaam, bv. race met een andere boeking van dezelfde klant), dan
+    // heeft de klant de plek al -- niet de boeking terugdraaien, gewoon
+    // loggen (zelfde aanpak als de bevestigingsmail hieronder).
+    if(state.gebruikt_abonnement_id){
+      const{error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id,p_email:state.gebruikt_abonnement_email});
+      if(credErr) console.warn('Kon abonnementstegoed niet verbruiken na groepsles-boeking:',credErr);
+    }
+
     fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
