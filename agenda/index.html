@@ -371,6 +371,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
       <div style="font-size:11px;color:var(--mu);margin-bottom:6px;">Referentiefoto</div>
       <img id="p-referentie-foto" src="" alt="Referentiefoto" style="max-width:100%;max-height:220px;border-radius:8px;border:1px solid var(--bd);cursor:pointer;" onclick="window.open(this.src,'_blank')">
     </div>
+    <div class="pop-row" id="p-koppel-row" style="display:none;color:var(--gd2);"><svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg><span id="p-koppel-tekst">Koppelbehandeling</span></div>
     <div id="p-noshow-row" style="display:none;margin:10px 0;padding:12px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:8px;">
       <div style="font-size:12px;color:#c0392b;margin-bottom:8px;" id="p-noshow-tekst"></div>
       <button class="pop-btn-afrekenen" style="background:#c0392b;border-color:#c0392b;width:100%;justify-content:center;" id="p-noshow-btn" onclick="incasseerNoshowFee()">No-show-fee incasseren</button>
@@ -1017,6 +1018,17 @@ function showPop(a,card){
     fotoRow.style.display='block';
   } else {
     fotoRow.style.display='none';
+  }
+  const koppelRow=document.getElementById('p-koppel-row');
+  if(a.duo_groep_id){
+    koppelRow.style.display='flex';
+    document.getElementById('p-koppel-tekst').textContent='Koppelbehandeling';
+    sb.from('afspraken').select('medewerkers(naam)').eq('duo_groep_id',a.duo_groep_id).neq('id',a.id).limit(1).then(({data})=>{
+      const partnerNaam=data && data[0] && data[0].medewerkers?.naam;
+      if(partnerNaam) document.getElementById('p-koppel-tekst').textContent='Koppelbehandeling (samen met '+partnerNaam+')';
+    });
+  } else {
+    koppelRow.style.display='none';
   }
   if(a.id && a.type!=='bloktijd'){
     sb.rpc('get_extra_diensten_voor_afspraken',{p_afspraak_ids:[a.id]}).then(({data:extras})=>{

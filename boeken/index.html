@@ -223,6 +223,18 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
         <div class="step-sub" style="margin-bottom:10px;" id="variant-keuze-titel">Kies een optie</div>
         <div class="dienst-grid" id="variant-keuze-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
       </div>
+      <div id="koppel-keuze-wrap" style="display:none;margin-top:20px;">
+        <div class="step-sub" style="margin-bottom:10px;">Deze behandeling kan ook als koppelbehandeling geboekt worden.</div>
+        <div class="dienst-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));">
+          <div class="dienst-card" id="koppel-optie-alleen" onclick="kiesKoppel(false)">
+            <div class="dc-naam">Alleen ik</div>
+          </div>
+          <div class="dienst-card" id="koppel-optie-koppel" onclick="kiesKoppel(true)">
+            <div class="dc-naam">Met een tweede persoon</div>
+            <div class="dc-duur">Koppelbehandeling</div>
+          </div>
+        </div>
+      </div>
       <div id="extra-diensten-wrap" style="display:none;margin-top:20px;">
         <div class="step-sub" style="margin-bottom:10px;">Nog iets erbij? (optioneel, wordt ter plekke afgerekend)</div>
         <div class="dienst-grid" id="extra-diensten-grid" style="grid-template-columns:repeat(auto-fill,minmax(160px,1fr));"></div>
@@ -391,7 +403,7 @@ function jsAttr(tekst){
   return escapeHtml(jsVeilig);
 }
 
-let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false,referentie_foto_url:null};
+let state={dienst:null,dienst_id:null,dienst_variant_id:null,prijs:0,duur:0,med:'Geen voorkeur',med_id:null,datum:null,tijd:null,aanb_type:null,aanb_bedrag:0,vereist_kaart:false,vereist_kaart_dienst:false,gebruikt_abonnement_id:null,gebruikt_abonnement_email:null,extra_diensten:[],vereist_ruimte:false,referentie_foto_url:null,koppel_optie:false,wil_koppel:false};
 
 async function uploadReferentieFoto(input){
   const file=input.files[0];
@@ -710,8 +722,9 @@ async function init(){
         </div>`;
       }
       const aanbEuro = heeftAanbetaling ? berekenAanbetalingBedrag(d.prijs, d.aanbetaling_type, d.aanbetaling_bedrag) : 0;
+      const koppelOptie = !!d.koppel_optie && !heeftAanbetaling && !vereistKaart && d.vereist_ruimte;
       return `
-      <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart},${!!d.vereist_ruimte})">
+      <div class="dienst-card" onclick="selectDienst(this,'${jsAttr(d.naam)}',${d.prijs},${d.duur_min},'${d.id}','${d.aanbetaling_type||''}',${d.aanbetaling_bedrag||0},${vereistKaart},${!!d.vereist_ruimte},null,${koppelOptie})">
         <div class="dc-naam">${escapeHtml(d.naam)}</div>
         <div class="dc-prijs">€${d.prijs}</div>
         <div class="dc-duur">${d.duur_min} min</div>
@@ -808,15 +821,25 @@ function selectVariant(el,naam,prijs,duur,dienstId,variantId,aanbType,aanbBedrag
   selectDienst(huidigVariantKeuzeEl,naam,prijs,duur,dienstId,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId);
 }
 
-function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId){
+function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,vereistRuimte,variantId,koppelOptie){
   document.querySelectorAll('#dienst-grid .dienst-card').forEach(c=>c.classList.remove('selected'));
   el.classList.add('selected');
   if(!variantId) document.getElementById('variant-keuze-wrap').style.display='none';
   state.dienst=naam;state.prijs=prijs;state.duur=duur;state.dienst_id=id;
   state.dienst_variant_id=variantId||null;
   state.vereist_ruimte=!!vereistRuimte;
+  state.koppel_optie=!!koppelOptie;
+  state.wil_koppel=false;
   state.extra_diensten=[];
   renderExtraDienstenGrid();
+  const koppelWrap=document.getElementById('koppel-keuze-wrap');
+  if(state.koppel_optie){
+    koppelWrap.style.display='block';
+    document.getElementById('koppel-optie-alleen').classList.add('selected');
+    document.getElementById('koppel-optie-koppel').classList.remove('selected');
+  } else {
+    koppelWrap.style.display='none';
+  }
   state.aanb_type = (window.SALON_STRIPE_ACTIEF && aanbType) ? aanbType : null;
   state.aanb_bedrag = state.aanb_type ? berekenAanbetalingBedrag(prijs,aanbType,aanbBedrag) : 0;
   state.vereist_kaart_dienst = !!(window.SALON_STRIPE_ACTIEF && vereistKaart);
@@ -847,6 +870,12 @@ function selectDienst(el,naam,prijs,duur,id,aanbType,aanbBedrag,vereistKaart,ver
   }
 
   document.getElementById('btn1').disabled=false;
+}
+
+function kiesKoppel(wilKoppel){
+  state.wil_koppel=wilKoppel;
+  document.getElementById('koppel-optie-alleen').classList.toggle('selected',!wilKoppel);
+  document.getElementById('koppel-optie-koppel').classList.toggle('selected',wilKoppel);
 }
 
 async function checkAbonnementTegoed(){
@@ -1026,7 +1055,9 @@ async function berekenBeschikbareSlots(datum){
   // functie geeft alleen tijd/duur/medewerker terug, geen namen of
   // contactgegevens, dus is veilig voor de publieke boekingswidget.
   const alleRuimteIds=(window.BOEKEN_RUIMTES||[]).map(r=>r.id);
-  const ruimteNodig=state.vereist_ruimte && alleRuimteIds.length>0;
+  // Koppelbehandeling heeft 2 ruimtes tegelijk nodig i.p.v. 1.
+  const aantalRuimtesNodig=state.wil_koppel?2:(state.vereist_ruimte?1:0);
+  const ruimteNodig=aantalRuimtesNodig>0 && alleRuimteIds.length>0;
 
   const[{data,error:queryError},verlofResult,ruimteResult]=await Promise.all([
     sb.rpc('get_bezette_tijden',{
@@ -1048,17 +1079,21 @@ async function berekenBeschikbareSlots(datum){
   const bestaandeAfspraken=data||[];
   const bezetteRuimtes=ruimteResult.data||[];
 
-  // Is minstens 1 ruimte vrij voor dit tijdslot? (alleen relevant als de
-  // gekozen dienst vereist_ruimte heeft EN de salon ruimtes heeft
-  // ingesteld -- anders wordt er niet op ruimte gecontroleerd.)
-  function heeftVrijeRuimte(slotStart, slotEind){
-    if(!ruimteNodig) return true;
-    return alleRuimteIds.some(rid=>!bezetteRuimtes.some(b=>{
+  // Hoeveel ruimtes zijn er vrij voor dit tijdslot?
+  function aantalVrijeRuimtes(slotStart, slotEind){
+    return alleRuimteIds.filter(rid=>!bezetteRuimtes.some(b=>{
       if(b.ruimte_id!==rid) return false;
       const bStart=new Date(b.datum_tijd);
       const bEind=new Date(bStart.getTime()+(b.duur_min||30)*60000);
       return slotStart<bEind && slotEind>bStart;
-    }));
+    })).length;
+  }
+  // Zijn er genoeg ruimtes vrij voor dit tijdslot? (1 normaal, 2 bij een
+  // koppelbehandeling. Alleen relevant als de gekozen dienst vereist_ruimte
+  // heeft EN de salon ruimtes heeft ingesteld.)
+  function heeftVrijeRuimte(slotStart, slotEind){
+    if(!ruimteNodig) return true;
+    return aantalVrijeRuimtes(slotStart, slotEind) >= aantalRuimtesNodig;
   }
   // Medewerkers met goedgekeurd verlof/ziekte op deze dag: behandel als
   // volledig bezet, zodat de online boekingswidget ze niet meer aanbiedt.
@@ -1087,12 +1122,16 @@ async function berekenBeschikbareSlots(datum){
     const slotEind=new Date(slotStart.getTime()+duurBenodigd*60000);
 
     let overlapt;
-    if(state.med_id){
+    if(state.med_id && !state.wil_koppel){
       // Specifieke medewerker gekozen: check alleen die ene.
       overlapt=medewerkerOverlapt(state.med_id, slotStart, slotEind);
     } else if(alleMedewerkerIds.length){
-      // 'Geen voorkeur': beschikbaar zodra minstens 1 medewerker vrij is.
-      overlapt=alleMedewerkerIds.every(id=>medewerkerOverlapt(id, slotStart, slotEind));
+      // 'Geen voorkeur' (of koppelbehandeling, die altijd 2 medewerkers
+      // nodig heeft ongeacht een eventueel gekozen voorkeur): beschikbaar
+      // zodra genoeg medewerkers vrij zijn (1 normaal, 2 bij koppel).
+      const aantalMedewerkersNodig=state.wil_koppel?2:1;
+      const aantalVrijeMedewerkers=alleMedewerkerIds.filter(id=>!medewerkerOverlapt(id, slotStart, slotEind)).length;
+      overlapt=aantalVrijeMedewerkers<aantalMedewerkersNodig;
     } else {
       // Geen medewerkers bekend (zou niet moeten voorkomen, maar voor de
       // zekerheid): val terug op de oude, conservatieve controle.
@@ -1177,6 +1216,76 @@ async function vindBeschikbareRuimte(dt, duurMin){
       return dt<bEind && slotEind>bStart;
     });
     if(!overlapt) return ruimteId;
+  }
+  return null;
+}
+
+// Zelfde als vindBeschikbareMedewerker/vindBeschikbareRuimte, maar dan
+// voor een koppelbehandeling: zoekt `aantal` (2) DISTINCTE vrije
+// medewerkers/ruimtes i.p.v. er 1. Gebruikt dezelfde verse databasecheck
+// vlak vóór het definitief aanmaken van de afspraken.
+async function vindBeschikbareMedewerkers(dt, duurMin, aantal){
+  const alleMedewerkerIds=(window.BOEKEN_MEDEWERKERS||[]).map(m=>m.id);
+  if(alleMedewerkerIds.length<aantal) return null;
+
+  const dagStart=new Date(dt);dagStart.setHours(0,0,0,0);
+  const dagEind=new Date(dt);dagEind.setHours(23,59,59,999);
+
+  const[{data},verlofResult]=await Promise.all([
+    sb.rpc('get_bezette_tijden',{
+      p_salon_id:SALON_ID,
+      p_locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+      p_datum_start:dagStart.toISOString(),
+      p_datum_eind:dagEind.toISOString()
+    }),
+    sb.rpc('get_verlof_op_datum',{p_salon_id:SALON_ID,p_datum:dt.toISOString().slice(0,10)})
+  ]);
+  const bestaandeAfspraken=data||[];
+  const medewerkersMetVerlof=new Set((verlofResult.data||[]).map(v=>v.medewerker_id));
+  const slotEind=new Date(dt.getTime()+duurMin*60000);
+
+  const gevonden=[];
+  for(const medewerkerId of alleMedewerkerIds){
+    if(medewerkersMetVerlof.has(medewerkerId)) continue;
+    const overlapt=bestaandeAfspraken.some(a=>{
+      if(a.medewerker_id!==medewerkerId) return false;
+      const aStart=new Date(a.datum_tijd);
+      const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
+      return dt<aEind && slotEind>aStart;
+    });
+    if(!overlapt){
+      gevonden.push(medewerkerId);
+      if(gevonden.length>=aantal) return gevonden;
+    }
+  }
+  return null;
+}
+
+async function vindBeschikbareRuimtes(dt, duurMin, aantal){
+  const alleRuimteIds=(window.BOEKEN_RUIMTES||[]).map(r=>r.id);
+  if(alleRuimteIds.length<aantal) return null;
+
+  const dagStart=new Date(dt);dagStart.setHours(0,0,0,0);
+  const dagEind=new Date(dt);dagEind.setHours(23,59,59,999);
+
+  const{data}=await sb.rpc('get_bezette_ruimtes',{
+    p_salon_id:SALON_ID, p_datum_start:dagStart.toISOString(), p_datum_eind:dagEind.toISOString()
+  });
+  const bezetteRuimtes=data||[];
+  const slotEind=new Date(dt.getTime()+duurMin*60000);
+
+  const gevonden=[];
+  for(const ruimteId of alleRuimteIds){
+    const overlapt=bezetteRuimtes.some(b=>{
+      if(b.ruimte_id!==ruimteId) return false;
+      const bStart=new Date(b.datum_tijd);
+      const bEind=new Date(bStart.getTime()+(b.duur_min||30)*60000);
+      return dt<bEind && slotEind>bStart;
+    });
+    if(!overlapt){
+      gevonden.push(ruimteId);
+      if(gevonden.length>=aantal) return gevonden;
+    }
   }
   return null;
 }
@@ -1435,54 +1544,100 @@ async function bevestigen(){
   const[uur,min]=state.tijd.split(':');
   const dt=new Date(jaar,maandIdx,dag,parseInt(uur),parseInt(min));
 
-  // Bij 'Geen voorkeur' een specifieke, daadwerkelijk vrije medewerker
-  // toewijzen i.p.v. medewerker_id:null -- zonder dit zouden twee 'geen
-  // voorkeur'-boekingen voor dezelfde tijd elkaar niet blokkeren (de
-  // beschikbaarheidscheck vergelijkt per medewerker-ID, en 'null' is
-  // geen ID). Verse controle vlak vóór het opslaan, voor het geval de
-  // tijd tussen bekijken en bevestigen net is ingenomen.
-  let toeTeWijzenMedewerkerId=state.med_id||null;
-  if(!toeTeWijzenMedewerkerId){
-    toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, totaleDuur());
-    if(!toeTeWijzenMedewerkerId){
-      btn.disabled=false;btn.textContent='Afspraak bevestigen';
-      errEl.textContent='Deze tijd is helaas net door iemand anders geboekt. Kies een andere tijd.';
-      errEl.style.display='block';
-      return;
-    }
-  }
-
-  // Vereist deze dienst een ruimte? Zelfde 'verse controle vlak vóór het
-  // opslaan'-redenering als bij medewerkers hierboven.
-  let toeTeWijzenRuimteId=null;
-  if(state.vereist_ruimte && (window.BOEKEN_RUIMTES||[]).length){
-    toeTeWijzenRuimteId=await vindBeschikbareRuimte(dt, totaleDuur());
-    if(!toeTeWijzenRuimteId){
-      btn.disabled=false;btn.textContent='Afspraak bevestigen';
-      errEl.textContent='Er is helaas geen ruimte meer vrij op deze tijd. Kies een andere tijd.';
-      errEl.style.display='block';
-      return;
-    }
-  }
-
   const naam=voor+(achter?' '+achter:'');
-  const{data:nieuweAfspraak,error}=await sb.from('afspraken').insert({
-    salon_id:SALON_ID||null,
-    locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
-    dienst_id:state.dienst_id||null,
-    dienst_variant_id:state.dienst_variant_id||null,
-    referentie_foto_url:state.referentie_foto_url||null,
-    medewerker_id:toeTeWijzenMedewerkerId,
-    ruimte_id:toeTeWijzenRuimteId,
-    datum_tijd:dt.toISOString(),
-    duur_min:totaleDuur(),
-    status:'gepland',
-    klant_naam:naam,
-    klant_email:email,
-    klant_telefoon:telSchoon||null,
-    notities:notitie||null,
-    gebruikt_abonnement_id:state.gebruikt_abonnement_id||null
-  }).select('id,annuleer_token').single();
+  let nieuweAfspraak, error;
+
+  if(state.wil_koppel){
+    // Koppelbehandeling: 2 ruimtes ÉN 2 medewerkers tegelijk nodig, voor
+    // dezelfde tijd/duur/dienst. Verse controle vlak vóór het opslaan
+    // (zelfde redenering als bij een normale boeking), maar dan voor 2
+    // DISTINCTE resources i.p.v. 1. De 2 afspraak-rijen delen een
+    // duo_groep_id zodat ze als 1 boeking herkenbaar blijven.
+    const duurNodig=totaleDuur();
+    const [medewerkerIds, ruimteIds] = await Promise.all([
+      vindBeschikbareMedewerkers(dt, duurNodig, 2),
+      vindBeschikbareRuimtes(dt, duurNodig, 2)
+    ]);
+    if(!medewerkerIds || !ruimteIds){
+      btn.disabled=false;btn.textContent='Afspraak bevestigen';
+      errEl.textContent='Deze tijd is helaas niet (meer) beschikbaar voor een koppelbehandeling. Kies een andere tijd.';
+      errEl.style.display='block';
+      return;
+    }
+    const duoGroepId=crypto.randomUUID();
+    const basisRij={
+      salon_id:SALON_ID||null,
+      locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+      dienst_id:state.dienst_id||null,
+      dienst_variant_id:state.dienst_variant_id||null,
+      referentie_foto_url:state.referentie_foto_url||null,
+      datum_tijd:dt.toISOString(),
+      duur_min:duurNodig,
+      status:'gepland',
+      klant_naam:naam,
+      klant_email:email,
+      klant_telefoon:telSchoon||null,
+      notities:notitie||null,
+      duo_groep_id:duoGroepId
+    };
+    const rijen=[
+      {...basisRij, medewerker_id:medewerkerIds[0], ruimte_id:ruimteIds[0]},
+      {...basisRij, medewerker_id:medewerkerIds[1], ruimte_id:ruimteIds[1]}
+    ];
+    const insertResult=await sb.from('afspraken').insert(rijen).select('id,annuleer_token');
+    error=insertResult.error;
+    nieuweAfspraak=insertResult.data ? insertResult.data[0] : null;
+  } else {
+    // Bij 'Geen voorkeur' een specifieke, daadwerkelijk vrije medewerker
+    // toewijzen i.p.v. medewerker_id:null -- zonder dit zouden twee 'geen
+    // voorkeur'-boekingen voor dezelfde tijd elkaar niet blokkeren (de
+    // beschikbaarheidscheck vergelijkt per medewerker-ID, en 'null' is
+    // geen ID). Verse controle vlak vóór het opslaan, voor het geval de
+    // tijd tussen bekijken en bevestigen net is ingenomen.
+    let toeTeWijzenMedewerkerId=state.med_id||null;
+    if(!toeTeWijzenMedewerkerId){
+      toeTeWijzenMedewerkerId=await vindBeschikbareMedewerker(dt, totaleDuur());
+      if(!toeTeWijzenMedewerkerId){
+        btn.disabled=false;btn.textContent='Afspraak bevestigen';
+        errEl.textContent='Deze tijd is helaas net door iemand anders geboekt. Kies een andere tijd.';
+        errEl.style.display='block';
+        return;
+      }
+    }
+
+    // Vereist deze dienst een ruimte? Zelfde 'verse controle vlak vóór het
+    // opslaan'-redenering als bij medewerkers hierboven.
+    let toeTeWijzenRuimteId=null;
+    if(state.vereist_ruimte && (window.BOEKEN_RUIMTES||[]).length){
+      toeTeWijzenRuimteId=await vindBeschikbareRuimte(dt, totaleDuur());
+      if(!toeTeWijzenRuimteId){
+        btn.disabled=false;btn.textContent='Afspraak bevestigen';
+        errEl.textContent='Er is helaas geen ruimte meer vrij op deze tijd. Kies een andere tijd.';
+        errEl.style.display='block';
+        return;
+      }
+    }
+
+    const insertResult=await sb.from('afspraken').insert({
+      salon_id:SALON_ID||null,
+      locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
+      dienst_id:state.dienst_id||null,
+      dienst_variant_id:state.dienst_variant_id||null,
+      referentie_foto_url:state.referentie_foto_url||null,
+      medewerker_id:toeTeWijzenMedewerkerId,
+      ruimte_id:toeTeWijzenRuimteId,
+      datum_tijd:dt.toISOString(),
+      duur_min:totaleDuur(),
+      status:'gepland',
+      klant_naam:naam,
+      klant_email:email,
+      klant_telefoon:telSchoon||null,
+      notities:notitie||null,
+      gebruikt_abonnement_id:state.gebruikt_abonnement_id||null
+    }).select('id,annuleer_token').single();
+    error=insertResult.error;
+    nieuweAfspraak=insertResult.data;
+  }
 
   btn.disabled=false;btn.textContent='Afspraak bevestigen';
 
