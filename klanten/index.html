@@ -764,11 +764,11 @@ async function toggleBlokkade(){
   if(!k.email&&!k.telefoon){ alert('Deze klant heeft geen e-mail of telefoonnummer, dus kan niet gekoppeld worden aan een blokkade.'); return; }
 
   if(HUIDIGE_BLOKKADE){
-    if(!confirm(`Weet je zeker dat je ${k.naam} wil deblokkeren?`)) return;
+    if(!confirm(`Weet je zeker dat je ${k.naam} wilt deblokkeren?`)) return;
     await sb.from('geblokkeerde_klanten').delete().eq('id',HUIDIGE_BLOKKADE);
     toast('Klant gedeblokkeerd');
   } else {
-    if(!confirm(`Weet je zeker dat je ${k.naam} wil blokkeren? Nieuwe boekingen via de widget worden dan geweigerd.`)) return;
+    if(!confirm(`Weet je zeker dat je ${k.naam} wilt blokkeren? Nieuwe boekingen via de widget worden dan geweigerd.`)) return;
     const reden=prompt('Reden voor blokkade (optioneel, alleen zichtbaar voor jou):')||null;
     const{error}=await sb.from('geblokkeerde_klanten').insert({
       salon_id:SALON_ID, email:k.email||null, telefoon:k.telefoon||null, reden
