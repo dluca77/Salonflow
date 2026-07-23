@@ -66,6 +66,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .section{background:var(--wh);border:1px solid var(--bd);margin-bottom:20px;padding:24px 24px 28px;}
 .sec-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
 .sec-sub{font-size:12px;color:var(--mu);margin-bottom:20px;line-height:1.5;}
+/* Subsectie binnen een tab -- groepeert losse instellingen die anders als
+   één ononderbroken lijst aanvoelen (bv. binnen "Profiel": widget, WhatsApp,
+   openingstijden, annuleren en klantenbinding zijn 4 losse onderwerpen). */
+.sub-sec{margin-top:28px;padding-top:22px;border-top:1px solid var(--bd);}
+.sub-sec-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;}
+.sub-sec-desc{font-size:11px;color:var(--mu);margin-bottom:16px;line-height:1.5;}
 
 .fr{margin-bottom:16px;}
 .fr:last-child{margin-bottom:0;}
@@ -275,17 +281,39 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
 
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
-        <div class="fl" style="margin-bottom:8px;">Boekingswidget voor je eigen website</div>
-        <div style="font-size:12px;color:var(--mu);margin-bottom:14px;">Heb je al een eigen website? Plak deze code op de plek waar bezoekers moeten kunnen boeken -- werkt op zo goed als elke websitebouwer (WordPress, Wix, Squarespace, of een eigen HTML-pagina).</div>
+      <div class="sub-sec">
+        <div class="sub-sec-title">Boekingswidget</div>
+        <div class="sub-sec-desc">Heb je al een eigen website? Plak deze code op de plek waar bezoekers moeten kunnen boeken -- werkt op zo goed als elke websitebouwer (WordPress, Wix, Squarespace, of een eigen HTML-pagina).</div>
         <div style="position:relative;">
           <textarea id="widget-embed-code" readonly rows="4" style="width:100%;font-family:'Courier New',monospace;font-size:12px;color:var(--ink2);background:var(--iv);border:1px solid var(--bd);border-radius:8px;padding:14px;resize:vertical;line-height:1.5;"></textarea>
           <button type="button" onclick="kopieerWidgetCode()" style="position:absolute;top:10px;right:10px;padding:6px 12px;background:var(--white);border:1px solid var(--bd);border-radius:6px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;">Kopiëren</button>
         </div>
         <div id="widget-kopieer-msg" style="font-size:11px;color:var(--gd);margin-top:6px;display:none;">✓ Gekopieerd naar klembord</div>
+
+        <div style="margin-top:24px;">
+          <div class="fl" style="margin-bottom:4px;">Openingstijden</div>
+          <div style="font-size:11px;color:var(--mu);margin-bottom:12px;">Bepaalt welke tijden klanten kunnen kiezen bij het online boeken.</div>
+          <div id="openingstijden-rijen" style="display:flex;flex-direction:column;gap:8px;"></div>
+          <button class="btn-sec" style="width:100%;margin-top:12px;" onclick="slaOpeningstijdenOp()">Openingstijden opslaan</button>
+          <div class="msg" id="msg-openingstijden"></div>
+        </div>
+
+        <div class="fr" style="margin-top:24px;">
+          <label class="fl">Annuleren toestaan tot</label>
+          <select class="fi" id="s-annuleer-cutoff">
+            <option value="0">Altijd (geen minimumtermijn)</option>
+            <option value="2">2 uur van tevoren</option>
+            <option value="12">12 uur van tevoren</option>
+            <option value="24">24 uur van tevoren</option>
+            <option value="48">48 uur van tevoren</option>
+          </select>
+          <div style="font-size:11px;color:var(--mu);margin-top:6px;">Klanten kunnen via de annuleerlink in hun bevestigingsmail niet meer annuleren binnen deze termijn -- ze zien dan een verzoek om rechtstreeks contact met je op te nemen.</div>
+        </div>
       </div>
 
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+      <div class="sub-sec">
+        <div class="sub-sec-title">Herinneringen</div>
+        <div class="sub-sec-desc">Extra kanalen naast de standaard e-mailbevestiging.</div>
         <div class="fr">
           <label class="fl" style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" id="s-whatsapp-actief" onchange="wisselWhatsappUI()" style="width:16px;height:16px;">
@@ -304,29 +332,9 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         </div>
       </div>
 
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
-        <div class="fl" style="margin-bottom:4px;">Openingstijden</div>
-        <div style="font-size:11px;color:var(--mu);margin-bottom:12px;">Bepaalt welke tijden klanten kunnen kiezen bij het online boeken.</div>
-        <div id="openingstijden-rijen" style="display:flex;flex-direction:column;gap:8px;"></div>
-        <button class="btn-sec" style="width:100%;margin-top:12px;" onclick="slaOpeningstijdenOp()">Openingstijden opslaan</button>
-        <div class="msg" id="msg-openingstijden"></div>
-      </div>
-
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
-        <div class="fr">
-          <label class="fl">Annuleren toestaan tot</label>
-          <select class="fi" id="s-annuleer-cutoff">
-            <option value="0">Altijd (geen minimumtermijn)</option>
-            <option value="2">2 uur van tevoren</option>
-            <option value="12">12 uur van tevoren</option>
-            <option value="24">24 uur van tevoren</option>
-            <option value="48">48 uur van tevoren</option>
-          </select>
-          <div style="font-size:11px;color:var(--mu);margin-top:6px;">Klanten kunnen via de annuleerlink in hun bevestigingsmail niet meer annuleren binnen deze termijn -- ze zien dan een verzoek om rechtstreeks contact met je op te nemen.</div>
-        </div>
-      </div>
-
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
+      <div class="sub-sec">
+        <div class="sub-sec-title">Klantenbinding</div>
+        <div class="sub-sec-desc">Zorg dat klanten terugkomen -- allemaal optioneel, standaard uit.</div>
         <div class="fr">
           <label class="fl" style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" id="s-stempel-actief" onchange="wisselStempelUI()" style="width:16px;height:16px;">
@@ -344,10 +352,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
             <input class="fi" id="s-stempel-beloning" type="text" placeholder="bv. Gratis knippen">
           </div>
         </div>
-      </div>
 
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
-        <div class="fr">
+        <div class="fr" style="margin-top:20px;">
           <label class="fl" style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" id="s-review-actief" onchange="wisselReviewUI()" style="width:16px;height:16px;">
             Automatisch om een review vragen
@@ -361,10 +367,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
             <div style="font-size:11px;color:var(--mu);margin-top:6px;">Te vinden via Google Business Profiel → 'Reviews aanvragen' → link kopiëren.</div>
           </div>
         </div>
-      </div>
 
-      <div style="margin-top:24px;padding-top:20px;border-top:1px solid var(--bd);">
-        <div class="fr">
+        <div class="fr" style="margin-top:20px;">
           <label class="fl" style="display:flex;align-items:center;gap:8px;">
             <input type="checkbox" id="s-terugkeer-actief" style="width:16px;height:16px;">
             Terugkeer-herinneringen versturen
