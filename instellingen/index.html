@@ -308,7 +308,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
         <div style="margin-top:24px;">
           <div class="fl" style="margin-bottom:4px;">Openingstijden</div>
           <div style="font-size:11px;color:var(--mu);margin-bottom:12px;">Bepaalt welke tijden klanten kunnen kiezen bij het online boeken.</div>
-          <div id="openingstijden-rijen" style="display:flex;flex-direction:column;gap:8px;"></div>
+          <div id="openingstijden-rijen" style="display:flex;flex-direction:column;"></div>
           <button class="btn-sec" style="width:100%;margin-top:12px;" onclick="slaOpeningstijdenOp()">Openingstijden opslaan</button>
           <div class="msg" id="msg-openingstijden"></div>
         </div>
@@ -1193,16 +1193,18 @@ function tijdOpties(geselecteerd){
 function renderOpeningstijden(){
   const opgeslagen = SALON.openingstijden || {};
   const container = document.getElementById('openingstijden-rijen');
-  container.innerHTML = OPENINGSTIJDEN_DAGEN.map(dag=>{
+  container.innerHTML = OPENINGSTIJDEN_DAGEN.map((dag,i)=>{
     const d = opgeslagen[dag] || {open:'09:00',dicht:'18:00',gesloten:false};
     return `
-    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-      <label style="width:90px;font-size:13px;flex-shrink:0;">
-        <input type="checkbox" id="ot-${dag}-open" ${d.gesloten?'':'checked'} onchange="wisselOpeningstijdRij('${dag}')" style="margin-right:6px;">${OPENINGSTIJDEN_LABELS[dag]}
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:11px 0;${i?'border-top:1px solid var(--bd);':''}">
+      <label class="switch" style="flex-shrink:0;">
+        <input type="checkbox" id="ot-${dag}-open" ${d.gesloten?'':'checked'} onchange="wisselOpeningstijdRij('${dag}')">
+        <span class="switch-track"><span class="switch-knob"></span></span>
       </label>
-      <select class="fi" id="ot-${dag}-van" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">${tijdOpties(d.open||'09:00')}</select>
-      <span style="font-size:12px;color:var(--mu);">tot</span>
-      <select class="fi" id="ot-${dag}-tot" ${d.gesloten?'disabled':''} style="width:auto;padding:6px 10px;font-size:12px;">${tijdOpties(d.dicht||'18:00')}</select>
+      <div style="width:88px;font-size:13.5px;font-weight:500;color:var(--ink);flex-shrink:0;">${OPENINGSTIJDEN_LABELS[dag]}</div>
+      <select class="fi" id="ot-${dag}-van" ${d.gesloten?'disabled':''} style="width:auto;padding:9px 12px;font-size:13px;">${tijdOpties(d.open||'09:00')}</select>
+      <span style="font-size:13px;color:var(--mu);">tot</span>
+      <select class="fi" id="ot-${dag}-tot" ${d.gesloten?'disabled':''} style="width:auto;padding:9px 12px;font-size:13px;">${tijdOpties(d.dicht||'18:00')}</select>
     </div>`;
   }).join('');
 }

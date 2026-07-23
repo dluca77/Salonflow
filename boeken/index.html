@@ -22,7 +22,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .brand-logo{width:36px;height:36px;background:var(--ink);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;color:var(--iv);font-size:14px;font-weight:700;flex-shrink:0;}
 .brand-name{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;letter-spacing:0.5px;}
 .brand-sub{font-size:11px;color:var(--mu2);letter-spacing:0.5px;margin-top:1px;}
-.header-right{font-size:11px;color:var(--mu2);letter-spacing:1.5px;text-transform:uppercase;}
+.header-right{font-size:13px;color:var(--mu2);font-weight:500;}
 
 /* ── LAYOUT ── */
 .layout{display:grid;grid-template-columns:1fr 380px;min-height:calc(100vh - 60px);max-width:1200px;margin:0 auto;min-width:0;}
@@ -36,7 +36,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .step-num{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:500;border:1px solid var(--bd);color:var(--mu2);transition:all 0.2s;flex-shrink:0;}
 .step-num.done{background:var(--gd);border-color:var(--gd);color:var(--iv);}
 .step-num.active{background:var(--ink);border-color:var(--ink);color:var(--iv);}
-.step-label{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
+.step-label{font-size:13.5px;font-weight:500;color:var(--mu2);}
 .step-label.active{color:var(--ink);}
 .step-line{flex:1;height:1px;background:var(--bd);margin:0 10px;}
 .step-line.done{background:var(--gd);}
@@ -71,7 +71,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .med-any{background:var(--wh);border:1px solid var(--bd);border-radius:10px;padding:16px 12px;text-align:center;cursor:pointer;transition:all 0.15s;}
 .med-av{width:40px;height:40px;background:var(--wm);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--gd);margin:0 auto 10px;}
 .med-naam{font-size:13px;font-weight:500;transition:color 0.15s;}
-.med-rol{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-top:3px;transition:color 0.15s;}
+.med-rol{font-size:13.5px;font-weight:500;color:var(--mu2);margin-top:3px;transition:color 0.15s;}
 
 /* Step 3: Kalender */
 .cal-nav{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
@@ -79,7 +79,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .cal-nav-btn{width:32px;height:32px;border:1px solid var(--bd);border-radius:50%;background:transparent;color:var(--mu);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;transition:all 0.15s;}
 .cal-nav-btn:hover{background:var(--wm);}
 .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:24px;}
-.cal-dayname{text-align:center;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);padding:6px 0;}
+.cal-dayname{text-align:center;font-size:12.5px;font-weight:500;color:var(--mu2);padding:6px 0;}
 .cal-day{aspect-ratio:1;display:flex;align-items:center;justify-content:center;font-size:13px;cursor:pointer;transition:all 0.15s;border:1px solid transparent;border-radius:8px;}
 .cal-day:hover:not(.past):not(.empty){background:var(--wm);border-color:var(--bd);}
 .cal-day.today{font-weight:700;color:var(--gd);}
@@ -88,7 +88,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .cal-day.busy{color:var(--mu2);}
 .cal-day.empty{cursor:default;}
 
-.time-section-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;margin-top:16px;}
+.time-section-label{font-size:12.5px;font-weight:500;color:var(--mu2);margin-bottom:8px;margin-top:16px;}
 .time-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;}
 .time-slot{padding:9px 4px;border:1px solid var(--bd);border-radius:8px;text-align:center;font-size:12px;cursor:pointer;background:var(--wh);transition:all 0.15s;}
 .time-slot:hover:not(.vol){border-color:var(--gd);}
@@ -97,7 +97,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 
 /* Step 4: Gegevens */
 .form-row{margin-bottom:14px;}
-.form-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
+.form-label{font-size:12.5px;font-weight:500;color:var(--mu);margin-bottom:6px;display:block;}
 .form-input{width:100%;background:var(--iv);border:1px solid var(--bd);border-radius:10px;padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;}
 .form-input.geldig{border-color:var(--green);}
 .form-input.ongeldig{border-color:var(--red);}
@@ -114,7 +114,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .cr-val{font-weight:500;text-align:right;min-width:0;overflow-wrap:break-word;}
 
 /* Knoppen */
-.btn-next{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;border-radius:10px;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;margin-top:8px;}
+.btn-next{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;border-radius:10px;font-size:14.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;margin-top:8px;}
 .btn-next:hover{background:var(--ink2);}
 .btn-next:disabled{opacity:0.3;cursor:not-allowed;}
 .btn-back{background:var(--white);border:1.5px solid var(--bd);border-radius:8px;font-size:13px;font-weight:600;letter-spacing:0.3px;color:var(--ink);cursor:pointer;font-family:'Inter',sans-serif;margin-top:10px;padding:12px 20px;width:100%;transition:all .15s;}
@@ -126,19 +126,19 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 
 /* ── SUMMARY PANEL ── */
 .summary-panel{padding:36px 28px;background:var(--wh);}
-.summary-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink);margin-bottom:20px;}
+.summary-title{font-size:13.5px;font-weight:500;color:var(--ink);margin-bottom:20px;}
 .sum-item{padding:14px 0;border-bottom:1px solid var(--bd);}
 .sum-item:last-of-type{border-bottom:none;}
-.sum-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:4px;}
+.sum-label{font-size:12.5px;font-weight:500;color:var(--mu2);margin-bottom:4px;}
 .sum-value{font-size:13px;font-weight:500;color:var(--ink);}
 .sum-total{margin-top:20px;padding:16px;background:var(--ink);border-radius:10px;display:flex;align-items:center;justify-content:space-between;}
-.sum-total-label{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,0.5);}
+.sum-total-label{font-size:13.5px;font-weight:500;color:rgba(255,255,255,0.5);}
 .sum-total-price{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--iv);}
 .salon-info{margin-top:24px;border-top:1px solid var(--bd);padding-top:20px;}
 .salon-info-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:var(--mu);margin-bottom:10px;overflow-wrap:break-word;min-width:0;}
 .salon-info-item svg{flex-shrink:0;margin-top:1px;}
 .salon-info-item svg{flex-shrink:0;color:var(--gd);}
-.powered{margin-top:24px;text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);}
+.powered{margin-top:24px;text-align:center;font-size:13.5px;font-weight:500;color:var(--mu2);}
 .powered a{color:var(--gd);text-decoration:none;}
 
 /* ── RESPONSIVE ── */
@@ -164,7 +164,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
    geen tweede logo-blokje, alleen de naam van de salon als context. */
 body.embed .header{height:40px;border-bottom:1px solid var(--bd);}
 body.embed .header-inner{padding:0 18px;max-width:none;}
-body.embed .brand-logo{width:22px;height:22px;font-size:10px;background:var(--gd);color:var(--iv);border-radius:6px;}
+body.embed .brand-logo{width:22px;height:22px;font-size:10px;background:var(--gd);color:var(--iv);border-radius:10px;}
 body.embed .brand-name{font-size:13px;font-family:'Inter',sans-serif;font-weight:600;letter-spacing:0.2px;}
 body.embed .brand-sub{display:none;}
 body.embed .header-right{display:none;}
@@ -197,8 +197,8 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
   <div class="steps-main">
 
     <div id="locatie-picker" style="display:none;margin-bottom:20px;padding:14px 16px;background:var(--wm);border-radius:8px;">
-      <label style="font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Kies een locatie</label>
-      <select id="locatie-select" onchange="wisselBoekLocatie(this.value)" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:6px;font-size:13px;font-family:'Inter',sans-serif;background:var(--wh);"></select>
+      <label style="font-size:13.5px;color:var(--ink2);font-weight:500;display:block;margin-bottom:6px;">Kies een locatie</label>
+      <select id="locatie-select" onchange="wisselBoekLocatie(this.value)" style="width:100%;padding:10px 12px;border:1px solid var(--bd);border-radius:10px;font-size:13px;font-family:'Inter',sans-serif;background:var(--wh);"></select>
     </div>
 
     <!-- Progress -->
@@ -217,7 +217,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div class="step-title">Kies een dienst</div>
       <div class="step-sub">Welke behandeling wil je boeken?</div>
       <div class="dienst-grid" id="dienst-grid">
-        <div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Laden...</div>
+        <div style="padding:24px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);">Laden...</div>
       </div>
       <div id="groepsles-keuze-wrap" style="display:none;margin-top:20px;">
         <div class="step-sub" style="margin-bottom:10px;" id="groepsles-keuze-titel">Kies een lesmoment</div>
@@ -260,7 +260,7 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div class="step-title">Kies een medewerker</div>
       <div class="step-sub">Of laat ons de beste keuze voor je maken.</div>
       <div class="med-grid" id="med-grid">
-        <div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Laden...</div>
+        <div style="padding:24px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);">Laden...</div>
       </div>
       <button class="btn-next" id="btn2" onclick="goStep(3)">Volgende →</button>
       <button class="btn-back" onclick="goStep(1)">← Terug</button>
@@ -368,8 +368,8 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
     <div id="abo-panel" style="display:none;margin-top:14px;padding:14px;background:var(--wm);border-radius:8px;">
       <div id="abo-panel-check">
         <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Al een abonnement voor deze dienst?</div>
-        <input class="fi" id="abo-check-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
-        <button onclick="checkAbonnementTegoed()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Check tegoed</button>
+        <input class="fi" id="abo-check-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:10px;font-size:12px;margin-bottom:8px;">
+        <button onclick="checkAbonnementTegoed()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-size:11px;cursor:pointer;">Check tegoed</button>
         <div id="abo-check-err" style="display:none;color:var(--red);font-size:11px;margin-top:6px;"></div>
         <a href="#" id="abo-nieuw-link" onclick="return openAboAanmelden(event)" style="display:block;text-align:center;margin-top:10px;font-size:11px;color:var(--gd2);">Nog geen abonnement? Bekijk prijzen →</a>
       </div>
@@ -380,9 +380,9 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div id="abo-panel-nieuw" style="display:none;">
         <div style="font-size:12px;font-weight:600;margin-bottom:4px;" id="abo-nieuw-titel"></div>
         <div style="font-size:11px;color:var(--mu);margin-bottom:10px;">Je wordt naar Stripe doorgestuurd om het abonnement te starten. Je eerste beurt is meteen beschikbaar zodra de betaling lukt.</div>
-        <input class="fi" id="abo-nieuw-naam" type="text" placeholder="Je naam" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
-        <input class="fi" id="abo-nieuw-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:6px;font-size:12px;margin-bottom:8px;">
-        <button onclick="startAbonnement()" style="width:100%;padding:9px;background:var(--gd);color:#fff;border:none;border-radius:6px;font-size:11px;cursor:pointer;">Abonnement starten</button>
+        <input class="fi" id="abo-nieuw-naam" type="text" placeholder="Je naam" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:10px;font-size:12px;margin-bottom:8px;">
+        <input class="fi" id="abo-nieuw-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:10px;font-size:12px;margin-bottom:8px;">
+        <button onclick="startAbonnement()" style="width:100%;padding:9px;background:var(--gd);color:#fff;border:none;border-radius:10px;font-size:11px;cursor:pointer;">Abonnement starten</button>
         <div id="abo-nieuw-err" style="display:none;color:var(--red);font-size:11px;margin-top:6px;"></div>
         <a href="#" onclick="return terugNaarAboCheck(event)" style="display:block;text-align:center;margin-top:8px;font-size:11px;color:var(--mu);">← Terug</a>
       </div>
@@ -755,7 +755,7 @@ async function init(){
         ${abo?`<div class="dc-aanbetaling" style="color:var(--gd2);">✦ Ook als abonnement: €${abo.prijs_per_maand}/maand</div>`:''}
       </div>`;
     }).join('')
-    :`<div style="grid-column:1/-1;padding:32px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Geen diensten beschikbaar</div>`;
+    :`<div style="grid-column:1/-1;padding:32px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);">Geen diensten beschikbaar</div>`;
 
   window.ALLE_DIENSTEN=diensten;
 
