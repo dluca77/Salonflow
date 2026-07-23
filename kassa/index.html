@@ -43,7 +43,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .mob-item.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
 .mob-item svg{width:16px;height:16px;flex-shrink:0;}
 .mob-foot{padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
-.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:10px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 /* ── MAIN ── */
 .main{margin-left:212px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
 
@@ -61,7 +61,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .med-select{width:100%;padding:11px 12px;border:1px solid var(--bd);background:var(--wh);font-size:13px;font-family:'Inter',sans-serif;color:var(--ink);cursor:pointer;}
 .med-select:invalid{color:var(--mu2);}
 .med-warn{font-size:11px;color:var(--red);margin-top:6px;display:none;}
-.apt-banner{background:var(--wm);border:1px solid var(--gd);border-radius:6px;padding:10px 12px;margin-bottom:16px;font-size:12px;display:none;}
+.apt-banner{background:var(--wm);border:1px solid var(--gd);border-radius:10px;padding:10px 12px;margin-bottom:16px;font-size:12px;display:none;}
 .apt-banner strong{color:var(--gd2);}
 .apt-banner-close{float:right;cursor:pointer;color:var(--mu);font-size:14px;}
 .bon-med-tag{font-size:9px;font-weight:700;color:var(--gd);background:var(--wm);border-radius:99px;width:22px;height:22px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
@@ -74,7 +74,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .diensten-panel{background:var(--iv);overflow-y:auto;padding:20px;}
 .diensten-panel::-webkit-scrollbar{width:3px;}
 .diensten-panel::-webkit-scrollbar-thumb{background:var(--bd);}
-.panel-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:14px;}
+.panel-label{font-size:12.5px;font-weight:500;color:var(--mu2);margin-bottom:14px;}
 .svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
 .svc{background:var(--wh);border:1px solid var(--bd);padding:14px 10px;text-align:center;cursor:pointer;transition:all 0.15s;}
 .svc:hover{border-color:var(--gd);background:var(--wm);}
@@ -82,7 +82,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .svc-name{font-size:12px;font-weight:500;margin-bottom:6px;line-height:1.3;}
 .svc-prijs{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);}
 .svc-dur{font-size:10px;color:var(--mu2);margin-top:3px;letter-spacing:0.5px;}
-.svc-loading{text-align:center;padding:40px;color:var(--mu2);font-size:12px;letter-spacing:1px;text-transform:uppercase;}
+.svc-loading{text-align:center;padding:40px;color:var(--mu2);font-size:15.5px;font-weight:500;}
 
 /* Extra knoppen */
 .extra-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
@@ -93,12 +93,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* RIGHT: bon */
 .bon-panel{background:var(--wh);border-left:1px solid var(--bd);display:flex;flex-direction:column;}
 .bon-head{padding:16px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
-.bon-title{font-size:10px;letter-spacing:2.5px;text-transform:uppercase;color:var(--ink);}
+.bon-title{font-size:13.5px;font-weight:500;color:var(--ink);}
 .bon-count{font-size:10px;letter-spacing:1px;color:var(--mu2);}
 .bon-list{flex:1;overflow-y:auto;padding:0;}
 .bon-list::-webkit-scrollbar{width:3px;}
 .bon-list::-webkit-scrollbar-thumb{background:var(--bd);}
-.bon-empty{padding:48px 20px;text-align:center;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
+.bon-empty{padding:48px 20px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);}
 .bon-item{display:flex;align-items:center;padding:12px 18px;border-bottom:1px solid var(--bd);gap:10px;}
 .bon-qty{width:28px;height:28px;background:var(--iv);border:1px solid var(--bd);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:500;cursor:pointer;flex-shrink:0;transition:all 0.15s;}
 .bon-qty:hover{background:var(--wm);border-color:var(--bd2);}
@@ -115,19 +115,19 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 /* Betaalmethodes */
 .pm-wrap{padding:12px 18px;border-top:1px solid var(--bd);}
-.pm-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;}
+.pm-label{font-size:12.5px;font-weight:500;color:var(--mu2);margin-bottom:8px;}
 .pm-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;}
-.pm{padding:8px 4px;border:1px solid var(--bd);text-align:center;font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
+.pm{padding:8px 4px;border:1px solid var(--bd);text-align:center;font-size:13.5px;font-weight:500;color:var(--mu);cursor:pointer;transition:all 0.15s;font-family:'Inter',sans-serif;}
 .pm.on{background:var(--ink);color:var(--iv);border-color:var(--ink);}
 .pm:not(.on):hover{background:var(--iv);border-color:var(--bd2);}
 
 /* Betaal knop */
 .bon-actions{padding:12px 18px 16px;display:flex;gap:8px;}
-.btn-clear{padding:14px;background:transparent;border:1px solid var(--bd);color:var(--mu);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
-.tb-btn{padding:8px 14px;background:transparent;border:1px solid var(--bd2);color:var(--ink2);font-size:11px;letter-spacing:0.5px;cursor:pointer;font-family:'Inter',sans-serif;border-radius:6px;transition:all 0.15s;}
+.btn-clear{padding:14px;background:transparent;border:1px solid var(--bd);color:var(--mu);font-size:13.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;}
+.tb-btn{padding:8px 14px;background:transparent;border:1px solid var(--bd2);color:var(--ink2);font-size:11px;letter-spacing:0.5px;cursor:pointer;font-family:'Inter',sans-serif;border-radius:10px;transition:all 0.15s;}
 .tb-btn:hover{background:var(--wm);}
 .btn-clear:hover{background:var(--iv);}
-.btn-pay{flex:1;padding:14px;background:var(--ink);color:var(--iv);border:none;font-size:11px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
+.btn-pay{flex:1;padding:14px;background:var(--ink);color:var(--iv);border:none;font-size:14.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;}
 .btn-pay:hover{background:var(--ink2);}
 .btn-pay:disabled{opacity:0.3;cursor:not-allowed;}
 
@@ -138,21 +138,21 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .mt{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;margin-bottom:6px;}
 .msub{font-size:12px;color:var(--mu);margin-bottom:16px;line-height:1.5;}
 .fi{width:100%;padding:11px 12px;border:1px solid var(--bd);background:var(--wh);font-size:13px;font-family:'Inter',sans-serif;margin-bottom:10px;}
-.btsv{width:100%;padding:12px;background:var(--ink);color:var(--iv);border:none;font-size:12px;letter-spacing:1px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;}
+.btsv{width:100%;padding:14px;background:var(--ink);color:var(--iv);border:none;font-size:14px;font-weight:600;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background 0.15s;}
 .cb-bedrag-opties{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px;}
 .cb-bedrag-btn{padding:12px 4px;text-align:center;border:1px solid var(--bd);cursor:pointer;font-size:13px;font-weight:600;background:var(--wh);}
 .cb-bedrag-btn.on{background:var(--ink);color:var(--iv);border-color:var(--ink);}
 .cb-err{color:var(--red);font-size:12px;margin-top:6px;display:none;}
-.cb-saldo-box{background:var(--wm);border-radius:6px;padding:14px;text-align:center;margin:12px 0;display:none;}
+.cb-saldo-box{background:var(--wm);border-radius:10px;padding:14px;text-align:center;margin:12px 0;display:none;}
 .cb-saldo-val{font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--gd);}
 .modal-success{background:var(--wh);width:100%;max-width:380px;padding:40px 32px;text-align:center;border-top:3px solid var(--gd);}
 .success-icon{width:56px;height:56px;background:rgba(45,106,79,0.1);border:1px solid rgba(45,106,79,0.2);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;font-size:24px;color:var(--green);}
 .success-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;margin-bottom:6px;}
-.success-sub{font-size:12px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:24px;}
+.success-sub{font-size:15.5px;font-weight:500;color:var(--mu2);margin-bottom:24px;}
 .receipt{border:1px solid var(--bd);margin-bottom:24px;text-align:left;}
 .rrow{display:flex;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--bd);font-size:13px;}
 .rrow:last-child{border-bottom:none;font-weight:500;}
-.btn-new{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-new{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:13.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;}
 .btn-new:hover{background:var(--ink2);}
 
 /* ── MOB OVERLAY ── */
@@ -294,7 +294,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
           <button class="pm" onclick="setPM('ideal',this)">iDEAL</button>
           <button class="pm" onclick="openM('m-cb-inwisselen')">Cadeaubon</button>
         </div>
-        <div id="cb-actief-balk" style="display:none;margin-top:10px;padding:10px 12px;background:var(--wm);border-radius:6px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
+        <div id="cb-actief-balk" style="display:none;margin-top:10px;padding:10px 12px;background:var(--wm);border-radius:10px;font-size:12px;display:flex;justify-content:space-between;align-items:center;">
           <span id="cb-actief-tekst"></span>
           <span onclick="verwijderCadeaubon()" style="cursor:pointer;color:var(--mu);font-weight:700;">×</span>
         </div>
@@ -394,7 +394,7 @@ async function loadData(){
 
   const prodGrid=document.getElementById('prod-grid');
   if(!allProducten.length){
-    prodGrid.innerHTML=`<div class="svc-loading">Nog geen producten.<br><a href="/producten/" style="color:var(--gd);text-decoration:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Producten toevoegen →</a></div>`;
+    prodGrid.innerHTML=`<div class="svc-loading">Nog geen producten.<br><a href="/producten/" style="color:var(--gd);text-decoration:none;font-size:13.5px;font-weight:500;">Producten toevoegen →</a></div>`;
   } else {
     prodGrid.innerHTML=allProducten.map(p=>{
       const opRaak=p.voorraad_aantal<=0;
@@ -416,7 +416,7 @@ async function loadData(){
 
   const grid=document.getElementById('svc-grid');
   if(!allDiensten.length){
-    grid.innerHTML=`<div class="svc-loading">Nog geen diensten.<br><a href="/diensten/" style="color:var(--gd);text-decoration:none;font-size:10px;letter-spacing:1px;text-transform:uppercase;">Diensten toevoegen →</a></div>`;
+    grid.innerHTML=`<div class="svc-loading">Nog geen diensten.<br><a href="/diensten/" style="color:var(--gd);text-decoration:none;font-size:13.5px;font-weight:500;">Diensten toevoegen →</a></div>`;
   } else {
     grid.innerHTML=allDiensten.map(d=>`
       <div class="svc" onclick="add('${jsAttr(d.naam)}',${d.prijs},'dienst',${d.prijs_incl_btw!==false},'${d.id}')">
@@ -810,7 +810,7 @@ async function betaal(){
   receiptHtml+=`<div class="rrow"><span>Totaal</span><span style="color:var(--gd)">€${t.totaal.toFixed(2)}</span></div>`;
   if(nieuweCadeaubonCodes.length){
     receiptHtml+=nieuweCadeaubonCodes.map(c=>
-      `<div class="rrow" style="background:var(--wm);margin-top:8px;padding:10px;border-radius:6px;flex-direction:column;align-items:flex-start;">
+      `<div class="rrow" style="background:var(--wm);margin-top:8px;padding:10px;border-radius:10px;flex-direction:column;align-items:flex-start;">
         <span style="font-size:11px;color:var(--mu);text-transform:uppercase;">Nieuwe cadeaubon (€${c.bedrag})</span>
         <span style="font-family:monospace;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--gd2);">${c.code}</span>
       </div>`

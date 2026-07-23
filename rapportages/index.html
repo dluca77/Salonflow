@@ -43,7 +43,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .mob-item.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
 .mob-item svg{width:16px;height:16px;flex-shrink:0;}
 .mob-foot{padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
-.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:10px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 /* ── MAIN ── */
 .main{margin-left:212px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
 .topbar{height:54px;background:var(--wh);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 20px;gap:12px;flex-shrink:0;}
@@ -56,7 +56,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* Periode tabs */
 .periods{background:var(--wh);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;gap:0;overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 .periods::-webkit-scrollbar{display:none;}
-.pd{padding:14px 18px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);cursor:pointer;border:none;background:transparent;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all 0.15s;}
+.pd{padding:14px 18px;font-size:13.5px;font-weight:500;color:var(--mu2);cursor:pointer;border:none;background:transparent;font-family:'Inter',sans-serif;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;transition:all 0.15s;}
 .pd.on{color:var(--gd);border-bottom-color:var(--gd);}
 
 /* ── CONTENT ── */
@@ -67,7 +67,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* ── KPI ROW ── */
 .kpi-row{grid-column:1/-1;display:grid;grid-template-columns:repeat(4,1fr);border:1px solid var(--bd);background:var(--bd);gap:1px;}
 .kpi{background:var(--wh);padding:18px 20px;}
-.kpi-label{font-size:9px;letter-spacing:2.5px;text-transform:uppercase;color:var(--mu2);margin-bottom:10px;}
+.kpi-label{font-size:12.5px;font-weight:500;color:var(--mu2);margin-bottom:10px;}
 .kpi-val{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--ink);line-height:1;}
 .kpi-val.gold{color:var(--gd);}
 .kpi-change{font-size:11px;color:var(--mu2);margin-top:5px;}
@@ -77,7 +77,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* ── CHART ── */
 .card{background:var(--wh);border:1px solid var(--bd);}
 .card-head{padding:14px 18px;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;}
-.card-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--ink);}
+.card-title{font-size:13.5px;font-weight:500;color:var(--ink);}
 .card-sub{font-size:10px;letter-spacing:1px;color:var(--mu2);}
 .chart-wrap{padding:20px 18px;}
 .bars{display:flex;align-items:flex-end;gap:6px;height:100px;}
@@ -101,13 +101,13 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 /* ── AI ── */
 .ai-card{background:var(--wm);border:1px solid var(--bd);grid-column:1/-1;}
 .ai-head{display:flex;align-items:center;gap:8px;padding:14px 18px;border-bottom:1px solid var(--bd);}
-.ai-title{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);}
+.ai-title{font-size:13.5px;font-weight:500;color:var(--gd);}
 .ai-body{display:grid;grid-template-columns:repeat(3,1fr);border-top:none;}
 .ai-insight{padding:14px 18px;border-right:1px solid var(--bd);font-size:13px;color:var(--ink2);line-height:1.7;font-weight:300;}
 .ai-insight:last-child{border-right:none;}
 
 .empty-state{grid-column:1/-1;padding:48px;text-align:center;}
-.empty-text{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);}
+.empty-text{font-size:13.5px;font-weight:500;color:var(--mu2);}
 
 /* ── MOB OVERLAY ── */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:998;}
@@ -183,7 +183,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="tb-logo">Kronr<em>.</em></div>
     <div class="tb-title">Rapportages</div>
     <div class="tb-spacer"></div>
-    <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2)" id="period-label"></div>
+    <div style="font-size:14.5px;font-weight:500;color:var(--mu2)" id="period-label"></div>
   </div>
 
   <div class="periods">
@@ -448,7 +448,7 @@ async function loadData(){
             <div class="tc-val">€${m.omzet}</div>
             <div class="tc-meta">omzet</div>
           </div>
-        </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Nog geen medewerkers</div>`}
+        </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);">Nog geen medewerkers</div>`}
     </div>
 
     <!-- Top diensten -->
@@ -464,7 +464,7 @@ async function loadData(){
             <div class="tc-val">€${d.omzet}</div>
             <div class="tc-meta">omzet</div>
           </div>
-        </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);">Nog geen afspraken met diensten</div>`}
+        </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);">Nog geen afspraken met diensten</div>`}
     </div>
 
     <!-- AI insights -->

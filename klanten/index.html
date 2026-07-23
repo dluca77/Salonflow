@@ -42,7 +42,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .mob-item.on{color:#fff;border-left-color:var(--gd);background:rgba(255,255,255,.06);}
 .mob-item svg{width:16px;height:16px;flex-shrink:0;}
 .mob-foot{padding-top:16px;border-top:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;color:rgba(255,255,255,.5);font-size:13px;cursor:pointer;}
-.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
+.hbg{width:36px;height:36px;border:1px solid var(--bd);border-radius:10px;background:var(--wh);color:var(--ink);cursor:pointer;display:none;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;}
 /* ── MAIN ── */
 .main{margin-left:212px;flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0;}
 
@@ -53,7 +53,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .tb-logo em{color:var(--gd);font-style:normal;}
 .tb-title{font-size:17px;font-weight:600;color:var(--ink);flex-shrink:0;}
 .tb-spacer{flex:1;}
-.btn-add{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;background:var(--ink);color:var(--iv);font-size:10px;letter-spacing:2px;text-transform:uppercase;border:none;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;white-space:nowrap;}
+.btn-add{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:var(--ink);color:var(--iv);font-size:13.5px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;white-space:nowrap;}
 .btn-add:hover{background:var(--ink2);}
 
 /* ── SEARCH + FILTERS ── */
@@ -66,14 +66,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 /* Filter trechter (zelfde patroon als agenda) */
 .fw{position:relative;flex-shrink:0;}
-.fb{width:38px;height:38px;border:1px solid var(--bd2);border-radius:6px;background:var(--wh);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;flex-shrink:0;}
+.fb{width:38px;height:38px;border:1px solid var(--bd2);border-radius:10px;background:var(--wh);color:var(--ink);cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;flex-shrink:0;}
 .fb:hover{background:var(--iv);}
 .fb.actief{background:var(--ink);color:#fff;border-color:var(--ink);}
 .fb-dot{position:absolute;top:-3px;right:-3px;width:8px;height:8px;border-radius:50%;background:var(--gd);border:2px solid var(--wh);display:none;}
 .fb.actief .fb-dot{display:block;}
 .fd{position:absolute;top:calc(100% + 4px);right:0;background:var(--wh);border:1px solid var(--bd);border-radius:8px;box-shadow:0 6px 20px rgba(0,0,0,.12);min-width:210px;z-index:200;display:none;}
 .fd.on{display:block;}
-.fd-lbl{padding:9px 12px 4px;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);font-weight:600;}
+.fd-lbl{padding:9px 12px 4px;font-size:12.5px;font-weight:500;color:var(--mu2);font-weight:600;}
 .fd-item{padding:9px 12px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--bd);}
 .fd-item:last-child{border-bottom:none;}
 .fd-item:hover{background:var(--iv);}
@@ -82,7 +82,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 .filters{display:flex;gap:6px;padding:10px 20px;background:var(--wh);border-bottom:1px solid var(--bd);overflow-x:auto;scrollbar-width:none;flex-shrink:0;}
 .filters::-webkit-scrollbar{display:none;}
-.ft{padding:6px 16px;border:1px solid var(--bd);background:transparent;color:var(--mu);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:all 0.15s;}
+.ft{padding:8px 18px;border:1.5px solid var(--bd);background:transparent;color:var(--mu);font-size:13px;font-weight:500;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:all 0.15s;}
 .ft.on{background:var(--ink);color:var(--iv);border-color:var(--ink);}
 .gbadge{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:5px;vertical-align:middle;}
 .gbadge.man{background:#6e93b0;}
@@ -93,7 +93,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .list-wrap{flex:1;overflow-y:auto;padding:0;}
 .list-wrap::-webkit-scrollbar{width:3px;}
 .list-wrap::-webkit-scrollbar-thumb{background:var(--bd);}
-.kcount{padding:12px 20px 8px;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);}
+.kcount{padding:12px 20px 8px;font-size:13.5px;font-weight:500;color:var(--mu2);}
 .klist{padding:0 20px 80px;}
 
 .kcard{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid var(--bd);cursor:pointer;transition:background 0.1s;}
@@ -103,7 +103,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .foto-row{display:flex;align-items:center;gap:14px;margin-bottom:16px;}
 .foto-preview{width:56px;height:56px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);flex-shrink:0;overflow:hidden;}
 .foto-preview img{width:100%;height:100%;object-fit:cover;}
-.btn-foto{padding:8px 16px;background:var(--wh);color:var(--ink);border:1px solid var(--bd2);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;display:inline-block;}
+.btn-foto{padding:8px 16px;background:var(--wh);color:var(--ink);border:1px solid var(--bd2);font-size:13.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;display:inline-block;}
 .btn-foto:hover{border-color:var(--ink);}
 .kinfo{flex:1;min-width:0;}
 .kname{font-size:14px;font-weight:500;margin-bottom:2px;transition:color 0.15s;}
@@ -113,7 +113,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .kvis{font-size:10px;letter-spacing:1px;color:var(--mu2);margin-top:2px;}
 
 .empty-state{padding:48px 20px;text-align:center;}
-.empty-text{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu2);margin-bottom:8px;}
+.empty-text{font-size:13.5px;font-weight:500;color:var(--mu2);margin-bottom:8px;}
 .empty-sub{font-size:12px;color:var(--mu2);}
 
 /* ── MODALS ── */
@@ -122,14 +122,14 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .modal{background:var(--wh);width:100%;max-width:520px;padding:24px 20px 40px;border-top:2px solid var(--gd);}
 .mh{width:32px;height:3px;background:var(--bd);margin:0 auto 20px;}
 .mt{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;margin-bottom:4px;}
-.msub{font-size:12px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-bottom:20px;}
+.msub{font-size:15.5px;font-weight:500;color:var(--mu2);margin-bottom:20px;}
 .fr{margin-bottom:14px;}
-.fl{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;display:block;}
+.fl{font-size:12.5px;font-weight:500;color:var(--mu);margin-bottom:6px;display:block;}
 .fi{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;-webkit-appearance:none;transition:border-color 0.15s;resize:none;}
 .fi:focus{border-color:var(--gd);}
 .fi::placeholder{color:var(--mu2);}
 .fg{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.btsv{width:100%;padding:15px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background 0.2s;}
+.btsv{width:100%;padding:14px;background:var(--ink);color:var(--iv);border:none;font-size:14px;font-weight:600;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;margin-top:6px;transition:background 0.2s;}
 .btsv:hover{background:var(--ink2);}
 .btsv:disabled{opacity:0.4;}
 .spinner-inline{display:inline-block;width:14px;height:14px;border:2px solid rgba(250,248,244,0.3);border-top-color:var(--iv);border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;}
@@ -141,20 +141,20 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .detail-av img{width:100%;height:100%;object-fit:cover;}
 .dr{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid var(--bd);}
 .dr:last-child{border-bottom:none;}
-.dr-l{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu2);}
+.dr-l{font-size:13.5px;font-weight:500;color:var(--mu2);}
 .dr-v{font-size:13px;font-weight:500;}
 .dr-v-gold{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--gd);}
 .btns-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;}
 .btn-blokkeer{width:100%;margin-top:10px;padding:9px;background:transparent;border:none;color:var(--mu2);font-size:11px;letter-spacing:0.5px;cursor:pointer;font-family:'Inter',sans-serif;text-decoration:underline;text-underline-offset:2px;}
 .btn-blokkeer:hover{color:#c0392b;}
 .btn-blokkeer.actief{color:#c0392b;}
-.geblokkeerd-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--iv);border:1px solid var(--bd);border-radius:6px;font-size:12px;}
+.geblokkeerd-item{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--iv);border:1px solid var(--bd);border-radius:10px;font-size:12px;}
 .geblokkeerd-item-info{color:var(--ink);}
 .geblokkeerd-item-reden{color:var(--mu2);font-size:11px;margin-top:2px;}
-.btn-deblokkeer{padding:6px 12px;background:transparent;border:1px solid var(--bd2);border-radius:6px;font-size:10px;letter-spacing:0.5px;text-transform:uppercase;cursor:pointer;color:var(--ink);font-family:'Inter',sans-serif;flex-shrink:0;}
+.btn-deblokkeer{padding:6px 12px;background:transparent;border:1px solid var(--bd2);border-radius:10px;font-size:13.5px;font-weight:500;cursor:pointer;color:var(--ink);font-family:'Inter',sans-serif;flex-shrink:0;}
 .btn-deblokkeer:hover{border-color:var(--ink);}
-.btn-sec{padding:13px;background:transparent;color:var(--mu);border:1px solid var(--bd);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
-.btn-prim{padding:13px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-sec{padding:13px;background:transparent;color:var(--mu);border:1px solid var(--bd);font-size:13.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;}
+.btn-prim{padding:13px;background:var(--ink);color:var(--iv);border:none;font-size:13.5px;font-weight:500;cursor:pointer;font-family:'Inter',sans-serif;}
 
 /* ── MOB OVERLAY ── */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:998;}
@@ -310,7 +310,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
             <svg width="20" height="20" viewBox="0 0 24 24" fill="#25D366"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.9 9.9 0 004.74 1.21h.01c5.46 0 9.91-4.45 9.91-9.91C21.96 6.45 17.5 2 12.04 2zm5.83 14.01c-.24.68-1.4 1.3-1.93 1.34-.51.05-1.02.24-3.43-.76-2.9-1.21-4.75-4.16-4.9-4.35-.14-.19-1.17-1.56-1.17-2.97 0-1.41.73-2.1.99-2.39.26-.29.56-.36.75-.36l.53.01c.17.01.4-.06.62.48.24.58.81 2 .88 2.14.07.15.12.32.02.51-.09.19-.14.31-.28.48-.14.16-.29.36-.42.48-.14.13-.28.28-.12.55.16.28.71 1.17 1.52 1.9 1.05.94 1.93 1.23 2.21 1.37.28.14.44.12.6-.07.16-.19.68-.79.86-1.06.18-.28.36-.23.6-.14.24.09 1.53.72 1.79.85.26.13.44.19.5.3.06.11.06.62-.18 1.3z"/></svg>
           </a>
         </div>
-        <div style="font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mu2);margin-top:3px;" id="d-sub"></div>
+        <div style="font-size:14.5px;font-weight:500;color:var(--mu2);margin-top:3px;" id="d-sub"></div>
       </div>
     </div>
     <div style="border:1px solid var(--bd);">
@@ -323,12 +323,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="dr"><span class="dr-l">Notities</span><span class="dr-v" id="d-notitie" style="color:var(--mu);font-weight:300;">—</span></div>
     </div>
     <div id="d-custom-velden" style="border:1px solid var(--bd);border-top:none;"></div>
-    <div id="d-block-status" style="display:none;padding:10px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:6px;margin-bottom:12px;font-size:12px;color:#c0392b;"></div>
+    <div id="d-block-status" style="display:none;padding:10px 14px;background:rgba(192,57,43,0.06);border:1px solid rgba(192,57,43,0.2);border-radius:10px;margin-bottom:12px;font-size:12px;color:#c0392b;"></div>
 
     <div id="d-stempel-sectie" style="display:none;margin-bottom:14px;padding:14px 16px;background:var(--wm);border-radius:8px;">
-      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:6px;">Stempelkaart</div>
+      <div style="font-size:13.5px;font-weight:500;color:var(--mu);margin-bottom:6px;">Stempelkaart</div>
       <div id="d-stempel-voortgang" style="font-size:14px;font-weight:600;margin-bottom:4px;">—</div>
-      <div id="d-stempel-vol-melding" style="display:none;margin-top:8px;padding:10px 12px;background:var(--gd);border-radius:6px;color:var(--iv);">
+      <div id="d-stempel-vol-melding" style="display:none;margin-top:8px;padding:10px 12px;background:var(--gd);border-radius:10px;color:var(--iv);">
         <div style="font-size:12px;">🎉 Heeft <span id="d-stempel-beloning-tekst"></span> tegoed</div>
         <div style="font-family:monospace;font-size:18px;font-weight:700;letter-spacing:2px;margin-top:4px;" id="d-stempel-code"></div>
         <button class="btn-sec" style="background:var(--iv);color:var(--gd2);margin-top:8px;width:100%;" onclick="wisselStempelInVoorKlant()">Inwisselen (klant heeft 't gehad)</button>
@@ -377,7 +377,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
     <div class="msg" id="msg-campagne"></div>
 
     <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--bd);">
-      <div style="font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:10px;">Eerder verstuurd</div>
+      <div style="font-size:13.5px;font-weight:500;color:var(--mu);margin-bottom:10px;">Eerder verstuurd</div>
       <div id="camp-geschiedenis" style="font-size:12px;color:var(--mu);">Nog geen campagnes verstuurd.</div>
     </div>
   </div>
