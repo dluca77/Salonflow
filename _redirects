@@ -1,5 +1,5 @@
 # Interne bestanden (DB-migraties, workers-documentatie, testscripts,
-# bouwplan) horen niet publiek bereikbaar te zijn -- ze staan in de repo
+# bouwplan) horen niet publiek bereikbaar te zijn — ze staan in de repo
 # voor referentie/versiebeheer, niet om via de live site te serveren.
 /db/*          /  404
 /workers/*     /  404
