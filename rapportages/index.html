@@ -351,9 +351,9 @@ async function loadData(){
 
   const omzet=betalingen.reduce((s,b)=>s+parseFloat(b.bedrag||0),0);
   const apts=afspraken.length;
-  const gemBon=apts>0?(omzet/apts).toFixed(2):0;
+  const gemBon=apts>0?(omzet/apts).toFixed(2).replace('.',','):0;
   const noshow=afspraken.filter(a=>a.status==='no-show').length;
-  const noshowPct=apts>0?((noshow/apts)*100).toFixed(1):0;
+  const noshowPct=apts>0?((noshow/apts)*100).toFixed(1).replace('.',','):0;
 
   // Bar chart: omzet per week/maand
   const weeks=[0,0,0,0];

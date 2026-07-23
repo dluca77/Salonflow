@@ -382,6 +382,10 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 <script>
 let bon=[], pm='pin', allDiensten=[], allMedewerkers=[], allProducten=[], huidigeMedewerkerId='', huidigeAfspraakId=null;
 
+// NL-notatie voor bedragen (komma i.p.v. punt) -- toFixed(2) geeft altijd
+// een punt, ongeacht locale, dus moet hier expliciet omgezet worden.
+function euro(bedrag){ return Number(bedrag).toFixed(2).replace('.', ','); }
+
 async function loadData(){
   const [dR,mR,pR]=await Promise.all([
     metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).eq('actief',true).order('categorie').order('naam'),
@@ -610,16 +614,16 @@ function berekenTotalen(){
 
 function updateTot(){
   const t=berekenTotalen();
-  document.getElementById('sub').textContent='€'+t.sub.toFixed(2);
-  document.getElementById('btw').textContent='€'+t.btw.toFixed(2);
-  document.getElementById('tot').textContent='€'+t.totaal.toFixed(2);
+  document.getElementById('sub').textContent='€'+euro(t.sub);
+  document.getElementById('btw').textContent='€'+euro(t.btw);
+  document.getElementById('tot').textContent='€'+euro(t.totaal);
 
   const balk=document.getElementById('cb-actief-balk');
   if(cadeaubonActief){
     balk.style.display='flex';
     document.getElementById('cb-actief-tekst').textContent=
-      `Cadeaubon ${cadeaubonActief.code}: €${t.cbGebruikt.toFixed(2)} gebruikt`+
-      (t.teBetalen>0?`, nog €${t.teBetalen.toFixed(2)} te betalen`:', volledig gedekt');
+      `Cadeaubon ${cadeaubonActief.code}: €${euro(t.cbGebruikt)} gebruikt`+
+      (t.teBetalen>0?`, nog €${euro(t.teBetalen)} te betalen`:', volledig gedekt');
   } else {
     balk.style.display='none';
   }
@@ -693,11 +697,11 @@ async function checkCadeaubon(){
   }
 
   cbCheckResultaat=data;
-  document.getElementById('cb-saldo-val').textContent='€'+Number(data.resterend_bedrag).toFixed(2);
+  document.getElementById('cb-saldo-val').textContent='€'+euro(data.resterend_bedrag);
   const t=berekenTotalen();
   const gebruikt=Math.min(Number(data.resterend_bedrag),t.totaal);
   document.getElementById('cb-saldo-tekst').textContent=
-    gebruikt>=t.totaal?'Dit dekt de hele bon.':`Dit dekt €${gebruikt.toFixed(2)} van de bon; de rest moet via een andere betaalmethode.`;
+    gebruikt>=t.totaal?'Dit dekt de hele bon.':`Dit dekt €${euro(gebruikt)} van de bon; de rest moet via een andere betaalmethode.`;
   saldoBox.style.display='block';
   document.getElementById('btn-cb-toepassen').style.display='block';
 }
@@ -801,13 +805,13 @@ async function betaal(){
 
   btn.disabled=false;btn.textContent='Afrekenen';
 
-  document.getElementById('suc-sub').textContent=methodeLabel+' · €'+t.totaal.toFixed(2);
+  document.getElementById('suc-sub').textContent=methodeLabel+' · €'+euro(t.totaal);
   let receiptHtml=bon.map(i=>`<div class="rrow"><span>${escapeHtml(i.naam)}</span><span>€${i.total}</span></div>`).join('')+
-    `<div class="rrow"><span>BTW 21%</span><span>€${t.btw.toFixed(2)}</span></div>`;
+    `<div class="rrow"><span>BTW 21%</span><span>€${euro(t.btw)}</span></div>`;
   if(cadeaubonActief){
-    receiptHtml+=`<div class="rrow"><span>Betaald met cadeaubon ${cadeaubonActief.code}</span><span>-€${t.cbGebruikt.toFixed(2)}</span></div>`;
+    receiptHtml+=`<div class="rrow"><span>Betaald met cadeaubon ${cadeaubonActief.code}</span><span>-€${euro(t.cbGebruikt)}</span></div>`;
   }
-  receiptHtml+=`<div class="rrow"><span>Totaal</span><span style="color:var(--gd)">€${t.totaal.toFixed(2)}</span></div>`;
+  receiptHtml+=`<div class="rrow"><span>Totaal</span><span style="color:var(--gd)">€${euro(t.totaal)}</span></div>`;
   if(nieuweCadeaubonCodes.length){
     receiptHtml+=nieuweCadeaubonCodes.map(c=>
       `<div class="rrow" style="background:var(--wm);margin-top:8px;padding:10px;border-radius:10px;flex-direction:column;align-items:flex-start;">
@@ -849,10 +853,10 @@ async function openDagafsluiting(){
     return;
   }
   dafTotalen=data[0];
-  document.getElementById('daf-pin').textContent='€'+Number(dafTotalen.systeem_pin).toFixed(2);
-  document.getElementById('daf-contant').textContent='€'+Number(dafTotalen.systeem_contant).toFixed(2);
-  document.getElementById('daf-ideal').textContent='€'+Number(dafTotalen.systeem_ideal).toFixed(2);
-  document.getElementById('daf-cadeaubon').textContent='€'+Number(dafTotalen.systeem_cadeaubon).toFixed(2);
+  document.getElementById('daf-pin').textContent='€'+euro(dafTotalen.systeem_pin);
+  document.getElementById('daf-contant').textContent='€'+euro(dafTotalen.systeem_contant);
+  document.getElementById('daf-ideal').textContent='€'+euro(dafTotalen.systeem_ideal);
+  document.getElementById('daf-cadeaubon').textContent='€'+euro(dafTotalen.systeem_cadeaubon);
   document.getElementById('daf-totalen').style.display='block';
 }
 
@@ -864,7 +868,7 @@ document.addEventListener('input',(e)=>{
     const verschil=geteld-Number(dafTotalen.systeem_contant);
     if(Math.abs(verschil)<0.01){preview.textContent='Klopt precies.';preview.style.color='var(--green)';}
     else{
-      preview.textContent=(verschil>0?'€'+verschil.toFixed(2)+' te veel':'€'+Math.abs(verschil).toFixed(2)+' te weinig')+' t.o.v. het systeem.';
+      preview.textContent=(verschil>0?'€'+euro(verschil)+' te veel':'€'+euro(Math.abs(verschil))+' te weinig')+' t.o.v. het systeem.';
       preview.style.color='var(--red)';
     }
   }
@@ -893,7 +897,7 @@ async function bevestigDagafsluiting(){
   }
   closeM('m-dagafsluiting');
   const r=data[0];
-  alert('Dag afgesloten. Verschil: €'+Number(r.verschil).toFixed(2));
+  alert('Dag afgesloten. Verschil: €'+euro(r.verschil));
 }
 
 function tick(){const n=new Date();document.getElementById('clock').textContent=n.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});}
