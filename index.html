@@ -28,8 +28,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-0.5px;}
 .nav-logo em{color:var(--gd);font-style:normal;}
 .nav-links{display:flex;align-items:center;gap:28px;}
-.nav-link{font-size:14px;font-weight:500;color:var(--mu);text-decoration:none;transition:color .2s;}
+.nav-link{position:relative;font-size:14px;font-weight:500;color:var(--mu);text-decoration:none;transition:color .2s;}
+.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;width:100%;height:1.5px;background:var(--gd);transform:scaleX(0);transform-origin:right;transition:transform .25s ease;}
 .nav-link:hover{color:var(--ink);}
+.nav-link:hover::after{transform:scaleX(1);transform-origin:left;}
 .nav-cta{padding:9px 22px;background:var(--ink);color:var(--white);font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;transition:all .2s;letter-spacing:-.1px;}
 .nav-cta:hover{background:var(--ink2);transform:translateY(-1px);}
 .nav-login{font-size:14px;font-weight:500;color:var(--ink);text-decoration:none;}
@@ -59,6 +61,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-btns{display:flex;align-items:center;gap:16px;justify-content:flex-start;flex-wrap:wrap;margin-bottom:28px;}
 .btn-primary{padding:16px 32px;background:var(--ink);color:var(--white);font-size:15px;font-weight:600;text-decoration:none;border-radius:10px;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
 .btn-primary:hover{background:var(--ink2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,13,11,.2);}
+.btn-arrow{display:inline-block;transition:transform .25s ease;}
+a:hover .btn-arrow{transform:translateX(4px);}
 .btn-secondary{padding:16px 28px;background:transparent;color:var(--ink);font-size:15px;font-weight:500;text-decoration:none;border-radius:10px;border:1.5px solid var(--bd);transition:all .2s;}
 .btn-secondary:hover{border-color:var(--ink);background:var(--iv);}
 .hero-usps{display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px;max-width:600px;}
@@ -301,9 +305,10 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .hero-screenshot{will-change:transform;}
 
 .feat-compact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-top:20px;}
-.feat-compact{background:var(--white);padding:28px 22px;transition:background .2s;}
-.feat-compact:hover{background:var(--iv);}
-.feat-compact-icon{width:36px;height:36px;background:var(--gd-light);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;}
+.feat-compact{background:var(--white);padding:28px 22px;transition:background .2s,transform .3s ease;}
+.feat-compact:hover{background:var(--iv);transform:translateY(-4px);}
+.feat-compact:hover .feat-compact-icon{transform:scale(1.08) rotate(-4deg);}
+.feat-compact-icon{width:36px;height:36px;background:var(--gd-light);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;transition:transform .3s ease;}
 .feat-compact-icon svg{width:16px;height:16px;color:var(--gd);}
 .feat-compact-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;}
 .feat-compact-desc{font-size:12px;color:var(--mu);line-height:1.55;}
@@ -555,6 +560,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   .mock-sidebar{width:36px;}
 }
 </style>
+<noscript><style>[data-aos],.section-label,.section-title,.section-sub,.feat-compact{opacity:1 !important;transform:none !important;}</style></noscript>
 </head>
 <body>
 
@@ -589,7 +595,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         <p class="hero-sub">Alles wat je salon nodig heeft. Eén platform. Eén abonnement. Eén overzicht. Zonder commissie.</p>
       </div>
       <div class="hero-btns">
-        <a href="/login/" class="btn-primary">Start 14 dagen gratis →</a>
+        <a href="/login/" class="btn-primary">Start 14 dagen gratis <span class="btn-arrow">→</span></a>
         <a href="#features" class="btn-secondary">Bekijk alle features</a>
       </div>
       <div class="hero-usps">
@@ -1060,7 +1066,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <span id="idx-period-lbl-y" style="cursor:pointer;color:var(--gd);font-weight:700;" onclick="idxSetPeriod('yearly')">Jaarlijks <span style="color:var(--gd);">(2 maanden gratis)</span></span>
     </div>
     <div class="pricing-grid">
-      <div class="price-card" data-aos>
+      <div class="price-card" data-aos data-aos-delay="0">
         <div class="price-name">Starter</div>
         <div class="price-amount"><sup>€</sup><span id="idx-amt-starter">19</span></div>
         <div class="price-per" id="idx-per-starter">per maand · 1 medewerker</div>
@@ -1088,7 +1094,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         </ul>
         <a href="/login/" class="price-btn">Start 14 dagen gratis</a>
       </div>
-      <div class="price-card" data-aos>
+      <div class="price-card" data-aos data-aos-delay="90">
         <div class="price-name">Business</div>
         <div class="price-amount"><sup>€</sup><span id="idx-amt-business">69</span></div>
         <div class="price-per" id="idx-per-business">per maand · onbeperkt</div>
@@ -1113,17 +1119,17 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <h2 class="section-title">Net gelanceerd.<br>Daarom krijg jij meer aandacht.</h2>
     <p class="section-sub" style="margin-bottom:52px;">Kronr is een nieuw platform. Als vroege gebruiker praat je rechtstreeks met de ontwikkelaar, zonder callcenter, zonder wachtrij en zonder ticket-systeem.</p>
     <div class="early-grid">
-      <div class="early-card" data-aos>
+      <div class="early-card" data-aos data-aos-delay="0">
         <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
         <div class="early-title">Directe lijn</div>
         <div class="early-desc">Vraag of feedback? Je mailt of appt rechtstreeks met de bouwer van Kronr.</div>
       </div>
-      <div class="early-card" data-aos>
+      <div class="early-card" data-aos data-aos-delay="100">
         <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
         <div class="early-title">Invloed op de roadmap</div>
         <div class="early-desc">Jouw wensen bepalen mee welke features er als volgende gebouwd worden.</div>
       </div>
-      <div class="early-card" data-aos>
+      <div class="early-card" data-aos data-aos-delay="200">
         <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
         <div class="early-title">Eerlijke prijs, altijd</div>
         <div class="early-desc">Als vroege gebruiker houd je je instaptarief, ook als de prijzen later stijgen.</div>
@@ -1136,7 +1142,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 <section class="cta-final">
   <h2 class="cta-final-title">Je begon een salon<br>om mensen mooier te maken.<br>Niet om administratie te doen.</h2>
   <p class="cta-final-sub">Run je salon. Niet je software. Start vandaag nog gratis.</p>
-  <a href="/login/" class="btn-white">Start 14 dagen gratis →</a>
+  <a href="/login/" class="btn-white">Start 14 dagen gratis <span class="btn-arrow">→</span></a>
   <p class="cta-final-note">Geen creditcard nodig · Opzegbaar per maand</p>
   <p class="cta-final-note" style="margin-top:4px;font-weight:600;color:rgba(255,255,255,.7);">Binnen 15 minuten aan de slag. Geen creditcard nodig.</p>
 </section>
@@ -1299,19 +1305,21 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
 });
 
 // Scroll reveal animaties
-const revealEls = document.querySelectorAll('[data-aos]');
+const revealEls = document.querySelectorAll('[data-aos], .section-label, .section-title, .section-sub, .feat-compact');
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if(e.isIntersecting) {
       e.target.style.opacity = '1';
       e.target.style.transform = 'translateY(0)';
+      observer.unobserve(e.target);
     }
   });
 }, {threshold: 0.1});
-revealEls.forEach(el => {
+revealEls.forEach((el, i) => {
+  const delay = el.dataset.aosDelay ? parseInt(el.dataset.aosDelay) : (el.classList.contains('feat-compact') ? (i % 4) * 70 : 0);
   el.style.opacity = '0';
   el.style.transform = 'translateY(24px)';
-  el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+  el.style.transition = `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`;
   observer.observe(el);
 });
 
