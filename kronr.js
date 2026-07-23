@@ -384,12 +384,15 @@ async function verbergIrrelevanteNavItems(salon) {
   let toonRuimtes = BEDRIJFSTYPES_MET_RUIMTES.includes(salon.type_bedrijf);
   let toonLessen = BEDRIJFSTYPES_MET_LESSEN.includes(salon.type_bedrijf);
 
+  // Alleen ACTIEVE ruimtes/groepsles-diensten tellen mee -- anders blijft
+  // het menu-item hangen zodra iemand een testruimte/-dienst deactiveert
+  // in plaats van verwijdert.
   if (!toonRuimtes) {
-    const { count } = await sb.from('ruimtes').select('id', { count: 'exact', head: true }).eq('salon_id', SALON_ID);
+    const { count } = await sb.from('ruimtes').select('id', { count: 'exact', head: true }).eq('salon_id', SALON_ID).eq('actief', true);
     if (count) toonRuimtes = true;
   }
   if (!toonLessen) {
-    const { count } = await sb.from('diensten').select('id', { count: 'exact', head: true }).eq('salon_id', SALON_ID).eq('is_groepsles', true);
+    const { count } = await sb.from('diensten').select('id', { count: 'exact', head: true }).eq('salon_id', SALON_ID).eq('is_groepsles', true).eq('actief', true);
     if (count) toonLessen = true;
   }
 

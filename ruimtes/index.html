@@ -151,6 +151,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </label>
     </div>
     <button class="btsv" onclick="slaRuimteOp()">Opslaan</button>
+    <button class="pt-btn" id="r-verwijder-btn" style="display:none;width:100%;margin-top:8px;color:#c0392b;border-color:#c0392b;" onclick="verwijderRuimte()">Verwijderen</button>
   </div>
 </div>
 
@@ -182,6 +183,7 @@ function openNieuweRuimte(){
   document.getElementById('r-naam').value='';
   document.getElementById('r-actief').checked=true;
   document.getElementById('r-err').style.display='none';
+  document.getElementById('r-verwijder-btn').style.display='none';
   openM('m-ruimte');
 }
 
@@ -193,7 +195,22 @@ function openBewerkRuimte(id){
   document.getElementById('r-naam').value=r.naam;
   document.getElementById('r-actief').checked=r.actief;
   document.getElementById('r-err').style.display='none';
+  document.getElementById('r-verwijder-btn').style.display='block';
   openM('m-ruimte');
+}
+
+async function verwijderRuimte(){
+  const id=document.getElementById('r-id').value;
+  if(!id) return;
+  // Bestaande afspraken/lessen die naar deze ruimte verwijzen verliezen
+  // alleen de koppeling (ruimte_id wordt null, zie ON DELETE SET NULL in
+  // de migratie) -- de afspraak/les zelf blijft gewoon bestaan.
+  if(!confirm('Deze ruimte verwijderen? Afspraken/lessen die hiernaar verwijzen blijven bestaan, maar verliezen de ruimte-koppeling.')) return;
+  const errEl=document.getElementById('r-err');
+  const{error}=await sb.from('ruimtes').delete().eq('id',id);
+  if(error){ errEl.textContent='Kon niet verwijderen: '+error.message; errEl.style.display='block'; return; }
+  closeM('m-ruimte');
+  laadRuimtes();
 }
 
 async function slaRuimteOp(){
