@@ -54,9 +54,14 @@ function kronrStorage() {
   };
 }
 
-const sb = window.supabase.createClient(SB_URL, SB_KEY, {
+// window.supabase kan ontbreken als de CDN-load faalt (trage verbinding,
+// ad-blocker, firewall). Zonder deze guard bleef `sb` in de temporal dead
+// zone hangen na een crash hier, wat élke pagina die kronr.js gebruikt
+// (dashboard, agenda, kassa, lessen, klanten, ...) liet vastlopen op een
+// onzichtbare pagina (opacity bleef op 0) zonder enige foutmelding.
+const sb = window.supabase ? window.supabase.createClient(SB_URL, SB_KEY, {
   auth: { storage: kronrStorage(), persistSession: true, autoRefreshToken: true }
-});
+}) : null;
 let SALON_ID = null;
 let SESSION_USER = null;
 let SALON = null;
@@ -328,15 +333,65 @@ async function kronrInit(callback, paginaModule) {
       document.querySelectorAll('.salon-init').forEach(el => el.style.display = 'none');
     }
 
+    // Sidebar opschonen op basis van bedrijfstype: een kapper hoeft nooit
+    // "Ruimtes" of "Lessen" te zien, en andersom hoeft een sportschool geen
+    // navigatie-item te zien die voor hen nooit relevant is. Dit toont/verbergt
+    // alleen de link (geen harde toegangsblokkade) en heeft een vangnet: als
+    // een salon de betreffende feature toch al gebruikt (bv. al een ruimte of
+    // groepsles heeft aangemaakt), blijft de link zichtbaar ongeacht het
+    // ingestelde bedrijfstype -- zo verliest niemand toegang tot eigen data.
+    await verbergIrrelevanteNavItems(salon);
+
     // Callback uitvoeren
     if (callback) await callback();
 
   } catch(e) {
     console.error('kronrInit fout:', e);
+    toonVerbindingsfoutBanner();
   } finally {
     // Altijd pagina zichtbaar maken, ook bij fout
     document.documentElement.style.opacity = '1';
   }
+}
+
+// Zonder dit bleef een mislukte load (bv. CDN-hapering) onzichtbaar voor
+// de gebruiker: de pagina toonde eindeloos "Laden..." zonder enige uitleg
+// of manier om het zelf op te lossen.
+function toonVerbindingsfoutBanner() {
+  if (document.getElementById('kronr-verbindingsfout-banner')) return;
+  const banner = document.createElement('div');
+  banner.id = 'kronr-verbindingsfout-banner';
+  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:10px 16px;text-align:center;font-family:Inter,sans-serif;font-size:13px;';
+  banner.innerHTML = 'Kon niet verbinden met de server. Check je internetverbinding en <a href="#" onclick="window.location.reload();return false;" style="color:#fff;text-decoration:underline;font-weight:600;">herlaad de pagina</a>.';
+  document.body.appendChild(banner);
+}
+
+// Welke bedrijfstypes (zie de select in instellingen/index.html) hebben
+// "Ruimtes" resp. "Lessen" standaard relevant genoeg om in de sidebar te
+// tonen. "Overig" en alle andere typen tonen ze pas zodra ze de feature
+// daadwerkelijk gebruiken (zie het vangnet in verbergIrrelevanteNavItems).
+const BEDRIJFSTYPES_MET_RUIMTES = ['Wellness', 'Massagesalon'];
+const BEDRIJFSTYPES_MET_LESSEN = ['Sportschool/PT'];
+
+function verbergNavItem(pad) {
+  document.querySelectorAll(`a[href="/${pad}/"]`).forEach(el => { el.style.display = 'none'; });
+}
+
+async function verbergIrrelevanteNavItems(salon) {
+  let toonRuimtes = BEDRIJFSTYPES_MET_RUIMTES.includes(salon.type_bedrijf);
+  let toonLessen = BEDRIJFSTYPES_MET_LESSEN.includes(salon.type_bedrijf);
+
+  if (!toonRuimtes) {
+    const { count } = await sb.from('ruimtes').select('id', { count: 'exact', head: true }).eq('salon_id', SALON_ID);
+    if (count) toonRuimtes = true;
+  }
+  if (!toonLessen) {
+    const { count } = await sb.from('diensten').select('id', { count: 'exact', head: true }).eq('salon_id', SALON_ID).eq('is_groepsles', true);
+    if (count) toonLessen = true;
+  }
+
+  if (!toonRuimtes) verbergNavItem('ruimtes');
+  if (!toonLessen) verbergNavItem('lessen');
 }
 
 async function uitloggen() {
