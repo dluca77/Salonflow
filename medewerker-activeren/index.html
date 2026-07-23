@@ -117,13 +117,13 @@ async function activeer(email){
   }
 
   if(!signUpData.session){
-    // E-mailbevestiging staat aan bij dit Supabase-project -- de koppeling
+    // E-mailbevestiging staat aan bij dit Supabase-project — de koppeling
     // (accepteer_medewerker_uitnodiging) kan pas na de eerste succesvolle
     // login, want die functie heeft auth.uid() nodig.
     card.innerHTML=`
       <div class="state-icon">✉️</div>
       <div class="card-title" style="text-align:center;">Bevestig je e-mail</div>
-      <p class="msg-center">We hebben een bevestigingslink naar ${escapeHtml(email)} gestuurd. Klik daarop, log daarna in via <a href="/medewerker-login/" style="color:var(--gd);">medewerker-login</a> -- je account wordt dan automatisch gekoppeld.</p>
+      <p class="msg-center">We hebben een bevestigingslink naar ${escapeHtml(email)} gestuurd. Klik daarop, log daarna in via <a href="/medewerker-login/" style="color:var(--gd);">medewerker-login</a> — je account wordt dan automatisch gekoppeld.</p>
     `;
     try{ sessionStorage.setItem('kronr_pending_uitnodiging_token', token); }catch(e){}
     return;
@@ -135,7 +135,7 @@ async function activeer(email){
     card.innerHTML=`
       <div class="state-icon">⚠️</div>
       <div class="card-title" style="text-align:center;">Account aangemaakt, koppelen mislukt</div>
-      <p class="msg-center">Je account is aangemaakt maar kon niet automatisch gekoppeld worden. Log in via <a href="/medewerker-login/" style="color:var(--gd);">medewerker-login</a> -- daar proberen we het opnieuw.</p>
+      <p class="msg-center">Je account is aangemaakt maar kon niet automatisch gekoppeld worden. Log in via <a href="/medewerker-login/" style="color:var(--gd);">medewerker-login</a> — daar proberen we het opnieuw.</p>
     `;
     try{ sessionStorage.setItem('kronr_pending_uitnodiging_token', token); }catch(e){}
     return;

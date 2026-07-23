@@ -943,7 +943,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div class="feat-compact">
         <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
         <div class="feat-compact-title">WhatsApp herinneringen <span style="font-size:10px;font-weight:400;color:var(--mu);">(binnenkort)</span></div>
-        <div class="feat-compact-desc">Minder no-shows, minder telefoontjes. Wacht nog op goedkeuring van Meta -- nog niet actief.</div>
+        <div class="feat-compact-desc">Minder no-shows, minder telefoontjes. Wacht nog op goedkeuring van Meta — nog niet actief.</div>
       </div>
     </div>
   </div>
@@ -1204,7 +1204,7 @@ window.addEventListener('scroll',()=>{
 
 // ── Blijf op de hoogte: e-mail-inschrijving voor de launch-aankondiging ──
 // window.supabase kan ontbreken als de CDN-load faalt (ad-blocker, trage
-// verbinding, firewall) -- zonder deze guard gooide createClient() dan een
+// verbinding, firewall) — zonder deze guard gooide createClient() dan een
 // exception die de rest van dit hele scriptblok liet crashen, inclusief de
 // doelgroep-tabs, tellers en alle andere interactiviteit op de pagina.
 const notifySb=window.supabase ? window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co','sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6') : null;
@@ -1241,7 +1241,7 @@ document.getElementById('notify-form').addEventListener('submit', async(e)=>{
   btn.disabled=false;btn.textContent='Aanmelden';
 
   if(error){
-    // Duplicate-key (23505): dit e-mailadres staat al ingeschreven -- geen
+    // Duplicate-key (23505): dit e-mailadres staat al ingeschreven — geen
     // fout voor de bezoeker, gewoon bevestigen dat we ze al hebben.
     if(error.code==='23505'){
       msg.textContent='Dit e-mailadres staat al ingeschreven!';
@@ -1254,7 +1254,7 @@ document.getElementById('notify-form').addEventListener('submit', async(e)=>{
     msg.textContent='Bedankt! We laten het je weten zodra we live gaan.';
     msg.classList.add('ok');
     input.value='';
-    // Bevestigingsmail is 'best effort' -- als dit faalt blijft de
+    // Bevestigingsmail is 'best effort' — als dit faalt blijft de
     // inschrijving zelf gewoon geldig, dat merkt de bezoeker niet.
     fetch('https://kronr-mail.isaak-elia.workers.dev/interesse-bevestiging',{
       method:'POST',headers:{'Content-Type':'application/json'},
@@ -1403,7 +1403,7 @@ idxSetPeriod('yearly');
     },
     fysio: {
       title: 'Fysiotherapie & paramedisch',
-      desc: 'Een behandelplan onthouden voor 200 patiënten kan niemand. Kronr wel -- elke voortgang, notitie en vervolgafspraak staat direct bij de patiënt.',
+      desc: 'Een behandelplan onthouden voor 200 patiënten kan niemand. Kronr wel — elke voortgang, notitie en vervolgafspraak staat direct bij de patiënt.',
       benefits: ['Behandelnotities en voortgang per patiënt overzichtelijk bijgehouden', 'Terugkerende afspraken (bv. wekelijks) automatisch ingepland', 'Nette facturen voor eigen risico/declaratie, geen losse kwitantie meer nodig'],
       kai: 'Meneer Bakker heeft nog 2 behandelingen in zijn traject van 6. Zal ik de volgende inplannen?',
       visual: `<div class="mini-agenda">
@@ -1417,7 +1417,7 @@ idxSetPeriod('yearly');
       title: 'Dansscholen',
       desc: 'Van proefles tot een heel seizoen: Kronr regelt de planning voor losse lessen én groepen die maandenlang samen dansen.',
       benefits: ['Groepslessen per niveau of leeftijdscategorie, met capaciteit bewaakt', 'Klanten boeken zelf een plek via de widget, geen dubbele boekingen', 'Instructeur- en zaalplanning in één overzicht'],
-      kai: 'De beginnersles van donderdag zit bijna vol -- nog 2 plekken.',
+      kai: 'De beginnersles van donderdag zit bijna vol — nog 2 plekken.',
       visual: `<div class="mini-agenda">
         <div class="mini-agenda-head">Salsa Beginners - do 19:00 (10/12)</div>
         <div class="mini-agenda-row"><div class="mini-agenda-time">Lieke</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
@@ -1427,14 +1427,14 @@ idxSetPeriod('yearly');
     },
     massage: {
       title: 'Massagepraktijken',
-      desc: 'Een uur op de tafel is geld -- een no-show kost je dat uur dubbel. Kronr beschermt je agenda met aanbetalingen en herinneringen.',
+      desc: 'Een uur op de tafel is geld — een no-show kost je dat uur dubbel. Kronr beschermt je agenda met aanbetalingen en herinneringen.',
       benefits: ['Aanbetaling bij het boeken, geen verrassingen achteraf', 'Automatische herinneringen verminderen no-shows', 'Klantnotities (blessures, voorkeuren) altijd bij de hand'],
       kai: 'Deze klant heeft al 2x niet afgezegd. Wil je een aanbetaling verplicht maken?',
       visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-spa.jpg" alt="Kronr agenda voor massagepraktijken" loading="lazy"></div>`
     },
     wenkbrauw: {
       title: 'Wenkbrauw- & wimperstudio\'s',
-      desc: 'Korte afspraken, hoge frequentie -- en dus ook het meeste last van no-shows. Kronr vult je rooster en beschermt je tijd.',
+      desc: 'Korte afspraken, hoge frequentie — en dus ook het meeste last van no-shows. Kronr vult je rooster en beschermt je tijd.',
       benefits: ['Automatische herinneringen vlak voor de afspraak', 'Snel opeenvolgende sloten zonder overlap', 'Terugkerende klanten (elke 3-4 weken) makkelijk opnieuw inplannen'],
       kai: 'Sanne komt om de 3 weken. Zal ik haar volgende afspraak alvast voorstellen?',
       visual: `<div class="mini-agenda">
@@ -1470,7 +1470,7 @@ idxSetPeriod('yearly');
     },
     klimhal: {
       title: 'Klimhal & boksschool',
-      desc: 'Groepslessen met een vaste capaciteit, plus losse instapmomenten -- Kronr bewaakt beide zonder dat een les ooit overboekt raakt.',
+      desc: 'Groepslessen met een vaste capaciteit, plus losse instapmomenten — Kronr bewaakt beide zonder dat een les ooit overboekt raakt.',
       benefits: ['Groepslessen met capaciteit, automatisch bewaakt', 'Klanten boeken zelf een plek via de widget', 'Losse dagkaarten of instapmomenten los van de lessen te verkopen'],
       kai: 'De boksles van 19:00 is nu vol. Wil je een extra les inplannen?',
       visual: `<div class="mini-agenda">
@@ -1537,7 +1537,7 @@ idxSetPeriod('yearly');
     },
     tandarts: {
       title: 'Tandartsen',
-      desc: 'Voor de agenda, herinneringen en betalingen kan Kronr je praktijk prima ondersteunen -- let op: dit is geen vervanging voor een gespecialiseerd patiëntendossier-systeem.',
+      desc: 'Voor de agenda, herinneringen en betalingen kan Kronr je praktijk prima ondersteunen — let op: dit is geen vervanging voor een gespecialiseerd patiëntendossier-systeem.',
       benefits: ['Agenda en online afspraken voor de praktijk', 'Automatische herinneringen om no-shows te voorkomen', 'Facturatie gekoppeld aan je boekhouding'],
       kai: 'Er is morgen nog een gaatje om 11:00 bij dr. De Vries.',
       visual: `<div class="mini-agenda">
@@ -1549,7 +1549,7 @@ idxSetPeriod('yearly');
     },
     dierenarts: {
       title: 'Dierenartsen',
-      desc: 'Voor de planning, herinneringen en kassa is Kronr geschikt -- voor medische dossiervoering gebruik je waarschijnlijk nog je gespecialiseerde software ernaast.',
+      desc: 'Voor de planning, herinneringen en kassa is Kronr geschikt — voor medische dossiervoering gebruik je waarschijnlijk nog je gespecialiseerde software ernaast.',
       benefits: ['Agenda per dierenarts en per behandelkamer', 'Herinneringen zodat klanten hun afspraak niet vergeten', 'Kassa en facturatie in hetzelfde overzicht'],
       kai: 'Milo (kat) staat om 14:00 gepland voor een controle.',
       visual: `<div class="mini-agenda">
@@ -1561,7 +1561,7 @@ idxSetPeriod('yearly');
     },
     psycholoog: {
       title: 'Psychologen & therapeuten',
-      desc: 'Kronr regelt je agenda en herhaalafspraken -- de inhoudelijke, privacygevoelige dossiervoering laat je bewust buiten dit systeem.',
+      desc: 'Kronr regelt je agenda en herhaalafspraken — de inhoudelijke, privacygevoelige dossiervoering laat je bewust buiten dit systeem.',
       benefits: ['Vaste wekelijkse of tweewekelijkse afspraken automatisch ingepland', 'Geen kassa-verplichting nodig voor wie dat niet wil gebruiken', 'Facturen met eigen praktijkgegevens'],
       kai: 'Uw cliënt van 15:00 heeft nog geen bevestiging gestuurd.',
       visual: `<div class="mini-agenda">
@@ -1655,7 +1655,7 @@ idxSetPeriod('yearly');
 
     if(key === 'anders'){
       // Als er al een branche-paneel open staat, dat eerst soepel
-      // sluiten (max-height-animatie) -- pas daarna begint Kai met typen.
+      // sluiten (max-height-animatie) — pas daarna begint Kai met typen.
       const paneelStaatOpen = layoutEl.classList.contains('vw-visible');
       if(paneelStaatOpen){
         layoutEl.classList.remove('vw-visible');
@@ -1692,7 +1692,7 @@ idxSetPeriod('yearly');
   });
 
   // Kai spreekt eerst ("Voor welke branche werk jij?"), daarna komen de
-  // pil-knoppen en het paneel animerend in beeld -- eenmalig bij scroll.
+  // pil-knoppen en het paneel animerend in beeld — eenmalig bij scroll.
   const kaiIntroEl = document.getElementById('vwKaiIntroText');
   const kaiCursorEl = document.getElementById('vwKaiIntroCursor');
   const pillsEl = document.getElementById('vwPills');
@@ -1833,7 +1833,7 @@ if(aiChatEl){
   aiChatObs.observe(aiChatEl);
 }
 
-// ── Micro-animatie 1: agenda -- rijen verschijnen na elkaar, dan schuift
+// ── Micro-animatie 1: agenda — rijen verschijnen na elkaar, dan schuift
 // er een nieuwe afspraak in met een conflict-detectie-badge ──
 function speelAgendaAf(){
   const rijen=[...document.querySelectorAll('#feat-agenda-visual .mini-agenda-row')];
@@ -1855,7 +1855,7 @@ if(agendaEl){
   agendaObs.observe(agendaEl);
 }
 
-// ── Micro-animatie 2: boekingswidget -- selectie schuift naar een ander
+// ── Micro-animatie 2: boekingswidget — selectie schuift naar een ander
 // tijdslot, daarna bevestigt de knop zichzelf ──
 function speelWidgetAf(){
   const slot1=document.getElementById('feat-slot-1');

@@ -98,7 +98,7 @@ async function toonWebsiteUpsellNudge() {
           <span style="font-size:13.5px;font-weight:600;color:var(--ink);">Heb je nog geen eigen website?</span>
           <span style="display:inline-flex;align-items:center;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;background:#f3ede4;color:var(--gd2);border:1px solid var(--gd);">Business</span>
         </div>
-        <div style="font-size:12px;color:var(--mu);line-height:1.5;">Met Business krijg je direct een kant-en-klare boekingspagina op jouw eigen kronr.nl-link -- zonder dat je zelf iets hoeft te bouwen.</div>
+        <div style="font-size:12px;color:var(--mu);line-height:1.5;">Met Business krijg je direct een kant-en-klare boekingspagina op jouw eigen kronr.nl-link — zonder dat je zelf iets hoeft te bouwen.</div>
       </div>
     </div>
     <div style="display:flex;align-items:center;gap:14px;flex-shrink:0;">
@@ -138,7 +138,7 @@ function toonKaiBegroeting() {
     <div style="background:var(--wh);border-radius:16px;max-width:420px;width:100%;padding:32px;text-align:center;">
       <img src="/images/kai-mascotte.png" alt="Kai" style="width:64px;height:64px;object-fit:contain;margin:0 auto 18px;">
       <h2 style="font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--ink);margin-bottom:10px;">Hoi! Ik ben Kai.</h2>
-      <p style="font-size:14px;color:var(--mu);line-height:1.6;margin-bottom:24px;">Welkom bij Kronr. Laat ik je in een korte rondleiding laten zien waar alles staat -- duurt hooguit een minuutje.</p>
+      <p style="font-size:14px;color:var(--mu);line-height:1.6;margin-bottom:24px;">Welkom bij Kronr. Laat ik je in een korte rondleiding laten zien waar alles staat — duurt hooguit een minuutje.</p>
       <div style="display:flex;gap:10px;justify-content:center;">
         <button onclick="sluitKaiBegroeting()" style="padding:12px 20px;background:none;border:1px solid var(--bd);border-radius:8px;font-size:13px;color:var(--mu);cursor:pointer;font-family:inherit;">Later</button>
         <button onclick="sluitKaiBegroeting();startRondleiding();" style="padding:12px 22px;background:var(--ink);color:var(--wh);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;">Start rondleiding</button>
@@ -158,7 +158,7 @@ const RONDLEIDING_STAPPEN = [
   { selector: '.si[href="/klanten/"], .mob-item[href="/klanten/"]', titel: 'Klanten', tekst: 'Alle klantgegevens, behandelhistorie en notities op één plek.' },
   { selector: '.si[href="/kassa/"], .mob-item[href="/kassa/"]', titel: 'Kassa', tekst: 'Reken hier snel af, inclusief pin, contant en cadeaubonnen.' },
   { selector: '.si[href="/diensten/"], .mob-item[href="/diensten/"]', titel: 'Diensten', tekst: 'Beheer hier je behandelingen, prijzen en duur.' },
-  { selector: '.si[href="/instellingen/"], .mob-item[href="/instellingen/"]', titel: 'Instellingen', tekst: 'Salonprofiel, boekingswidget, abonnement -- alles wat je verder kunt aanpassen.' },
+  { selector: '.si[href="/instellingen/"], .mob-item[href="/instellingen/"]', titel: 'Instellingen', tekst: 'Salonprofiel, boekingswidget, abonnement — alles wat je verder kunt aanpassen.' },
 ];
 
 let rondleidingIndex = 0;
@@ -171,7 +171,7 @@ function startRondleiding() {
 function elementIsWerkelijkZichtbaar(el) {
   if (el.offsetParent === null) return false;
   const r = el.getBoundingClientRect();
-  // offsetParent alleen zegt dat het element niet display:none is -- een
+  // offsetParent alleen zegt dat het element niet display:none is — een
   // element kan nog steeds volledig BUITEN BEELD staan (bv. het mobiele
   // menu dat dicht staat via left:-100%). Dat telt hier niet als zichtbaar.
   return r.width > 0 && r.height > 0 &&
@@ -195,7 +195,7 @@ async function toonRondleidingStap() {
   let el = vindZichtbareStapElement(stap.selector);
 
   // Geen enkele kandidaat écht zichtbaar? Op mobiel staat het menu dan
-  // waarschijnlijk dicht -- open het (dezelfde functie als de hamburger-
+  // waarschijnlijk dicht — open het (dezelfde functie als de hamburger-
   // knop) en wacht de schuif-animatie af voordat we opnieuw meten.
   if (!el && typeof openSB === 'function' && document.getElementById('sb')) {
     openSB();
@@ -216,7 +216,7 @@ async function toonRondleidingStap() {
   highlight.style.cssText = `position:fixed;top:${rect.top - 4}px;left:${rect.left - 4}px;width:${rect.width + 8}px;height:${rect.height + 8}px;border:2px solid var(--gd);border-radius:8px;z-index:9998;pointer-events:none;box-shadow:0 0 0 4000px rgba(15,13,11,.55);`;
   overlay.appendChild(highlight);
 
-  // Tooltip altijd rechts van het gemarkeerde item -- breedte past zich
+  // Tooltip altijd rechts van het gemarkeerde item — breedte past zich
   // aan de beschikbare ruimte aan (bv. naast het mobiele menu, dat maar
   // een deel van het scherm inneemt), i.p.v. terug te vallen op eronder
   // plaatsen (wat op mobiel over het menu zelf heen viel).

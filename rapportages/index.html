@@ -275,7 +275,7 @@ async function laadPrijsAdvies(){
     if(cached?.suggesties?.length){ toon(cached.suggesties); return; }
   }catch(e){}
 
-  // Aparte, vaste 8-weken terugblik -- los van de periode-knoppen boven de
+  // Aparte, vaste 8-weken terugblik — los van de periode-knoppen boven de
   // pagina, want voor prijsadvies is 'deze maand' vaak te weinig data.
   const nu=new Date();
   const achtWekenGeleden=new Date(nu.getTime()-8*7*24*60*60*1000);

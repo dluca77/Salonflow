@@ -346,7 +346,7 @@ const AVATAR_KLEUREN = ['#8B6B47','#1C1917','#7C8B6B','#6E5439','#9C7A4E'];
 // ── Toast-meldingen (i.p.v. alert()) ──
 // Veiligheid: klant-/afzender-gegevens (naam, onderwerp, inhoud van
 // binnenkomende mail) komen van BUITEN Kronr en mogen dus NOOIT
-// ongefilterd als HTML worden ingevoegd -- dat zou willekeurige
+// ongefilterd als HTML worden ingevoegd — dat zou willekeurige
 // bezoekers/afzenders de kans geven om script uit te voeren in het
 // ingelogde postvak. Alles wat uit klant_naam/van_naam/onderwerp/
 // inhoud komt gaat door deze functie heen vóór het in innerHTML
@@ -1085,7 +1085,7 @@ async function uitloggen(){
 
 // Vangnet: als er ook maar iets misgaat vóórdat init() de kans krijgt
 // om de pagina zichtbaar te maken, moet de pagina na een paar seconden
-// hoe dan ook zichtbaar worden met een duidelijke melding -- nooit
+// hoe dan ook zichtbaar worden met een duidelijke melding — nooit
 // voor altijd wit blijven.
 setTimeout(()=>{
   if(document.body.style.opacity!=='1'){

@@ -421,7 +421,7 @@ function bepaalSegmentKlanten(segmentType){
     }
     if(segmentType==='inactief_60d'){
       const stats=vindStats(k);
-      if(!stats.laatste) return true; // nog nooit geweest -- ook 'inactief'
+      if(!stats.laatste) return true; // nog nooit geweest — ook 'inactief'
       const dagenGeleden=(nu-new Date(stats.laatste))/(1000*60*60*24);
       return dagenGeleden>=60;
     }

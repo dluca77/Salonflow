@@ -7,7 +7,7 @@ const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 // ── Veiligheid: klantgegevens (naam, telefoon, notities) komen van de
 // PUBLIEKE boekingswidget en dus van willekeurige, niet-vertrouwde
 // bezoekers. Alles wat uit klant_naam/klant_email/notities e.d. komt
-// moet door deze functie heen vóórdat het in innerHTML terechtkomt --
+// moet door deze functie heen vóórdat het in innerHTML terechtkomt —
 // anders kan een kwaadwillende "klant" met een script-payload als
 // naam de sessie van de ingelogde salon-eigenaar/medewerker kapen
 // zodra die de agenda/dashboard/klantenlijst bekijkt.
@@ -96,7 +96,7 @@ function toonVergrendelScherm() {
         <svg width="26" height="26" fill="none" stroke="#8c6d3f" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
       </div>
       <h1 style="font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:#0f0d0b;margin-bottom:12px;">Je proefperiode is verlopen</h1>
-      <p style="font-size:14.5px;color:#6b6058;line-height:1.6;margin-bottom:28px;">Je 14 dagen gratis zijn voorbij. Kies een pakket om Kronr te blijven gebruiken -- je gegevens staan gewoon klaar, er gaat niets verloren.</p>
+      <p style="font-size:14.5px;color:#6b6058;line-height:1.6;margin-bottom:28px;">Je 14 dagen gratis zijn voorbij. Kies een pakket om Kronr te blijven gebruiken — je gegevens staan gewoon klaar, er gaat niets verloren.</p>
       <a href="/instellingen/#abonnement" style="display:inline-block;background:#0f0d0b;color:#faf8f4;padding:14px 28px;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;">Bekijk pakketten</a>
       <div style="margin-top:20px;">
         <a href="#" onclick="uitloggen();return false;" style="font-size:13px;color:#a09890;text-decoration:underline;">Uitloggen</a>
@@ -111,7 +111,7 @@ function wisselLocatie(id) {
 }
 
 function renderLocatieSwitcher() {
-  if (LOCATIES.length < 2) return; // geen switcher nodig voor 1 locatie -- geen UI-rommel voor de meeste salons
+  if (LOCATIES.length < 2) return; // geen switcher nodig voor 1 locatie — geen UI-rommel voor de meeste salons
 
   const huidige = LOCATIES.find(l => l.id === HUIDIGE_LOCATIE_ID);
   const optiesHtml = LOCATIES.map(l =>
@@ -147,7 +147,7 @@ function heeftRecht(moduleNaam, minimaalNiveau) {
 }
 
 // Is deze medewerker beperkt tot alleen-bekijken voor deze module? (Voor
-// de eigenaar altijd false -- die mag überhaupt alles bewerken.)
+// de eigenaar altijd false — die mag überhaupt alles bewerken.)
 function isAlleenBekijken(moduleNaam) {
   if (!IS_MEDEWERKER) return false;
   return !heeftRecht(moduleNaam, 'bewerken');
@@ -169,7 +169,7 @@ function toonGeenToegangScherm() {
 // ── Automatisch verlopen data opruimen ──
 // Afspraken waarvan de tijd voorbij is en die nog een 'actieve' status
 // hebben, gaan automatisch op 'afgerond'. Wachtlijst-aanvragen waarvan
-// de voorkeursperiode voorbij is, gaan op 'verlopen' (niet verwijderd --
+// de voorkeursperiode voorbij is, gaan op 'verlopen' (niet verwijderd —
 // blijft zichtbaar in de historie, maar telt niet meer mee als actief).
 async function automatiseerVerlopenData() {
   const nu = new Date().toISOString();
@@ -194,7 +194,7 @@ async function automatiseerVerlopenData() {
       .lt('voorkeur_tot', nu);
 
     // Volledig flexibele aanvragen ("maakt niet uit wanneer") hebben geen
-    // voorkeur_tot -- die wordt bij de vorige query dus NOOIT gematcht
+    // voorkeur_tot — die wordt bij de vorige query dus NOOIT gematcht
     // (NULL voldoet nooit aan een 'kleiner dan'-vergelijking). Daarom een
     // aparte, langere vervaltermijn: na 30 dagen zonder specifieke
     // voorkeur mag zo'n aanvraag ook als verlopen gelden.
@@ -224,7 +224,7 @@ async function kronrInit(callback, paginaModule) {
 
     // Is dit account een Kronr-teamlid (jouw eigen hallo@kronr.nl-account,
     // niet een salon-eigenaar)? Dan hoort dit account HELEMAAL NIET in de
-    // salon-specifieke pagina's -- zonder deze check zou hieronder anders
+    // salon-specifieke pagina's — zonder deze check zou hieronder anders
     // per ongeluk een nieuwe, foutieve salon voor dit account worden
     // aangemaakt (want het is geen bestaande eigenaar of medewerker).
     const { data: teamlid } = await sb.from('kronr_team')
@@ -242,7 +242,7 @@ async function kronrInit(callback, paginaModule) {
       .eq('owner_id', session.user.id)
       .single();
 
-    // Geen salon als eigenaar? Kan een medewerker zijn -- die heeft
+    // Geen salon als eigenaar? Kan een medewerker zijn — die heeft
     // een eigen inlog gekoppeld aan een medewerkersprofiel, niet aan
     // een salons.owner_id. Check dat VOORDAT we aannemen dat dit een
     // gloednieuwe eigenaar is en er een nieuwe salon wordt aangemaakt.
@@ -268,7 +268,7 @@ async function kronrInit(callback, paginaModule) {
     }
 
     // Nog steeds geen salon EN geen medewerker gevonden? Dan is dit
-    // een gloednieuwe eigenaar -- salon aanmaken op basis van user metadata.
+    // een gloednieuwe eigenaar — salon aanmaken op basis van user metadata.
     if (!salon) {
       const meta = session.user.user_metadata || {};
       const naam = meta.bedrijf_naam || meta.full_name || 'Mijn Salon';
@@ -319,7 +319,7 @@ async function kronrInit(callback, paginaModule) {
     renderLocatieSwitcher();
 
     // Automatisch verlopen data opruimen (afgeronde afspraken, verlopen
-    // wachtlijst) VOORDAT de aanroepende pagina zijn eigen data ophaalt --
+    // wachtlijst) VOORDAT de aanroepende pagina zijn eigen data ophaalt —
     // zodat KPI's/tellingen altijd met de actuele status rekenen.
     await automatiseerVerlopenData();
 
@@ -339,7 +339,7 @@ async function kronrInit(callback, paginaModule) {
     // alleen de link (geen harde toegangsblokkade) en heeft een vangnet: als
     // een salon de betreffende feature toch al gebruikt (bv. al een ruimte of
     // groepsles heeft aangemaakt), blijft de link zichtbaar ongeacht het
-    // ingestelde bedrijfstype -- zo verliest niemand toegang tot eigen data.
+    // ingestelde bedrijfstype — zo verliest niemand toegang tot eigen data.
     await verbergIrrelevanteNavItems(salon);
 
     // Callback uitvoeren
@@ -361,7 +361,7 @@ function toonVerbindingsfoutBanner() {
   if (document.getElementById('kronr-verbindingsfout-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'kronr-verbindingsfout-banner';
-  // Onderaan als toast i.p.v. bovenaan -- een top-banner overlapt op elke
+  // Onderaan als toast i.p.v. bovenaan — een top-banner overlapt op elke
   // pagina de topbar/actieknoppen (die zelf ook fixed/vast gepositioneerd
   // zijn), dit voorkomt dat sowieso.
   banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:10px 16px;text-align:center;font-family:Inter,sans-serif;font-size:13px;box-shadow:0 -4px 12px rgba(0,0,0,.15);';
@@ -384,7 +384,7 @@ async function verbergIrrelevanteNavItems(salon) {
   let toonRuimtes = BEDRIJFSTYPES_MET_RUIMTES.includes(salon.type_bedrijf);
   let toonLessen = BEDRIJFSTYPES_MET_LESSEN.includes(salon.type_bedrijf);
 
-  // Alleen ACTIEVE ruimtes/groepsles-diensten tellen mee -- anders blijft
+  // Alleen ACTIEVE ruimtes/groepsles-diensten tellen mee — anders blijft
   // het menu-item hangen zodra iemand een testruimte/-dienst deactiveert
   // in plaats van verwijdert.
   if (!toonRuimtes) {
@@ -407,7 +407,7 @@ async function uitloggen() {
 
 // Kleine helper: past het locatie-filter alleen toe als er daadwerkelijk
 // een huidige locatie bekend is (bv. nog niet zo als de migratie nog niet
-// gedraaid is voor deze salon) -- voorkomt dat een .eq('locatie_id', null)
+// gedraaid is voor deze salon) — voorkomt dat een .eq('locatie_id', null)
 // per ongeluk alles wegfiltert.
 function metLocatie(query) {
   return HUIDIGE_LOCATIE_ID ? query.eq('locatie_id', HUIDIGE_LOCATIE_ID) : query;

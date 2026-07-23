@@ -55,7 +55,7 @@ const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
 // Klantgegevens komen van de publieke boekingswidget en zijn dus
-// niet-vertrouwde invoer -- moet ge-escaped voordat het in innerHTML
+// niet-vertrouwde invoer — moet ge-escaped voordat het in innerHTML
 // terechtkomt.
 function escapeHtml(tekst) {
   if (tekst === null || tekst === undefined) return '';
@@ -142,7 +142,7 @@ async function bevestigAnnulering(a){
   }
 
   if(!data){
-    // Server heeft het geweigerd -- meestal omdat de cutoff-termijn intussen
+    // Server heeft het geweigerd — meestal omdat de cutoff-termijn intussen
     // is verstreken (bv. iemand liet de pagina lang openstaan) of de
     // afspraak al op een andere manier geannuleerd is. Haal de afspraak
     // opnieuw op zodat de juiste reden getoond wordt in plaats van een

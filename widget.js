@@ -94,7 +94,7 @@
     ".kw-chat-hint{font-size:11px;color:#8a8378;padding:2px 14px 10px;}",
     ".kw-chat-input-row{display:flex;gap:8px;padding:10px 12px;border-top:1px solid rgba(26,23,20,0.08);flex-shrink:0;}",
     ".kw-chat-input{flex:1;border:1px solid rgba(26,23,20,0.15);border-radius:100px;padding:9px 14px;",
-    /* font-size MOET 16px zijn (niet lager) -- anders zoomt iOS Safari
+    /* font-size MOET 16px zijn (niet lager) — anders zoomt iOS Safari
        automatisch in zodra dit veld focus krijgt, en de gebruiker moet
        daarna handmatig weer uitzoomen om de rest van het gesprek te zien. */
     "font-family:'Inter',sans-serif;font-size:16px;outline:none;}",
@@ -163,7 +163,7 @@
   // Haalt dezelfde publieke salongegevens op als boeken/index.html (RLS
   // staat anonieme leestoegang op deze specifieke, niet-gevoelige kolommen
   // toe). Nodig omdat de /klant-vraag Worker-route geen eigen salon_id-
-  // lookup doet -- die verwacht dat de aanroeper deze data al meestuurt.
+  // lookup doet — die verwacht dat de aanroeper deze data al meestuurt.
   function haalSalonContext(){
     if(salonContextPromise) return salonContextPromise;
     var salonUrl = SB_URL + '/rest/v1/salons?id=eq.' + encodeURIComponent(SALON_ID) +

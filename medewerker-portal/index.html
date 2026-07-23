@@ -72,7 +72,7 @@ const sb=window.supabase.createClient(SB_URL,SB_KEY);
 let MEDEWERKER=null;
 
 // Klantgegevens (klant_naam) komen van de publieke boekingswidget en
-// zijn dus niet-vertrouwde invoer -- moet ge-escaped voordat het in
+// zijn dus niet-vertrouwde invoer — moet ge-escaped voordat het in
 // innerHTML terechtkomt.
 function escapeHtml(tekst) {
   if (tekst === null || tekst === undefined) return '';

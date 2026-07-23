@@ -52,7 +52,7 @@ const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
 // Klantgegevens komen van de publieke boekingswidget/wachtlijst en
-// zijn dus niet-vertrouwde invoer -- moet ge-escaped voordat het in
+// zijn dus niet-vertrouwde invoer — moet ge-escaped voordat het in
 // innerHTML terechtkomt.
 function escapeHtml(tekst) {
   if (tekst === null || tekst === undefined) return '';
@@ -82,7 +82,7 @@ async function init(){
   let entry=Array.isArray(data)?data[0]:data;
 
   if(error||!entry||!entry.voorgestelde_datum_tijd){
-    // Geen 1-op-1-wachtlijst-plek met dit token -- kan een groepsles-
+    // Geen 1-op-1-wachtlijst-plek met dit token — kan een groepsles-
     // wachtlijst-token zijn (les_boekingen/lessen_wachtlijst-migratie).
     const{data:lesData,error:lesError}=await sb.rpc('get_lessen_wachtlijst_via_token',{p_token:token});
     const lesEntry=Array.isArray(lesData)?lesData[0]:lesData;
@@ -140,7 +140,7 @@ async function bevestigClaim(){
     return;
   }
 
-  // Bevestigingsmail versturen -- dit was eerst alleen beloofd in de tekst,
+  // Bevestigingsmail versturen — dit was eerst alleen beloofd in de tekst,
   // maar werd nooit daadwerkelijk verstuurd. Nu gebeurt het echt.
   fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
     method:'POST',

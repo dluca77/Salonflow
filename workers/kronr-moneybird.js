@@ -35,7 +35,7 @@ export default {
       // (geen await, geen keepalive) en gaat direct door naar de volgende
       // stap (bon tonen, nieuwe pagina). Zonder ctx.waitUntil() kan
       // Cloudflare deze Worker halverwege afbreken zodra de browser de
-      // verbinding sluit -- nog vóórdat de factuur is aangemaakt of zelfs
+      // verbinding sluit — nog vóórdat de factuur is aangemaakt of zelfs
       // vóórdat een foutmelding kon worden opgeslagen. Door de eigenlijke
       // verwerking in ctx.waitUntil() te zetten, blijft de Worker op de
       // achtergrond draaien totdat hij echt klaar is, ongeacht of de
@@ -230,7 +230,7 @@ async function haalOfMaakKassaKlantContact(accessToken, administrationId) {
 // 21%-verkooptarief van de eigen Moneybird-administratie op.
 //
 // Caching: btw-tarieven veranderen vrijwel nooit, dus we hoeven dit niet
-// bij elke synchronisatie opnieuw bij Moneybird op te vragen -- dat kostte
+// bij elke synchronisatie opnieuw bij Moneybird op te vragen — dat kostte
 // een extra API-call per transactie en kon bij snel-achter-elkaar
 // synchroniseren tegen Moneybird's rate-limit aanlopen (mogelijk de
 // oorzaak van incidenteel mislukte syncs). Gebruikt Cloudflare's Cache
@@ -271,7 +271,7 @@ async function haalBtwTarieven(accessToken, administrationId) {
   // Fooi is niet btw-plichtig. Moneybird past echter, als een regel
   // helemaal geen tax_rate_id heeft, kennelijk alsnog het algemene
   // tarief van de factuur toe i.p.v. de regel als vrijgesteld te
-  // behandelen -- daarom expliciet een 0%-tarief opzoeken en dat aan
+  // behandelen — daarom expliciet een 0%-tarief opzoeken en dat aan
   // fooi-regels meegeven, in plaats van tax_rate_id gewoon weg te laten.
   const kandidaten0 = tarieven.filter(t => Number(t.percentage) === 0);
   const tarief0 = kandidaten0.find(t => t.tax_rate_type === 'sales_invoice') || kandidaten0[0];
@@ -279,7 +279,7 @@ async function haalBtwTarieven(accessToken, administrationId) {
   const resultaat = { btw21: tarief21.id, btw0: tarief0 ? tarief0.id : null };
 
   const response = new Response(JSON.stringify(resultaat), {
-    headers: { 'Cache-Control': 'max-age=86400' }, // 24 uur -- ruim genoeg, tarieven wijzigen vrijwel nooit
+    headers: { 'Cache-Control': 'max-age=86400' }, // 24 uur — ruim genoeg, tarieven wijzigen vrijwel nooit
   });
   await cache.put(cacheKey, response);
 
@@ -305,11 +305,11 @@ async function handleSyncBetalingAchtergrond(body, env) {
     // tarief mee, zodat Moneybird niet nogmaals btw optelt.
     //
     // Uitzondering: fooi ('type'==='fooi') is een vrijwillige gift aan
-    // het personeel, geen vergoeding voor een dienst/product -- daar
+    // het personeel, geen vergoeding voor een dienst/product — daar
     // hoort geen btw over berekend te worden. BELANGRIJK: Moneybird past,
     // als een regel HELEMAAL GEEN tax_rate_id heeft, het algemene tarief
     // van de rest van de factuur toe i.p.v. de regel als vrijgesteld te
-    // zien -- daarom expliciet het 0%-tarief meegeven, niet gewoon
+    // zien — daarom expliciet het 0%-tarief meegeven, niet gewoon
     // weglaten.
     const { btw21, btw0 } = await haalBtwTarieven(accessToken, administrationId);
     const naarExclBtw = (bedragInclBtw) => Math.round((bedragInclBtw / 1.21) * 100) / 100;
@@ -335,7 +335,7 @@ async function handleSyncBetalingAchtergrond(body, env) {
     // eigen btw-herberekening, plus de onbelaste fooi-regels erbovenop)
     // zo dicht mogelijk bij het betaalde bedrag brengt. Let op: bij
     // sommige "ronde" bedragen bestaat er wiskundig geen 2-decimalen-
-    // prijs die exact terugrekent bij 21% btw -- in die (zeldzame)
+    // prijs die exact terugrekent bij 21% btw — in die (zeldzame)
     // gevallen is 1 cent verschil het best haalbare resultaat.
     const berekenTotaal = (rs) => rs.reduce((som, r) =>
       som + (r.tax_rate_id === btw21 ? Math.round(r.price * r.amount * 1.21 * 100) / 100 : r.price * r.amount), 0);

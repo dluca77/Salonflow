@@ -669,7 +669,7 @@ function buildDayCol(d,slots,today,now,di){
     col.appendChild(nl);
   }
 
-  // Afspraken -- geannuleerde afspraken worden niet meer getoond in het rooster,
+  // Afspraken — geannuleerde afspraken worden niet meer getoond in het rooster,
   // dat gaf verwarrende overlap met eventuele nieuwe afspraak op dezelfde plek
   getApts(d).filter(a=>a.status!=='geannuleerd').forEach((a,i)=>{col.appendChild(buildAptCard(a,i));});
   return col;
@@ -678,7 +678,7 @@ function buildDayCol(d,slots,today,now,di){
 function heeftWachtlijstOpDag(d){
   const key=dk(d);
   return WACHTLIJST.some(w=>{
-    if(!w.voorkeur_vanaf||!w.voorkeur_tot) return false; // "elke dag is goed" -- niet specifiek genoeg voor een indicator per dag
+    if(!w.voorkeur_vanaf||!w.voorkeur_tot) return false; // "elke dag is goed" — niet specifiek genoeg voor een indicator per dag
     return key>=w.voorkeur_vanaf&&key<=w.voorkeur_tot;
   });
 }
@@ -704,7 +704,7 @@ function buildAptCard(a,i){
   card.className=`apt c${i%8}${isBloktijd?' bloktijd':''}${status==='geannuleerd'?' geannuleerd':''}`;
   card.style.top=tp+'px';card.style.height=hp+'px';
   const magSlepen=!a._herhaald && !(typeof isAlleenBekijken==='function' && isAlleenBekijken('agenda'));
-  card.draggable=false; // native HTML5 drag-and-drop uit -- zie mousedown-handler hieronder
+  card.draggable=false; // native HTML5 drag-and-drop uit — zie mousedown-handler hieronder
 
   // Status badge indien groter
   const statusHtml=hp>52?`<div class="apt-status" style="color:${STATUS_COLORS[status]}">${STATUS_LABELS[status]}</div>`:'';
@@ -712,13 +712,13 @@ function buildAptCard(a,i){
 
   card.onclick=e=>{e.stopPropagation();showPop(a,card);};
 
-  // Desktop drag & drop -- eigen implementatie i.p.v. native HTML5 DnD.
+  // Desktop drag & drop — eigen implementatie i.p.v. native HTML5 DnD.
   // Native drag-and-drop rendert zijn eigen sleep-schaduw, die in Chrome/
   // Windows merkbaar achter de cursor aan hobbelt en "hakkerig" aanvoelt.
   // Deze aanpak spiegelt de touch-implementatie hieronder: een los
   // ghost-element dat we zelf met left/top positioneren op elke
   // mousemove, wat een vloeiende sleepbeweging geeft.
-  const MOUSE_DRAG_DREMPEL=4; // pixels -- voorkomt dat een gewone klik als sleep wordt gezien
+  const MOUSE_DRAG_DREMPEL=4; // pixels — voorkomt dat een gewone klik als sleep wordt gezien
   card.addEventListener('mousedown',e=>{
     if(e.button!==0 || !magSlepen) return;
     let ghost=null, dragging=false;
@@ -751,7 +751,7 @@ function buildAptCard(a,i){
       document.removeEventListener('mouseup',onUp);
       card.classList.remove('dragging');
       document.querySelectorAll('.gl.touch-over').forEach(el=>el.classList.remove('touch-over'));
-      if(!dragging) return; // gewone klik, geen sleep -- card.onclick handelt dat al af
+      if(!dragging) return; // gewone klik, geen sleep — card.onclick handelt dat al af
       if(ghost) ghost.remove();
 
       const target=document.elementFromPoint(ev.clientX,ev.clientY);
@@ -1013,7 +1013,7 @@ function showPop(a,card){
     waBtn.style.display='none';
   }
   document.getElementById('p-datum').textContent=dag.charAt(0).toUpperCase()+dag.slice(1)+', '+ft(ah,am)+' – '+ft(eh,em);
-  const trajectTekst=(a.traject_id && a.traject_sessienummer && a.behandeltrajecten?.totaal_sessies)?' -- sessie '+a.traject_sessienummer+' van '+a.behandeltrajecten.totaal_sessies:'';
+  const trajectTekst=(a.traject_id && a.traject_sessienummer && a.behandeltrajecten?.totaal_sessies)?' — sessie '+a.traject_sessienummer+' van '+a.behandeltrajecten.totaal_sessies:'';
   document.getElementById('p-svc').textContent=(a.diensten?.naam?a.diensten.naam+(a.dienst_varianten?.naam?' ('+a.dienst_varianten.naam+')':'')+trajectTekst:a.bloktijd_type)||'—';
   const fotoRow=document.getElementById('p-referentie-foto-row');
   if(a.referentie_foto_url){
@@ -1195,7 +1195,7 @@ async function verwijderWachtlijstItem(id){
 function wijsWachtlijstToe(item){
   closeModal('modal-wachtlijst');
   // Voorkeursdatum (indien één specifieke dag gevraagd) alvast invullen,
-  // anders vandaag als redelijk startpunt -- de eigenaar kiest zelf het
+  // anders vandaag als redelijk startpunt — de eigenaar kiest zelf het
   // exacte tijdstip en bevestigt de dienst in het openende formulier.
   const datum = (item.voorkeur_vanaf===item.voorkeur_tot && item.voorkeur_vanaf) ? item.voorkeur_vanaf : dk(cur);
   openNieuw(datum,'09:00',item.medewerker_id||'');
@@ -1225,7 +1225,7 @@ async function incasseerNoshowFee(){
     btn.style.display='none';
   }catch(e){
     btn.disabled=false;btn.textContent=origLabel;
-    alert('Incasseren mislukt: '+e.message+'\n\nDit kan gebeuren als de kaart geweigerd wordt of verlopen is -- neem in dat geval rechtstreeks contact op met de klant.');
+    alert('Incasseren mislukt: '+e.message+'\n\nDit kan gebeuren als de kaart geweigerd wordt of verlopen is — neem in dat geval rechtstreeks contact op met de klant.');
   }
 }
 
@@ -1274,7 +1274,7 @@ async function checkWachtlijstMatch(afspraak){
       })
     });
 
-    // WhatsApp-variant -- alleen actief zodra goedgekeurd, de Worker
+    // WhatsApp-variant — alleen actief zodra goedgekeurd, de Worker
     // controleert dit zelf en doet anders gewoon niks.
     if(data.klant_telefoon){
       fetch('https://kronr-whatsapp.isaak-elia.workers.dev/wachtlijst-plek',{

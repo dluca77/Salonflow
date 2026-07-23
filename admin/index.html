@@ -287,7 +287,7 @@ try{
 
 // Veiligheid: salonnaam/type/e-mail komen van zelfregistrerende salons
 // (BUITEN Kronr's controle) en mogen dus nooit ongefilterd als HTML
-// worden ingevoegd -- dat zou een salon-eigenaar met een kwaadaardige
+// worden ingevoegd — dat zou een salon-eigenaar met een kwaadaardige
 // salonnaam de kans geven om script uit te voeren in dit interne
 // beheerpaneel, gezien door Kronr-personeel.
 function escapeHtml(tekst){
@@ -483,7 +483,7 @@ function renderMarketing(){
   MARKETING_SEGMENTEN = {
     risico: {
       titel:'Inactieve salons', icoon:'⚠', salons:risico, urgent:true,
-      omschrijving:'Lang geen afspraak meer gemaakt -- kans op afhaken.',
+      omschrijving:'Lang geen afspraak meer gemaakt — kans op afhaken.',
       onderwerp:'Alles goed? We hebben je een tijdje niet gezien',
       inhoud:'Hoi {naam},\n\nHet viel me op dat er al even geen nieuwe afspraken zijn ingepland in Kronr. Loopt alles goed, of loop je ergens tegenaan waar ik bij kan helpen?\n\nLaat het gewoon weten, ik denk graag met je mee.',
     },
@@ -495,13 +495,13 @@ function renderMarketing(){
     },
     nieuw: {
       titel:'Net aangemeld', icoon:'👋', salons:nieuwAangemeld, urgent:false,
-      omschrijving:'Nieuwe salons -- goed moment voor een welkomst-tip.',
+      omschrijving:'Nieuwe salons — goed moment voor een welkomst-tip.',
       onderwerp:'Welkom bij Kronr — een paar tips om snel te starten',
       inhoud:'Hoi {naam},\n\nWelkom bij Kronr! Een paar dingen die veel salons in de eerste week instellen: je openingstijden, je diensten met prijzen, en de online boekingswidget op je eigen site.\n\nLoop je ergens tegenaan, antwoord gewoon op deze mail.',
     },
     upgrade: {
       titel:'Klaar voor upgrade', icoon:'📈', salons:klaarVoorUpgrade, urgent:false,
-      omschrijving:'Al 2+ maanden op Starter -- mogelijk toe aan meer.',
+      omschrijving:'Al 2+ maanden op Starter — mogelijk toe aan meer.',
       onderwerp:'Groeit je salon? Misschien tijd voor een groter pakket',
       inhoud:'Hoi {naam},\n\nJe gebruikt Kronr nu al een tijdje op het Starter-pakket. Loop je tegen de grenzen aan, of ben je benieuwd wat een groter pakket je extra oplevert (zoals Kai, onze AI-assistent, of meerdere medewerkers)? Laat het weten, dan denk ik met je mee.',
     },

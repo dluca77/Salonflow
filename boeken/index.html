@@ -448,7 +448,7 @@ async function uploadReferentieFoto(input){
 }
 
 // Totale duur/prijs incl. eventuele extra diensten (voor beschikbaarheids-
-// check en het getoonde totaalbedrag) -- de hoofddienst blijft alleen
+// check en het getoonde totaalbedrag) — de hoofddienst blijft alleen
 // bepalend voor aanbetaling/abonnement/no-show-kaartvereiste.
 function totaleDuur(){ return state.duur + state.extra_diensten.reduce((s,e)=>s+e.duur_min,0); }
 function totalePrijsExclAanbetaling(){ return state.prijs + state.extra_diensten.reduce((s,e)=>s+e.prijs,0); }
@@ -480,7 +480,7 @@ function toggleExtraDienst(id,naam,prijs,duur_min){
 
 function updateSamenvattingMetExtras(){
   document.getElementById('sum-duur').textContent=totaleDuur()+' min';
-  // Alleen het volledige (niet-abonnement) totaal aanpassen -- als er een
+  // Alleen het volledige (niet-abonnement) totaal aanpassen — als er een
   // abonnement-tegoed wordt ingezet voor de hoofddienst, blijft dat €0-label
   // ongewijzigd staan (extra diensten worden dan gewoon los bijgerekend,
   // niet gedekt door het abonnement).
@@ -498,7 +498,7 @@ let calYear=new Date().getFullYear(), calMonth=new Date().getMonth();
 const MN=['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'];
 
 // ── INIT ──────────────────────────────────────────────────────────────────────
-// Landcodes -- Nederland staat vooraan en is standaard geselecteerd,
+// Landcodes — Nederland staat vooraan en is standaard geselecteerd,
 // de rest alfabetisch op landnaam (typen op eerste letter werkt dan intuïtief).
 const LANDCODES=[
   {land:'Nederland',code:'+31',iso:'NL'},
@@ -563,7 +563,7 @@ const LANDCODES=[
   {land:'Zimbabwe',code:'+263',iso:'ZW'}
 ];
 
-// Voorbeeld-placeholders per land -- generieke tekst voor landen zonder specifiek voorbeeld
+// Voorbeeld-placeholders per land — generieke tekst voor landen zonder specifiek voorbeeld
 const TEL_PLACEHOLDERS={
   NL:'6 12345678',
   DE:'151 23456789',
@@ -597,7 +597,7 @@ function zetLiveEmailValidatie(){
     const v=el.value.trim();
     el.classList.remove('geldig','ongeldig');
     if(v&&EMAIL_REGEX.test(v)) el.classList.add('geldig');
-    // Nog geen rood tijdens typen -- alleen groen zodra het geldig wordt,
+    // Nog geen rood tijdens typen — alleen groen zodra het geldig wordt,
     // rood pas bij weg-klikken (blur), zodat het niet bestraffend aanvoelt.
   });
 
@@ -612,7 +612,7 @@ function zetLiveEmailValidatie(){
 }
 
 // Klanten met herhaalde no-shows bij deze salon moeten voortaan altijd
-// een kaart vastleggen, ook als de gekozen dienst dat zelf niet vereist --
+// een kaart vastleggen, ook als de gekozen dienst dat zelf niet vereist —
 // dit overschrijft state.vereist_kaart alleen als Stripe actief is (zonder
 // Stripe kan er toch geen kaart vastgelegd worden).
 async function checkNoshowRisico(email){
@@ -620,7 +620,7 @@ async function checkNoshowRisico(email){
   if(!window.SALON_STRIPE_ACTIEF || !SALON_ID) return;
   try{
     const{data}=await sb.rpc('check_noshow_risico',{p_salon_id:SALON_ID,p_email:email});
-    // Alleen ooit AANzetten op basis van risico -- nooit terugzetten naar
+    // Alleen ooit AANzetten op basis van risico — nooit terugzetten naar
     // false, want de dienst zelf kan een kaart al onafhankelijk vereisen
     // (state.vereist_kaart_dienst) en die vlag mogen we niet overschrijven.
     if(data){
@@ -652,7 +652,7 @@ async function init(){
   }
 
   // Zowel de UUID (uit de widget-embedcode) als de leesbare slug (zoals
-  // gebruikt op s/index.html) moeten hier werken -- anders werkt een link
+  // gebruikt op s/index.html) moeten hier werken — anders werkt een link
   // die iemand kopieert van de gehoste pagina niet op de losse boekingspagina.
   if(!UUID_REGEX.test(SALON_ID)){
     const{data:slugData}=await sb.rpc('get_salon_via_slug',{p_slug:SALON_ID});
@@ -678,7 +678,7 @@ async function init(){
     HUIDIGE_BOEK_LOCATIE_ID=locaties[0].id;
   }
   // 0 locaties (salon nog niet gemigreerd, of net aangemaakt): geen
-  // filter toepassen -- gewoon alle diensten/medewerkers van de salon
+  // filter toepassen — gewoon alle diensten/medewerkers van de salon
   // tonen, zoals vóór deze feature.
 
   await laadDienstenEnMedewerkers();
@@ -731,7 +731,7 @@ async function init(){
         <div class="dienst-card" onclick="selectGroepslesDienst(this,'${jsAttr(d.naam)}','${d.id}',${d.prijs})">
           <div class="dc-naam">${escapeHtml(d.naam)}</div>
           <div class="dc-prijs">€${d.prijs}</div>
-          <div class="dc-duur">Groepsles -- kies een lesmoment</div>
+          <div class="dc-duur">Groepsles — kies een lesmoment</div>
         </div>`;
       }
       if(varianten && varianten.length){
@@ -794,7 +794,7 @@ function vanStap1Volgende(){
   // koos al een concreet lesmoment. Direct door naar de gegevens-stap.
   if(state.gekozen_les_id){
     goStep(4);
-    // goStep(n) markeert alle stappen <n als 'voltooid' (groen vinkje) --
+    // goStep(n) markeert alle stappen <n als 'voltooid' (groen vinkje) —
     // voor een overgeslagen stap 2/3 is dat misleidend (die zijn niet
     // doorlopen, gewoon niet relevant). Toon ze als neutraal i.p.v. 'klaar'.
     [2,3].forEach(i=>{
@@ -820,7 +820,7 @@ function goStep(n){
   }
   if(n===3){
     renderCal();
-    // Beschikbaarheid altijd vers ophalen zodra deze stap actief wordt --
+    // Beschikbaarheid altijd vers ophalen zodra deze stap actief wordt —
     // zowel bij vooruit gaan als bij TERUG gaan vanuit stap 4. Zonder dit
     // kon een eerder al getoonde (inmiddels verouderde) tijd-lijst blijven
     // staan, met het risico dat iemand een tijd bevestigt die in de
@@ -919,7 +919,7 @@ function kiesKoppel(wilKoppel){
 }
 
 // ── GROEPSLES ─────────────────────────────────────────────────────────────
-// Groepslessen slaan het normale medewerker/datum-tijd-traject over --
+// Groepslessen slaan het normale medewerker/datum-tijd-traject over —
 // de klant kiest direct een concreet, al ingepland lesmoment (met vrije
 // plekken) en gaat daarna meteen door naar de gegevens-stap. Bewuste
 // scope-beperking (net als bij koppelbehandelingen): geen aanbetaling/
@@ -971,7 +971,7 @@ async function selectGroepslesDienst(el,naam,id,prijs){
     return `<div class="dienst-card${vol?' vol':''}" ${vol?`onclick="toonLessenWachtlijst(this,'${l.id}','${jsAttr(datumStr)}','${tijdStr}')"`:`onclick="kiesLes(this,'${l.id}','${jsAttr(datumStr)}','${tijdStr}',${l.duur_min})"`}>
       <div class="dc-naam">${escapeHtml(datumStr)}</div>
       <div class="dc-prijs">${tijdStr}</div>
-      <div class="dc-duur">${vol?'Vol -- klik voor wachtlijst':vrij+' van de '+l.capaciteit+' plekken vrij'}${l.medewerker_naam?' · '+escapeHtml(l.medewerker_naam):''}</div>
+      <div class="dc-duur">${vol?'Vol — klik voor wachtlijst':vrij+' van de '+l.capaciteit+' plekken vrij'}${l.medewerker_naam?' · '+escapeHtml(l.medewerker_naam):''}</div>
     </div>`;
   }).join('');
 }
@@ -1209,7 +1209,7 @@ async function berekenBeschikbareSlots(datum){
   const dagEind=new Date(datum);dagEind.setHours(23,59,59,999);
 
   // Bestaande afspraken ophalen via een veilige databasefunctie i.p.v.
-  // de tabel rechtstreeks -- RLS blokkeert anonieme leestoegang tot
+  // de tabel rechtstreeks — RLS blokkeert anonieme leestoegang tot
   // afspraken (terecht, want die tabel bevat klantgegevens), maar deze
   // functie geeft alleen tijd/duur/medewerker terug, geen namen of
   // contactgegevens, dus is veilig voor de publieke boekingswidget.
@@ -1314,7 +1314,7 @@ async function berekenBeschikbareSlots(datum){
 }
 
 // Zoekt, voor een specifiek tijdstip + duur, de eerste medewerker die
-// daadwerkelijk vrij is -- gebruikt bij het definitief bevestigen van
+// daadwerkelijk vrij is — gebruikt bij het definitief bevestigen van
 // een 'Geen voorkeur'-boeking (haalt verse data op, voor het geval de
 // beschikbaarheid net is veranderd sinds het kiezen van de tijd).
 async function vindBeschikbareMedewerker(dt, duurMin){
@@ -1351,7 +1351,7 @@ async function vindBeschikbareMedewerker(dt, duurMin){
 }
 
 // Zoekt, vlak voor het definitief aanmaken van de afspraak, een vrije
-// ruimte -- alleen relevant als de gekozen dienst vereist_ruimte heeft.
+// ruimte — alleen relevant als de gekozen dienst vereist_ruimte heeft.
 // Verse controle (net als vindBeschikbareMedewerker) i.p.v. te vertrouwen
 // op de check die bij het kiezen van de tijd is gedaan.
 async function vindBeschikbareRuimte(dt, duurMin){
@@ -1569,7 +1569,7 @@ async function verwerkAanbetalingReturn(){
     .single();
 
   if(!a){
-    // Kan niet meer gevonden worden -- toon in ieder geval geen kapotte pagina
+    // Kan niet meer gevonden worden — toon in ieder geval geen kapotte pagina
     return;
   }
 
@@ -1613,7 +1613,7 @@ async function verwerkAanbetalingReturn(){
     subEl.textContent='Je ontvangt ook een bevestiging per e-mail.';
   } else {
     titelEl.textContent='Afspraak staat nog steeds gepland';
-    subEl.textContent='Niet alles is afgerond. Je afspraak blijft staan -- neem contact op met de salon, of probeer het opnieuw.';
+    subEl.textContent='Niet alles is afgerond. Je afspraak blijft staan — neem contact op met de salon, of probeer het opnieuw.';
   }
 
   document.getElementById('progress-bar').style.display='none';
@@ -1639,7 +1639,7 @@ async function bevestigen(){
     errEl.style.display='block';return;
   }
 
-  // E-mail: check op een geldig algemeen formaat (iets@iets.iets) --
+  // E-mail: check op een geldig algemeen formaat (iets@iets.iets) —
   // NIET beperkt tot specifieke providers, anders weiger je Gmail/Outlook/zakelijke adressen.
   const emailRegex=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
   if(!emailRegex.test(email)){
@@ -1677,12 +1677,12 @@ async function bevestigen(){
     }
   }catch(e){
     console.warn('Kon blokkeerstatus niet controleren, boeking gaat door:',e);
-    // Bewust: als de check zelf faalt (bijv. netwerkfout), blokkeren we de boeking niet --
+    // Bewust: als de check zelf faalt (bijv. netwerkfout), blokkeren we de boeking niet —
     // liever een enkele ongewenste boeking dan alle klanten onterecht weigeren.
   }
 
   // Groepsles: helemaal los pad van de normale 1-op-1-boeking. Geen
-  // medewerker/ruimte-toewijzing, geen aanbetaling/abonnement -- gewoon
+  // medewerker/ruimte-toewijzing, geen aanbetaling/abonnement — gewoon
   // een plek reserveren in het al gekozen lesmoment via de atomaire
   // boek_les-RPC (die zelf de capaciteit bewaakt).
   if(state.gekozen_les_id){
@@ -1698,11 +1698,11 @@ async function bevestigen(){
       return;
     }
 
-    // Abonnementstegoed pas NA een gelukte boeking verbruiken -- boek_les
+    // Abonnementstegoed pas NA een gelukte boeking verbruiken — boek_les
     // bewaakt zelf de capaciteit en kan falen (les net vol), dus eerst de
     // plek veiligstellen. Mislukt het verbruiken van het tegoed alsnog
     // (zeldzaam, bv. race met een andere boeking van dezelfde klant), dan
-    // heeft de klant de plek al -- niet de boeking terugdraaien, gewoon
+    // heeft de klant de plek al — niet de boeking terugdraaien, gewoon
     // loggen (zelfde aanpak als de bevestigingsmail hieronder).
     if(state.gebruikt_abonnement_id){
       const{error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id,p_email:state.gebruikt_abonnement_email});
@@ -1732,7 +1732,7 @@ async function bevestigen(){
   }
 
   // Abonnement-tegoed? Dan EERST atomisch verbruiken (voorkomt dat 2
-  // gelijktijdige boekingen hetzelfde laatste tegoed dubbel gebruiken) --
+  // gelijktijdige boekingen hetzelfde laatste tegoed dubbel gebruiken) —
   // pas als dat lukt, de afspraak aanmaken met de koppeling erbij.
   if(state.gebruikt_abonnement_id){
     const{data:gelukt,error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id,p_email:state.gebruikt_abonnement_email});
@@ -1758,7 +1758,7 @@ async function bevestigen(){
 
   // Traject (bv. tattoo-sessies, fysio-traject): op basis van het al
   // ingevulde e-mailadres automatisch een bestaand actief traject vinden
-  // of een nieuwe starten -- geen aparte stap nodig voor de klant. Non-
+  // of een nieuwe starten — geen aparte stap nodig voor de klant. Non-
   // fataal: als dit om wat voor reden dan ook mislukt, gaat de boeking
   // gewoon door zonder traject-koppeling.
   let trajectId=null, trajectSessieNummer=null;
@@ -1822,7 +1822,7 @@ async function bevestigen(){
     nieuweAfspraak=insertResult.data ? insertResult.data[0] : null;
   } else {
     // Bij 'Geen voorkeur' een specifieke, daadwerkelijk vrije medewerker
-    // toewijzen i.p.v. medewerker_id:null -- zonder dit zouden twee 'geen
+    // toewijzen i.p.v. medewerker_id:null — zonder dit zouden twee 'geen
     // voorkeur'-boekingen voor dezelfde tijd elkaar niet blokkeren (de
     // beschikbaarheidscheck vergelijkt per medewerker-ID, en 'null' is
     // geen ID). Verse controle vlak vóór het opslaan, voor het geval de
@@ -1884,7 +1884,7 @@ async function bevestigen(){
 
   // Extra diensten (optioneel bijgeboekt naast de hoofddienst) koppelen aan
   // de zojuist aangemaakte afspraak. Non-fataal: als dit om wat voor reden
-  // dan ook mislukt, blijft de hoofdboeking gewoon staan -- de salon ziet
+  // dan ook mislukt, blijft de hoofdboeking gewoon staan — de salon ziet
   // in het ergste geval een paar minuten extra duur niet terug, maar de
   // klant heeft wel gewoon een geldige afspraak.
   if(state.extra_diensten.length && nieuweAfspraak){
@@ -1898,7 +1898,7 @@ async function bevestigen(){
   // Aanbetaling en/of verplichte kaartgegevens? Dan eerst naar Stripe
   // Checkout (op de eigen Stripe-account van de salon) voordat we de
   // boeking als compleet tonen. De afspraak zelf staat al vast (status
-  // 'gepland') -- als de Stripe-stap om wat voor reden dan ook niet lukt,
+  // 'gepland') — als de Stripe-stap om wat voor reden dan ook niet lukt,
   // blijft de boeking gewoon staan en valt het terug op 'ter plekke regelen'.
   //
   // Als een dienst ZOWEL een aanbetaling ALS verplichte kaartgegevens
@@ -1948,12 +1948,12 @@ async function bevestigen(){
       return;
     }catch(e){
       console.warn('Stripe-stap kon niet gestart worden, boeking blijft staan zonder aanbetaling/kaartgegevens:',e);
-      // Val gewoon door naar de normale bevestiging hieronder -- de klant
+      // Val gewoon door naar de normale bevestiging hieronder — de klant
       // regelt het dan ter plekke met de salon.
     }
   }
 
-  // Bevestigingsmail versturen -- gebeurt op de achtergrond; als dit faalt
+  // Bevestigingsmail versturen — gebeurt op de achtergrond; als dit faalt
   // (bijv. mailserver tijdelijk onbereikbaar) laten we de boeking gewoon staan,
   // een klant zonder mail is beter dan een klant zonder afspraak.
   fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
@@ -1972,7 +1972,7 @@ async function bevestigen(){
   }).catch(e=>console.warn('Bevestigingsmail kon niet worden verstuurd:',e));
 
   // WhatsApp-bevestiging (alleen actief zodra de salon dit heeft
-  // aanstaan én Twilio/Meta-goedkeuring binnen is -- de Worker zelf
+  // aanstaan én Twilio/Meta-goedkeuring binnen is — de Worker zelf
   // controleert dit en doet gewoon niks als het nog niet zover is,
   // dus dit is veilig om altijd aan te roepen).
   if(nieuweAfspraak?.id){

@@ -59,7 +59,7 @@ const SB_KEY='sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 const sb=window.supabase.createClient(SB_URL,SB_KEY);
 
 // Salongegevens (zoals de omschrijving van de beloning) worden door de
-// salon-eigenaar zelf ingesteld en zijn dus niet-vertrouwde invoer --
+// salon-eigenaar zelf ingesteld en zijn dus niet-vertrouwde invoer —
 // moet ge-escaped voordat het in innerHTML terechtkomt.
 function escapeHtml(tekst) {
   if (tekst === null || tekst === undefined) return '';
@@ -111,7 +111,7 @@ async function vraagCodeAan(){
     return;
   }
 
-  // Stap 2: code laten mailen (non-fataal als dit misgaat qua UI-flow --
+  // Stap 2: code laten mailen (non-fataal als dit misgaat qua UI-flow —
   // de code bestaat al server-side, dus we tonen de invoerstap sowieso;
   // als het mailtje echt niet aankomt, kan de klant het gewoon opnieuw
   // aanvragen).

@@ -99,7 +99,7 @@ async function inloggen(){
   }
 
   // Heeft dit account 2FA ingeschakeld? Dan eerst de code vragen
-  // voordat we verdergaan -- zonder dit zou een wachtwoord alleen
+  // voordat we verdergaan — zonder dit zou een wachtwoord alleen
   // (zonder de tweede factor) nog steeds voldoende zijn om in te
   // loggen, wat het hele nut van 2FA ondermijnt.
   const{data:levels} = await sb.auth.mfa.getAuthenticatorAssuranceLevel();
@@ -146,7 +146,7 @@ async function bevestigMfaInloggen(){
 }
 
 // Gedeelde afronding ná een geslaagde login (met of zonder 2FA):
-// controleren of dit account een teamlid is. GEEN auto-aanmaak meer --
+// controleren of dit account een teamlid is. GEEN auto-aanmaak meer —
 // teamleden worden alleen door Kronr zelf via SQL toegevoegd, nooit
 // via deze pagina. Zonder deze grens kon vroeger elk account dat hier
 // inlogde zichzelf automatisch tot 'eigenaar' maken.

@@ -101,7 +101,7 @@ async function init(){
     return;
   }
 
-  // Deze gehoste pagina is een functie van het Business-pakket -- dit is
+  // Deze gehoste pagina is een functie van het Business-pakket — dit is
   // GEEN "link klopt niet"-situatie, dus een eigen duidelijke melding
   // i.p.v. dezelfde generieke "niet gevonden"-tekst (die de eigenaar op
   // het verkeerde been zet alsof de link zelf stuk is).
@@ -142,7 +142,7 @@ function toonContent(salon){
   document.getElementById('laden-state').style.display='none';
   document.getElementById('content').style.display='block';
 
-  // Kai-chatwidget (widget.js) laden voor deze salon -- geeft bezoekers
+  // Kai-chatwidget (widget.js) laden voor deze salon — geeft bezoekers
   // op deze gehoste pagina ook de mogelijkheid om vragen te stellen
   // (openingstijden/diensten/prijzen) naast het al aanwezige boekingsformulier.
   const widgetScript=document.createElement('script');
@@ -159,7 +159,7 @@ function toonFout(tekst){
 }
 
 // Iframe laat automatisch meegroeien met zijn echte inhoud (geen vaste
-// hoogte meer) -- voorkomt dat er twee losse scroll-containers ontstaan
+// hoogte meer) — voorkomt dat er twee losse scroll-containers ontstaan
 // wanneer de boekingsflow hoger is dan een vast aantal pixels.
 window.addEventListener('message', (e)=>{
   if(e.data && e.data.type==='kronr:hoogte' && typeof e.data.height==='number'){

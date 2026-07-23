@@ -128,7 +128,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   </div>
 
   <div class="content">
-    <div class="intro-banner">Voor salons waar niet de medewerker, maar de ruimte (behandelkamer, massagebed, sauna) de beperkende factor is -- bv. spa's en wellness. Zet bij een dienst in Diensten 'vereist een ruimte' aan zodra je hier ruimtes hebt toegevoegd; de boekingswidget houdt dan rekening met ruimte-beschikbaarheid naast (of in plaats van) medewerker-beschikbaarheid.</div>
+    <div class="intro-banner">Voor salons waar niet de medewerker, maar de ruimte (behandelkamer, massagebed, sauna) de beperkende factor is — bv. spa's en wellness. Zet bij een dienst in Diensten 'vereist een ruimte' aan zodra je hier ruimtes hebt toegevoegd; de boekingswidget houdt dan rekening met ruimte-beschikbaarheid naast (of in plaats van) medewerker-beschikbaarheid.</div>
     <div class="prod-table">
       <div id="ruimte-rows"><div class="empty-state"><div class="empty-text">Laden...</div></div></div>
     </div>
@@ -204,7 +204,7 @@ async function verwijderRuimte(){
   if(!id) return;
   // Bestaande afspraken/lessen die naar deze ruimte verwijzen verliezen
   // alleen de koppeling (ruimte_id wordt null, zie ON DELETE SET NULL in
-  // de migratie) -- de afspraak/les zelf blijft gewoon bestaan.
+  // de migratie) — de afspraak/les zelf blijft gewoon bestaan.
   if(!confirm('Deze ruimte verwijderen? Afspraken/lessen die hiernaar verwijzen blijven bestaan, maar verliezen de ruimte-koppeling.')) return;
   const errEl=document.getElementById('r-err');
   const{error}=await sb.from('ruimtes').delete().eq('id',id);

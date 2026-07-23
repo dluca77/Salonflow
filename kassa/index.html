@@ -461,7 +461,7 @@ async function koppelLesBoeking(lesBoekingId){
     if(huidigeMedewerkerId){
       add(dienst.naam+' (groepsles)', dienst.prijs, 'dienst');
     }else{
-      // Les heeft geen vaste medewerker -- vraag de kassamedewerker om er
+      // Les heeft geen vaste medewerker — vraag de kassamedewerker om er
       // eerst een te kiezen, en zet de dienst dan alsnog op de bon.
       pendingLesDienst={naam:dienst.naam+' (groepsles)',prijs:dienst.prijs};
       document.getElementById('med-warn').style.display='block';
@@ -487,7 +487,7 @@ async function koppelAfspraak(afspraakId){
   }
 
   // Bij een variant (staffelprijs, bv. hondenmaat) de variant-naam/prijs
-  // gebruiken i.p.v. de basisprijs van de dienst -- anders reken je bij
+  // gebruiken i.p.v. de basisprijs van de dienst — anders reken je bij
   // het afrekenen per ongeluk de verkeerde (basis-)prijs af.
   if(a.dienst_variant_id && a.dienst_varianten?.naam && typeof a.dienst_varianten.prijs==='number'){
     add(`${a.diensten?.naam||'Dienst'} (${a.dienst_varianten.naam})`, a.dienst_varianten.prijs, 'dienst');
@@ -496,7 +496,7 @@ async function koppelAfspraak(afspraakId){
   }
 
   // Eventuele extra diensten die bij het boeken zijn bijgevoegd, ook op de
-  // bon zetten -- deze hebben geen aanbetaling/abonnement, dus worden hier
+  // bon zetten — deze hebben geen aanbetaling/abonnement, dus worden hier
   // gewoon als losse regel afgerekend (zie 2026-07-extra-diensten-migratie.sql).
   const{data:extras}=await sb.rpc('get_extra_diensten_voor_afspraken',{p_afspraak_ids:[afspraakId]});
   (extras||[]).forEach(e=>add(e.naam, e.prijs, 'dienst'));
@@ -578,9 +578,9 @@ function clearBon(){bon=[];verwijderCadeaubon();renderBon();}
 
 function berekenTotalen(){
   // Cadeaubon-VERKOOP is niet BTW-plichtig bij verkoop (dat gebeurt pas bij
-  // inwisselen voor een dienst/product) -- daarom apart van de rest houden.
+  // inwisselen voor een dienst/product) — daarom apart van de rest houden.
   // Fooi is een vrijwillige gift aan het personeel, geen vergoeding voor
-  // een dienst/product -- ook die hoort dus geen btw te hebben.
+  // een dienst/product — ook die hoort dus geen btw te hebben.
   const btwPlichtigeItems=bon.filter(i=>i.type!=='cadeaubon_verkoop'&&i.type!=='fooi');
   const cbVerkoop=bon.filter(i=>i.type==='cadeaubon_verkoop').reduce((s,i)=>s+i.total,0);
   const fooiTotaal=bon.filter(i=>i.type==='fooi').reduce((s,i)=>s+i.total,0);
@@ -783,7 +783,7 @@ async function betaal(){
 
   if(!rpcErr && betaling){
     // Boekhoudkoppeling: op de achtergrond synchroniseren, blokkeert de
-    // kassa niet en laat de bon nooit mislukken als dit faalt -- eventuele
+    // kassa niet en laat de bon nooit mislukken als dit faalt — eventuele
     // fouten worden zichtbaar in instellingen (boekhouding_laatste_sync_fout).
     if(SALON?.boekhouding_provider==='moneybird'){
       fetch('https://kronr-moneybird.isaak-elia.workers.dev/sync-betaling',{

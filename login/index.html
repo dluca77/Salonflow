@@ -296,7 +296,7 @@ const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
 
 // Pre-launch: nieuwe accounts (via het formulier of via Google) mogen nog
 // niet aangemaakt worden, alleen inloggen op bestaande accounts blijft
-// werken. Zet dit op false zodra Kronr écht live gaat -- verder geen
+// werken. Zet dit op false zodra Kronr écht live gaat — verder geen
 // andere code hoeft dan te wijzigen.
 const PRE_LAUNCH = true;
 
@@ -428,7 +428,7 @@ function checkWwSterkte(){
 }
 
 async function registreer() {
-  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden -- schrijf je in op de homepage voor een seintje zodra we live gaan.');
+  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden — schrijf je in op de homepage voor een seintje zodra we live gaan.');
   const contactNaam = document.getElementById('r-contactnaam').value.trim();
   const naam  = document.getElementById('r-naam').value.trim();
   const type  = document.getElementById('r-type').value;
@@ -483,7 +483,7 @@ async function registreer() {
 
   // Supabase geeft (bewust, om te voorkomen dat je kunt aftasten welke
   // e-mailadressen al bestaan) GEEN foutmelding als je registreert met
-  // een e-mailadres dat al bestaat -- data.user wordt gewoon terug-
+  // een e-mailadres dat al bestaat — data.user wordt gewoon terug-
   // gegeven, maar met een LEGE identities-array. Zonder deze check zou
   // de gebruiker hier ten onrechte "Account aangemaakt!" te zien
   // krijgen, terwijl er niets nieuws gebeurt en er dus ook geen
@@ -504,7 +504,7 @@ async function registreer() {
   }
 
   // Formulier + tabbladen wegklappen, en een duidelijke bevestiging
-  // ervoor in de plaats tonen -- zodat het echt voelt alsof er iets is
+  // ervoor in de plaats tonen — zodat het echt voelt alsof er iets is
   // gebeurd, in plaats van alleen een kleine tekstregel boven een
   // formulier dat gewoon zichtbaar blijft staan.
   document.getElementById('login-tabs').style.display = 'none';
@@ -549,7 +549,7 @@ async function schrijfInPrelaunch() {
     msg.textContent = 'Bedankt! We laten het je weten zodra we live gaan.';
     msg.style.color = 'var(--green)';
     input.value = '';
-    // Bevestigingsmail is 'best effort' -- als dit faalt blijft de
+    // Bevestigingsmail is 'best effort' — als dit faalt blijft de
     // inschrijving zelf gewoon geldig, dat merkt de bezoeker niet.
     fetch('https://kronr-mail.isaak-elia.workers.dev/interesse-bevestiging', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -562,9 +562,9 @@ async function schrijfInPrelaunch() {
 // ── GOOGLE ──
 async function loginGoogle() {
   // Google-inloggen maakt bij Supabase automatisch een nieuw account aan
-  // als het e-mailadres nog niet bestaat -- tijdens de pre-launch mag dat
+  // als het e-mailadres nog niet bestaat — tijdens de pre-launch mag dat
   // net zo min als via het gewone registratieformulier.
-  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden -- schrijf je in op de homepage voor een seintje zodra we live gaan.');
+  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden — schrijf je in op de homepage voor een seintje zodra we live gaan.');
   localStorage.setItem('kronr_remember', '1');
   await sb.auth.signInWithOAuth({
     provider: 'google',

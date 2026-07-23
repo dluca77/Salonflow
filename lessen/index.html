@@ -329,7 +329,7 @@ async function openLesDetail(id){
   huidigLesId=id;
   const dt=new Date(les.datum_tijd);
   document.getElementById('ld-titel').textContent=les.diensten?.naam||'Les';
-  document.getElementById('ld-sub').textContent=dt.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})+' om '+dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})+' -- '+les._boekingen.length+'/'+les.capaciteit+' geboekt';
+  document.getElementById('ld-sub').textContent=dt.toLocaleDateString('nl-NL',{weekday:'long',day:'numeric',month:'long'})+' om '+dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'})+' — '+les._boekingen.length+'/'+les.capaciteit+' geboekt';
   document.getElementById('ld-err').style.display='none';
 
   const{data:boekingen}=await sb.from('les_boekingen').select('*').eq('les_id',id).order('created_at');

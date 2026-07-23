@@ -272,7 +272,7 @@ select.fi{cursor:pointer;}
         <input type="checkbox" id="d-koppel-optie" style="width:16px;height:16px;">
         Kan als koppelbehandeling geboekt worden (bv. koppelmassage)
       </label>
-      <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant kan bij het boeken kiezen voor 2 personen tegelijk -- reserveert dan automatisch 2 ruimtes en 2 medewerkers. Alleen zinvol i.c.m. 'Vereist een ruimte'. Werkt niet i.c.m. aanbetaling/kaartgegevens-vereisten.</div>
+      <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant kan bij het boeken kiezen voor 2 personen tegelijk — reserveert dan automatisch 2 ruimtes en 2 medewerkers. Alleen zinvol i.c.m. 'Vereist een ruimte'. Werkt niet i.c.m. aanbetaling/kaartgegevens-vereisten.</div>
     </div>
     <div class="fr">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
@@ -349,7 +349,7 @@ select.fi{cursor:pointer;}
         <input type="checkbox" id="ab-koppel-optie" style="width:16px;height:16px;">
         Kan als koppelbehandeling geboekt worden (bv. koppelmassage)
       </label>
-      <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant kan bij het boeken kiezen voor 2 personen tegelijk -- reserveert dan automatisch 2 ruimtes en 2 medewerkers. Alleen zinvol i.c.m. 'Vereist een ruimte'. Werkt niet i.c.m. aanbetaling/kaartgegevens-vereisten.</div>
+      <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klant kan bij het boeken kiezen voor 2 personen tegelijk — reserveert dan automatisch 2 ruimtes en 2 medewerkers. Alleen zinvol i.c.m. 'Vereist een ruimte'. Werkt niet i.c.m. aanbetaling/kaartgegevens-vereisten.</div>
     </div>
     <div class="fr">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
@@ -398,7 +398,7 @@ select.fi{cursor:pointer;}
   <div class="modal">
     <div class="mh"></div>
     <div class="mt">Varianten: <span id="vr-dienst-naam"></span></div>
-    <div class="msub">Voor diensten waarbij de prijs/duur verschilt (bv. hondenmaat, haarlengte). Voeg hier de varianten toe -- de klant kiest er dan één bij het boeken. Zonder varianten werkt deze dienst zoals voorheen met de vaste prijs/duur hierboven.</div>
+    <div class="msub">Voor diensten waarbij de prijs/duur verschilt (bv. hondenmaat, haarlengte). Voeg hier de varianten toe — de klant kiest er dan één bij het boeken. Zonder varianten werkt deze dienst zoals voorheen met de vaste prijs/duur hierboven.</div>
     <div id="vr-err" style="display:none;padding:10px 14px;border-left:3px solid var(--red);font-size:13px;margin-bottom:14px;background:rgba(192,57,43,0.06);color:var(--red);"></div>
 
     <div id="vr-lijst" style="margin-bottom:16px;"></div>
@@ -425,7 +425,7 @@ select.fi{cursor:pointer;}
 let DIENSTEN=[], activeTab='Alle', PRIJSADVIES_SUGGESTIES=null;
 
 // ── Zelfde logica als rapportages (bewust gedupliceerd, geen gedeeld
-// script-bestand) -- zelfde cache-key, dus als rapportages deze week
+// script-bestand) — zelfde cache-key, dus als rapportages deze week
 // al gedraaid heeft, wordt die data hier gewoon herbruikt. ──
 function wk(d){
   const date=new Date(d);
@@ -685,7 +685,7 @@ function renderVariantenLijst(){
   const lijst=document.getElementById('vr-lijst');
   const varianten=DIENST_VARIANTEN[huidigVariantenDienstId]||[];
   if(!varianten.length){
-    lijst.innerHTML='<div style="font-size:12px;color:var(--mu);">Nog geen varianten -- deze dienst gebruikt de vaste prijs/duur hierboven.</div>';
+    lijst.innerHTML='<div style="font-size:12px;color:var(--mu);">Nog geen varianten — deze dienst gebruikt de vaste prijs/duur hierboven.</div>';
     return;
   }
   lijst.innerHTML=varianten.map(v=>`
@@ -845,7 +845,7 @@ async function slaAanbetalingOp(){
     }
   } else if(bestaandPlan){
     // Niet verwijderen (bestaande abonnees zouden dan een kapotte
-    // koppeling krijgen) -- gewoon uitschakelen zodat 'ie niet meer
+    // koppeling krijgen) — gewoon uitschakelen zodat 'ie niet meer
     // aangeboden wordt aan nieuwe klanten.
     await sb.from('abonnement_plannen').update({actief:false}).eq('id',bestaandPlan.id);
   }

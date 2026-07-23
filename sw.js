@@ -1,7 +1,7 @@
-// Kronr service worker -- alleen bedoeld om de app installeerbaar te maken
+// Kronr service worker — alleen bedoeld om de app installeerbaar te maken
 // ("Toevoegen aan beginscherm") voor personeel, NIET om data te versnellen.
 // Dit is een boekingssysteem met live gegevens (agenda, beschikbaarheid,
-// betalingen) -- we willen nooit verouderde data tonen zolang er internet
+// betalingen) — we willen nooit verouderde data tonen zolang er internet
 // is. Alles gaat dus altijd eerst naar het netwerk; de cache is puur een
 // noodval voor als de verbinding wegvalt.
 
