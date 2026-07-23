@@ -55,68 +55,69 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .content::-webkit-scrollbar{width:3px;}
 .content::-webkit-scrollbar-thumb{background:var(--bd);}
 
-.pg-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:4px;}
-.pg-sub{font-size:13px;color:var(--mu);margin-bottom:32px;}
-.settings-tabs{display:flex;gap:4px;border-bottom:1px solid var(--bd);margin-bottom:24px;overflow-x:auto;scrollbar-width:none;}
+.pg-title{font-family:'Inter',sans-serif;font-size:28px;font-weight:700;letter-spacing:-.5px;margin-bottom:6px;}
+.pg-sub{font-size:14px;color:var(--mu);margin-bottom:36px;}
+.settings-tabs{display:flex;gap:2px;border-bottom:1px solid var(--bd);margin-bottom:28px;overflow-x:auto;scrollbar-width:none;}
 .settings-tabs::-webkit-scrollbar{display:none;}
-.settings-tab{padding:10px 16px;background:transparent;border:none;border-bottom:2px solid transparent;font-size:12px;letter-spacing:0.5px;color:var(--mu);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:all .15s;}
-.settings-tab:hover{color:var(--ink);}
-.settings-tab.on{color:var(--ink);border-bottom-color:var(--gd);font-weight:600;}
+.settings-tab{padding:12px 18px;background:transparent;border:none;border-bottom:2px solid transparent;font-size:13.5px;color:var(--mu);cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap;transition:all .15s;border-radius:8px 8px 0 0;}
+.settings-tab:hover{color:var(--ink);background:var(--wm);}
+.settings-tab.on{color:var(--ink);border-bottom-color:var(--ink);font-weight:600;}
 
-.section{background:var(--wh);border:1px solid var(--bd);margin-bottom:20px;padding:24px 24px 28px;}
-.sec-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;margin-bottom:4px;}
-.sec-sub{font-size:12px;color:var(--mu);margin-bottom:20px;line-height:1.5;}
+.section{background:var(--wh);border:1px solid var(--bd);border-radius:14px;margin-bottom:20px;padding:32px;}
+.sec-title{font-family:'Inter',sans-serif;font-size:19px;font-weight:700;letter-spacing:-.3px;margin-bottom:5px;}
+.sec-sub{font-size:13px;color:var(--mu);margin-bottom:24px;line-height:1.55;}
 /* Subsectie binnen een tab -- groepeert losse instellingen die anders als
    één ononderbroken lijst aanvoelen (bv. binnen "Profiel": widget, WhatsApp,
    openingstijden, annuleren en klantenbinding zijn 4 losse onderwerpen). */
-.sub-sec{margin-top:28px;padding-top:22px;border-top:1px solid var(--bd);}
-.sub-sec-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--ink);margin-bottom:4px;}
-.sub-sec-desc{font-size:11px;color:var(--mu);margin-bottom:16px;line-height:1.5;}
+.sub-sec{margin-top:36px;padding-top:28px;border-top:1px solid var(--bd);}
+.sub-sec-title{font-family:'Inter',sans-serif;font-size:16px;font-weight:700;color:var(--ink);margin-bottom:5px;letter-spacing:-.2px;}
+.sub-sec-desc{font-size:12.5px;color:var(--mu);margin-bottom:18px;line-height:1.55;}
 
-.fr{margin-bottom:16px;}
+.fr{margin-bottom:20px;}
 .fr:last-child{margin-bottom:0;}
 
 /* ── Plan-badge & vergrendelde features (consistente upsell-stijl,
    overal hetzelfde patroon: badge + gedimd kader + korte uitleg + CTA) ── */
-.plan-badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:9.5px;font-weight:700;letter-spacing:0.8px;text-transform:uppercase;flex-shrink:0;}
+.plan-badge{display:inline-flex;align-items:center;gap:4px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;flex-shrink:0;}
 .plan-badge.business{background:#f3ede4;color:var(--gd2);border:1px solid var(--gd);}
 .plan-badge.pro{background:#eef1f8;color:#3a4a8c;border:1px solid #7a8bd6;}
-.locked-feature{margin-top:8px;padding:22px 20px;background:var(--iv);border:1px dashed var(--bd2);border-radius:10px;}
-.locked-feature-head{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.locked-feature{margin-top:10px;padding:24px;background:var(--iv);border:1.5px dashed var(--bd2);border-radius:14px;}
+.locked-feature-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap;}
 .locked-feature-lock{font-size:15px;line-height:1;}
-.locked-feature-title{font-size:13px;font-weight:600;color:var(--ink);}
-.locked-feature-desc{font-size:12px;color:var(--mu);line-height:1.55;margin-bottom:14px;}
-.locked-feature-cta{display:inline-flex;align-items:center;gap:6px;padding:9px 16px;background:var(--ink);color:#fff;border-radius:6px;font-size:12px;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-family:inherit;}
-.locked-feature-cta:hover{opacity:.9;}
-.fl{font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:7px;display:block;}
-.fi{width:100%;background:var(--iv);border:1px solid var(--bd);padding:12px 14px;font-size:14px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s;border-radius:6px;}
-.fi:focus{border-color:var(--gd);}
+.locked-feature-title{font-size:14.5px;font-weight:600;color:var(--ink);}
+.locked-feature-desc{font-size:13px;color:var(--mu);line-height:1.6;margin-bottom:16px;}
+.locked-feature-cta{display:inline-flex;align-items:center;gap:6px;padding:11px 20px;background:var(--ink);color:#fff;border-radius:10px;font-size:13.5px;font-weight:600;text-decoration:none;cursor:pointer;border:none;font-family:inherit;transition:background 0.15s;}
+.locked-feature-cta:hover{background:var(--ink2);}
+.fl{font-size:13.5px;font-weight:500;color:var(--ink2);margin-bottom:8px;display:block;}
+.fi{width:100%;background:var(--wh);border:1.5px solid var(--bd);padding:13px 16px;font-size:14.5px;color:var(--ink);font-family:'Inter',sans-serif;outline:none;transition:border-color 0.15s,box-shadow 0.15s;border-radius:10px;}
+.fi:focus{border-color:var(--gd);box-shadow:0 0 0 3px rgba(140,109,63,0.12);}
 .fi:disabled{color:var(--mu2);cursor:not-allowed;background:var(--wm);}
 .fi::placeholder{color:var(--mu2);}
-.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.form-row-2{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
 
-.btn-sv{padding:12px 24px;background:var(--ink);color:var(--iv);border:none;font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.2s;border-radius:6px;margin-top:16px;}
+.btn-sv{padding:13px 26px;background:var(--ink);color:var(--iv);border:none;font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.15s,transform 0.1s;border-radius:10px;margin-top:20px;}
 .btn-sv:hover{background:var(--ink2);}
+.btn-sv:active{transform:scale(.98);}
 .btn-sv:disabled{opacity:0.5;cursor:not-allowed;}
-.btn-sec{padding:12px 24px;background:transparent;color:var(--ink);border:1px solid var(--bd2);font-size:10px;letter-spacing:2px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;border-radius:6px;margin-top:16px;}
-.btn-sec:hover{border-color:var(--ink);}
-.btn-danger{padding:9px 16px;background:transparent;color:var(--red);border:1px solid rgba(192,57,43,0.3);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.2s;border-radius:6px;}
-.btn-danger:hover{background:rgba(192,57,43,0.06);}
+.btn-sec{padding:13px 26px;background:var(--wh);color:var(--ink);border:1.5px solid var(--bd2);font-size:14px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;border-radius:10px;margin-top:20px;}
+.btn-sec:hover{border-color:var(--ink);background:var(--wm);}
+.btn-danger{padding:10px 18px;background:transparent;color:var(--red);border:1.5px solid rgba(192,57,43,0.3);font-size:13.5px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;border-radius:10px;}
+.btn-danger:hover{background:rgba(192,57,43,0.08);border-color:var(--red);}
 
 /* Logo upload */
 .logo-row{display:flex;align-items:center;gap:18px;margin-bottom:20px;}
-.logo-preview{width:72px;height:72px;border-radius:12px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:24px;font-weight:700;color:var(--gd);overflow:hidden;flex-shrink:0;border:1px solid var(--bd);}
+.logo-preview{width:72px;height:72px;border-radius:14px;background:var(--wm);display:flex;align-items:center;justify-content:center;font-family:'Inter',sans-serif;font-size:22px;font-weight:700;color:var(--gd);overflow:hidden;flex-shrink:0;border:1px solid var(--bd);}
 .logo-preview img{width:100%;height:100%;object-fit:cover;}
 .logo-actions{display:flex;flex-direction:column;gap:6px;}
-.btn-upload{padding:8px 16px;background:var(--wh);color:var(--ink);border:1px solid var(--bd2);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;border-radius:6px;display:inline-block;width:fit-content;}
-.btn-upload:hover{border-color:var(--ink);}
+.btn-upload{padding:10px 18px;background:var(--wh);color:var(--ink);border:1.5px solid var(--bd2);font-size:13px;font-weight:600;cursor:pointer;font-family:'Inter',sans-serif;transition:all 0.15s;border-radius:10px;display:inline-block;width:fit-content;}
+.btn-upload:hover{border-color:var(--ink);background:var(--wm);}
 .pc-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-top:14px;}
 .pc-card{background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:18px 14px;position:relative;}
 .pc-card.popular{border:2px solid var(--gd);background:var(--ink);}
 .pc-badge{position:absolute;top:-11px;left:50%;transform:translateX(-50%);padding:3px 12px;background:var(--gd);color:#fff;font-size:9px;font-weight:700;border-radius:99px;letter-spacing:.5px;text-transform:uppercase;white-space:nowrap;}
-.pc-name{font-size:11px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;}
+.pc-name{font-size:13px;font-weight:600;color:var(--mu);margin-bottom:8px;}
 .pc-card.popular .pc-name{color:rgba(255,255,255,.5);}
-.pc-amount{font-family:'Playfair Display',serif;font-size:26px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:2px;}
+.pc-amount{font-family:'Inter',sans-serif;font-size:28px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:2px;}
 .pc-card.popular .pc-amount{color:#fff;}
 .pc-amount sup{font-size:13px;font-weight:400;vertical-align:super;}
 .pc-per{font-size:10px;color:var(--mu);margin-bottom:12px;}
@@ -126,10 +127,24 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .pc-card.popular .pc-features li{color:rgba(255,255,255,.65);}
 .pc-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;}
 .pc-card.popular .pc-features li::before{color:var(--gd);}
-.pc-btn{display:block;width:100%;text-align:center;padding:10px;background:var(--ink);color:#fff;font-size:10px;letter-spacing:1px;text-transform:uppercase;font-weight:600;border:none;border-radius:6px;cursor:pointer;font-family:'Inter',sans-serif;}
+.pc-btn{display:block;width:100%;text-align:center;padding:12px;background:var(--ink);color:#fff;font-size:13.5px;font-weight:600;border:none;border-radius:10px;cursor:pointer;font-family:'Inter',sans-serif;transition:background 0.15s;}
+.pc-btn:hover{background:var(--ink2);}
 .pc-card.popular .pc-btn{background:var(--gd);}
 .pc-btn.pc-current{opacity:.5;cursor:default;}
 .logo-hint{font-size:11px;color:var(--mu2);}
+
+/* Toggle-instelling als nette kaart-rij i.p.v. losse checkbox + tekst
+   eronder -- dit is waar het "ouderwets formulier"-gevoel het meest zat. */
+.toggle-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px;background:var(--iv);border:1px solid var(--bd);border-radius:12px;}
+.toggle-row-text{flex:1;min-width:0;}
+.toggle-row-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:3px;}
+.toggle-row-desc{font-size:12.5px;color:var(--mu);line-height:1.5;}
+.switch{position:relative;display:inline-block;width:42px;height:24px;flex-shrink:0;margin-top:2px;}
+.switch input{opacity:0;position:absolute;width:100%;height:100%;margin:0;cursor:pointer;}
+.switch-track{position:absolute;inset:0;background:var(--bd2);border-radius:99px;transition:background .15s;pointer-events:none;}
+.switch-knob{position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .15s;box-shadow:0 1px 3px rgba(0,0,0,.2);}
+.switch input:checked + .switch-track{background:var(--gd);}
+.switch input:checked + .switch-track .switch-knob{left:21px;}
 
 /* Messages */
 .msg{padding:11px 14px;font-size:13px;margin-top:12px;line-height:1.5;display:none;border-left:3px solid;border-radius:4px;}
@@ -314,12 +329,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="sub-sec">
         <div class="sub-sec-title">Herinneringen</div>
         <div class="sub-sec-desc">Extra kanalen naast de standaard e-mailbevestiging.</div>
-        <div class="fr">
-          <label class="fl" style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="s-whatsapp-actief" onchange="wisselWhatsappUI()" style="width:16px;height:16px;">
-            WhatsApp-herinneringen versturen
-          </label>
-          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klanten krijgen een WhatsApp-bericht ter herinnering aan hun afspraak, naast de e-mailbevestiging.</div>
+        <div class="toggle-row">
+          <div class="toggle-row-text">
+            <div class="toggle-row-title">WhatsApp-herinneringen versturen</div>
+            <div class="toggle-row-desc">Klanten krijgen een WhatsApp-bericht ter herinnering aan hun afspraak, naast de e-mailbevestiging.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="s-whatsapp-actief" onchange="wisselWhatsappUI()"><span class="switch-track"><span class="switch-knob"></span></span></label>
         </div>
         <div id="whatsapp-instellingen" style="display:none;margin-top:14px;">
           <div class="fr">
@@ -335,12 +350,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       <div class="sub-sec">
         <div class="sub-sec-title">Klantenbinding</div>
         <div class="sub-sec-desc">Zorg dat klanten terugkomen -- allemaal optioneel, standaard uit.</div>
-        <div class="fr">
-          <label class="fl" style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="s-stempel-actief" onchange="wisselStempelUI()" style="width:16px;height:16px;">
-            Stempelkaart-programma
-          </label>
-          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klanten sparen stempels bij afgeronde afspraken en krijgen een beloning zodra de kaart vol is. Stel per dienst in of die meetelt via Diensten.</div>
+        <div class="toggle-row">
+          <div class="toggle-row-text">
+            <div class="toggle-row-title">Stempelkaart-programma</div>
+            <div class="toggle-row-desc">Klanten sparen stempels bij afgeronde afspraken en krijgen een beloning zodra de kaart vol is. Stel per dienst in of die meetelt via Diensten.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="s-stempel-actief" onchange="wisselStempelUI()"><span class="switch-track"><span class="switch-knob"></span></span></label>
         </div>
         <div id="stempel-instellingen" style="display:none;margin-top:14px;">
           <div class="fr">
@@ -353,12 +368,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
           </div>
         </div>
 
-        <div class="fr" style="margin-top:20px;">
-          <label class="fl" style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="s-review-actief" onchange="wisselReviewUI()" style="width:16px;height:16px;">
-            Automatisch om een review vragen
-          </label>
-          <div style="font-size:11px;color:var(--mu);margin-top:4px;">1 dag na een afgeronde afspraak krijgt de klant automatisch een mailtje met het verzoek om een Google-review te schrijven. Dezelfde klant wordt daarna minimaal 90 dagen niet opnieuw gevraagd.</div>
+        <div class="toggle-row" style="margin-top:20px;">
+          <div class="toggle-row-text">
+            <div class="toggle-row-title">Automatisch om een review vragen</div>
+            <div class="toggle-row-desc">1 dag na een afgeronde afspraak krijgt de klant automatisch een mailtje met het verzoek om een Google-review te schrijven. Dezelfde klant wordt daarna minimaal 90 dagen niet opnieuw gevraagd.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="s-review-actief" onchange="wisselReviewUI()"><span class="switch-track"><span class="switch-knob"></span></span></label>
         </div>
         <div id="review-instellingen" style="display:none;margin-top:14px;">
           <div class="fr">
@@ -368,12 +383,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
           </div>
         </div>
 
-        <div class="fr" style="margin-top:20px;">
-          <label class="fl" style="display:flex;align-items:center;gap:8px;">
-            <input type="checkbox" id="s-terugkeer-actief" style="width:16px;height:16px;">
-            Terugkeer-herinneringen versturen
-          </label>
-          <div style="font-size:11px;color:var(--mu);margin-top:4px;">Klanten krijgen automatisch een mail met boekingslink zodra het bij een dienst ingestelde aantal weken (zie Diensten) sinds hun laatste afgeronde afspraak is verstreken. Stel per dienst in na hoeveel weken via Diensten → dienst bewerken.</div>
+        <div class="toggle-row" style="margin-top:20px;">
+          <div class="toggle-row-text">
+            <div class="toggle-row-title">Terugkeer-herinneringen versturen</div>
+            <div class="toggle-row-desc">Klanten krijgen automatisch een mail met boekingslink zodra het bij een dienst ingestelde aantal weken (zie Diensten) sinds hun laatste afgeronde afspraak is verstreken. Stel per dienst in na hoeveel weken via Diensten → dienst bewerken.</div>
+          </div>
+          <label class="switch"><input type="checkbox" id="s-terugkeer-actief"><span class="switch-track"><span class="switch-knob"></span></span></label>
         </div>
       </div>
 
