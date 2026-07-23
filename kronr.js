@@ -361,7 +361,10 @@ function toonVerbindingsfoutBanner() {
   if (document.getElementById('kronr-verbindingsfout-banner')) return;
   const banner = document.createElement('div');
   banner.id = 'kronr-verbindingsfout-banner';
-  banner.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:10px 16px;text-align:center;font-family:Inter,sans-serif;font-size:13px;';
+  // Onderaan als toast i.p.v. bovenaan -- een top-banner overlapt op elke
+  // pagina de topbar/actieknoppen (die zelf ook fixed/vast gepositioneerd
+  // zijn), dit voorkomt dat sowieso.
+  banner.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:999999;background:#c0392b;color:#fff;padding:10px 16px;text-align:center;font-family:Inter,sans-serif;font-size:13px;box-shadow:0 -4px 12px rgba(0,0,0,.15);';
   banner.innerHTML = 'Kon niet verbinden met de server. Check je internetverbinding en <a href="#" onclick="window.location.reload();return false;" style="color:#fff;text-decoration:underline;font-weight:600;">herlaad de pagina</a>.';
   document.body.appendChild(banner);
 }
