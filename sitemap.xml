@@ -49,6 +49,12 @@
     <priority>0.2</priority>
   </url>
   <url>
+    <loc>https://kronr.nl/verwerkersovereenkomst/</loc>
+    <lastmod>2026-07-23</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  <url>
     <loc>https://kronr.nl/privacybeleid/</loc>
     <lastmod>2026-07-23</lastmod>
     <changefreq>yearly</changefreq>
