@@ -217,5 +217,5 @@ zodra die aanvraag goedgekeurd is. Bouwen zodra je het seintje geeft.
 | 8 | Abonnementen (klanten) | ✅ | ✅ | ✅ | recurring Stripe-billing, los van Kronr's eigen plan |
 | 9 | Meerdere locaties | ✅ | ✅ | ✅ | locatie-switcher echt gebruikt in agenda/kassa/dashboard |
 | 10 | Marketing campagnes | ✅ | ✅ | ✅ | segment-builder in `klanten/index.html` |
-| 11 | AI-assistent (klantvragen) | n.v.t. | ✅ | ⚠️ | widget stuurt naar een workerroute die **niet in deze repo staat**; het bijbehorende planningsdoc meldt zelf **geen rate limiting** — misbruik-/kostenrisico, aanbevolen om alsnog toe te voegen |
+| 11 | AI-assistent (klantvragen) | n.v.t. | ✅ | ✅ | widget stuurt naar de live `kronr-ai` Worker (niet in deze repo, gecontroleerd via Cloudflare API); heeft al rate limiting (20 vragen/uur/IP via KV) én bescherming tegen prompt-injectie in de systeeminstructie — het planningsdoc in deze repo was hierover verouderd |
 | 12 | WhatsApp herinneringen | ✅ (schema) | ❌ | ❌ | geblokkeerd op externe Meta/Twilio-goedkeuring, niet op bouwwerk |
