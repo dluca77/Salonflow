@@ -313,7 +313,7 @@ a:hover .btn-arrow{transform:translateX(4px);}
 /* ── Parallax op de hero-mockup ── */
 .hero-screenshot{will-change:transform;}
 
-.feat-compact-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-top:20px;}
+.feat-compact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-top:20px;}
 .feat-compact{background:var(--white);padding:28px 22px;transition:background .2s,transform .3s ease;}
 .feat-compact:hover{background:var(--iv);transform:translateY(-4px);}
 .feat-compact:hover .feat-compact-icon{transform:scale(1.08) rotate(-4deg);}
@@ -455,7 +455,7 @@ a:hover .btn-arrow{transform:translateX(4px);}
 /* ── FOOTER ── */
 footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-inner{max-width:1200px;margin:0 auto;}
-.footer-top{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:48px;margin-bottom:48px;}
+.footer-top{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:40px;margin-bottom:48px;}
 .footer-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:16px;}
 .footer-logo em{color:var(--gd);font-style:normal;}
 .footer-desc{font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:260px;}
@@ -463,7 +463,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
 .footer-links a{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6;text-decoration:none;transition:color .2s;}
 .footer-links a:hover{color:var(--white);}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;align-items:center;justify-content:space-between;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .footer-copy{font-size:13px;color:rgba(255,255,255,.3);}
 .footer-legal{display:flex;gap:20px;}
 .footer-legal a{font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;}
@@ -948,7 +948,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       <div class="feat-compact">
         <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
         <div class="feat-compact-title">Kassa & betalingen</div>
-        <div class="feat-compact-desc">Pin, contant, iDEAL en cadeaubonnen in één kassa.</div>
+        <div class="feat-compact-desc">Pin, contant en iDEAL in één overzichtelijke kassa.</div>
       </div>
       <div class="feat-compact">
         <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
@@ -959,6 +959,11 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
         <div class="feat-compact-title">WhatsApp herinneringen <span style="font-size:10px;font-weight:400;color:var(--mu);">(binnenkort)</span></div>
         <div class="feat-compact-desc">Minder no-shows, minder telefoontjes. Wacht nog op goedkeuring van Meta — nog niet actief.</div>
+      </div>
+      <div class="feat-compact">
+        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+        <div class="feat-compact-title">Slimme wachtlijst</div>
+        <div class="feat-compact-desc">Bij een annulering krijgt de eerste klant op de wachtlijst automatisch een link om de vrijgekomen plek te claimen.</div>
       </div>
     </div>
   </div>
@@ -1182,6 +1187,16 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         </ul>
       </div>
       <div>
+        <div class="footer-col-title">Voor wie</div>
+        <ul class="footer-links">
+          <li><a href="#voor-wie-kappers" class="js-vw-link" data-industry="kappers">Kappers</a></li>
+          <li><a href="#voor-wie-nagels" class="js-vw-link" data-industry="nagels">Nagelstudio's</a></li>
+          <li><a href="#voor-wie-beauty" class="js-vw-link" data-industry="beauty">Schoonheidsspecialisten</a></li>
+          <li><a href="#voor-wie-sport" class="js-vw-link" data-industry="sport">Sportscholen</a></li>
+          <li><a href="#voor-wie" class="js-vw-link">Alle branches</a></li>
+        </ul>
+      </div>
+      <div>
         <div class="footer-col-title">Bedrijf</div>
         <ul class="footer-links">
           <li><a href="/over-ons/">Over ons</a></li>
@@ -1202,7 +1217,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2026 Kronr · Alle rechten voorbehouden</div>
+      <div class="footer-copy">© 2026 Kronr · Alle rechten voorbehouden · Betalingen beveiligd via Stripe</div>
       <div class="footer-legal">
         <a href="/privacybeleid/">Privacy</a>
         <a href="/algemene-voorwaarden/">Voorwaarden</a>
@@ -1704,6 +1719,19 @@ idxSetPeriod('yearly');
       bezig = false;
     }, 180);
   }
+
+  // Footerlinks als 'Kappers', 'Nagelstudio's' etc. openen direct de juiste
+  // branche-tab in deze sectie, i.p.v. alleen naar #voor-wie te scrollen.
+  document.querySelectorAll('.js-vw-link').forEach(link => {
+    link.addEventListener('click', e => {
+      const key = link.dataset.industry;
+      if(!key) return;
+      e.preventDefault();
+      document.getElementById('voor-wie').scrollIntoView({behavior:'smooth'});
+      if(!pillsEl.classList.contains('vw-visible')) speelKaiIntroAf();
+      setTimeout(() => toonBranche(key), pillsEl.classList.contains('vw-visible') ? 0 : 500);
+    });
+  });
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => toonBranche(tab.dataset.industry));
