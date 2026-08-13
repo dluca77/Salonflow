@@ -455,7 +455,7 @@ a:hover .btn-arrow{transform:translateX(4px);}
 /* ── FOOTER ── */
 footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-inner{max-width:1200px;margin:0 auto;}
-.footer-top{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:48px;margin-bottom:48px;}
+.footer-top{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:40px;margin-bottom:48px;}
 .footer-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:16px;}
 .footer-logo em{color:var(--gd);font-style:normal;}
 .footer-desc{font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:260px;}
@@ -463,7 +463,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
 .footer-links a{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6;text-decoration:none;transition:color .2s;}
 .footer-links a:hover{color:var(--white);}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;align-items:center;justify-content:space-between;}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
 .footer-copy{font-size:13px;color:rgba(255,255,255,.3);}
 .footer-legal{display:flex;gap:20px;}
 .footer-legal a{font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;}
@@ -1182,6 +1182,16 @@ footer{background:var(--ink);padding:60px 24px 32px;}
         </ul>
       </div>
       <div>
+        <div class="footer-col-title">Voor wie</div>
+        <ul class="footer-links">
+          <li><a href="#voor-wie-kappers" class="js-vw-link" data-industry="kappers">Kappers</a></li>
+          <li><a href="#voor-wie-nagels" class="js-vw-link" data-industry="nagels">Nagelstudio's</a></li>
+          <li><a href="#voor-wie-beauty" class="js-vw-link" data-industry="beauty">Schoonheidsspecialisten</a></li>
+          <li><a href="#voor-wie-sport" class="js-vw-link" data-industry="sport">Sportscholen</a></li>
+          <li><a href="#voor-wie" class="js-vw-link">Alle branches</a></li>
+        </ul>
+      </div>
+      <div>
         <div class="footer-col-title">Bedrijf</div>
         <ul class="footer-links">
           <li><a href="/over-ons/">Over ons</a></li>
@@ -1202,7 +1212,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       </div>
     </div>
     <div class="footer-bottom">
-      <div class="footer-copy">© 2026 Kronr · Alle rechten voorbehouden</div>
+      <div class="footer-copy">© 2026 Kronr · Alle rechten voorbehouden · Betalingen beveiligd via Stripe</div>
       <div class="footer-legal">
         <a href="/privacybeleid/">Privacy</a>
         <a href="/algemene-voorwaarden/">Voorwaarden</a>
@@ -1704,6 +1714,19 @@ idxSetPeriod('yearly');
       bezig = false;
     }, 180);
   }
+
+  // Footerlinks als 'Kappers', 'Nagelstudio's' etc. openen direct de juiste
+  // branche-tab in deze sectie, i.p.v. alleen naar #voor-wie te scrollen.
+  document.querySelectorAll('.js-vw-link').forEach(link => {
+    link.addEventListener('click', e => {
+      const key = link.dataset.industry;
+      if(!key) return;
+      e.preventDefault();
+      document.getElementById('voor-wie').scrollIntoView({behavior:'smooth'});
+      if(!pillsEl.classList.contains('vw-visible')) speelKaiIntroAf();
+      setTimeout(() => toonBranche(key), pillsEl.classList.contains('vw-visible') ? 0 : 500);
+    });
+  });
 
   tabs.forEach(tab => {
     tab.addEventListener('click', () => toonBranche(tab.dataset.industry));
