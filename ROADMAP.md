@@ -1,5 +1,14 @@
 # Kronr — Bouwplan (features om 1 voor 1 te bouwen)
 
+> **⚠️ Update 2026-08-13:** dit document bleek zwaar verouderd. Een volledige
+> code-audit wees uit dat alle onderstaande punten (1 t/m 11) al volledig
+> end-to-end gebouwd zijn (DB + UI + workerlogica) — alleen niemand had dit
+> bestand bijgewerkt. Enige echte openstaande punt is #12 (WhatsApp), en die
+> is geblokkeerd op een externe Meta/Twilio-goedkeuring, niet op bouwwerk.
+> Zie de sectie "Status per feature" onderaan voor de audit-resultaten.
+> Laat dit bestand vanaf nu meteen bijwerken zodra een feature klaar is,
+> anders ontstaat dezelfde verwarring opnieuw.
+
 Twee bronnen samengevoegd:
 - **A1–A6**: features die al op index.html/instellingen.html beloofd worden
   (Pro/Business-pakket) maar nog niet bestaan
@@ -191,3 +200,22 @@ zodra die aanvraag goedgekeurd is. Bouwen zodra je het seintje geeft.
 10. Marketing campagnes
 11. AI-assistent voor klantvragen
 12. WhatsApp herinneringen *(geblokkeerd, buiten volgorde te bouwen zodra Meta akkoord is)*
+
+---
+
+## Status per feature (audit 2026-08-13)
+
+| # | Feature | DB | UI | End-to-end | Opmerking |
+|---|---|---|---|---|---|
+| 1 | Annuleringsbeleid | ✅ | ✅ | ✅ | `annuleren/index.html` checkt `annuleer_cutoff_uren` |
+| 2 | Stempelkaart | ✅ | ✅ | ✅ | incl. publieke `stempelkaart/` pagina |
+| 3 | Review-verzameling | ✅ | ✅ | ✅ | cron in `workers/kronr-mail.js` — controleer of de Cloudflare cron-trigger daadwerkelijk staat ingesteld (niet zichtbaar vanuit deze repo) |
+| 4 | Cadeaubonnen | ✅ | ✅ | ✅ | verkoop + verzilvering werkt in `kassa/index.html` |
+| 5 | No-show-bescherming | ✅ | ✅ | ✅ | SetupIntent + incasseerknop in `agenda/index.html` |
+| 6 | Personeelsplanning/verlof | ✅ | ✅ | ✅ | verlof blokkeert sloten in `boeken/index.html` |
+| 7 | Boekhoudkoppeling | ✅ | ✅ | ✅ | Moneybird OAuth, `workers/kronr-moneybird.js` |
+| 8 | Abonnementen (klanten) | ✅ | ✅ | ✅ | recurring Stripe-billing, los van Kronr's eigen plan |
+| 9 | Meerdere locaties | ✅ | ✅ | ✅ | locatie-switcher echt gebruikt in agenda/kassa/dashboard |
+| 10 | Marketing campagnes | ✅ | ✅ | ✅ | segment-builder in `klanten/index.html` |
+| 11 | AI-assistent (klantvragen) | n.v.t. | ✅ | ⚠️ | widget stuurt naar een workerroute die **niet in deze repo staat**; het bijbehorende planningsdoc meldt zelf **geen rate limiting** — misbruik-/kostenrisico, aanbevolen om alsnog toe te voegen |
+| 12 | WhatsApp herinneringen | ✅ (schema) | ❌ | ❌ | geblokkeerd op externe Meta/Twilio-goedkeuring, niet op bouwwerk |
