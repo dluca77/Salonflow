@@ -455,6 +455,12 @@ a:hover .btn-arrow{transform:translateX(4px);}
 /* ── FOOTER ── */
 footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-inner{max-width:1200px;margin:0 auto;}
+.cookie-notice{position:fixed;left:20px;right:20px;bottom:-100px;z-index:200;max-width:640px;margin:0 auto;background:var(--ink);color:#fff;border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 16px 40px rgba(0,0,0,.25);transition:bottom .35s cubic-bezier(.2,.8,.2,1);}
+.cookie-notice.show{bottom:20px;}
+.cookie-notice-text{flex:1;min-width:200px;font-size:13px;line-height:1.6;color:rgba(255,255,255,.85);}
+.cookie-notice-text a{color:#fff;text-decoration:underline;}
+.cookie-notice-btn{background:#fff;color:var(--ink);border:none;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;}
+@media(max-width:480px){.cookie-notice{flex-direction:column;align-items:stretch;}.cookie-notice-btn{width:100%;}}
 .faq-section{padding:96px 32px;}
 .faq-list{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
 .faq-item{background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px 22px;}
@@ -2077,5 +2083,26 @@ if(heroScreenshotEl){
     <a href="/login/" class="mob-btn-start">Start 14 dagen gratis →</a>
   </div>
 </div>
+
+<!-- Cookiemelding: puur informatief, geen accept/weiger-keuze nodig
+     omdat Kronr alleen functionele en beveiligingscookies gebruikt
+     (Supabase Auth-sessie, Cloudflare Turnstile) — zie /cookies/. -->
+<div class="cookie-notice" id="cookieNotice">
+  <p class="cookie-notice-text">We gebruiken alleen functionele cookies om Kronr te laten werken en te beveiligen — geen marketing- of trackingcookies. <a href="/cookies/">Meer info</a></p>
+  <button class="cookie-notice-btn" id="cookieNoticeBtn">Begrepen</button>
+</div>
+<script>
+(function(){
+  const KEY='kronr_cookienotice_gezien';
+  const el=document.getElementById('cookieNotice');
+  if(!el) return;
+  if(localStorage.getItem(KEY)) return;
+  el.classList.add('show');
+  document.getElementById('cookieNoticeBtn').addEventListener('click',()=>{
+    localStorage.setItem(KEY,'1');
+    el.classList.remove('show');
+  });
+})();
+</script>
 </body>
 </html>
