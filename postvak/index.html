@@ -40,6 +40,9 @@ body{font-family:'Inter',sans-serif;background:var(--content-bg);overflow:hidden
 
 /* ── Icoon/tekst-knoppen ── */
 .icon-btn{background:none;border:none;cursor:pointer;color:var(--mu);padding:6px;border-radius:8px;display:flex;align-items:center;transition:background .15s,color .15s;}
+.icon-btn:hover{background:var(--iv);color:var(--ink);}
+.icon-btn.draait svg{animation:versSpin .6s linear;}
+@keyframes versSpin{to{transform:rotate(360deg);}}
 .icon-btn:hover{background:var(--bd2);color:var(--ink);}
 .btn-dark{background:var(--sidebar-bg);color:var(--sidebar-text);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;padding:10px 16px;transition:opacity .15s;}
 .btn-dark:hover{opacity:.88;}
@@ -188,6 +191,9 @@ body{font-family:'Inter',sans-serif;background:var(--content-bg);overflow:hidden
       <div class="lijst-header">
         <div class="lijst-header-top">
           <div class="lijst-titel" id="lijst-titel">Postvak IN</div>
+          <button class="icon-btn" id="ververs-btn" onclick="ververs()" title="Vernieuwen" aria-label="Vernieuwen">
+            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+          </button>
           <button class="btn-dark btn-nieuw-desktop" onclick="toonNieuwBericht()">+ Nieuw</button>
           <button class="btn-nieuw-mobiel" onclick="toonNieuwBericht()" title="Nieuw bericht" aria-label="Nieuw bericht">+</button>
           <button class="icon-btn mobiel-menu-btn" onclick="wisselMobielMenu()" title="Meer" aria-label="Meer">
@@ -523,6 +529,22 @@ async function laadBerichten(){
   renderLijst();
   verversOngelezenBadge();
 }
+
+async function ververs(){
+  const btn=document.getElementById('ververs-btn');
+  if(btn) btn.classList.add('draait');
+  if(HUIDIGE_TAB==='uit') await laadVerzonden();
+  else await laadBerichten();
+  if(btn){
+    setTimeout(()=>btn.classList.remove('draait'),400);
+  }
+}
+
+// Automatisch elke 30s op de achtergrond verversen, zodat nieuwe mail
+// niet pas zichtbaar wordt na een volledige page-reload.
+setInterval(()=>{
+  if(document.visibilityState==='visible') ververs();
+},30000);
 
 async function laadVerzonden(){
   const{data,error}=await sb.from('kronr_verzonden').select('*').order('verzonden_op',{ascending:false});
