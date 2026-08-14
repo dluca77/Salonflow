@@ -57,15 +57,28 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 /* ── HERO ── */
 .hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:100px 24px 150px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.55)),url('/images/achtergrond.jpg');background-size:cover;background-position:65% top;position:relative;overflow:hidden;box-sizing:border-box;}
 .hero::before{content:'';position:absolute;top:0;left:0;right:0;height:600px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(140,109,63,0.06) 0%,transparent 70%);pointer-events:none;}
-.hero-grid{max-width:1600px;width:100%;margin:140px auto 0;display:grid;grid-template-columns:0.95fr 1.05fr;gap:56px;align-items:center;}
+.hero::after{content:'';position:absolute;inset:-20%;background:
+    radial-gradient(circle at 20% 30%,rgba(140,109,63,.16) 0%,transparent 45%),
+    radial-gradient(circle at 80% 20%,rgba(217,169,74,.14) 0%,transparent 40%),
+    radial-gradient(circle at 60% 80%,rgba(140,109,63,.10) 0%,transparent 45%);
+  filter:blur(40px);pointer-events:none;z-index:0;animation:auroraDrift 18s ease-in-out infinite;}
+@keyframes auroraDrift{
+  0%,100%{transform:translate(0,0) scale(1);}
+  33%{transform:translate(3%,-2%) scale(1.06);}
+  66%{transform:translate(-3%,2%) scale(1.03);}
+}
+@media(prefers-reduced-motion:reduce){.hero::after{animation:none;}}
+.hero-grid{position:relative;z-index:1;max-width:1600px;width:100%;margin:140px auto 0;display:grid;grid-template-columns:0.95fr 1.05fr;gap:56px;align-items:center;}
 .hero-left{text-align:left;}
-.hero-label-wrap{max-width:1600px;margin:0 auto 28px;width:100%;text-align:center;}
+.hero-label-wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto 28px;width:100%;text-align:center;}
 .hero-label{display:inline-flex;align-items:center;gap:10px;padding:8px 4px;font-size:13.5px;font-weight:500;color:var(--ink2);}
 .hero-label .streep{width:20px;height:1px;background:var(--gd);display:inline-block;}
 .hero-label strong{color:var(--gd2);font-weight:700;}
 @keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
 .hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5.4vw,80px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:14px;}
-.hero-word-meer{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px;}
+.hero-word-meer{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px;background:linear-gradient(90deg,var(--ink) 0%,var(--gd) 25%,#d9a94a 50%,var(--gd) 75%,var(--ink) 100%);background-size:250% auto;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;animation:gradientVloei 6s linear infinite;}
+@keyframes gradientVloei{to{background-position:-250% center;}}
+@media(prefers-reduced-motion:reduce){.hero-word-meer{animation:none;-webkit-text-fill-color:var(--ink);}}
 .hero-je{color:var(--gd);}
 .hero-cycle-word{font-style:italic;font-weight:600;color:var(--gd);}
 .hero-cycle-cursor{display:inline-block;width:3px;height:0.85em;background:var(--gd);margin-left:3px;vertical-align:baseline;animation:heroCycleBlink .8s step-end infinite;}
@@ -1338,6 +1351,20 @@ window.addEventListener('scroll',()=>{
   document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
 });
 
+// 3D-tilt op de belangrijkste kaarten bij hover (features, prijzen,
+// testimonials, early-access) -- alleen op precisie-pointers (geen touch)
+if(window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
+  document.querySelectorAll('.feat-compact, .price-card, .early-card, .testi-card').forEach(kaart=>{
+    kaart.addEventListener('mousemove',e=>{
+      const rect=kaart.getBoundingClientRect();
+      const px=(e.clientX-rect.left)/rect.width-0.5;
+      const py=(e.clientY-rect.top)/rect.height-0.5;
+      kaart.style.transform=`translateY(-6px) perspective(900px) rotateX(${py*-5}deg) rotateY(${px*5}deg)`;
+    });
+    kaart.addEventListener('mouseleave',()=>{ kaart.style.transform=''; });
+  });
+}
+
 // Magnetische glow op de primaire knoppen: volgt de cursor via CSS-variabelen
 document.querySelectorAll('.btn-primary').forEach(btn=>{
   btn.addEventListener('mousemove',e=>{
@@ -1453,13 +1480,14 @@ document.querySelectorAll('a[href^="#"]').forEach(a=>{
   });
 });
 
-// Scroll reveal animaties
-const revealEls = document.querySelectorAll('[data-aos], .section-label, .section-title, .section-sub, .feat-compact');
+// Scroll reveal animaties -- schaal+fade i.p.v. alleen een lichte
+// schuif, voor een steviger effect door de hele pagina.
+const revealEls = document.querySelectorAll('[data-aos], .section-label, .section-title, .section-sub, .feat-compact, .price-card, .testi-card, .early-card');
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if(e.isIntersecting) {
       e.target.style.opacity = '1';
-      e.target.style.transform = 'translateY(0)';
+      e.target.style.transform = 'translateY(0) scale(1)';
       if(e.target.classList.contains('feat-compact')) e.target.classList.add('is-revealed');
       observer.unobserve(e.target);
     }
@@ -1468,8 +1496,8 @@ const observer = new IntersectionObserver((entries) => {
 revealEls.forEach((el, i) => {
   const delay = el.dataset.aosDelay ? parseInt(el.dataset.aosDelay) : (el.classList.contains('feat-compact') ? (i % 4) * 70 : 0);
   el.style.opacity = '0';
-  el.style.transform = 'translateY(24px)';
-  el.style.transition = `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms`;
+  el.style.transform = 'translateY(28px) scale(.96)';
+  el.style.transition = `opacity 0.7s cubic-bezier(.2,.8,.2,1) ${delay}ms, transform 0.7s cubic-bezier(.2,.8,.2,1) ${delay}ms`;
   observer.observe(el);
 });
 
