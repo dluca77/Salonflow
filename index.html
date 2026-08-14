@@ -455,7 +455,18 @@ a:hover .btn-arrow{transform:translateX(4px);}
 /* ── FOOTER ── */
 footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-inner{max-width:1200px;margin:0 auto;}
-.footer-top{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:40px;margin-bottom:48px;}
+.faq-section{padding:96px 32px;}
+.faq-list{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
+.faq-item{background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px 22px;}
+.faq-item summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;}
+.faq-item summary::-webkit-details-marker{display:none;}
+.faq-item summary::after{content:'+';font-size:20px;color:var(--gd);font-weight:400;margin-left:12px;flex-shrink:0;}
+.faq-item[open] summary::after{content:'−';}
+.faq-item p{margin-top:12px;color:var(--mu);font-size:14px;line-height:1.7;}
+.footer-top{display:grid;grid-template-columns:minmax(0,2fr) repeat(5,minmax(0,1fr));gap:32px;margin-bottom:48px;}
+.tag-badge{display:inline-block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gd);font-weight:700;border:1px solid var(--bd2);border-radius:20px;padding:3px 10px 3px 8px;}
+.tag-badge::before{content:'[';margin-right:2px;color:var(--mu2);}
+.tag-badge::after{content:']';margin-left:2px;color:var(--mu2);}
 .footer-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:16px;}
 .footer-logo em{color:var(--gd);font-style:normal;}
 .footer-desc{font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:260px;}
@@ -607,7 +618,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
       </div>
       <div class="hero-btns">
         <a href="/login/" class="btn-primary">Start 14 dagen gratis <span class="btn-arrow">→</span></a>
-        <a href="#features" class="btn-secondary">Bekijk alle features</a>
+        <a href="/demo/" class="btn-secondary">Bekijk live demo</a>
       </div>
       <div class="hero-usps">
         <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen creditcard</div>
@@ -1163,6 +1174,54 @@ footer{background:var(--ink);padding:60px 24px 32px;}
   <p class="cta-final-note" style="margin-top:4px;font-weight:600;color:rgba(255,255,255,.7);">Binnen 15 minuten aan de slag. Geen creditcard nodig.</p>
 </section>
 
+<!-- FAQ -->
+<section class="faq-section" id="faq">
+  <div class="section-inner" style="max-width:780px;margin:0 auto;">
+    <div class="section-label" style="text-align:center;">Veelgestelde vragen</div>
+    <h2 class="section-title" style="text-align:center;">Nog vragen?</h2>
+    <div class="faq-list">
+      <details class="faq-item">
+        <summary>Heb ik een creditcard nodig om te starten?</summary>
+        <p>Nee. Je start direct met 14 dagen gratis proberen, zonder betaalgegevens. Pas als je na de proefperiode doorgaat, koppel je een betaalmethode.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Rekent Kronr commissie over mijn omzet?</summary>
+        <p>Nee, nooit. Je betaalt één vast maandbedrag, ongeacht hoeveel afspraken of omzet je via Kronr verwerkt.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Kan ik mijn gegevens overzetten vanuit een ander pakket?</summary>
+        <p>Ja. We helpen je klanten, diensten en agenda over te zetten vanuit de meeste bekende salonpakketten, zodat je binnen 15 minuten operationeel bent.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Is Kronr geschikt voor meerdere locaties of medewerkers?</summary>
+        <p>Ja, Kronr ondersteunt meerdere locaties, medewerkerrooster en -rechten vanuit één abonnement.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Wat gebeurt er met mijn data en is dit AVG/GDPR-proof?</summary>
+        <p>Al je gegevens worden veilig binnen de EU opgeslagen en verwerkt conform de AVG/GDPR. Lees meer in ons <a href="/privacybeleid/">privacybeleid</a> en de <a href="/verwerkersovereenkomst/">verwerkersovereenkomst</a>.</p>
+      </details>
+      <details class="faq-item">
+        <summary>Kan ik maandelijks opzeggen?</summary>
+        <p>Ja, je abonnement is elke maand opzegbaar. Geen langlopend contract of opzegtermijn.</p>
+      </details>
+    </div>
+  </div>
+</section>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type":"Question","name":"Heb ik een creditcard nodig om te starten?","acceptedAnswer":{"@type":"Answer","text":"Nee. Je start direct met 14 dagen gratis proberen, zonder betaalgegevens. Pas als je na de proefperiode doorgaat, koppel je een betaalmethode."}},
+    {"@type":"Question","name":"Rekent Kronr commissie over mijn omzet?","acceptedAnswer":{"@type":"Answer","text":"Nee, nooit. Je betaalt één vast maandbedrag, ongeacht hoeveel afspraken of omzet je via Kronr verwerkt."}},
+    {"@type":"Question","name":"Kan ik mijn gegevens overzetten vanuit een ander pakket?","acceptedAnswer":{"@type":"Answer","text":"Ja. We helpen je klanten, diensten en agenda over te zetten vanuit de meeste bekende salonpakketten, zodat je binnen 15 minuten operationeel bent."}},
+    {"@type":"Question","name":"Is Kronr geschikt voor meerdere locaties of medewerkers?","acceptedAnswer":{"@type":"Answer","text":"Ja, Kronr ondersteunt meerdere locaties, medewerkerrooster en -rechten vanuit één abonnement."}},
+    {"@type":"Question","name":"Wat gebeurt er met mijn data en is dit AVG/GDPR-proof?","acceptedAnswer":{"@type":"Answer","text":"Al je gegevens worden veilig binnen de EU opgeslagen en verwerkt conform de AVG/GDPR."}},
+    {"@type":"Question","name":"Kan ik maandelijks opzeggen?","acceptedAnswer":{"@type":"Answer","text":"Ja, je abonnement is elke maand opzegbaar. Geen langlopend contract of opzegtermijn."}}
+  ]
+}
+</script>
+
 <!-- FOOTER -->
 <footer>
   <div class="footer-inner">
@@ -1215,6 +1274,16 @@ footer{background:var(--ink);padding:60px 24px 32px;}
           <li><a href="/verwerkersovereenkomst/">Verwerkersovereenkomst</a></li>
           <li><a href="/gdpr/">GDPR</a></li>
           <li><a href="/cookies/">Cookies</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Gidsen</div>
+        <ul class="footer-links">
+          <li><a href="/demo/">Live demo</a></li>
+          <li><a href="#faq">Veelgestelde vragen</a></li>
+          <li><a href="/vs/salonized/">Kronr vs. Salonized</a></li>
+          <li><a href="/vs/fresha/">Kronr vs. Fresha</a></li>
+          <li><a href="/vs/treatwell/">Kronr vs. Treatwell</a></li>
         </ul>
       </div>
     </div>
@@ -1963,6 +2032,32 @@ if(heroScreenshotEl){
     heroScreenshotEl.style.transform=`translateY(${offset}px)`;
   },{passive:true});
 }
+
+// ── UTM-tracking: campagneparameters uit de landingsurl vasthouden en
+// meegeven aan de belangrijkste CTA's, zodat attributie bewaard blijft
+// tot en met de signup (sessionStorage overleeft navigatie tussen pagina's) ──
+(function(){
+  const utmKeys=['utm_source','utm_medium','utm_campaign','utm_term','utm_content'];
+  const params=new URLSearchParams(location.search);
+  const incoming={};
+  let heeftUtm=false;
+  utmKeys.forEach(k=>{ if(params.has(k)){ incoming[k]=params.get(k); heeftUtm=true; } });
+  if(heeftUtm) sessionStorage.setItem('kronr_utm', JSON.stringify(incoming));
+
+  const opgeslagen=sessionStorage.getItem('kronr_utm');
+  if(!opgeslagen) return;
+  let utm;
+  try{ utm=JSON.parse(opgeslagen); }catch(e){ return; }
+  if(!utm || !Object.keys(utm).length) return;
+
+  document.querySelectorAll('a[href^="/login/"], a[href^="/demo/"]').forEach(a=>{
+    try{
+      const url=new URL(a.href, location.origin);
+      Object.entries(utm).forEach(([k,v])=>url.searchParams.set(k,v));
+      a.href=url.pathname+url.search;
+    }catch(e){}
+  });
+})();
 </script>
 
 <!-- Mobile menu -->

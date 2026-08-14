@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Live demo | Kronr</title>
+<meta name="description" content="Klik zelf door een voorbeeld van het Kronr-dashboard — agenda, kassa en klanten. Geen account nodig.">
+<meta name="robots" content="index,follow">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="canonical" href="https://kronr.nl/demo/">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --iv:#faf8f4;--white:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
+  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;}
+a{color:inherit;}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--bd);background:var(--white);}
+.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
+.logo em{font-style:normal;color:var(--gd);}
+.topbar-actions{display:flex;align-items:center;gap:16px;}
+.back-link{font-size:13px;color:var(--mu);text-decoration:none;font-weight:500;}
+.btn-primary{background:var(--ink);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;}
+.demo-banner{text-align:center;padding:28px 20px 8px;}
+.demo-banner h1{font-family:'Playfair Display',serif;font-size:clamp(22px,3.4vw,32px);margin-bottom:8px;}
+.demo-banner p{color:var(--mu);font-size:14px;max-width:520px;margin:0 auto;}
+.demo-tag{display:inline-block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);font-weight:700;margin-bottom:10px;}
+
+.demo-wrap{max-width:1040px;margin:24px auto 80px;padding:0 20px;}
+.demo-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.demo-tab{background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;color:var(--mu);cursor:pointer;transition:.15s;}
+.demo-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
+.demo-tab:hover:not(.active){border-color:var(--gd);color:var(--ink);}
+
+.app-mockup{background:var(--iv);border-radius:16px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 32px 80px rgba(15,13,11,.12),0 8px 24px rgba(15,13,11,.08);min-height:560px;display:flex;flex-direction:column;}
+.mock-nav{height:48px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 18px;gap:12px;}
+.mock-dots{display:flex;gap:6px;}
+.mock-dot{width:11px;height:11px;border-radius:50%;}
+.mock-logo{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-left:8px;}
+.mock-logo em{color:var(--gd);font-style:normal;}
+.mock-body{flex:1;display:flex;}
+.mock-sidebar{width:56px;background:#1a1714;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:10px;}
+.mock-si{width:32px;height:32px;background:rgba(255,255,255,.08);border-radius:7px;}
+.mock-si.on{background:rgba(140,109,63,.5);}
+.mock-content{flex:1;padding:22px;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
+.kpi{background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:14px;}
+.kpi-l{font-size:11px;color:var(--mu);margin-bottom:6px;font-weight:500;}
+.kpi-v{font-size:22px;font-weight:700;letter-spacing:-.3px;}
+
+.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;overflow:hidden;}
+.panel-head{padding:12px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:600;display:flex;justify-content:space-between;}
+.panel-head span:last-child{color:var(--gd);font-size:12px;}
+
+.agenda-rows{display:grid;grid-template-columns:56px repeat(4,1fr);gap:1px;background:var(--bd);}
+.ah{background:var(--iv);padding:8px;font-size:10px;text-align:center;color:var(--mu2);font-weight:600;}
+.aslot{background:var(--white);height:44px;position:relative;}
+.apt{position:absolute;inset:2px;border-radius:5px;padding:5px 7px;font-size:10px;font-weight:600;overflow:hidden;cursor:pointer;transition:opacity .15s;}
+.apt:hover{opacity:.85;}
+.apt.c0{background:#e8d5f5;color:#6b3fa0;}
+.apt.c1{background:#ffd9c0;color:#c05a00;}
+.apt.c2{background:#c8f0d8;color:#1a7a40;}
+.apt.c3{background:#c8e8ff;color:#1a5fa0;}
+.atime{background:var(--iv);padding:8px;font-size:10px;color:var(--mu2);text-align:right;}
+
+.kassa-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
+.cart-item{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
+.cart-total{display:flex;justify-content:space-between;padding:14px 16px;font-size:15px;font-weight:700;background:var(--iv);}
+.pay-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px;}
+.pay-btn{border:1px solid var(--bd);background:var(--white);border-radius:8px;padding:12px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;}
+.pay-btn.on{background:var(--ink);color:#fff;border-color:var(--ink);}
+
+.klant-rows{display:flex;flex-direction:column;}
+.klant-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
+.klant-avatar{width:32px;height:32px;border-radius:50%;background:var(--wm);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gd2);flex-shrink:0;}
+.klant-name{font-weight:600;flex:1;}
+.klant-meta{color:var(--mu);font-size:11px;}
+.stempel-dots{display:flex;gap:3px;}
+.stempel-dot{width:9px;height:9px;border-radius:50%;background:var(--bd);}
+.stempel-dot.on{background:var(--gd);}
+
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:.25s;pointer-events:none;z-index:50;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+.demo-cta{text-align:center;margin-top:32px;padding:28px;background:var(--white);border:1px solid var(--bd);border-radius:14px;}
+.demo-cta h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:8px;}
+.demo-cta p{color:var(--mu);font-size:13px;margin-bottom:18px;}
+
+@media(max-width:720px){
+  .kpi-row{grid-template-columns:repeat(2,1fr);}
+  .kassa-grid{grid-template-columns:1fr;}
+  .agenda-rows{grid-template-columns:44px repeat(2,1fr);}
+  .ah:nth-child(n+4):nth-child(-n+5){display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="logo">Kronr<em>.</em></div>
+  <div class="topbar-actions">
+    <a href="/" class="back-link">← Terug naar site</a>
+    <a href="/login/" class="btn-primary">Start gratis</a>
+  </div>
+</div>
+
+<div class="demo-banner">
+  <div class="demo-tag">Live demo</div>
+  <h1>Klik zelf door het Kronr-dashboard</h1>
+  <p>Dit is een voorbeeldsalon met verzonnen data. Klik op een afspraak, wissel van tab of rond een betaling af — alles werkt, niets wordt opgeslagen.</p>
+</div>
+
+<div class="demo-wrap">
+  <div class="demo-tabs">
+    <button class="demo-tab active" data-tab="agenda">Agenda</button>
+    <button class="demo-tab" data-tab="kassa">Kassa</button>
+    <button class="demo-tab" data-tab="klanten">Klanten</button>
+  </div>
+
+  <div class="app-mockup">
+    <div class="mock-nav">
+      <div class="mock-dots">
+        <div class="mock-dot" style="background:#ff5f57;"></div>
+        <div class="mock-dot" style="background:#febc2e;"></div>
+        <div class="mock-dot" style="background:#28c840;"></div>
+      </div>
+      <div class="mock-logo">Kronr<em>.</em></div>
+    </div>
+    <div class="mock-body">
+      <div class="mock-sidebar">
+        <div class="mock-si" data-side="agenda"></div>
+        <div class="mock-si" data-side="kassa"></div>
+        <div class="mock-si" data-side="klanten"></div>
+        <div class="mock-si"></div>
+      </div>
+      <div class="mock-content" id="tabContent"></div>
+    </div>
+  </div>
+
+  <div class="demo-cta">
+    <h2>Zo simpel ziet het er straks bij jou uit</h2>
+    <p>Binnen 15 minuten met je eigen diensten, prijzen en team ingericht.</p>
+    <a href="/login/" class="btn-primary">Start 14 dagen gratis →</a>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const KPI_ROW = `
+  <div class="kpi-row">
+    <div class="kpi"><div class="kpi-l">Vandaag</div><div class="kpi-v">8</div></div>
+    <div class="kpi"><div class="kpi-l">Omzet</div><div class="kpi-v">€640</div></div>
+    <div class="kpi"><div class="kpi-l">Klanten</div><div class="kpi-v">247</div></div>
+    <div class="kpi"><div class="kpi-l">Bezetting</div><div class="kpi-v">87%</div></div>
+  </div>`;
+
+const AGENDA = `
+  ${KPI_ROW}
+  <div class="panel">
+    <div class="panel-head"><span>Agenda vandaag</span><span>Week →</span></div>
+    <div class="agenda-rows">
+      <div class="ah"></div><div class="ah">Jasmijn</div><div class="ah">Sara</div><div class="ah">Tom</div><div class="ah">Nina</div>
+      <div class="atime">9:00</div>
+      <div class="aslot"><div class="apt c0" onclick="toast('Knippen — Fem de Vries, 09:00')">Fem: Knippen</div></div>
+      <div class="aslot"></div>
+      <div class="aslot"><div class="apt c2" onclick="toast('Highlights — Roos B., 09:00')">Roos: Highlights</div></div>
+      <div class="aslot"></div>
+      <div class="atime">10:00</div>
+      <div class="aslot"></div>
+      <div class="aslot"><div class="apt c1" onclick="toast('Baard trimmen — Daan K., 10:00')">Daan: Baard</div></div>
+      <div class="aslot"></div>
+      <div class="aslot"><div class="apt c3" onclick="toast('Kleuring — Iris V., 10:00')">Iris: Kleuring</div></div>
+      <div class="atime">11:00</div>
+      <div class="aslot"><div class="apt c2" onclick="toast('Föhnen — Maud S., 11:00')">Maud: Föhnen</div></div>
+      <div class="aslot"></div>
+      <div class="aslot"></div>
+      <div class="aslot"><div class="apt c0" onclick="toast('Knippen — Lars P., 11:00')">Lars: Knippen</div></div>
+    </div>
+  </div>`;
+
+const KASSA = `
+  ${KPI_ROW}
+  <div class="kassa-grid">
+    <div class="panel">
+      <div class="panel-head"><span>Bon — Roos B.</span><span></span></div>
+      <div class="cart-item"><span>Highlights</span><span>€85,00</span></div>
+      <div class="cart-item"><span>Föhnen</span><span>€22,50</span></div>
+      <div class="cart-item"><span>Kortingscode SUMMER10</span><span>-€10,75</span></div>
+      <div class="cart-total"><span>Totaal</span><span>€96,75</span></div>
+    </div>
+    <div class="panel">
+      <div class="panel-head"><span>Afrekenen</span><span></span></div>
+      <div class="pay-btns">
+        <div class="pay-btn on" onclick="toast('Betaling van €96,75 via iDEAL afgerond ✓')">iDEAL</div>
+        <div class="pay-btn" onclick="toast('Betaling van €96,75 via pin afgerond ✓')">Pin</div>
+        <div class="pay-btn" onclick="toast('Betaling van €96,75 contant afgerond ✓')">Contant</div>
+        <div class="pay-btn" onclick="toast('Cadeaubon KRONR-8F2X toegepast')">Cadeaubon</div>
+      </div>
+    </div>
+  </div>`;
+
+const KLANTEN = `
+  ${KPI_ROW}
+  <div class="panel">
+    <div class="panel-head"><span>Klanten</span><span>247 totaal</span></div>
+    <div class="klant-rows">
+      <div class="klant-row" onclick="toast('Klantprofiel Fem de Vries geopend')">
+        <div class="klant-avatar">FV</div>
+        <div><div class="klant-name">Fem de Vries</div><div class="klant-meta">Laatste bezoek: 3 dagen geleden</div></div>
+        <div class="stempel-dots">${dots(8,10)}</div>
+      </div>
+      <div class="klant-row" onclick="toast('Klantprofiel Roos Bakker geopend')">
+        <div class="klant-avatar">RB</div>
+        <div><div class="klant-name">Roos Bakker</div><div class="klant-meta">Laatste bezoek: vandaag</div></div>
+        <div class="stempel-dots">${dots(3,10)}</div>
+      </div>
+      <div class="klant-row" onclick="toast('Klantprofiel Daan Klerks geopend')">
+        <div class="klant-avatar">DK</div>
+        <div><div class="klant-name">Daan Klerks</div><div class="klant-meta">Laatste bezoek: vorige week</div></div>
+        <div class="stempel-dots">${dots(10,10)}</div>
+      </div>
+    </div>
+  </div>`;
+
+function dots(on,total){
+  let h='';
+  for(let i=0;i<total;i++) h+=`<div class="stempel-dot${i<on?' on':''}"></div>`;
+  return h;
+}
+
+const TABS = {agenda:AGENDA, kassa:KASSA, klanten:KLANTEN};
+
+function showTab(name){
+  document.getElementById('tabContent').innerHTML = TABS[name];
+  document.querySelectorAll('.demo-tab').forEach(t=>t.classList.toggle('active', t.dataset.tab===name));
+  document.querySelectorAll('.mock-si').forEach(s=>s.classList.toggle('on', s.dataset.side===name));
+}
+
+document.querySelectorAll('.demo-tab').forEach(t=>t.addEventListener('click',()=>showTab(t.dataset.tab)));
+document.querySelectorAll('.mock-si[data-side]').forEach(s=>s.addEventListener('click',()=>showTab(s.dataset.side)));
+
+let toastTimer;
+function toast(msg){
+  const el=document.getElementById('toast');
+  el.textContent=msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),2200);
+}
+
+showTab('agenda');
+</script>
+</body>
+</html>
