@@ -612,7 +612,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="nav-actions">
       <a href="/login/" class="nav-login">Inloggen</a>
       <a href="/demo/" class="nav-demo">Bekijk demo</a>
-      <a href="/login/" class="nav-cta">Start gratis</a>
+      <a href="/login/" class="nav-cta">Start 14 dagen gratis</a>
       <button class="mob-menu" id="mob-menu" onclick="toggleMob()">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
       </button>
@@ -626,11 +626,11 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     <div class="hero-left">
       <div class="hero-text-group">
         <h1 class="hero-title">Besteed minder tijd aan administratie.<br><span class="hero-word-meer">Meer</span> tijd voor<br><span class="hero-je">je</span><span id="heroJeSpace"> </span><span class="hero-cycle-wrap"><span id="heroCycleWord" class="hero-cycle-word"></span><span class="hero-cycle-cursor"></span></span>.</h1>
-        <p class="hero-sub">Alles wat je salon nodig heeft. Eén platform. Eén abonnement. Eén overzicht. Zonder commissie.</p>
+        <p class="hero-sub">Van agenda en betalingen tot WhatsApp en AI. Alles voor je salon in één platform, zonder commissie.</p>
       </div>
       <div class="hero-btns">
         <a href="/login/" class="btn-primary">Start 14 dagen gratis <span class="btn-arrow">→</span></a>
-        <a href="/demo/" class="btn-secondary">Bekijk live demo</a>
+        <a href="/demo/" class="btn-secondary">Bekijk demo</a>
       </div>
       <div class="hero-usps">
         <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen creditcard</div>
@@ -1891,7 +1891,7 @@ idxSetPeriod('yearly');
 
 // Hero-titel: cyclisch "getypt" slotwoord (voor wie de tijd is)
 (function(){
-  const woorden=['klanten','team','familie','zelf'];
+  const woorden=['klanten','team','zelf'];
   const el=document.getElementById('heroCycleWord');
   const spatieEl=document.getElementById('heroJeSpace');
   if(!el) return;
