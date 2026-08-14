@@ -44,6 +44,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .nav-cta{padding:9px 22px;background:var(--ink);color:var(--white);font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;transition:all .2s;letter-spacing:-.1px;}
 .nav-cta:hover{background:var(--ink2);transform:translateY(-1px);}
 .nav-login{font-size:14px;font-weight:500;color:var(--ink);text-decoration:none;}
+.nav-demo{padding:8px 20px;background:transparent;color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;border:1.5px solid var(--bd2);transition:all .2s;letter-spacing:-.1px;}
+.nav-demo:hover{border-color:var(--ink);background:var(--iv);}
 .mob-menu{display:none;width:36px;height:36px;border:none;background:transparent;cursor:pointer;margin-left:auto;}
 
 /* ── HERO ── */
@@ -455,12 +457,15 @@ a:hover .btn-arrow{transform:translateX(4px);}
 /* ── FOOTER ── */
 footer{background:var(--ink);padding:60px 24px 32px;}
 .footer-inner{max-width:1200px;margin:0 auto;}
-.cookie-notice{position:fixed;left:20px;right:20px;bottom:-100px;z-index:200;max-width:640px;margin:0 auto;background:var(--ink);color:#fff;border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;box-shadow:0 16px 40px rgba(0,0,0,.25);transition:bottom .35s cubic-bezier(.2,.8,.2,1);}
-.cookie-notice.show{bottom:20px;}
+.cookie-notice{position:fixed;left:20px;right:20px;bottom:20px;z-index:250;max-width:640px;margin:0 auto;background:var(--ink);color:#fff;border-radius:12px;padding:16px 18px;padding-bottom:calc(16px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 16px 40px rgba(0,0,0,.25);transform:translateY(140%);opacity:0;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s;pointer-events:none;}
+.cookie-notice.show{transform:translateY(0);opacity:1;pointer-events:auto;}
 .cookie-notice-text{flex:1;min-width:200px;font-size:13px;line-height:1.6;color:rgba(255,255,255,.85);}
 .cookie-notice-text a{color:#fff;text-decoration:underline;}
-.cookie-notice-btn{background:#fff;color:var(--ink);border:none;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;}
-@media(max-width:480px){.cookie-notice{flex-direction:column;align-items:stretch;}.cookie-notice-btn{width:100%;}}
+.cookie-notice-actions{display:flex;align-items:center;gap:8px;}
+.cookie-notice-btn{background:#fff;color:var(--ink);border:none;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;touch-action:manipulation;}
+.cookie-notice-close{background:transparent;border:none;color:rgba(255,255,255,.6);font-size:20px;line-height:1;cursor:pointer;padding:6px 8px;touch-action:manipulation;}
+.cookie-notice-close:hover{color:#fff;}
+@media(max-width:480px){.cookie-notice{flex-direction:column;align-items:stretch;}.cookie-notice-actions{justify-content:space-between;}.cookie-notice-btn{flex:1;}}
 .faq-section{padding:96px 32px;}
 .faq-list{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
 .faq-item{background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px 22px;}
@@ -535,7 +540,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
 }
 @media(max-width:768px){
   .nav-links{display:none;}
-  .nav-login,.nav-cta{display:none;}
+  .nav-login,.nav-cta,.nav-demo{display:none;}
   .mob-menu{display:flex;align-items:center;justify-content:center;}
   .hero{min-height:100dvh;padding:96px 16px 64px;display:flex;flex-direction:column;}
   .hero-label-wrap{margin-bottom:0;}
@@ -606,6 +611,7 @@ footer{background:var(--ink);padding:60px 24px 32px;}
     </div>
     <div class="nav-actions">
       <a href="/login/" class="nav-login">Inloggen</a>
+      <a href="/demo/" class="nav-demo">Bekijk demo</a>
       <a href="/login/" class="nav-cta">Start gratis</a>
       <button class="mob-menu" id="mob-menu" onclick="toggleMob()">
         <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -2079,6 +2085,7 @@ if(heroScreenshotEl){
     <a href="#prijzen" class="mob-link" onclick="closeMob()">Prijzen</a>
   </div>
   <div class="mob-nav-foot">
+    <a href="/demo/" class="mob-btn-login">Bekijk demo</a>
     <a href="/login/" class="mob-btn-login">Inloggen</a>
     <a href="/login/" class="mob-btn-start">Start 14 dagen gratis →</a>
   </div>
@@ -2089,19 +2096,24 @@ if(heroScreenshotEl){
      (Supabase Auth-sessie, Cloudflare Turnstile) — zie /cookies/. -->
 <div class="cookie-notice" id="cookieNotice">
   <p class="cookie-notice-text">We gebruiken alleen functionele cookies om Kronr te laten werken en te beveiligen — geen marketing- of trackingcookies. <a href="/cookies/">Meer info</a></p>
-  <button class="cookie-notice-btn" id="cookieNoticeBtn">Begrepen</button>
+  <div class="cookie-notice-actions">
+    <button class="cookie-notice-btn" id="cookieNoticeBtn">Begrepen</button>
+    <button class="cookie-notice-close" id="cookieNoticeClose" aria-label="Sluiten">✕</button>
+  </div>
 </div>
 <script>
 (function(){
   const KEY='kronr_cookienotice_gezien';
   const el=document.getElementById('cookieNotice');
   if(!el) return;
-  if(localStorage.getItem(KEY)) return;
-  el.classList.add('show');
-  document.getElementById('cookieNoticeBtn').addEventListener('click',()=>{
+  function sluit(){
     localStorage.setItem(KEY,'1');
     el.classList.remove('show');
-  });
+  }
+  if(localStorage.getItem(KEY)) return;
+  requestAnimationFrame(()=>el.classList.add('show'));
+  document.getElementById('cookieNoticeBtn').addEventListener('click',sluit);
+  document.getElementById('cookieNoticeClose').addEventListener('click',sluit);
 })();
 </script>
 </body>
