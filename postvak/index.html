@@ -55,6 +55,7 @@ body{font-family:'Inter',sans-serif;background:var(--content-bg);overflow:hidden
 .lijst-panel{width:360px;flex:0 0 360px;border-right:1px solid var(--bd);display:flex;flex-direction:column;background:var(--list-bg);transition:background .2s,border-color .2s;}
 .lijst-header{padding:20px 20px 14px;display:flex;flex-direction:column;gap:12px;border-bottom:1px solid var(--bd);}
 .lijst-header-top{display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.lijst-header-acties{display:flex;align-items:center;gap:6px;}
 .lijst-titel{font-size:17px;font-weight:700;color:var(--ink);}
 .btn-nieuw-mobiel{display:none;width:32px;height:32px;border-radius:50%;background:var(--sidebar-bg);color:var(--sidebar-text);border:none;align-items:center;justify-content:center;font-size:18px;cursor:pointer;flex-shrink:0;}
 .zoek-input-wrap{position:relative;}
@@ -191,14 +192,16 @@ body{font-family:'Inter',sans-serif;background:var(--content-bg);overflow:hidden
       <div class="lijst-header">
         <div class="lijst-header-top">
           <div class="lijst-titel" id="lijst-titel">Postvak IN</div>
-          <button class="icon-btn" id="ververs-btn" onclick="ververs()" title="Vernieuwen" aria-label="Vernieuwen">
-            <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
-          </button>
-          <button class="btn-dark btn-nieuw-desktop" onclick="toonNieuwBericht()">+ Nieuw</button>
-          <button class="btn-nieuw-mobiel" onclick="toonNieuwBericht()" title="Nieuw bericht" aria-label="Nieuw bericht">+</button>
-          <button class="icon-btn mobiel-menu-btn" onclick="wisselMobielMenu()" title="Meer" aria-label="Meer">
-            <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
-          </button>
+          <div class="lijst-header-acties">
+            <button class="icon-btn" id="ververs-btn" onclick="ververs()" title="Vernieuwen" aria-label="Vernieuwen">
+              <svg width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+            </button>
+            <button class="btn-dark btn-nieuw-desktop" onclick="toonNieuwBericht()">+ Nieuw</button>
+            <button class="btn-nieuw-mobiel" onclick="toonNieuwBericht()" title="Nieuw bericht" aria-label="Nieuw bericht">+</button>
+            <button class="icon-btn mobiel-menu-btn" onclick="wisselMobielMenu()" title="Meer" aria-label="Meer">
+              <svg width="19" height="19" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.5"/><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/></svg>
+            </button>
+          </div>
         </div>
         <div class="zoek-input-wrap">
           <svg class="zoek-icon" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
