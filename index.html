@@ -34,7 +34,8 @@ nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border
 .nav-inner{max-width:1600px;margin:0 auto;padding:0 24px;height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;}
 .nav-links-wrap{display:flex;justify-content:flex-start;order:1;}
 .nav-actions{display:flex;align-items:center;gap:20px;justify-content:flex-end;order:3;}
-.nav-logo{font-family:'Playfair Display',serif;font-size:34px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-0.5px;order:2;}
+.nav-logo{font-family:'Playfair Display',serif;font-size:34px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-0.5px;order:2;display:inline-block;transition:transform .25s ease;}
+.nav-logo:hover{transform:scale(1.04);}
 .nav-logo em{color:var(--gd);font-style:normal;}
 .nav-links{display:flex;align-items:center;gap:28px;}
 .nav-link{position:relative;font-size:14px;font-weight:500;color:var(--ink2);text-decoration:none;transition:color .2s;}
@@ -227,6 +228,8 @@ a:hover .btn-arrow{transform:translateX(4px);}
 .vw-panel-benefits li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);flex-shrink:0;}
 .vw-panel-visual{background:var(--iv);border:1px solid var(--bd);border-radius:12px;padding:24px;min-height:300px;display:flex;flex-direction:column;justify-content:center;gap:14px;}
 .vw-visual-shot{border-radius:10px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 10px 28px rgba(15,13,11,.10);background:var(--white);}
+.vw-visual-shot img{transition:transform .5s cubic-bezier(.2,.8,.2,1);}
+.vw-visual-shot:hover img{transform:scale(1.04);}
 .vw-visual-shot-bar{height:24px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px;padding:0 12px;}
 .vw-visual-shot-bar span{width:7px;height:7px;border-radius:50%;background:var(--bd);}
 .vw-visual-shot img{display:block;width:100%;height:auto;}
@@ -416,7 +419,8 @@ a:hover .btn-arrow{transform:translateX(4px);}
 .testi-rating{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:var(--ink2);}
 .testi-rating-stars{color:var(--gd);font-size:18px;letter-spacing:2px;}
 .testi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:52px;}
-.testi-card{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:36px 32px;}
+.testi-card{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:36px 32px;transition:transform .3s ease,box-shadow .3s ease,border-color .2s;}
+.testi-card:hover{transform:translateY(-4px);border-color:var(--gd);box-shadow:0 16px 40px rgba(140,109,63,.1);}
 .testi-stars{color:var(--gd);font-size:15px;margin-bottom:18px;letter-spacing:3px;}
 .testi-text{font-size:16px;color:var(--ink2);line-height:1.75;margin-bottom:22px;font-weight:300;}
 .testi-text::before{content:'"';}
@@ -446,7 +450,8 @@ a:hover .btn-arrow{transform:translateX(4px);}
 .photo-section{padding:100px 24px;background:var(--white);}
 .photo-section-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center;}
 .photo-frame{aspect-ratio:4/5;border-radius:20px;background:var(--iv);border:1px solid var(--bd);overflow:hidden;position:relative;}
-.photo-frame img{width:100%;height:100%;object-fit:cover;display:block;}
+.photo-frame img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.8,.2,1);}
+.photo-frame:hover img{transform:scale(1.06);}
 .photo-illustration{width:100%;height:100%;display:block;}
 .photo-frame-caption{position:absolute;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(0deg,rgba(15,13,11,.55) 0%,transparent 100%);color:#fff;font-size:11.5px;font-weight:500;text-align:center;}
 
@@ -2038,16 +2043,42 @@ if(aiVisualEl){
   aiVisualObs.observe(aiVisualEl);
 }
 
-// ── Parallax op de hero-mockup: beweegt lichtjes trager dan de scroll,
-// alleen zolang de hero zichtbaar is (voorkomt vreemde effecten verderop) ──
+// ── Parallax + 3D-tilt op de hero-mockup: scroll beweegt 'm lichtjes
+// trager dan de pagina, en op desktop kantelt-ie licht mee met de muis.
+// Beide effecten schrijven naar dezelfde transform, dus gecombineerd
+// in één functie zodat ze elkaar niet overschrijven. ──
 const heroScreenshotEl=document.querySelector('.hero-screenshot');
 if(heroScreenshotEl){
+  let scrollOffset=0, tiltX=0, tiltY=0;
+  const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const magKanTilt=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+  function pasHeroTransformToe(){
+    heroScreenshotEl.style.transform=`translateY(${scrollOffset}px) perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+  }
+
   window.addEventListener('scroll',()=>{
     const rect=heroScreenshotEl.parentElement.getBoundingClientRect();
     if(rect.bottom<0||rect.top>window.innerHeight) return; // buiten beeld, niks doen
-    const offset=Math.max(0,-rect.top)*0.08;
-    heroScreenshotEl.style.transform=`translateY(${offset}px)`;
+    scrollOffset=Math.max(0,-rect.top)*0.08;
+    pasHeroTransformToe();
   },{passive:true});
+
+  if(!reduceMotion && magKanTilt){
+    heroScreenshotEl.style.transition='transform .15s ease-out';
+    heroScreenshotEl.addEventListener('mousemove',e=>{
+      const rect=heroScreenshotEl.getBoundingClientRect();
+      const px=(e.clientX-rect.left)/rect.width-0.5;
+      const py=(e.clientY-rect.top)/rect.height-0.5;
+      tiltX=py*-4;
+      tiltY=px*4;
+      pasHeroTransformToe();
+    });
+    heroScreenshotEl.addEventListener('mouseleave',()=>{
+      tiltX=0;tiltY=0;
+      pasHeroTransformToe();
+    });
+  }
 }
 
 // ── UTM-tracking: campagneparameters uit de landingsurl vasthouden en
