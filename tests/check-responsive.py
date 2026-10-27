@@ -43,9 +43,9 @@ VIEWPORTS = [
 ]
 
 DEFAULT_PAGES = [
-    "dashboard.html", "agenda.html", "klanten.html", "kassa.html",
-    "medewerkers.html", "diensten.html", "rapportages.html",
-    "instellingen.html", "boeken.html", "index.html",
+    "dashboard/", "agenda/", "klanten/", "kassa/",
+    "medewerkers/", "diensten/", "rapportages/",
+    "instellingen/", "boeken/", "index.html", "demo/", "login/",
 ]
 
 MOCK_JS = """
@@ -190,7 +190,9 @@ def run():
                     js_errors = []
                     page.on("pageerror", lambda exc: js_errors.append(str(exc)))
                     try:
-                        page.goto(f"http://localhost:{PORT}/{page_file}", wait_until="load", timeout=15000)
+                        response = page.goto(f"http://localhost:{PORT}/{page_file}", wait_until="load", timeout=15000)
+                        if not response or response.status >= 400:
+                            raise RuntimeError(f"HTTP {response.status if response else 'no response'}")
                         page.wait_for_timeout(1200)
                         res = page.evaluate(CHECK_JS)
                         ok = (not res["trueOverflow"]) and (len(js_errors) == 0)
