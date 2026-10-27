@@ -1,0 +1,53 @@
+/* Visual identity only: retain app layout, status colours and behavior. */
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap");
+:root {
+  --iv: #f8f6ef;
+  --wm: #eeebf1;
+  --bd: #ded7e3;
+  --bd2: #b1a2bc;
+  --gd: #725187;
+  --gd2: #533467;
+  --ink: #251a2e;
+  --mu: #716679;
+  --mu2: #82738b;
+}
+html,
+body,
+button,
+input,
+textarea,
+select {
+  font-family: "DM Sans", sans-serif;
+}
+.sidebar {
+  background: #251a2e;
+}
+.sb-logo {
+  font-size: 0 !important;
+  min-height: 40px;
+  position: relative;
+}
+.sb-logo em {
+  display: none;
+}
+.sb-logo::after {
+  content: "";
+  display: block;
+  width: 116px;
+  height: 34px;
+  background: #f8f6ef;
+  mask: url("/images/kronr-wordmark.svg") center/contain no-repeat;
+}
+.si.on {
+  border-left-color: #e3f291;
+  background: #ffffff0d;
+  color: #fff;
+}
+.sb-av {
+  background: #d8c9ef;
+  color: #251a2e;
+}
+:focus-visible {
+  outline: 3px solid #956fc5;
+  outline-offset: 3px;
+}

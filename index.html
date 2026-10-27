@@ -31,6 +31,7 @@
     />
     <link rel="stylesheet" href="/rebrand.css" />
     <script src="/rebrand.js" defer></script>
+    <link rel="stylesheet" href="/rebrand-refinements.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Naar de inhoud</a>
@@ -247,74 +248,81 @@
             betaalmoment: alles sluit op elkaar aan.
           </p>
         </div>
-        <div class="flow-cards">
-          <article class="flow-card booking-card">
-            <div class="card-index">01 <span>VOOR DE AFSPRAAK</span></div>
-            <h3>Je klant boekt.<br />Jij werkt door.</h3>
-            <p>
-              Een eigen boekingspagina waar je klanten zelf een dienst en tijd
-              kiezen.
-            </p>
-            <div class="booking-widget">
-              <span class="widget-brand">STUDIO NOVA</span
-              ><strong>Een moment voor jezelf.</strong>
-              <div class="widget-service">
-                <span>Knippen & styling<small>60 minuten</small></span
-                ><strong>€ 72</strong>
-              </div>
-              <div class="widget-days">
-                <span>MA<b>19</b></span
-                ><span>DI<b>20</b></span
-                ><span class="selected">WO<b>21</b></span
-                ><span>DO<b>22</b></span
-                ><span>VR<b>23</b></span>
-              </div>
-              <div class="widget-times">
-                <span>09:00</span><span class="selected">11:00 ✓</span
-                ><span>14:30</span>
-              </div>
-              <span class="widget-label">Voorbeeld van een online boeking</span>
+        <div class="booking-journey" data-stage="0">
+          <div class="journey-story">
+            <div
+              class="journey-progress"
+              aria-label="Stappen van het voorbeeld"
+            >
+              <span data-journey-step>01 / BOEKEN</span
+              ><span data-journey-step>02 / AGENDA</span
+              ><span data-journey-step>03 / AFREKENEN</span>
             </div>
-          </article>
-          <article class="flow-card client-card">
-            <div class="card-index">02 <span>IN DE STOEL</span></div>
-            <h3>Niet zomaar een klant.<br />Jouw vaste Emma.</h3>
-            <p>
-              Afspraakgeschiedenis, voorkeuren en notities bij elkaar. Voor
-              aandacht die persoonlijk voelt.
+            <h3 data-journey-title>Jouw klant kiest.</h3>
+            <p data-journey-status aria-live="polite">
+              Kies een tijd en probeer een voorbeeldboeking.
             </p>
-            <div class="client-widget">
-              <div class="client-avatar">EV</div>
-              <strong>Emma van Dijk</strong
-              ><span>Voorbeeldklant · sinds 2024</span>
-              <div class="client-note">
-                <span>✳ GOED OM TE WETEN</span>
-                <p>
-                  Houdt van een natuurlijke kleur.<br />Het liefst een afspraak
-                  op woensdag.
-                </p>
+            <button class="btn btn-lime" data-journey-action>
+              Boek deze voorbeeldplek →
+            </button>
+            <small
+              >Interactief voorbeeld · fictieve gegevens.<br />Je maakt geen
+              echte boeking of betaling.</small
+            >
+          </div>
+          <div class="journey-window">
+            <div class="journey-window-head">
+              <span>STUDIO NOVA</span><span>powered by kronr.</span>
+            </div>
+            <div data-journey-panel>
+              <span class="eyebrow">EEN MOMENT VOOR JEZELF</span>
+              <h4>Mooi begint<br />met aandacht.</h4>
+              <div class="journey-service">
+                <span>Knippen & styling<small>Julia · 60 minuten</small></span
+                ><b>€ 72</b>
               </div>
-              <div class="client-tags">
-                <span>Knippen & styling</span><span>6 bezoeken</span>
+              <p>Woensdag · beschikbare voorbeeldtijden</p>
+              <div
+                class="journey-times"
+                role="group"
+                aria-label="Kies een voorbeeldtijd"
+              >
+                <button data-time="09:30" aria-pressed="false">09:30</button
+                ><button data-time="11:00" aria-pressed="true">11:00</button
+                ><button data-time="14:30" aria-pressed="false">14:30</button>
               </div>
             </div>
-          </article>
-          <article class="flow-card payment-card">
-            <div class="card-index">03 <span>NA DE AFSPRAAK</span></div>
-            <h3>Mooi resultaat.<br />Netjes afgerond.</h3>
-            <p>
-              Afrekenen en overzicht houden, zonder de werkdag opnieuw bij
-              elkaar te puzzelen.
-            </p>
-            <div class="receipt">
-              <span class="receipt-check">✓</span
-              ><strong>Helemaal geregeld.</strong><span>Voorbeeldbetaling</span>
-              <div><span>Knippen & styling</span><b>€ 72,00</b></div>
-              <div><span>Betaald</span><b>€ 72,00</b></div>
-              <span class="receipt-wordmark">kronr.</span>
+            <div data-journey-panel hidden>
+              <span class="eyebrow">WOENSDAG / JULIA</span>
+              <h4>Een plek.<br />Alles erbij.</h4>
+              <div class="journey-appointment">
+                <strong
+                  ><span data-chosen-time>11:00</span> · Lisa de Vries</strong
+                >
+                <p>Knippen & styling · 60 min</p>
+                <span>Online geboekt ✓</span>
+              </div>
+              <div class="journey-note">
+                Klantnotitie<small
+                  >Graag de lengte behouden, alleen de punten.</small
+                >
+              </div>
             </div>
-          </article>
+            <div data-journey-panel hidden>
+              <span class="eyebrow">VOORBEELDBON</span>
+              <h4>Tot de<br />volgende keer.</h4>
+              <div class="journey-service">
+                <span
+                  >Lisa · <span data-chosen-time>11:00</span
+                  ><small>Knippen & styling</small></span
+                ><b>€ 72,00</b>
+              </div>
+              <div class="journey-paid">✓ Voorbeeld afgerond</div>
+              <p>Afspraak, klant en betaling in één overzicht.</p>
+            </div>
+          </div>
         </div>
+        <script src="/journey.js" defer></script>
         <a class="text-link dark-link" href="/demo/"
           >Probeer de interactieve demo ↗</a
         >
