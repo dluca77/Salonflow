@@ -1,0 +1,240 @@
+/* Visual bridge for existing demo/auth. Authentication and payment logic unchanged. */
+:root {
+  --iv: #f8f6ef;
+  --wm: #eeebf1;
+  --bd: #dcd4e1;
+  --bd2: #a99ab4;
+  --gd: #725187;
+  --gd2: #533467;
+  --ink: #251a2e;
+  --ink2: #392b43;
+  --mu: #716679;
+  --mu2: #82738b;
+}
+html,
+body,
+button,
+input,
+select {
+  font-family: "DM Sans", sans-serif;
+}
+body {
+  background: var(--iv);
+}
+:focus-visible {
+  outline: 3px solid #956fc5;
+  outline-offset: 4px;
+}
+.logo,
+.left-logo {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 700;
+  letter-spacing: -1.5px;
+  font-size: 30px;
+  text-transform: lowercase;
+}
+.logo em,
+.left-logo em {
+  color: inherit;
+}
+.topbar {
+  background: var(--ink);
+  color: var(--iv);
+  padding: 24px clamp(20px, 4vw, 60px);
+}
+.topbar .back-link {
+  color: #d0c2db;
+}
+.topbar .btn-primary {
+  background: #e3f291;
+  color: var(--ink);
+  border-radius: 7px;
+}
+h1,
+h2,
+.right-title,
+.left-title {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+  letter-spacing: -1.4px;
+}
+h1 {
+  font-size: clamp(36px, 4vw, 60px);
+}
+.tab-btn.active,
+.btn-primary,
+.btn-main {
+  background: var(--ink);
+  color: var(--iv);
+  border-radius: 7px;
+}
+.demo-frame {
+  border-color: var(--bd);
+  box-shadow: 0 25px 70px #251a2e10;
+}
+.wrap::before,
+.wrap::after {
+  display: none;
+}
+.left {
+  background: var(--ink);
+  padding: clamp(30px, 5vw, 80px);
+  min-height: 100vh;
+}
+.left-logo {
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+.left-logo::before {
+  content: "";
+  background: url("/images/kronr-mark.svg") center/contain no-repeat;
+  width: 32px;
+  height: 32px;
+  display: inline-block;
+  margin-right: 10px;
+}
+.left-title {
+  font-size: clamp(48px, 5.2vw, 80px);
+  line-height: 1.03;
+}
+.left-title em,
+.ls-num {
+  color: #e3f291;
+}
+.left-sub,
+.ls-lbl {
+  color: #c3b4ce;
+}
+.left-letter {
+  color: #392b43;
+  -webkit-text-stroke: 0;
+  font-family: "DM Sans", sans-serif;
+}
+.right {
+  max-width: 560px;
+}
+.right-title {
+  font-size: 48px;
+}
+.right-sub {
+  font-size: 14px;
+  line-height: 1.6;
+}
+.tab {
+  font-family: "DM Sans", sans-serif;
+}
+.finput {
+  background: #fffdfa;
+  border: 1px solid var(--bd);
+  border-radius: 7px;
+}
+.tab.active {
+  color: var(--ink);
+  border-color: var(--ink);
+}
+.demo-banner h1,
+.demo-cta h2 {
+  font-family: "Instrument Serif", Georgia, serif;
+  font-weight: 400;
+}
+.demo-banner h1 {
+  font-size: clamp(35px, 4vw, 56px);
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+.demo-cta h2 {
+  font-size: 34px;
+}
+.mock-logo {
+  font-family: "DM Sans", sans-serif;
+  letter-spacing: -0.7px;
+  text-transform: lowercase;
+}
+.mock-sidebar {
+  background: var(--ink);
+}
+.mock-si.on {
+  background: #d8c9ef;
+}
+.mock-content {
+  min-width: 0;
+}
+.agenda-scroll {
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+}
+.agenda-rows {
+  grid-template-columns: 56px repeat(4, minmax(110px, 1fr));
+  min-width: 520px;
+}
+.ah:nth-child(n + 4):nth-child(-n + 5) {
+  display: block;
+}
+.ls-num {
+  font-family: "DM Sans", sans-serif;
+  font-weight: 500;
+}
+@media (max-width: 768px) {
+  .left {
+    min-height: auto;
+    padding: 28px;
+  }
+  .left-title {
+    font-size: 46px;
+  }
+  .right {
+    padding: 35px 24px;
+  }
+  .right-title {
+    font-size: 40px;
+  }
+  .topbar {
+    padding: 18px;
+    gap: 15px;
+  }
+  .topbar-actions {
+    gap: 12px;
+  }
+  .topbar .back-link {
+    font-size: 11px;
+  }
+  .topbar .btn-primary {
+    font-size: 11px;
+    padding: 12px;
+  }
+}
+@media (max-width: 540px) {
+  .mock-sidebar {
+    display: none;
+  }
+  .mock-content {
+    padding: 14px;
+  }
+  .demo-banner {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+  .demo-banner h1 {
+    font-size: 37px;
+    letter-spacing: -1px;
+  }
+  .topbar .back-link {
+    max-width: 65px;
+  }
+  .topbar .btn-primary {
+    padding: 10px;
+    font-size: 10px;
+  }
+  .demo-wrap {
+    padding: 0 16px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *:before,
+  *:after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

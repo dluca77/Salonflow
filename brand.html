@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <meta name="robots" content="noindex" />
+    <title>Kronr — Huisstijl 02</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/rebrand.css" />
+    <link rel="stylesheet" href="/rebrand-refinements.css" />
+    <style>
+      .brand-sheet {
+        max-width: 1200px;
+        margin: auto;
+        padding: 70px 24px;
+      }
+      .brand-sheet > section {
+        padding: 50px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .brand-sheet h1 {
+        font-size: clamp(60px, 8vw, 110px);
+      }
+      .brand-sheet h2 {
+        font-size: 44px;
+        margin-bottom: 25px;
+      }
+      .brand-sheet p {
+        max-width: 620px;
+        color: var(--muted);
+        margin: 20px 0;
+      }
+      .swatches {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+      }
+      .swatch {
+        height: 170px;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        font-size: 12px;
+        border: 1px solid #251a2e15;
+      }
+      .logo-sample {
+        display: flex;
+        gap: 50px;
+        align-items: center;
+        padding: 35px;
+        background: var(--plum);
+        color: var(--ivory);
+        border-radius: 12px;
+      }
+      .logo-sample .brand {
+        font-size: 60px;
+      }
+      .logo-sample img {
+        width: 70px;
+        height: 70px;
+      }
+      .type-specimen {
+        font-family: var(--serif);
+        font-size: clamp(45px, 7vw, 90px);
+        line-height: 1.05;
+      }
+      .brand-sheet ul {
+        line-height: 2;
+        font-size: 14px;
+        padding-left: 20px;
+      }
+      @media (max-width: 600px) {
+        .swatches {
+          grid-template-columns: 1fr 1fr;
+        }
+        .swatch {
+          height: 140px;
+        }
+        .logo-sample {
+          padding: 25px;
+          gap: 20px;
+        }
+        .logo-sample .brand {
+          font-size: 45px;
+        }
+        .logo-sample img {
+          width: 45px;
+          height: 45px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="brand-sheet">
+      <a class="text-link dark-link" href="/">← Naar de website</a>
+      <section>
+        <span class="eyebrow">KRONR / VISUELE IDENTITEIT / CONCEPT 02</span>
+        <h1>Maak ruimte<br />voor <em>je vak.</em></h1>
+        <p>
+          Een persoonlijke, moderne identiteit voor software die ruimte geeft.
+          Editorial in de grote momenten. Helder en precies in de details.
+        </p>
+      </section>
+      <section>
+        <h2>Een compact, herkenbaar merk.</h2>
+        <div class="logo-sample">
+          <img src="/images/kronr-mark.svg" alt="Kronr K-beeldmerk" /><span
+            class="brand"
+            aria-label="Kronr"
+          ></span>
+        </div>
+        <p>
+          Het eigen vectorwoordmerk combineert ronde letters met een open o. De
+          punt sluit het woordmerk af. Houd rondom minimaal een halve
+          beeldmerkbreedte vrij; gebruik geen schaduw of vervorming.
+        </p>
+        <a class="text-link dark-link" href="/images/kronr-mark.svg" download
+          >Download het vectorbeeldmerk ↗</a
+        >
+      </section>
+      <section>
+        <h2>Warmte, met een scherpe rand.</h2>
+        <div class="swatches">
+          <div class="swatch" style="background: #251a2e; color: #f8f6ef">
+            <strong>Aubergine</strong><span>#251A2E · basis / tekst</span>
+          </div>
+          <div class="swatch" style="background: #f8f6ef">
+            <strong>Ivoor</strong><span>#F8F6EF · ademruimte</span>
+          </div>
+          <div class="swatch" style="background: #e3f291">
+            <strong>Citroen</strong><span>#E3F291 · actie / accent</span>
+          </div>
+          <div class="swatch" style="background: #d8c9ef">
+            <strong>Lila</strong><span>#D8C9EF · product / Kai</span>
+          </div>
+        </div>
+        <p>
+          Gebruik aubergine en ivoor als grote vlakken. Citroen markeert acties
+          en bijzondere momenten, niet elke knop tegelijk. Donkere tekst op
+          lichte accenten; nooit lichte tekst op citroen.
+        </p>
+      </section>
+      <section>
+        <span class="eyebrow">INSTRUMENT SERIF · DISPLAY</span>
+        <div class="type-specimen">Jouw handen.<br /><em>Jouw ideeën.</em></div>
+        <p>
+          Instrument Serif voor korte, uitgesproken koppen. Normaal gewicht,
+          compacte regelafstand, één cursief accent per kop. DM Sans voor
+          navigatie, lopende tekst en de productinterface.
+        </p>
+        <span class="eyebrow">DM SANS · INTERFACE</span>
+        <p style="font-size: 24px; color: var(--ink)">
+          Een mooie dag, Julia.<br />09 afspraken · € 712 voorbeeldomzet
+        </p>
+      </section>
+      <section>
+        <h2>Beweging met een reden.</h2>
+        <ul>
+          <li>
+            Een boeking verschijnt, een afspraak schuift in de agenda, het
+            overzicht verandert.
+          </li>
+          <li>Eén korte demonstratie, met zichtbare pauze- en stapknoppen.</li>
+          <li>Geen autoplay bij een voorkeur voor minder beweging.</li>
+          <li>
+            Decoratieve vormen blijven stil; de aandacht gaat naar het product.
+          </li>
+          <li>Voorbeelddata en conceptfuncties worden altijd benoemd.</li>
+        </ul>
+      </section>
+      <section>
+        <h2>Zo klinkt Kronr.</h2>
+        <p>
+          Direct, warm en zonder opgeblazen beloften. “Jij werkt door” in plaats
+          van “revolutionaire end-to-end optimalisatie”. Laat echte functies het
+          verhaal vertellen. Geen verzonnen klantreviews, omzetgaranties of
+          onbewezen tijdwinst.
+        </p>
+      </section>
+    </div>
+  </body>
+</html>

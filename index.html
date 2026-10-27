@@ -1,2217 +1,621 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Kronr: Salonbeheer zonder gedoe</title>
-<link rel="icon" type="image/svg+xml" href="favicon.svg">
-<meta name="description" content="Agenda, boekingen, betalingen en klantbeheer in één overzichtelijke app. Gebouwd voor kappers, nagelstudio's, schoonheidsspecialisten, sportscholen en meer die minder tijd aan administratie willen besteden.">
-<meta property="og:type" content="website">
-<meta property="og:url" content="https://kronr.nl/">
-<meta property="og:title" content="Kronr: Salonbeheer zonder gedoe">
-<meta property="og:description" content="Agenda, boekingen, betalingen en klantbeheer in één overzichtelijke app. Geen commissie, geen verrassingen.">
-<meta property="og:image" content="https://kronr.nl/images/salon-professional.jpg">
-<meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Kronr: Salonbeheer zonder gedoe">
-<meta name="twitter:description" content="Agenda, boekingen, betalingen en klantbeheer in één overzichtelijke app. Geen commissie, geen verrassingen.">
-<meta name="twitter:image" content="https://kronr.nl/images/salon-professional.jpg">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-:root{
-  --ink:#0f0d0b;--ink2:#2a2420;--mu:#6b6058;--mu2:#a09890;
-  --iv:#faf8f4;--wm:#f3ede4;--bd:#e2d9ce;
-  --gd:#8c6d3f;--gd2:#6e5230;--gd-light:#f5ede0;
-  --white:#ffffff;
-  --green:#1a7a40;
-}
-html{scroll-behavior:smooth;}
-body{font-family:'Inter',sans-serif;background:var(--white);color:var(--ink);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
-
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;transition:all .3s;border-bottom:1px solid rgba(26,23,20,.1);}
-.scroll-progress{position:fixed;top:0;left:0;height:5px;width:0%;background:linear-gradient(90deg,#d9a94a,var(--gd),#d9a94a);background-size:200% auto;animation:progressGlow 3s linear infinite;z-index:300;transition:width .1s linear;box-shadow:0 0 10px rgba(217,169,74,.7);}
-@keyframes progressGlow{to{background-position:-200% center;}}
-@media(prefers-reduced-motion:reduce){.scroll-progress{animation:none;}}
-nav.scrolled{background:rgba(255,255,255,0.95);backdrop-filter:blur(12px);border-bottom:1px solid var(--bd);}
-.nav-inner{max-width:1600px;margin:0 auto;padding:0 24px;height:64px;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:24px;}
-.nav-links-wrap{display:flex;justify-content:flex-start;order:1;}
-.nav-actions{display:flex;align-items:center;gap:20px;justify-content:flex-end;order:3;}
-.nav-logo{font-family:'Playfair Display',serif;font-size:34px;font-weight:800;color:var(--ink);text-decoration:none;letter-spacing:-0.5px;order:2;display:inline-block;transition:transform .25s ease;}
-.nav-logo:hover{transform:scale(1.04);}
-.nav-logo em{color:var(--gd);font-style:normal;}
-.nav-links{display:flex;align-items:center;gap:28px;}
-.nav-link{position:relative;font-size:14px;font-weight:500;color:var(--ink2);text-decoration:none;transition:color .2s;}
-.nav-link::after{content:'';position:absolute;left:0;bottom:-4px;width:100%;height:1.5px;background:var(--gd);transform:scaleX(0);transform-origin:right;transition:transform .25s ease;}
-.nav-link:hover{color:var(--ink);}
-.nav-link:hover::after{transform:scaleX(1);transform-origin:left;}
-.nav-cta{padding:9px 22px;background:var(--ink);color:var(--white);font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;transition:all .2s;letter-spacing:-.1px;}
-.nav-cta:hover{background:var(--ink2);transform:translateY(-1px);}
-.nav-login{position:relative;font-size:14px;font-weight:500;color:var(--ink);text-decoration:none;transition:color .2s;}
-.nav-login::after{content:'';position:absolute;left:0;bottom:-4px;width:100%;height:1.5px;background:var(--gd);transform:scaleX(0);transform-origin:right;transition:transform .25s ease;}
-.nav-login:hover{color:var(--gd);}
-.nav-login:hover::after{transform:scaleX(1);transform-origin:left;}
-.nav-divider{color:var(--bd2);font-size:14px;}
-.nav-demo{padding:8px 20px;background:rgba(255,255,255,.75);color:var(--ink);font-size:13px;font-weight:600;text-decoration:none;border-radius:8px;border:1.5px solid rgba(26,23,20,.35);transition:all .2s;letter-spacing:-.1px;}
-.nav-demo:hover{border-color:var(--ink);background:var(--white);}
-.mob-menu{display:none;width:36px;height:36px;border:none;background:transparent;cursor:pointer;margin-left:auto;}
-
-/* ── HERO ── */
-.hero{min-height:100dvh;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:100px 24px 150px;background:linear-gradient(rgba(255,255,255,.35),rgba(255,255,255,.55)),url('/images/achtergrond.jpg');background-size:cover;background-position:65% top;position:relative;overflow:hidden;box-sizing:border-box;}
-.hero::before{content:'';position:absolute;top:0;left:0;right:0;height:600px;background:radial-gradient(ellipse 80% 60% at 50% -10%,rgba(140,109,63,0.06) 0%,transparent 70%);pointer-events:none;}
-.hero::after{content:'';position:absolute;inset:-20%;background:
-    radial-gradient(circle at 20% 30%,rgba(140,109,63,.16) 0%,transparent 45%),
-    radial-gradient(circle at 80% 20%,rgba(217,169,74,.14) 0%,transparent 40%),
-    radial-gradient(circle at 60% 80%,rgba(140,109,63,.10) 0%,transparent 45%);
-  filter:blur(40px);pointer-events:none;z-index:0;animation:auroraDrift 18s ease-in-out infinite;}
-@keyframes auroraDrift{
-  0%,100%{transform:translate(0,0) scale(1);}
-  33%{transform:translate(3%,-2%) scale(1.06);}
-  66%{transform:translate(-3%,2%) scale(1.03);}
-}
-@media(prefers-reduced-motion:reduce){.hero::after{animation:none;}}
-.hero-grid{position:relative;z-index:1;max-width:1600px;width:100%;margin:140px auto 0;display:grid;grid-template-columns:0.95fr 1.05fr;gap:56px;align-items:center;}
-.hero-left{text-align:left;}
-.hero-label-wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto 28px;width:100%;text-align:center;}
-.hero-label{display:inline-flex;align-items:center;gap:10px;padding:8px 4px;font-size:13.5px;font-weight:500;color:var(--ink2);}
-.hero-label .streep{width:20px;height:1px;background:var(--gd);display:inline-block;}
-.hero-label strong{color:var(--gd2);font-weight:700;}
-@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.4;}}
-.hero-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5.4vw,80px);font-weight:800;line-height:1.05;letter-spacing:-1.5px;color:var(--ink);margin-bottom:14px;}
-.hero-word-meer{text-decoration:underline;text-underline-offset:6px;text-decoration-thickness:2px;}
-.hero-je{color:var(--gd);}
-.hero-cycle-word{font-style:italic;font-weight:600;color:var(--gd);}
-.hero-cycle-cursor{display:inline-block;width:3px;height:0.85em;background:var(--gd);margin-left:3px;vertical-align:baseline;animation:heroCycleBlink .8s step-end infinite;}
-@keyframes heroCycleBlink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
-@media(prefers-reduced-motion:reduce){
-  .hero-cycle-cursor{display:none;}
-}
-.hero-sub{font-size:clamp(15px,1.3vw,17px);font-weight:400;color:var(--mu);line-height:1.7;max-width:480px;margin:0 0 36px;}
-.hero-sub-secondary{font-family:'Playfair Display',serif;font-style:italic;font-size:clamp(16px,1.6vw,21px);font-weight:500;color:var(--mu2);line-height:1.5;margin:0 0 36px;}
-.hero-btns{display:flex;align-items:center;gap:16px;justify-content:flex-start;flex-wrap:wrap;margin-bottom:28px;}
-.btn-primary,.btn-secondary,.nav-cta,.nav-demo{will-change:transform;}
-.btn-primary:active,.btn-secondary:active,.nav-cta:active,.nav-demo:active{transform:scale(.96) !important;}
-.btn-primary{position:relative;overflow:hidden;padding:16px 32px;background:var(--ink);color:var(--white);font-size:15px;font-weight:600;text-decoration:none;border-radius:10px;transition:all .2s;display:inline-flex;align-items:center;gap:8px;}
-.btn-primary:hover{background:var(--ink2);transform:translateY(-2px);box-shadow:0 8px 24px rgba(15,13,11,.2);}
-.btn-primary::before{content:'';position:absolute;top:var(--gy,50%);left:var(--gx,50%);width:220px;height:220px;background:radial-gradient(circle,rgba(255,255,255,.16),transparent 70%);transform:translate(-50%,-50%);opacity:0;transition:opacity .3s;pointer-events:none;}
-.btn-primary:hover::before{opacity:1;}
-.btn-arrow{display:inline-block;transition:transform .25s ease;}
-a:hover .btn-arrow{transform:translateX(4px);}
-.btn-secondary{padding:16px 28px;background:rgba(255,255,255,.7);color:var(--ink);font-size:15px;font-weight:500;text-decoration:none;border-radius:10px;border:1.5px solid rgba(26,23,20,.35);transition:all .2s;}
-.btn-secondary:hover{border-color:var(--ink);background:var(--white);}
-.hero-usps{display:flex;flex-wrap:wrap;align-items:center;gap:10px 24px;max-width:600px;}
-.hero-usp{display:flex;align-items:center;gap:8px;font-size:13.5px;font-weight:500;color:var(--ink2);}
-.hero-usp svg{width:16px;height:16px;color:var(--green);flex-shrink:0;}
-
-/* App screenshot */
-.hero-screenshot{width:100%;position:relative;opacity:0;transform:translateY(32px);animation:heroRise 1s cubic-bezier(.2,.8,.2,1) .4s forwards;}
-@keyframes heroRise{to{opacity:1;transform:translateY(0);}}
-.screenshot-shadow{border-radius:16px;overflow:hidden;box-shadow:0 32px 80px rgba(15,13,11,.12),0 8px 24px rgba(15,13,11,.08);border:1px solid var(--bd);}
-.app-mockup{background:var(--iv);width:100%;aspect-ratio:16/9;display:flex;flex-direction:column;position:relative;overflow:hidden;}
-/* Mockup topbar */
-.mock-nav{height:44px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 16px;gap:12px;}
-.mock-dots{display:flex;gap:5px;}
-.mock-dot{width:10px;height:10px;border-radius:50%;}
-.mock-logo{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:var(--ink);margin-left:8px;}
-.mock-logo em{color:var(--gd);font-style:normal;}
-/* Mockup body */
-.mock-body{flex:1;display:flex;}
-.mock-sidebar{width:48px;background:#1a1714;display:flex;flex-direction:column;align-items:center;padding:12px 0;gap:8px;}
-.mock-si{width:28px;height:28px;background:rgba(255,255,255,.08);border-radius:6px;}
-.mock-si.on{background:rgba(140,109,63,.4);}
-.mock-content{flex:1;padding:16px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1fr) minmax(0,1fr);gap:8px;align-content:start;}
-.mock-kpi{background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:12px;}
-.mock-kpi-l{font-size:9px;font-weight:500;color:var(--mu);margin-bottom:6px;}
-.mock-kpi-v{font-family:'Inter',sans-serif;font-size:19px;font-weight:700;color:var(--ink);letter-spacing:-.3px;}
-.mock-agenda{grid-column:1/-1;background:var(--white);border:1px solid var(--bd);border-radius:10px;overflow:hidden;}
-.mock-agenda-head{padding:8px 12px;border-bottom:1px solid var(--bd);font-size:10px;font-weight:600;color:var(--ink);display:flex;justify-content:space-between;}
-.mock-agenda-rows{display:grid;grid-template-columns:40px 1fr 1fr 1fr 1fr 1fr;gap:1px;background:var(--bd);}
-.mock-ah{background:var(--iv);padding:4px;font-size:6px;text-align:center;color:var(--mu2);font-weight:600;}
-.mock-slot{background:var(--white);height:18px;position:relative;}
-.mock-apt{position:absolute;inset:1px;border-radius:2px;padding:2px 4px;font-size:5px;font-weight:600;overflow:hidden;}
-.mock-apt.c0{background:#e8d5f5;color:#6b3fa0;}
-.mock-apt.c1{background:#ffd9c0;color:#c05a00;}
-.mock-apt.c2{background:#c8f0d8;color:#1a7a40;}
-.mock-apt.c3{background:#c8e8ff;color:#1a5fa0;}
-.mock-time{background:var(--iv);padding:4px;font-size:5px;color:var(--mu2);text-align:right;display:flex;align-items:flex-end;justify-content:flex-end;}
-
-/* ── HERO: zwevende notificaties + AI-chatpaneel over de mockup ── */
-.hero-float-toasts{position:absolute;left:-2%;bottom:8%;display:flex;flex-direction:column;gap:10px;z-index:3;width:26%;min-width:220px;}
-.hero-toast{background:var(--white);border-radius:10px;box-shadow:0 12px 32px rgba(15,13,11,.14);padding:10px 14px;display:flex;align-items:flex-start;gap:10px;opacity:0;transform:translateY(14px);animation:toastIn .5s ease forwards,floatBob 5s ease-in-out infinite;}
-.hero-toast:nth-child(1){animation-delay:1.1s,1.6s;}
-.hero-toast:nth-child(2){animation-delay:1.6s,2.1s;}
-.hero-toast:nth-child(3){animation-delay:2.1s,2.6s;}
-@keyframes floatBob{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
-@keyframes toastIn{to{opacity:1;transform:translateY(0);}}
-@media(prefers-reduced-motion:reduce){.hero-toast,.hero-ai-panel{animation:none !important;}}
-.hero-toast-icon{width:32px;height:32px;border-radius:50%;background:var(--iv);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:14px;}
-.hero-toast-icon.wa{background:#e7f7ec;}
-.hero-toast-icon.eu{background:var(--iv);}
-.hero-toast-body{flex:1;min-width:0;}
-.hero-toast-title{font-size:11px;font-weight:700;color:var(--ink);display:flex;justify-content:space-between;gap:8px;}
-.hero-toast-title span{font-weight:400;color:var(--mu2);font-size:9px;}
-.hero-toast-sub{font-size:10px;color:var(--mu);margin-top:2px;line-height:1.4;}
-
-.hero-ai-panel{position:absolute;right:-2%;top:140px;width:34%;min-width:280px;max-width:360px;background:var(--white);border-radius:12px;box-shadow:0 24px 60px rgba(15,13,11,.18);border:1px solid var(--bd);z-index:4;opacity:0;transform:translateY(20px);animation:toastIn .6s ease 2.6s forwards,floatBob 6s ease-in-out 3.2s infinite;}
-.hero-ai-head{display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--bd);}
-.hero-ai-dot{width:7px;height:7px;border-radius:50%;background:#2d6a4f;flex-shrink:0;}
-.hero-ai-head-text{font-size:12px;font-weight:700;color:var(--ink);}
-.hero-ai-head-text span{display:block;font-size:9px;font-weight:400;color:var(--mu2);margin-top:1px;}
-.hero-ai-body{padding:9px 12px;display:flex;flex-direction:column;gap:6px;}
-.hero-ai-msg{font-size:9.5px;line-height:1.4;padding:6px 9px;border-radius:8px;max-width:88%;}
-.hero-ai-msg.ai{background:var(--iv);color:var(--ink2);align-self:flex-start;}
-.hero-ai-msg.user{background:var(--ink);color:var(--iv);align-self:flex-end;}
-.hero-ai-input{margin:0 12px 10px;padding:7px 10px;border:1px solid var(--bd);border-radius:8px;font-size:9.5px;color:var(--mu2);}
-.hero-ai-draft{background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:7px 9px;font-size:9px;line-height:1.45;color:var(--ink2);align-self:flex-start;max-width:92%;}
-.hero-ai-wa-btn{margin-top:6px;padding-top:6px;border-top:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:9px;color:#25a35a;font-weight:700;cursor:default;}
-.hero-ai-wa-btn svg{width:11px;height:11px;flex-shrink:0;}
-@media(max-width:900px){.hero-float-toasts,.hero-ai-panel{display:none;}}
-@media(min-width:901px) and (max-width:1499px){
-  .hero-ai-head{padding:6px 10px;}
-  .hero-ai-body{padding:6px 10px;gap:4px;}
-  .hero-ai-msg{font-size:8.5px;padding:5px 8px;line-height:1.3;}
-  .hero-ai-draft{padding:5px 8px;font-size:8px;line-height:1.3;}
-  .hero-ai-checklist,.hero-ai-wa-btn{margin-top:4px;padding-top:4px;}
-  .hero-ai-input{margin:0 10px 8px;padding:5px 8px;}
-  .hero-ai-msg:nth-child(3){display:none;}
-}
-
-
-/* ── HERO: onderste featurebalk ── */
-.hero-pills{max-width:1600px;margin:280px auto 0;width:100%;background:var(--white);border:1px solid var(--bd);border-radius:99px;padding:10px 16px;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;box-shadow:0 12px 32px rgba(15,13,11,.06);position:relative;z-index:2;}
-.hero-pill{display:flex;align-items:center;gap:8px;padding:8px 16px;font-size:13px;font-weight:500;color:var(--ink2);white-space:nowrap;}
-.hero-pill svg{width:16px;height:16px;color:var(--gd);flex-shrink:0;}
-
-@media(max-width:1100px){
-  .hero-grid{grid-template-columns:1fr;gap:40px;}
-  .hero-left{text-align:center;}
-  .hero-sub{margin-left:auto;margin-right:auto;}
-  .hero-btns{justify-content:center;}
-  .hero-usps{margin:0 auto;}
-  .hero-pills{margin-top:40px;}
-}
-@media(max-width:640px){
-  .hero-pills{display:grid;grid-template-columns:1fr 1fr;gap:16px 12px;border-radius:18px;padding:22px 20px;justify-content:initial;overflow:visible;}
-  .hero-pill{justify-content:flex-start;white-space:normal;}
-}
-
-/* ── STATS BAR ── */
-.stats-bar{padding:60px 24px;}
-.stats-inner{max-width:1200px;margin:0 auto;border-radius:16px;overflow:hidden;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:rgba(255,255,255,.12);}
-.stat-item{padding:28px 32px;background:var(--ink);text-align:center;}
-.stat-num{font-family:'Inter',sans-serif;font-size:32px;font-weight:700;color:var(--white);line-height:1;letter-spacing:-1px;}
-.stat-num span{color:var(--gd);font-weight:400;}
-.stat-lbl{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);margin-top:8px;font-weight:500;}
-
-/* ── SECTIONS ── */
-.section{padding:100px 24px;}
-.section-inner{max-width:1200px;margin:0 auto;}
-.section-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gd);font-weight:600;margin-bottom:16px;}
-.section-title{font-family:'Playfair Display',serif;font-size:clamp(28px,4.5vw,60px);font-weight:700;line-height:1.08;letter-spacing:-1px;color:var(--ink);margin-bottom:20px;}
-.section-sub{font-size:17px;font-weight:300;color:var(--mu);line-height:1.7;max-width:560px;}
-
-/* ── VOOR WIE ── */
-.voor-wie{
-  position:relative;
-  overflow:hidden;
-  background:
-    radial-gradient(circle at -5% 115%, rgba(140,109,63,0.24) 0%, transparent 45%),
-    radial-gradient(circle at 105% 115%, rgba(140,109,63,0.24) 0%, transparent 45%),
-    var(--iv);
-}
-.vw-watermark-kai{position:absolute;bottom:-8%;right:1%;width:340px;height:340px;object-fit:contain;opacity:0.08;pointer-events:none;z-index:0;max-width:30%;}
-@media(max-width:768px){
-  .vw-watermark-kai{width:200px;height:200px;bottom:-6%;right:1%;max-width:45%;}
-}
-.voor-wie.vw-glow-visible::before,.voor-wie.vw-glow-visible::after{opacity:1;}
-.voor-wie .section-inner{position:relative;z-index:1;}
-
-.vw-kai-intro{display:flex;align-items:flex-start;gap:16px;margin-top:40px;max-width:560px;}
-.vw-kai-intro-avatar{width:48px;height:48px;object-fit:contain;flex-shrink:0;}
-.vw-kai-intro-bubble{background:var(--iv);border:1px solid var(--bd);border-radius:4px 16px 16px 16px;padding:16px 20px;font-size:16px;color:var(--ink2);line-height:1.5;min-height:26px;}
-.vw-kai-intro-cursor{display:inline-block;width:2px;height:1em;background:var(--gd);margin-left:2px;vertical-align:middle;animation:heroCycleBlink .8s step-end infinite;}
-
-.vw-pills{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px;opacity:0;transform:translateY(14px);transition:opacity .5s ease,transform .5s ease;}
-.vw-pills.vw-visible{opacity:1;transform:translateY(0);}
-.vw-pill{appearance:none;background:var(--white);border:1px solid var(--bd);border-radius:99px;padding:12px 24px;font-family:inherit;font-size:14.5px;font-weight:600;color:var(--ink2);cursor:pointer;transition:all .2s;opacity:0;transform:translateY(10px);}
-.vw-pills.vw-visible .vw-pill{opacity:1;transform:translateY(0);}
-.vw-pill:hover{border-color:var(--gd);color:var(--ink);}
-.vw-pill.active{background:var(--ink);border-color:var(--ink);color:var(--white);}
-
-.vw-layout{margin-top:0;max-height:0;overflow:hidden;opacity:0;transform:translateY(14px);transition:max-height .55s ease,opacity .45s ease,transform .45s ease,margin-top .55s ease;}
-.vw-layout.vw-visible{max-height:900px;opacity:1;transform:translateY(0);margin-top:28px;}
-.vw-panel{background:var(--white);border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.06);border-radius:16px;padding:44px 48px;display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:580px;position:relative;overflow:hidden;}
-.vw-panel-title{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--ink);margin-bottom:14px;}
-.vw-panel-desc{font-size:15px;color:var(--mu);line-height:1.65;margin-bottom:20px;}
-.vw-panel-benefits{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px;}
-.vw-panel-benefits li{font-size:14.5px;color:var(--ink2);display:flex;align-items:center;gap:10px;}
-.vw-panel-benefits li::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--gd);flex-shrink:0;}
-.vw-panel-visual{background:var(--iv);border:1px solid var(--bd);border-radius:12px;padding:24px;min-height:300px;display:flex;flex-direction:column;justify-content:center;gap:14px;}
-.vw-visual-shot{border-radius:10px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 10px 28px rgba(15,13,11,.10);background:var(--white);}
-.vw-visual-shot img{transition:transform .5s cubic-bezier(.2,.8,.2,1);}
-.vw-visual-shot:hover img{transform:scale(1.04);}
-.vw-visual-shot-bar{height:24px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px;padding:0 12px;}
-.vw-visual-shot-bar span{width:7px;height:7px;border-radius:50%;background:var(--bd);}
-.vw-visual-shot img{display:block;width:100%;height:auto;}
-.vw-kai-bubble{display:flex;align-items:flex-start;gap:10px;padding:14px 16px;background:var(--white);border:1px solid var(--bd);border-radius:10px;}
-.vw-kai-avatar{width:26px;height:26px;object-fit:contain;flex-shrink:0;margin-top:1px;}
-.vw-kai-text{font-size:13px;color:var(--ink2);line-height:1.55;}
-.vw-kai-text strong{color:var(--gd);}
-.vw-panel-text,.vw-panel-visual{transition:opacity .25s ease,transform .25s ease;}
-.vw-fade-out{opacity:0;transform:translateY(8px);}
-@media(max-width:768px){
-  .vw-kai-intro{margin-top:32px;gap:12px;}
-  .vw-kai-intro-avatar{width:38px;height:38px;}
-  .vw-kai-intro-bubble{font-size:14px;padding:13px 16px;}
-  .vw-pills{gap:8px;margin-top:24px;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px;margin-left:-20px;margin-right:-20px;padding-left:20px;padding-right:20px;-webkit-mask-image:linear-gradient(to right,transparent 0,black 20px,black calc(100% - 32px),transparent 100%);mask-image:linear-gradient(to right,transparent 0,black 20px,black calc(100% - 32px),transparent 100%);}
-  .vw-pills::-webkit-scrollbar{display:none;}
-  .vw-pill{padding:12px 20px;font-size:15px;flex-shrink:0;white-space:nowrap;}
-  .vw-panel{grid-template-columns:1fr;padding:28px 22px;gap:24px;border-radius:14px;}
-  .vw-panel-visual{min-height:280px;padding:20px;}
-}
-
-/* ── ZO WERKT HET ── */
-.howit-timeline{position:relative;max-width:900px;margin:0 auto;padding-left:70px;padding-bottom:44px;}
-.howit-line{position:absolute;left:23px;top:8px;bottom:8px;width:2px;background:var(--bd);}
-.howit-line-fill{position:absolute;top:0;left:0;width:100%;height:0%;background:var(--gd);transition:height .3s ease;}
-.howit-step{position:relative;padding-bottom:80px;opacity:.4;transform:scale(.96);transition:opacity .5s ease,transform .5s ease;}
-.howit-step:last-child{padding-bottom:0;}
-.howit-step.howit-active{opacity:1;transform:scale(1);}
-.howit-step-marker{position:absolute;left:-70px;top:0;width:48px;height:48px;border-radius:50%;background:var(--white);border:2px solid var(--bd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--mu);transition:all .4s ease;z-index:1;}
-.howit-step.howit-active .howit-step-marker{background:var(--gd);border-color:var(--gd);color:var(--white);transform:scale(1.1);}
-.howit-step-body{display:grid;grid-template-columns:0.9fr 1.1fr;gap:36px;align-items:center;}
-.howit-step-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;color:var(--ink);margin-bottom:14px;}
-.howit-step-desc{font-size:15px;color:var(--mu);line-height:1.7;}
-.howit-step-shot{border-radius:14px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 20px 50px rgba(15,13,11,.08);}
-.howit-step-shot img{width:100%;height:auto;display:block;}
-.howit-live-pill{position:absolute;left:24px;transform:translateX(-50%);bottom:0;width:fit-content;display:flex;align-items:center;gap:8px;padding:8px 18px;background:var(--white);border:1px solid var(--bd);border-radius:99px;font-size:13px;font-weight:600;color:var(--ink2);box-shadow:0 8px 20px rgba(15,13,11,.06);white-space:nowrap;}
-.howit-live-dot{width:8px;height:8px;border-radius:50%;background:#2d6a4f;box-shadow:0 0 0 3px rgba(45,106,79,.15);flex-shrink:0;animation:howitLivePulse 1.8s ease-in-out infinite;}
-@keyframes howitLivePulse{0%,100%{box-shadow:0 0 0 3px rgba(45,106,79,.15);}50%{box-shadow:0 0 0 6px rgba(45,106,79,.05);}}
-@media(max-width:900px){
-  .howit-live-pill{left:-52px;}
-}
-@media(max-width:900px){
-  .howit-timeline{padding-left:52px;}
-  .howit-line{left:15px;}
-  .howit-step-marker{left:-52px;width:36px;height:36px;font-size:15px;}
-  .howit-live-pill{left:20px;padding:6px 14px;font-size:12px;gap:6px;}
-  .howit-live-dot{width:6px;height:6px;}
-  .howit-step-body{grid-template-columns:1fr;gap:18px;}
-  .howit-step-title{font-size:21px;}
-  .howit-step{padding-bottom:56px;}
-}
-
-/* ── FEATURES ── */
-.hero-feat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:64px;align-items:center;padding:56px 0;border-bottom:1px solid var(--bd);}
-.hero-feat:first-of-type{padding-top:64px;}
-.hero-feat:last-of-type{border-bottom:none;}
-.hero-feat.reverse .hero-feat-visual{order:-1;}
-.hero-feat-num{font-family:'Playfair Display',serif;font-style:italic;font-size:15px;color:var(--gd);font-weight:700;letter-spacing:1px;margin-bottom:16px;}
-.hero-feat-title{font-family:'Playfair Display',serif;font-size:clamp(26px,3vw,38px);font-weight:700;color:var(--ink);margin-bottom:16px;letter-spacing:-.5px;line-height:1.15;}
-.hero-feat-desc{font-size:16px;color:var(--mu);line-height:1.7;max-width:420px;font-weight:300;}
-.hero-feat-bullets{list-style:none;display:flex;flex-direction:column;gap:10px;max-width:420px;}
-.hero-feat-bullets li{display:flex;align-items:flex-start;gap:9px;font-size:15px;color:var(--ink2);font-weight:400;line-height:1.4;}
-.hero-feat-bullets li::before{content:'';width:5px;height:5px;border-radius:50%;background:var(--gd);flex-shrink:0;margin-top:8px;}
-.hero-feat-visual{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:20px;min-height:260px;display:flex;align-items:center;justify-content:center;transition:transform .3s;}
-.hero-feat-visual:hover{transform:translateY(-4px);}
-
-.mini-agenda{width:100%;background:var(--white);border:1px solid var(--bd);border-radius:10px;overflow:hidden;}
-.mini-agenda-head{padding:10px 14px;border-bottom:1px solid var(--bd);font-size:11px;font-weight:600;color:var(--ink);}
-.mini-agenda-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-bottom:1px solid var(--bd);}
-.mini-agenda-row:last-child{border-bottom:none;}
-.mini-agenda-time{font-size:10px;color:var(--mu2);width:36px;flex-shrink:0;}
-.mini-agenda-apt{flex:1;padding:6px 10px;border-radius:6px;font-size:11px;font-weight:600;}
-
-.mini-widget{width:100%;max-width:280px;background:var(--white);border:1px solid var(--bd);border-radius:12px;padding:18px;box-shadow:0 12px 32px rgba(15,13,11,.08);}
-.mini-widget-title{font-size:12px;font-weight:600;color:var(--ink);margin-bottom:12px;}
-.mini-widget-slot{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border:1px solid var(--bd);border-radius:8px;margin-bottom:8px;font-size:11px;color:var(--mu);}
-.mini-widget-slot.selected{border-color:var(--gd);background:var(--gd-light);color:var(--gd2);font-weight:600;}
-.mini-widget-btn{width:100%;padding:10px;background:var(--ink);color:var(--white);text-align:center;border-radius:8px;font-size:11px;font-weight:600;margin-top:4px;transition:background .3s;}
-.mini-widget-btn.confirmed{background:var(--green);}
-
-/* ── Micro-animaties in de features-sectie (alleen daar, niet in de
-   "voor wie"-panelen die .mini-agenda-row hergebruiken) ── */
-#feat-agenda-visual .mini-agenda-row{opacity:0;transform:translateX(-10px);transition:opacity .4s ease,transform .4s ease,box-shadow .3s ease;}
-#feat-agenda-visual .mini-agenda-row.shown{opacity:1;transform:translateX(0);}
-.mini-agenda-row.new-row{box-shadow:inset 0 0 0 2px var(--gd);border-radius:6px;}
-.mini-agenda-conflict-badge{display:inline-flex;align-items:center;gap:4px;font-size:9px;color:var(--green);font-weight:600;margin-left:6px;opacity:0;transition:opacity .3s ease .2s;white-space:nowrap;}
-.mini-agenda-conflict-badge.shown{opacity:1;}
-
-.feat-ai-bubble{opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease;}
-.feat-ai-bubble.shown{opacity:1;transform:translateY(0);}
-
-/* ── Parallax op de hero-mockup ── */
-.hero-screenshot{will-change:transform;}
-
-.feat-compact-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1px;background:var(--bd);border:1px solid var(--bd);border-radius:16px;overflow:hidden;margin-top:20px;}
-.feat-compact{background:var(--white);padding:28px 22px;transition:background .2s,transform .3s ease;}
-.feat-compact:hover{background:var(--iv);transform:translateY(-4px);}
-.feat-compact:hover .feat-compact-icon{transform:scale(1.08) rotate(-4deg);}
-.feat-compact-icon{width:36px;height:36px;background:var(--gd-light);border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:14px;transition:transform .3s ease;}
-.feat-compact.is-revealed .feat-compact-icon{animation:iconPop .5s cubic-bezier(.34,1.56,.64,1);}
-@keyframes iconPop{0%{transform:scale(.4);}60%{transform:scale(1.15);}100%{transform:scale(1);}}
-.feat-compact-icon svg{width:16px;height:16px;color:var(--gd);}
-.feat-compact-title{font-size:14px;font-weight:600;color:var(--ink);margin-bottom:6px;}
-.feat-compact-desc{font-size:12px;color:var(--mu);line-height:1.55;}
-
-/* ── AI SECTION ── */
-.ai-section{background:var(--ink);padding:120px 24px;}
-.ai-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:0.95fr 1.05fr;gap:80px;align-items:center;}
-.ai-label{font-size:11px;letter-spacing:3px;text-transform:uppercase;color:var(--gd);font-weight:600;margin-bottom:16px;}
-.ai-label-row{display:flex;align-items:center;gap:10px;margin-bottom:16px;}
-.ai-label-row .ai-label{margin-bottom:0;}
-.ai-kai-avatar{width:32px;height:32px;object-fit:contain;flex-shrink:0;}
-.ai-chat-avatar{width:22px;height:22px;object-fit:contain;flex-shrink:0;}
-.ai-title{font-family:'Playfair Display',serif;font-size:clamp(32px,4vw,52px);font-weight:800;line-height:1.08;letter-spacing:-1px;color:var(--white);margin-bottom:20px;}
-.ai-title em{font-style:italic;color:var(--gd);}
-.ai-sub{font-size:16px;color:rgba(255,255,255,.5);line-height:1.7;margin-bottom:36px;}
-.ai-features{display:flex;flex-direction:column;gap:16px;}
-.ai-feat{display:flex;align-items:flex-start;gap:14px;padding:16px;border:1px solid rgba(255,255,255,.06);border-radius:10px;background:rgba(255,255,255,.02);}
-.ai-feat-icon{width:36px;height:36px;background:rgba(140,109,63,.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.ai-feat-icon svg{width:16px;height:16px;color:var(--gd);}
-.ai-feat-text{font-size:14px;color:rgba(255,255,255,.6);line-height:1.6;}
-.ai-feat-text strong{color:var(--white);display:block;margin-bottom:3px;}
-
-/* AI chat mockup */
-.ai-visual{display:flex;flex-direction:column;gap:16px;}
-.ai-photo-caption{display:flex;align-items:center;gap:12px;}
-.ai-photo-caption img{width:56px;height:56px;border-radius:8px;object-fit:cover;flex-shrink:0;}
-.ai-photo-caption span{font-size:12.5px;color:rgba(255,255,255,.45);line-height:1.5;}
-.ai-chat{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px;min-height:420px;justify-content:center;position:relative;z-index:2;}
-.ai-chat-head{display:flex;align-items:center;gap:10px;padding-bottom:16px;margin-bottom:4px;border-bottom:1px solid rgba(255,255,255,.08);}
-.ai-chat-dot{width:8px;height:8px;border-radius:50%;background:#4ade80;box-shadow:0 0 0 4px rgba(74,222,128,.15);flex-shrink:0;}
-.ai-chat-head-text{font-size:13px;font-weight:600;color:var(--white);display:flex;align-items:center;gap:8px;}
-.ai-chat-head-text .ai-chat-live{font-size:11px;font-weight:700;color:#4ade80;text-transform:uppercase;letter-spacing:.5px;}
-.ai-chat-head-sub{font-size:11px;font-weight:400;color:rgba(255,255,255,.4);margin-top:2px;}
-.chat-msg{display:flex;gap:10px;align-items:flex-start;}
-.chat-bubble-wrap{display:flex;flex-direction:column;gap:3px;}
-.chat-timestamp{font-size:10px;color:rgba(255,255,255,.3);display:flex;align-items:center;gap:4px;}
-.chat-msg.user .chat-timestamp{justify-content:flex-end;}
-.chat-timestamp svg{width:11px;height:11px;color:#7cc4f5;}
-.chat-typing-label{font-size:12px;color:rgba(255,255,255,.4);white-space:nowrap;}
-.chat-msg.ai{flex-direction:row;}
-.chat-msg.user{flex-direction:row-reverse;}
-.chat-av{width:28px;height:28px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;}
-.chat-av.ai-av{background:var(--gd);color:var(--white);}
-.chat-av.user-av{background:rgba(255,255,255,.1);color:rgba(255,255,255,.6);}
-.chat-bubble{padding:10px 14px;border-radius:10px;font-size:13px;line-height:1.55;max-width:260px;}
-.ai-bubble{background:rgba(255,255,255,.06);color:rgba(255,255,255,.8);border-radius:10px 10px 10px 2px;}
-.user-bubble{background:var(--gd);color:var(--white);border-radius:10px 10px 2px 10px;}
-.chat-typing{display:flex;align-items:center;gap:8px;padding:10px 14px;background:rgba(255,255,255,.06);border-radius:10px;width:fit-content;flex-wrap:nowrap;white-space:nowrap;}
-.chat-typing-dots{display:flex;gap:4px;flex-shrink:0;}
-.chat-typing-dots span{width:6px;height:6px;background:rgba(255,255,255,.3);border-radius:50%;animation:bounce .8s infinite;}
-.chat-typing-dots span:nth-child(2){animation-delay:.15s;}
-.chat-typing-dots span:nth-child(3){animation-delay:.3s;}
-@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-4px);}}
-.chat-msg-hidden{opacity:0;transform:translateY(8px);transition:opacity .4s ease,transform .4s ease;}
-.chat-msg-hidden.shown{opacity:1;transform:translateY(0);}
-.chat-typing-indicator{opacity:0;transition:opacity .2s;}
-.chat-typing-indicator.shown{opacity:1;}
-
-/* ── PRIJZEN ── */
-.pricing{background:var(--iv);}
-.pricing-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-top:52px;}
-.price-card{background:var(--white);border:1px solid var(--bd);border-radius:16px;padding:36px 32px;position:relative;transition:all .2s;}
-.price-card:hover{transform:translateY(-4px);box-shadow:0 16px 48px rgba(140,109,63,.1);}
-.price-card.popular{border:2px solid var(--gd);background:var(--ink);}
-.price-badge{position:absolute;top:-16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:5px 18px 5px 5px;background:linear-gradient(135deg,var(--gd),#6e5230);color:var(--white);font-size:11px;font-weight:700;border-radius:99px;letter-spacing:1px;text-transform:uppercase;white-space:nowrap;box-shadow:0 8px 20px rgba(140,109,63,.3);animation:badgeGloed 2.8s ease-in-out infinite;}
-@keyframes badgeGloed{0%,100%{box-shadow:0 8px 20px rgba(140,109,63,.3);}50%{box-shadow:0 8px 28px rgba(140,109,63,.55);}}
-.price-badge-star{width:22px;height:22px;border-radius:50%;background:var(--gd);border:2px solid #d9a94a;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
-.price-badge-star svg{width:12px;height:12px;fill:#fff;}
-.price-name{font-size:13px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--mu);margin-bottom:12px;}
-.price-card.popular .price-name{color:rgba(255,255,255,.5);}
-.price-amount{font-family:'Playfair Display',serif;font-size:52px;font-weight:800;color:var(--ink);line-height:1;margin-bottom:4px;}
-.price-card.popular .price-amount{color:var(--white);}
-.price-amount sup{font-size:22px;font-weight:400;vertical-align:super;}
-.price-per{font-size:13px;color:var(--mu);margin-bottom:28px;}
-.price-card.popular .price-per{color:rgba(255,255,255,.4);}
-.price-features{list-style:none;display:flex;flex-direction:column;gap:10px;margin-bottom:32px;}
-.price-features li{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--mu);}
-.price-card.popular .price-features li{color:rgba(255,255,255,.65);}
-.price-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;}
-.price-card.popular .price-features li::before{color:var(--gd);}
-.price-btn{display:block;text-align:center;padding:14px;background:var(--ink);color:var(--white);font-size:14px;font-weight:600;text-decoration:none;border-radius:10px;transition:all .2s;}
-.price-btn:hover{background:var(--ink2);}
-.price-card.popular .price-btn{background:var(--gd);color:var(--white);}
-.price-card.popular .price-btn:hover{background:var(--gd2);}
-.pricing-benefits{display:flex;flex-wrap:wrap;justify-content:center;gap:20px 32px;margin-bottom:44px;}
-.pricing-benefit{display:flex;align-items:center;gap:7px;font-size:13.5px;color:var(--ink2);font-weight:500;}
-.pricing-benefit svg{width:15px;height:15px;color:var(--green);flex-shrink:0;}
-
-/* ── TESTIMONIALS ── */
-.testimonials{padding:100px 24px;background:var(--white);}
-.testi-rating{display:flex;align-items:center;gap:10px;margin-bottom:16px;font-size:15px;color:var(--ink2);}
-.testi-rating-stars{color:var(--gd);font-size:18px;letter-spacing:2px;}
-.testi-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;margin-top:52px;}
-.testi-card{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:36px 32px;transition:transform .3s ease,box-shadow .3s ease,border-color .2s;}
-.testi-card:hover{transform:translateY(-4px);border-color:var(--gd);box-shadow:0 16px 40px rgba(140,109,63,.1);}
-.testi-stars{color:var(--gd);font-size:15px;margin-bottom:18px;letter-spacing:3px;}
-.testi-text{font-size:16px;color:var(--ink2);line-height:1.75;margin-bottom:22px;font-weight:300;}
-.testi-text::before{content:'"';}
-.testi-text::after{content:'"';}
-.testi-author{display:flex;align-items:center;gap:12px;}
-.testi-av{width:42px;height:42px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--white);}
-.testi-name{font-size:14.5px;font-weight:600;color:var(--ink);}
-.testi-role{font-size:12.5px;color:var(--mu);}
-.testi-result{display:inline-block;margin-top:16px;padding:6px 12px;background:rgba(26,122,64,.08);color:var(--green);font-size:12px;font-weight:600;border-radius:8px;}
-.testi-featured{display:grid;grid-template-columns:auto 1fr;gap:40px;align-items:center;background:var(--iv);border:1px solid var(--bd);border-radius:24px;padding:56px 60px;margin-top:52px;}
-.testi-featured-av{width:120px;height:120px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--white);flex-shrink:0;box-shadow:0 12px 32px rgba(140,109,63,.25);}
-.testi-featured-stars{color:var(--gd);font-size:18px;letter-spacing:3px;margin-bottom:16px;}
-.testi-featured-text{font-family:'Playfair Display',serif;font-size:clamp(22px,2.8vw,30px);font-style:italic;color:var(--ink);line-height:1.4;margin-bottom:20px;}
-.testi-featured-text::before{content:'"';}
-.testi-featured-text::after{content:'"';}
-.testi-featured-name{font-size:15px;font-weight:600;color:var(--ink);}
-.testi-featured-role{font-size:13px;color:var(--mu);}
-.early-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;}
-.early-card{background:var(--iv);border:1px solid var(--bd);border-radius:16px;padding:32px 28px;transition:all .2s;}
-.early-card:hover{border-color:var(--gd);transform:translateY(-4px);box-shadow:0 16px 40px rgba(140,109,63,.08);}
-.early-icon{width:44px;height:44px;background:var(--gd-light);border-radius:10px;display:flex;align-items:center;justify-content:center;margin-bottom:18px;color:var(--gd);}
-.early-icon svg{width:20px;height:20px;}
-.early-title{font-size:16px;font-weight:600;color:var(--ink);margin-bottom:8px;}
-.early-desc{font-size:13.5px;color:var(--mu);line-height:1.6;}
-
-/* ── FOTO SECTIE ── */
-.photo-section{padding:100px 24px;background:var(--white);}
-.photo-section-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:1fr 1.1fr;gap:64px;align-items:center;}
-.photo-frame{aspect-ratio:4/5;border-radius:20px;background:var(--iv);border:1px solid var(--bd);overflow:hidden;position:relative;}
-.photo-frame img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s cubic-bezier(.2,.8,.2,1);}
-.photo-frame:hover img{transform:scale(1.06);}
-.photo-illustration{width:100%;height:100%;display:block;}
-.photo-frame-caption{position:absolute;bottom:0;left:0;right:0;padding:16px 20px;background:linear-gradient(0deg,rgba(15,13,11,.55) 0%,transparent 100%);color:#fff;font-size:11.5px;font-weight:500;text-align:center;}
-
-/* ── CTA FINAL ── */
-.cta-final{background:var(--gd);padding:100px 24px;text-align:center;}
-.cta-final-title{font-family:'Playfair Display',serif;font-size:clamp(36px,5vw,64px);font-weight:800;color:var(--white);letter-spacing:-1.5px;line-height:1.05;margin-bottom:20px;}
-.cta-final-sub{font-size:18px;color:rgba(255,255,255,.7);margin-bottom:40px;font-weight:300;}
-.btn-white{padding:16px 36px;background:var(--white);color:var(--ink);font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;transition:all .2s;display:inline-block;}
-.btn-white:hover{transform:translateY(-2px);box-shadow:0 12px 32px rgba(0,0,0,.15);}
-.cta-final-note{font-size:13px;color:rgba(255,255,255,.5);margin-top:16px;}
-
-/* ── FOOTER ── */
-footer{background:var(--ink);padding:60px 24px 32px;}
-.footer-inner{max-width:1200px;margin:0 auto;}
-.cookie-notice{position:fixed;left:20px;right:20px;bottom:20px;z-index:250;max-width:640px;margin:0 auto;background:var(--ink);color:#fff;border-radius:12px;padding:16px 18px;padding-bottom:calc(16px + env(safe-area-inset-bottom));display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 16px 40px rgba(0,0,0,.25);transform:translateY(140%);opacity:0;transition:transform .35s cubic-bezier(.2,.8,.2,1),opacity .35s;pointer-events:none;}
-.cookie-notice.show{transform:translateY(0);opacity:1;pointer-events:auto;}
-.cookie-notice-text{flex:1;min-width:200px;font-size:13px;line-height:1.6;color:rgba(255,255,255,.85);}
-.cookie-notice-text a{color:#fff;text-decoration:underline;}
-.cookie-notice-actions{display:flex;align-items:center;gap:8px;}
-.cookie-notice-btn{background:#fff;color:var(--ink);border:none;border-radius:7px;padding:9px 18px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;font-family:'Inter',sans-serif;touch-action:manipulation;}
-.cookie-notice-close{background:transparent;border:none;color:rgba(255,255,255,.6);font-size:20px;line-height:1;cursor:pointer;padding:6px 8px;touch-action:manipulation;}
-.cookie-notice-close:hover{color:#fff;}
-@media(max-width:480px){.cookie-notice{flex-direction:column;align-items:stretch;}.cookie-notice-actions{justify-content:space-between;}.cookie-notice-btn{flex:1;}}
-.faq-section{padding:96px 32px;}
-.faq-list{margin-top:32px;display:flex;flex-direction:column;gap:12px;}
-.faq-item{background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:18px 22px;}
-.faq-item summary{cursor:pointer;font-weight:600;font-size:15px;list-style:none;display:flex;justify-content:space-between;align-items:center;}
-.faq-item summary::-webkit-details-marker{display:none;}
-.faq-item summary::after{content:'+';font-size:20px;color:var(--gd);font-weight:400;margin-left:12px;flex-shrink:0;}
-.faq-item[open] summary::after{content:'−';}
-.faq-item p{margin-top:12px;color:var(--mu);font-size:14px;line-height:1.7;}
-.footer-top{display:grid;grid-template-columns:minmax(0,2fr) repeat(5,minmax(0,1fr));gap:32px;margin-bottom:48px;}
-.tag-badge{display:inline-block;font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--gd);font-weight:700;border:1px solid var(--bd2);border-radius:20px;padding:3px 10px 3px 8px;}
-.tag-badge::before{content:'[';margin-right:2px;color:var(--mu2);}
-.tag-badge::after{content:']';margin-left:2px;color:var(--mu2);}
-.footer-logo{font-family:'Playfair Display',serif;font-size:24px;font-weight:800;color:var(--white);letter-spacing:-0.5px;margin-bottom:16px;}
-.footer-logo em{color:var(--gd);font-style:normal;}
-.footer-desc{font-size:14px;color:rgba(255,255,255,.4);line-height:1.7;max-width:260px;}
-.footer-col-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:16px;font-weight:600;}
-.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px;}
-.footer-links a{font-size:14px;color:rgba(255,255,255,.5);line-height:1.6;text-decoration:none;transition:color .2s;}
-.footer-links a:hover{color:var(--white);}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.06);padding-top:24px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
-.footer-copy{font-size:13px;color:rgba(255,255,255,.3);}
-.footer-legal{display:flex;gap:20px;}
-.footer-legal a{font-size:13px;color:rgba(255,255,255,.3);text-decoration:none;}
-.footer-legal a:hover{color:rgba(255,255,255,.6);}
-
-/* ── FOOTER: blijf op de hoogte ── */
-.footer-notify{margin-top:22px;}
-.footer-notify-label{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:rgba(255,255,255,.3);margin-bottom:10px;font-weight:600;display:block;}
-.footer-notify-row{display:flex;gap:8px;max-width:340px;}
-.footer-notify-input{flex:1;min-width:0;padding:10px 14px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);border-radius:8px;color:var(--white);font-size:13px;font-family:inherit;}
-.footer-notify-input::placeholder{color:rgba(255,255,255,.3);}
-.footer-notify-input:focus{outline:none;border-color:var(--gd);}
-.footer-notify-btn{padding:10px 18px;background:var(--gd);color:var(--white);border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:background .2s;font-family:inherit;}
-.footer-notify-btn:hover{background:var(--gd2);}
-.footer-notify-btn:disabled{opacity:.5;cursor:default;}
-.footer-notify-msg{font-size:12.5px;margin-top:8px;color:rgba(255,255,255,.5);}
-.footer-notify-msg.ok{color:#4ade80;}
-.footer-notify-msg.err{color:#ff8a8a;}
-@media(max-width:480px){.footer-notify-row{flex-direction:column;max-width:none;}.footer-notify-btn{width:100%;}}
-
-
-/* ── MOBILE MENU ── */
-.mob-nav{position:fixed;inset:0;background:var(--ink);z-index:200;display:flex;flex-direction:column;padding:24px;transform:translateX(100%);transition:transform .3s ease;}
-.mob-nav.on{transform:translateX(0);}
-.mob-nav-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:40px;}
-.mob-nav-logo{font-family:'Playfair Display',serif;font-size:22px;font-weight:800;color:var(--white);letter-spacing:-.5px;}
-.mob-nav-logo em{color:var(--gd);font-style:normal;}
-.mob-close{width:36px;height:36px;border:1px solid rgba(255,255,255,.2);border-radius:8px;background:transparent;color:rgba(255,255,255,.6);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;}
-.mob-links{display:flex;flex-direction:column;gap:4px;flex:1;}
-.mob-link{font-size:24px;font-weight:600;color:rgba(255,255,255,.6);text-decoration:none;padding:14px 0;border-bottom:1px solid rgba(255,255,255,.06);transition:color .2s;}
-.mob-link:hover{color:var(--white);}
-.mob-nav-foot{display:flex;flex-direction:column;gap:12px;}
-.mob-btn-login{padding:14px;text-align:center;border:1px solid rgba(255,255,255,.2);color:rgba(255,255,255,.7);font-size:15px;font-weight:500;text-decoration:none;border-radius:10px;}
-.mob-btn-start{padding:14px;text-align:center;background:var(--gd);color:var(--white);font-size:15px;font-weight:700;text-decoration:none;border-radius:10px;}
-/* ── RESPONSIVE ── */
-@media(max-width:1024px){
-  .ai-inner{grid-template-columns:1fr;gap:40px;}
-  .ai-chat{display:none;}
-  .ai-visual{padding:0;}
-  .ai-photo-caption{display:none;}
-  .footer-top{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .feat-compact-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .feat-compact-grid>.feat-compact:last-child:nth-child(odd){grid-column:1/-1;}
-  .photo-section-inner{gap:40px;}
-  .hero-feat{gap:40px;}
-  .early-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .section{padding:72px 24px;}
-  .ai-section{padding:80px 24px;}
-  .testimonials{padding:72px 24px;}
-  .photo-section{padding:72px 24px;}
-  .cta-final{padding:80px 24px;}
-}
-@media(max-width:768px){
-  .scroll-progress{height:2px;box-shadow:0 0 6px rgba(217,169,74,.6);}
-  .nav-links{display:none;}
-  .nav-login,.nav-cta,.nav-demo,.nav-divider{display:none;}
-  .mob-menu{display:flex;align-items:center;justify-content:center;}
-  .hero{min-height:100dvh;padding:96px 16px 64px;display:flex;flex-direction:column;}
-  .hero-label-wrap{margin-bottom:0;}
-  .hero-grid{display:block;margin-top:0;}
-  .hero-left{display:block;width:100%;}
-  .hero-text-group{padding:20dvh 0;display:flex;flex-direction:column;justify-content:center;gap:20px;}
-  .hero-title{margin-bottom:0;}
-  .hero-sub{margin-bottom:0;}
-  .hero-btns{margin-bottom:44px;gap:14px;}
-  .hero-usps{gap:16px 20px;margin-bottom:40px;}
-  .hero-screenshot{padding:0;}
-  .mock-content{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .mock-kpi-v{font-size:16px;}
-  .section{padding:56px 20px;}
-  .ai-section{padding:64px 20px;}
-  .testimonials{padding:56px 20px;}
-  .photo-section{padding:56px 20px;}
-  .cta-final{padding:64px 20px;}
-  .section-title{margin-bottom:14px;}
-  .hero-feat{grid-template-columns:1fr;gap:28px;padding:32px 0;}
-  .hero-feat:first-of-type{padding-top:40px;}
-  .hero-feat.reverse .hero-feat-visual{order:0;}
-  .hero-feat-desc{max-width:none;}
-  .feat-compact-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .feat-compact-grid>.feat-compact:last-child:nth-child(odd){grid-column:1/-1;}
-  .pricing-grid{grid-template-columns:1fr;}
-  .testi-grid{grid-template-columns:1fr;}
-  .testi-featured{grid-template-columns:1fr;text-align:center;padding:32px 24px;gap:20px;}
-  .testi-featured-av{margin:0 auto;width:80px;height:80px;font-size:26px;}
-  .footer-top{grid-template-columns:1fr;}
-  .stats-inner{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .photo-section-inner{grid-template-columns:1fr;gap:28px;}
-  .photo-frame{aspect-ratio:16/10;}
-  .hero-usps{gap:8px 14px;}
-  .pricing-benefits{gap:12px 20px;}
-  .early-grid{grid-template-columns:1fr;gap:14px;}
-  .early-card{padding:24px 22px;}
-}
-@media(max-width:768px) and (max-height:700px){
-  .hero-text-group{padding:10dvh 0;}
-}
-@media(max-width:480px){
-  .hero-btns{flex-direction:column;align-items:stretch;}
-  .btn-primary,.btn-secondary{text-align:center;justify-content:center;}
-  .stats-inner{grid-template-columns:minmax(0,1fr) minmax(0,1fr);}
-  .mock-content{padding:10px;gap:6px;}
-  .mock-kpi{padding:8px;}
-  .mock-kpi-l{font-size:6px;}
-  .mock-kpi-v{font-size:14px;}
-  .mock-sidebar{width:36px;}
-}
-</style>
-<noscript><style>[data-aos],.section-label,.section-title,.section-sub,.feat-compact{opacity:1 !important;transform:none !important;}</style></noscript>
-</head>
-<body>
-
-<!-- NAV -->
-<div class="scroll-progress" id="scrollProgress"></div>
-<nav id="nav">
-  <div class="nav-inner">
-    <a href="#" class="nav-logo">Kronr<em>.</em></a>
-    <div class="nav-links-wrap">
-      <div class="nav-links">
-        <a href="#voor-wie" class="nav-link">Voor wie</a>
-        <a href="#features" class="nav-link">Features</a>
-        <a href="#ai" class="nav-link">Kai</a>
-        <a href="#prijzen" class="nav-link">Prijzen</a>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Kronr — Maak ruimte voor je vak.</title>
+    <meta
+      name="description"
+      content="Meer aandacht voor je klanten, minder losse systemen. Ontdek Kronr: agenda, online boeken, klantbeheer en betalingen voor salons en beautyprofessionals."
+    />
+    <meta name="theme-color" content="#251a2e" />
+    <link rel="canonical" href="https://kronr.nl/" />
+    <link rel="icon" href="/images/kronr-mark.svg" type="image/svg+xml" />
+    <meta property="og:title" content="Kronr — Maak ruimte voor je vak." />
+    <meta
+      property="og:description"
+      content="Je agenda, klanten en betalingen. Eén fijne flow."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://kronr.nl/" />
+    <meta
+      property="og:image"
+      content="https://kronr.nl/images/salon-professional.jpg"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/rebrand.css" />
+    <script src="/rebrand.js" defer></script>
+    <link rel="stylesheet" href="/rebrand-refinements.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Naar de inhoud</a>
+    <header class="site-header">
+      <a class="brand" href="/" aria-label="Kronr — homepage"
+        ><img src="/images/kronr-mark.svg" alt="" width="32" height="32" /><span
+          >kronr<span class="brand-dot">.</span></span
+        ></a
+      >
+      <nav class="desktop-nav" aria-label="Hoofdnavigatie">
+        <a href="#flow">De ervaring</a><a href="#voor-wie">Voor jouw salon</a
+        ><a href="#prijzen">Prijzen</a>
+      </nav>
+      <div class="header-actions">
+        <a class="login-link" href="/login/">Inloggen ↗</a
+        ><a class="button button-small button-lime" href="/demo/"
+          >Ontdek Kronr ↗</a
+        ><button
+          class="menu-toggle"
+          id="menu-toggle"
+          aria-label="Menu openen"
+          aria-controls="mobile-menu"
+          aria-expanded="false"
+        >
+          <span></span><span></span>
+        </button>
       </div>
-    </div>
-    <div class="nav-actions">
-      <a href="/login/" class="nav-login">Inloggen</a>
-      <span class="nav-divider">|</span>
-      <a href="/demo/" class="nav-demo">Bekijk demo</a>
-      <a href="/login/" class="nav-cta">Start 14 dagen gratis</a>
-      <button class="mob-menu" id="mob-menu" onclick="toggleMob()">
-        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
-      </button>
-    </div>
-  </div>
-</nav>
-
-<!-- HERO -->
-<section class="hero">
-  <div class="hero-grid">
-    <div class="hero-left">
-      <div class="hero-text-group">
-        <h1 class="hero-title">Besteed minder tijd aan administratie.<br><span class="hero-word-meer">Meer</span> tijd voor<br><span class="hero-je">je</span><span id="heroJeSpace"> </span><span class="hero-cycle-wrap"><span id="heroCycleWord" class="hero-cycle-word"></span><span class="hero-cycle-cursor"></span></span>.</h1>
-        <p class="hero-sub">Van agenda en betalingen tot WhatsApp en AI. Alles voor je salon in één platform, zonder commissie.</p>
+    </header>
+    <dialog id="mobile-menu" aria-label="Navigatie">
+      <div class="mobile-head">
+        <span class="brand">kronr.</span
+        ><button class="menu-close" aria-label="Menu sluiten">✕</button>
       </div>
-      <div class="hero-btns">
-        <a href="/login/" class="btn-primary">Start 14 dagen gratis <span class="btn-arrow">→</span></a>
-        <a href="/demo/" class="btn-secondary">Bekijk demo</a>
-      </div>
-      <div class="hero-usps">
-        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen creditcard</div>
-        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
-        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Binnen 15 minuten klaar</div>
-        <div class="hero-usp"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Nederlandse support</div>
-      </div>
-    </div>
-
-  <!-- App mockup -->
-  <div class="hero-screenshot">
-    <div class="screenshot-shadow">
-      <div class="app-mockup">
-        <div class="mock-nav">
-          <div class="mock-dots">
-            <div class="mock-dot" style="background:#ff5f57;"></div>
-            <div class="mock-dot" style="background:#febc2e;"></div>
-            <div class="mock-dot" style="background:#28c840;"></div>
+      <nav aria-label="Mobiele navigatie">
+        <a href="#flow">De ervaring</a><a href="#voor-wie">Voor jouw salon</a
+        ><a href="#prijzen">Prijzen</a><a href="/demo/">Bekijk de demo ↗</a
+        ><a href="/login/">Inloggen</a>
+      </nav>
+      <a class="button button-lime" href="/login/#registreer"
+        >Ontvang de launchupdate ↗</a
+      >
+    </dialog>
+    <main id="main">
+      <section class="hero" aria-labelledby="hero-title">
+        <div class="hero-orbit" aria-hidden="true"></div>
+        <div class="hero-topline">
+          <span
+            ><i class="status-dot"></i> IN ONTWIKKELING. VOOR JOUW VOLGENDE
+            HOOFDSTUK.</span
+          ><span class="edition">SALON SOFTWARE, REIMAGINED — 01</span>
+        </div>
+        <div class="hero-grid">
+          <div class="hero-copy">
+            <h1 id="hero-title">Maak ruimte<br />voor <em>je vak.</em></h1>
+            <p class="hero-sub">
+              Jij maakt mensen op hun mooist.<br />Kronr houdt de rest bij
+              elkaar.
+            </p>
+            <p class="hero-description">
+              Agenda, boekingen, klanten en betalingen.<br />Eén fijne flow voor
+              je hele salon.
+            </p>
+            <div class="hero-actions">
+              <a class="button button-lime" href="#flow">Ervaar de flow ↓</a
+              ><a class="text-link" href="/demo/">Zelf rondkijken ↗</a>
+            </div>
+            <div class="hero-footnote">
+              <span>Geen commissie</span><span>Persoonlijke support</span>
+            </div>
           </div>
-          <div class="mock-logo">Kronr<em>.</em></div>
-          <div style="margin-left:auto;display:flex;gap:8px;">
-            <div style="width:60px;height:22px;background:#f3ede4;border-radius:4px;"></div>
-            <div style="width:80px;height:22px;background:#1a1714;border-radius:4px;"></div>
+          <div class="scene-wrap">
+            <div class="scene-overline">
+              <span><i class="status-dot"></i> EEN DAG IN JOUW SALON</span
+              ><span>Interactief voorbeeld</span>
+            </div>
+            <div class="product-scene" id="product-scene" data-stage="0">
+              <div class="product-top">
+                <span class="mini-brand">kronr.</span><span>Studio Nova ⌄</span
+                ><span class="avatar">JD</span>
+              </div>
+              <div class="product-body">
+                <aside class="product-rail" aria-hidden="true">
+                  <span class="rail-active">▦</span><span>◷</span><span>♧</span
+                  ><span>↗</span><span class="rail-bottom">✳</span>
+                </aside>
+                <div class="product-main">
+                  <div class="product-greeting">
+                    <div>
+                      <span class="micro-label"
+                        >WOENSDAG, 21 OKTOBER · VOORBEELD</span
+                      >
+                      <h2>Een mooie dag, Julia <span>✳</span></h2>
+                    </div>
+                    <span class="small-badge">Jouw overzicht</span>
+                  </div>
+                  <div class="product-metrics">
+                    <div>
+                      <span>Afspraken</span
+                      ><strong id="scene-count">08<span>vandaag</span></strong>
+                    </div>
+                    <div>
+                      <span>Omzet vandaag</span
+                      ><strong id="scene-revenue"
+                        >€ 640<span>voorbeeld</span></strong
+                      >
+                    </div>
+                    <div class="metric-chart">
+                      <span>Een fijne flow</span>
+                      <div aria-hidden="true">
+                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="calendar-top">
+                    <strong>Je agenda</strong><span>Vandaag ⌄</span>
+                  </div>
+                  <div class="mini-calendar">
+                    <div class="calendar-head">
+                      <span></span><span>Julia</span><span>Noor</span
+                      ><span>Sam</span>
+                    </div>
+                    <div class="calendar-grid">
+                      <div class="calendar-times">
+                        <span>09:00</span><span>10:00</span><span>11:00</span
+                        ><span>12:00</span>
+                      </div>
+                      <div class="calendar-column">
+                        <div class="appointment lilac">
+                          <strong>Emma</strong><span>Knippen & styling</span
+                          ><small>09:00 — 10:00</small>
+                        </div>
+                        <div class="appointment lime incoming-appointment">
+                          <strong>Lisa</strong><span>Knippen & styling</span
+                          ><small>11:00 — 12:00</small>
+                        </div>
+                      </div>
+                      <div class="calendar-column">
+                        <div class="appointment peach lower">
+                          <strong>Sophie</strong><span>Balayage</span
+                          ><small>10:00 — 12:00</small>
+                        </div>
+                      </div>
+                      <div class="calendar-column">
+                        <div class="appointment sage">
+                          <strong>Alex</strong><span>Knippen</span
+                          ><small>09:00 — 09:45</small>
+                        </div>
+                        <div class="calendar-break">Even opladen ☕</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="product-bottom">
+                    <span><i class="status-dot"></i> Alles op één plek.</span
+                    ><span>Dat werkt lekker.</span>
+                  </div>
+                </div>
+              </div>
+              <div class="booking-toast" id="scene-toast">
+                <span class="toast-icon">↗</span>
+                <div>
+                  <strong id="scene-toast-title">Lisa boekt online</strong
+                  ><span id="scene-toast-sub"
+                    >Knippen & styling · woensdag 11:00</span
+                  >
+                </div>
+                <span class="toast-check">✓</span>
+              </div>
+            </div>
+            <div class="scene-controls" aria-label="Voorbeeldwerkdag">
+              <div class="scene-steps">
+                <button data-scene-step="0" aria-pressed="true">
+                  <span>01</span> Boeken</button
+                ><button data-scene-step="1" aria-pressed="false">
+                  <span>02</span> Plannen</button
+                ><button data-scene-step="2" aria-pressed="false">
+                  <span>03</span> Afronden
+                </button>
+              </div>
+              <button
+                class="scene-play"
+                id="scene-play"
+                aria-label="Voorbeeld afspelen"
+              >
+                ▶
+              </button>
+            </div>
+            <p class="scene-note">
+              Fictieve salon en voorbeelddata. Klik door de drie stappen.
+            </p>
           </div>
         </div>
-        <div class="mock-body">
-          <div class="mock-sidebar">
-            <div class="mock-si on"></div>
-            <div class="mock-si"></div>
-            <div class="mock-si"></div>
-            <div class="mock-si"></div>
-            <div class="mock-si"></div>
+        <div class="hero-baseline">
+          <span>MEER OVERZICHT. MINDER OPEN TABBLADEN.</span
+          ><a href="#flow">Scroll om te ontdekken ↓</a>
+        </div>
+      </section>
+      <div class="capability-strip" aria-label="De basis van Kronr">
+        <span>Agenda</span><i>✳</i><span>Online boeken</span><i>✳</i
+        ><span>Klanten</span><i>✳</i><span>Betalingen</span><i>✳</i
+        ><span>Jouw ritme</span>
+      </div>
+      <section
+        class="flow-section section-pad"
+        id="flow"
+        aria-labelledby="flow-title"
+      >
+        <div class="section-heading">
+          <span class="eyebrow">01 / VAN DRUK NAAR FLOW</span>
+          <h2 id="flow-title">
+            Een werkdag die<br /><em>met je meebeweegt.</em>
+          </h2>
+          <p>
+            Geen wirwar aan losse tools. Van de eerste boeking tot het laatste
+            betaalmoment: alles sluit op elkaar aan.
+          </p>
+        </div>
+        <div class="booking-journey" data-stage="0">
+          <div class="journey-story">
+            <div
+              class="journey-progress"
+              aria-label="Stappen van het voorbeeld"
+            >
+              <span data-journey-step>01 / BOEKEN</span
+              ><span data-journey-step>02 / AGENDA</span
+              ><span data-journey-step>03 / AFREKENEN</span>
+            </div>
+            <h3 data-journey-title>Jouw klant kiest.</h3>
+            <p data-journey-status aria-live="polite">
+              Kies een tijd en probeer een voorbeeldboeking.
+            </p>
+            <button class="btn btn-lime" data-journey-action>
+              Boek deze voorbeeldplek →
+            </button>
+            <small
+              >Interactief voorbeeld · fictieve gegevens.<br />Je maakt geen
+              echte boeking of betaling.</small
+            >
           </div>
-          <div class="mock-content">
-            <div class="mock-kpi"><div class="mock-kpi-l">Vandaag</div><div class="mock-kpi-v">8</div></div>
-            <div class="mock-kpi"><div class="mock-kpi-l">Omzet</div><div class="mock-kpi-v">€640</div></div>
-            <div class="mock-kpi"><div class="mock-kpi-l">Klanten</div><div class="mock-kpi-v">247</div></div>
-            <div class="mock-kpi"><div class="mock-kpi-l">Bezetting</div><div class="mock-kpi-v">87%</div></div>
-            <div class="mock-agenda">
-              <div class="mock-agenda-head">
-                <span>Agenda vandaag</span>
-                <span style="color:#8c6d3f;font-size:7px;">Week →</span>
+          <div class="journey-window">
+            <div class="journey-window-head">
+              <span>STUDIO NOVA</span><span>powered by kronr.</span>
+            </div>
+            <div data-journey-panel>
+              <span class="eyebrow">EEN MOMENT VOOR JEZELF</span>
+              <h4>Mooi begint<br />met aandacht.</h4>
+              <div class="journey-service">
+                <span>Knippen & styling<small>Julia · 60 minuten</small></span
+                ><b>€ 72</b>
               </div>
-              <div class="mock-agenda-rows">
-                <div class="mock-time" style="border-right:1px solid #e2d9ce;">9:00</div>
-                <div class="mock-slot"><div class="mock-apt c0">Jasmijn: Knippen</div></div>
-                <div class="mock-slot"></div>
-                <div class="mock-slot"><div class="mock-apt c2">Sara: Highlights</div></div>
-                <div class="mock-slot"><div class="mock-apt c1">Tom: Baard</div></div>
-                <div class="mock-slot"></div>
-                <div class="mock-time" style="border-right:1px solid #e2d9ce;">10:00</div>
-                <div class="mock-slot"></div>
-                <div class="mock-slot"><div class="mock-apt c3">Lena: Kleur</div></div>
-                <div class="mock-slot"></div>
-                <div class="mock-slot"></div>
-                <div class="mock-slot"></div>
-                <div class="mock-time" style="border-right:1px solid #e2d9ce;">11:00</div>
-                <div class="mock-slot"><div class="mock-apt c1">Roos: Knippen</div></div>
-                <div class="mock-slot"></div>
-                <div class="mock-slot"><div class="mock-apt c0">Mike: Fade</div></div>
-                <div class="mock-slot"></div>
-                <div class="mock-slot"><div class="mock-apt c2">Ana: Balayage</div></div>
+              <p>Woensdag · beschikbare voorbeeldtijden</p>
+              <div
+                class="journey-times"
+                role="group"
+                aria-label="Kies een voorbeeldtijd"
+              >
+                <button data-time="09:30" aria-pressed="false">09:30</button
+                ><button data-time="11:00" aria-pressed="true">11:00</button
+                ><button data-time="14:30" aria-pressed="false">14:30</button>
               </div>
+            </div>
+            <div data-journey-panel hidden>
+              <span class="eyebrow">WOENSDAG / JULIA</span>
+              <h4>Een plek.<br />Alles erbij.</h4>
+              <div class="journey-appointment">
+                <strong
+                  ><span data-chosen-time>11:00</span> · Lisa de Vries</strong
+                >
+                <p>Knippen & styling · 60 min</p>
+                <span>Online geboekt ✓</span>
+              </div>
+              <div class="journey-note">
+                Klantnotitie<small
+                  >Graag de lengte behouden, alleen de punten.</small
+                >
+              </div>
+            </div>
+            <div data-journey-panel hidden>
+              <span class="eyebrow">VOORBEELDBON</span>
+              <h4>Tot de<br />volgende keer.</h4>
+              <div class="journey-service">
+                <span
+                  >Lisa · <span data-chosen-time>11:00</span
+                  ><small>Knippen & styling</small></span
+                ><b>€ 72,00</b>
+              </div>
+              <div class="journey-paid">✓ Voorbeeld afgerond</div>
+              <p>Afspraak, klant en betaling in één overzicht.</p>
             </div>
           </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Zwevende notificaties, zoals in het dashboard -->
-    <div class="hero-float-toasts">
-      <div class="hero-toast">
-        <div class="hero-toast-icon eu">📅</div>
-        <div class="hero-toast-body">
-          <div class="hero-toast-title">Nieuwe afspraak<span>Nu</span></div>
-          <div class="hero-toast-sub">Lisa Jansen heeft een afspraak geboekt op vrijdag 14:00</div>
+        <script src="/journey.js" defer></script>
+        <a class="text-link dark-link" href="/demo/"
+          >Probeer de interactieve demo ↗</a
+        >
+      </section>
+      <section
+        class="editorial-section"
+        id="voor-wie"
+        aria-labelledby="people-title"
+      >
+        <div class="editorial-photo">
+          <img
+            src="/images/salon-professional.jpg"
+            alt="Salonprofessional aan het werk"
+            loading="lazy"
+            width="1200"
+            height="900"
+          /><span class="photo-stamp"
+            >GEMAAKT VOOR<br />MENSENWERK <b>✳</b></span
+          >
         </div>
-      </div>
-      <div class="hero-toast">
-        <div class="hero-toast-icon wa">💬</div>
-        <div class="hero-toast-body">
-          <div class="hero-toast-title">WhatsApp herinnering<span>Nu</span></div>
-          <div class="hero-toast-sub">Herinnering verstuurd naar 3 klanten</div>
+        <div class="editorial-copy">
+          <span class="eyebrow">02 / ACHTER ELKE MOOIE ZAAK</span>
+          <h2 id="people-title">
+            Jouw handen.<br />Jouw ideeën.<br /><em>Jouw zaak.</em>
+          </h2>
+          <p>
+            Je begon niet voor de administratie. Je begon voor het vak, het
+            contact en dat moment waarop iemand blij de deur uitloopt.
+          </p>
+          <p>
+            Kronr brengt rust achter de schermen. Zodat jij er vóór je klanten
+            kunt zijn.
+          </p>
+          <div class="industry-tags">
+            <span>Kappers</span><span>Nagelstudio’s</span><span>Beauty</span
+            ><span>Wellness</span>
+          </div>
+          <a class="text-link dark-link" href="mailto:hallo@kronr.nl"
+            >Past Kronr bij mijn zaak? ↗</a
+          >
         </div>
-      </div>
-      <div class="hero-toast">
-        <div class="hero-toast-icon eu">€</div>
-        <div class="hero-toast-body">
-          <div class="hero-toast-title">Betaling ontvangen<span>Nu</span></div>
-          <div class="hero-toast-sub">€75,00 van Emma Bakker</div>
+      </section>
+      <section
+        class="kai-section section-pad"
+        id="ai"
+        aria-labelledby="kai-title"
+      >
+        <div class="kai-copy">
+          <span class="eyebrow">03 / EEN FRISSE BLIK ERBIJ</span>
+          <h2 id="kai-title">Jij hebt het talent.<br /><em>Dit is Kai.</em></h2>
+          <p>
+            Een assistent om mee te denken. Van een eerste bericht tot een idee
+            voor je salon. Jij houdt de regie.
+          </p>
+          <a class="text-link" href="#prijzen">Bekijk Kai per pakket ↗</a>
+          <p class="kai-disclaimer">
+            Illustratief concept. Functies verschillen per pakket.
+            WhatsApp-verzending is nog niet beschikbaar.
+          </p>
         </div>
-      </div>
-    </div>
-
-    <!-- AI-chatpaneel, zoals in het dashboard -->
-    <div class="hero-ai-panel">
-      <div class="hero-ai-head">
-        <div class="hero-ai-dot"></div>
-        <img src="images/kai-mascotte.png" alt="Kai" style="width:18px;height:18px;object-fit:contain;flex-shrink:0;">
-        <div class="hero-ai-head-text">Kai<span>AI is online</span></div>
-      </div>
-      <div class="hero-ai-body">
-        <div class="hero-ai-msg ai">Goedemorgen! Waar kan ik je vandaag mee helpen?</div>
-        <div class="hero-ai-msg user">Schrijf een WhatsApp-herinnering voor Emma morgen om 14:00.</div>
-        <div class="hero-ai-msg ai">Natuurlijk! Hier is een vriendelijke herinnering die je zo kunt versturen.</div>
-        <div class="hero-ai-draft">
-          Hi Emma! 👋<br>Dit is een vriendelijke herinnering aan je afspraak morgen om 14:00 bij ons.<br>We kijken ernaar uit je weer te zien!<br>Tot dan! 🧡
-          <div class="hero-ai-wa-btn">
-            <span style="display:flex;align-items:center;gap:5px;"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91C21.95 6.45 17.5 2 12.04 2zm5.8 14.03c-.24.68-1.4 1.3-1.94 1.38-.5.08-1.12.11-1.8-.11-.42-.13-.95-.31-1.63-.6-2.87-1.24-4.74-4.15-4.88-4.34-.14-.19-1.17-1.56-1.17-2.98 0-1.42.74-2.11 1.01-2.4.26-.28.57-.35.76-.35.19 0 .38 0 .55.01.17.01.41-.07.64.49.24.58.81 2 .88 2.14.07.14.12.31.02.5-.09.19-.14.31-.28.48-.14.16-.29.37-.42.49-.14.14-.28.28-.12.55.16.28.71 1.17 1.53 1.9 1.05.94 1.94 1.23 2.21 1.37.28.14.44.12.6-.07.16-.19.68-.79.87-1.06.19-.28.37-.23.62-.14.26.09 1.64.77 1.92.91.28.14.47.21.53.33.07.12.07.68-.17 1.36z"/></svg>Verstuur via WhatsApp</span>
-            <span>→</span>
+        <div class="kai-stage">
+          <div class="kai-orb" aria-hidden="true">✳</div>
+          <div class="kai-chat">
+            <div class="kai-chat-label">
+              <span>✳ Kai</span><span>CONCEPTPREVIEW</span>
+            </div>
+            <div class="kai-user">
+              Hoe nodig ik een klant vriendelijk uit om weer langs te komen?
+            </div>
+            <div class="kai-answer">
+              <span>✳</span>
+              <p>
+                Hé Emma, tijd voor een moment voor jezelf? We zien je graag weer
+                in de salon. Kies gerust een tijd die jou uitkomt.
+              </p>
+            </div>
+            <div class="kai-review">
+              Een eerste versie. Jij maakt het persoonlijk. <span>↗</span>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="hero-ai-input">Stel een vraag...</div>
-    </div>
-    </div>
-  </div>
-
-  <!-- Onderste featurebalk -->
-  <div class="hero-pills">
-    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Online boekingen</div>
-    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Agenda</div>
-    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>Betalingen</div>
-    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>Klantbeheer</div>
-    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 3l1.9 5.8L20 11l-6.1 2.2L12 19l-1.9-5.8L4 11l6.1-2.2z"/></svg>Kaissistent</div>
-    <div class="hero-pill"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>WhatsApp herinneringen</div>
-  </div>
-</section>
-
-<!-- STATS -->
-<div class="stats-bar">
-  <div class="stats-inner">
-    <div class="stat-item"><div class="stat-num">0<span>%</span></div><div class="stat-lbl">Commissie</div></div>
-    <div class="stat-item"><div class="stat-num">15<span> min</span></div><div class="stat-lbl">Ingericht</div></div>
-    <div class="stat-item"><div class="stat-num">24<span>/7</span></div><div class="stat-lbl">Online boekingen</div></div>
-    <div class="stat-item"><div class="stat-num">AI<span></span></div><div class="stat-lbl">In elk pakket</div></div>
-  </div>
-</div>
-
-<!-- VOOR WIE -->
-<section class="section voor-wie" id="voor-wie">
-  <img src="images/kai-mascotte.png" alt="" class="vw-watermark-kai">
-  <div class="section-inner">
-    <div class="section-label">Voor wie is Kronr?</div>
-    <h2 class="section-title">Ontdek hoe Kronr<br>jouw branche ondersteunt.</h2>
-
-    <div class="vw-kai-intro">
-      <img src="images/kai-mascotte.png" alt="Kai" class="vw-kai-intro-avatar">
-      <div class="vw-kai-intro-bubble">
-        <span id="vwKaiIntroText"></span><span class="vw-kai-intro-cursor" id="vwKaiIntroCursor"></span>
-      </div>
-    </div>
-
-    <div class="vw-pills" id="vwPills" role="tablist">
-      <button class="vw-pill" data-industry="kappers" role="tab" aria-selected="false">Kappers</button>
-      <button class="vw-pill" data-industry="nagels" role="tab" aria-selected="false">Nagels</button>
-      <button class="vw-pill" data-industry="beauty" role="tab" aria-selected="false">Beauty</button>
-      <button class="vw-pill" data-industry="spa" role="tab" aria-selected="false">Spa</button>
-      <button class="vw-pill" data-industry="tattoo" role="tab" aria-selected="false">Tattoo</button>
-      <button class="vw-pill" data-industry="sport" role="tab" aria-selected="false">Sport & fitness</button>
-      <button class="vw-pill" data-industry="dieren" role="tab" aria-selected="false">Dierenverzorging</button>
-      <button class="vw-pill" data-industry="fysio" role="tab" aria-selected="false">Fysio & paramedisch</button>
-      <button class="vw-pill" data-industry="dans" role="tab" aria-selected="false">Dansscholen</button>
-      <button class="vw-pill" data-industry="massage" role="tab" aria-selected="false">Massage</button>
-      <button class="vw-pill" data-industry="wenkbrauw" role="tab" aria-selected="false">Wenkbrauw & wimpers</button>
-      <button class="vw-pill" data-industry="rijschool" role="tab" aria-selected="false">Rijscholen</button>
-      <button class="vw-pill" data-industry="pt" role="tab" aria-selected="false">Personal trainers</button>
-      <button class="vw-pill" data-industry="klimhal" role="tab" aria-selected="false">Klimhal & boksschool</button>
-      <button class="vw-pill" data-industry="hondentrainer" role="tab" aria-selected="false">Hondentrainers</button>
-      <button class="vw-pill" data-industry="fotografie" role="tab" aria-selected="false">Fotografie</button>
-      <button class="vw-pill" data-industry="garage" role="tab" aria-selected="false">Garages</button>
-      <button class="vw-pill" data-industry="coworking" role="tab" aria-selected="false">Vergaderruimtes</button>
-      <button class="vw-pill" data-industry="dietist" role="tab" aria-selected="false">Diëtisten</button>
-      <button class="vw-pill" data-industry="tandarts" role="tab" aria-selected="false">Tandartsen</button>
-      <button class="vw-pill" data-industry="dierenarts" role="tab" aria-selected="false">Dierenartsen</button>
-      <button class="vw-pill" data-industry="psycholoog" role="tab" aria-selected="false">Psychologen</button>
-      <button class="vw-pill" data-industry="anders" role="tab" aria-selected="false">Anders</button>
-    </div>
-
-    <div class="vw-kai-intro" id="vwAndersReply" style="display:none;">
-      <img src="images/kai-mascotte.png" alt="Kai" class="vw-kai-intro-avatar">
-      <div class="vw-kai-intro-bubble" id="vwAndersReplyBubble">
-        <span id="vwAndersReplyText"></span><span class="vw-kai-intro-cursor" id="vwAndersReplyCursor"></span>
-      </div>
-    </div>
-
-    <div class="vw-layout" id="vwLayout">
-      <div class="vw-panel" id="vwPanel">
-        <div class="vw-panel-text" id="vwPanelText">
-          <h3 class="vw-panel-title" id="vwTitle"></h3>
-          <p class="vw-panel-desc" id="vwDesc"></p>
-          <ul class="vw-panel-benefits" id="vwBenefits"></ul>
+      </section>
+      <section
+        class="pricing-section section-pad"
+        id="prijzen"
+        aria-labelledby="pricing-title"
+      >
+        <div class="section-heading">
+          <span class="eyebrow">04 / RUIMTE OM TE GROEIEN</span>
+          <h2 id="pricing-title">Jouw ambities.<br /><em>Jouw pakket.</em></h2>
+          <p>
+            Geen commissie over je boekingen. Kies het pakket dat past bij jouw
+            team.
+          </p>
         </div>
-        <div class="vw-panel-visual" id="vwVisual"></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ZO WERKT HET -->
-<section class="section" style="background:var(--iv);" id="zowerkthet">
-  <div class="section-inner">
-    <div class="section-label">Zo werkt het</div>
-    <h2 class="section-title">Binnen 15 minuten<br>live met je salon</h2>
-    <p class="section-sub" style="margin-bottom:52px;">Geen ingewikkelde installatie, geen wekenlange onboarding. Zo simpel is het.</p>
-
-    <div class="howit-timeline" id="howitTimeline">
-      <div class="howit-line"><div class="howit-line-fill" id="howitLineFill"></div></div>
-
-      <div class="howit-step howit-active" data-step="1">
-        <div class="howit-step-marker"><span>1</span></div>
-        <div class="howit-step-body">
-          <div class="howit-step-text">
-            <h3 class="howit-step-title">Account aanmaken</h3>
-            <p class="howit-step-desc">Vul je salonnaam in, kies je diensten en stel je openingstijden in. Binnen een paar minuten staat je basis klaar, zonder dat een creditcard nodig is of een ingewikkelde configuratie moet worden doorlopen.</p>
+        <div class="pricing-toolbar">
+          <div class="period-switch" role="group" aria-label="Betaalperiode">
+            <button data-period="monthly" aria-pressed="true">
+              Maandelijks</button
+            ><button data-period="yearly" aria-pressed="false">
+              Jaarlijks <span>2 maanden gratis</span>
+            </button>
           </div>
-          <div class="howit-step-shot"><img src="images/stp1.png" alt="Account aanmaken in Kronr" loading="lazy"></div>
+          <p>Nieuwe accounts openen bij de lancering.</p>
         </div>
-      </div>
-
-      <div class="howit-step" data-step="2">
-        <div class="howit-step-marker"><span>2</span></div>
-        <div class="howit-step-body">
-          <div class="howit-step-text">
-            <h3 class="howit-step-title">Klanten importeren</h3>
-            <p class="howit-step-desc">Importeer je bestaande klantenbestand in één keer, of begin gewoon fris. Namen, telefoonnummers en eerdere afspraken staan meteen klaar.</p>
-          </div>
-          <div class="howit-step-shot"><img src="images/stp2.png" alt="Klanten importeren in Kronr" loading="lazy"></div>
+        <div class="price-grid">
+          <article class="price-card">
+            <span class="plan-name">Starter</span>
+            <p>Een sterke basis voor jouw eigen zaak.</p>
+            <div class="price">
+              <span>€</span><strong data-price="starter">19</strong
+              ><span data-price-unit>/ maand</span>
+            </div>
+            <span class="plan-team">1 medewerker</span
+            ><a class="button button-outline" href="/login/#registreer"
+              >Houd me op de hoogte ↗</a
+            >
+            <ul>
+              <li>Agenda & online boeken</li>
+              <li>Kassa & betalingen</li>
+              <li>Klantenbeheer</li>
+              <li>E-mailherinneringen</li>
+              <li>Basisrapportages</li>
+            </ul>
+          </article>
+          <article class="price-card featured">
+            <div class="plan-top">
+              <span class="plan-name">Pro</span
+              ><span class="plan-badge">VOOR JE TEAM</span>
+            </div>
+            <p>Meer inzicht. Meer ruimte om te groeien.</p>
+            <div class="price">
+              <span>€</span><strong data-price="pro">39</strong
+              ><span data-price-unit>/ maand</span>
+            </div>
+            <span class="plan-team">Tot en met 5 medewerkers</span
+            ><a class="button button-plum" href="/login/#registreer"
+              >Houd me op de hoogte ↗</a
+            >
+            <ul>
+              <li>Alles van Starter</li>
+              <li>Cadeaubonnen</li>
+              <li>Uitgebreide rapportages</li>
+              <li>Kai-inzichten</li>
+              <li>Boekhoudkoppeling</li>
+              <li>WhatsApp-herinneringen <small>Binnenkort</small></li>
+            </ul>
+          </article>
+          <article class="price-card">
+            <span class="plan-name">Business</span>
+            <p>Voor grote plannen en meerdere locaties.</p>
+            <div class="price">
+              <span>€</span><strong data-price="business">69</strong
+              ><span data-price-unit>/ maand</span>
+            </div>
+            <span class="plan-team">Onbeperkt medewerkers</span
+            ><a class="button button-outline" href="/login/#registreer"
+              >Houd me op de hoogte ↗</a
+            >
+            <ul>
+              <li>Alles van Pro</li>
+              <li>Kaissistent</li>
+              <li>Marketingcampagnes</li>
+              <li>Meerdere locaties</li>
+              <li>Prioriteit bij support</li>
+            </ul>
+          </article>
         </div>
-      </div>
-
-      <div class="howit-step" data-step="3">
-        <div class="howit-step-marker"><span>3</span></div>
-        <div class="howit-step-body">
-          <div class="howit-step-text">
-            <h3 class="howit-step-title">Direct online boekingen ontvangen</h3>
-            <p class="howit-step-desc">Deel je persoonlijke boekingslink via WhatsApp, Instagram of je website. Klanten boeken zelf, 24 uur per dag, en jij ziet meteen een volle agenda binnenkomen.</p>
-          </div>
-          <div class="howit-step-shot"><img src="images/stp3.png" alt="Online boekingen ontvangen met Kronr" loading="lazy"></div>
-        </div>
-      </div>
-
-      <div class="howit-live-pill"><span class="howit-live-dot"></span>Live</div>
-    </div>
-  </div>
-</section>
-
-<!-- FOTO SECTIE: vervang .photo-frame met een echte foto zodra je die hebt -->
-<section class="photo-section">
-  <div class="photo-section-inner" data-aos>
-    <div class="photo-frame">
-      <img src="images/salon-professional.jpg" alt="Salonprofessional aan het werk" style="width:100%;height:100%;object-fit:cover;display:block;">
-    </div>
-    <div>
-      <div class="section-label">Beauty is mensenwerk</div>
-      <h2 class="section-title">Je begon een salon<br>om mensen mooier te maken.</h2>
-      <p class="section-sub">Niet om 's avonds nog administratie te doen, tussen zes verschillende systemen te schakelen, of je af te vragen waarom je bedrijf zo chaotisch aanvoelt. Kronr regelt dat, zodat jij je weer kunt richten op waar je ooit voor begon.</p>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section class="section" id="features">
-  <div class="section-inner">
-    <div class="section-label">Alles wat je nodig hebt</div>
-    <h2 class="section-title">Van de eerste boeking<br>tot de betaling. Alles in één overzicht.</h2>
-    <p class="section-sub" style="margin-bottom:0;">Alles wat je nodig hebt om je salon soepel te laten draaien, zonder tussen tien verschillende tools te hoeven schakelen.</p>
-
-    <div class="hero-feat" data-aos>
-      <div>
-        <div class="hero-feat-num">01</div>
-        <h3 class="hero-feat-title">Slimme agenda</h3>
-        <p class="hero-feat-desc" style="margin-bottom:14px;">Plan sneller. Voorkom dubbele boekingen. Houd altijd overzicht.</p>
-        <ul class="hero-feat-bullets">
-          <li>Dag-, week- en maandweergave</li>
-          <li>Drag & drop plannen</li>
-          <li>Automatische conflictdetectie</li>
-        </ul>
-      </div>
-      <div class="hero-feat-visual" id="feat-agenda-visual">
-        <div class="mini-agenda">
-          <div class="mini-agenda-head">Agenda: woensdag</div>
-          <div class="mini-agenda-row"><div class="mini-agenda-time">9:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Jasmijn: Knippen</div></div>
-          <div class="mini-agenda-row"><div class="mini-agenda-time">10:15</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sara: Highlights</div></div>
-          <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tom: Baard</div></div>
-          <div class="mini-agenda-row"><div class="mini-agenda-time">13:30</div><div class="mini-agenda-apt" style="background:#c8e8ff;color:#1a5fa0;">Lena: Kleur</div></div>
-          <div class="mini-agenda-row new-row"><div class="mini-agenda-time">14:15</div><div class="mini-agenda-apt" style="background:#f5ede0;color:#8c6d3f;">Emma: Föhnen</div><div class="mini-agenda-conflict-badge" id="feat-conflict-badge">✓ Geen dubbele boeking</div></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-feat reverse" data-aos>
-      <div>
-        <div class="hero-feat-num">02</div>
-        <h3 class="hero-feat-title">Online boeken 24/7</h3>
-        <p class="hero-feat-desc" style="margin-bottom:14px;">Klanten plannen zelf. Jij werkt gewoon door.</p>
-        <ul class="hero-feat-bullets">
-          <li>Eigen boekingspagina of widget</li>
-          <li>Aanbetaling mogelijk</li>
-          <li>Automatisch annuleringsbeleid</li>
-        </ul>
-      </div>
-      <div class="hero-feat-visual" id="feat-widget-visual">
-        <div class="mini-widget">
-          <div class="mini-widget-title">Kies een tijd</div>
-          <div class="mini-widget-slot" id="feat-slot-1">14:30</div>
-          <div class="mini-widget-slot selected" id="feat-slot-2">16:30: geselecteerd</div>
-          <div class="mini-widget-slot" id="feat-slot-3">17:00</div>
-          <div class="mini-widget-btn" id="feat-widget-btn">Afspraak bevestigen</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="hero-feat" data-aos>
-      <div>
-        <div class="hero-feat-num">03</div>
-        <h3 class="hero-feat-title">Kaissistent</h3>
-        <p class="hero-feat-desc" style="margin-bottom:14px;">Kai helpt met de taken die jij liever niet doet.</p>
-        <ul class="hero-feat-bullets">
-          <li>Beantwoordt klantvragen</li>
-          <li>Stuurt herinneringen</li>
-          <li>Geeft groeisuggesties</li>
-        </ul>
-      </div>
-      <div class="hero-feat-visual" id="feat-ai-visual">
-        <div style="width:100%;display:flex;flex-direction:column;gap:8px;">
-          <div class="feat-ai-bubble" style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">💡 Geeft prijsadvies op basis van je boekingen</div>
-          <div class="feat-ai-bubble" style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">💬 Beantwoordt veelgestelde klantvragen</div>
-          <div class="feat-ai-bubble" style="background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--ink2);">📈 Geeft groeisuggesties voor je salon</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="feat-compact-grid">
-      <div class="feat-compact">
-        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div>
-        <div class="feat-compact-title">Klantenbeheer</div>
-        <div class="feat-compact-desc">Behandelhistorie, allergieën en notities. Altijd bij de hand.</div>
-      </div>
-      <div class="feat-compact">
-        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="feat-compact-title">Kassa & betalingen</div>
-        <div class="feat-compact-desc">Pin, contant, iDEAL en cadeaubonnen in één kassa.</div>
-      </div>
-      <div class="feat-compact">
-        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
-        <div class="feat-compact-title">Rapportages</div>
-        <div class="feat-compact-desc">Omzet, bezetting en no-shows in duidelijke overzichten.</div>
-      </div>
-      <div class="feat-compact">
-        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.8a19.79 19.79 0 01-3.07-8.68A2 2 0 012 .84h3a2 2 0 012 1.72 12.84 12.84 0 00.7 2.81 2 2 0 01-.45 2.11L6.09 8.91a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45 12.84 12.84 0 002.81.7A2 2 0 0122 16.92z"/></svg></div>
-        <div class="feat-compact-title">WhatsApp herinneringen <span style="font-size:10px;font-weight:400;color:var(--mu);">(binnenkort)</span></div>
-        <div class="feat-compact-desc">Minder no-shows, minder telefoontjes. Wacht nog op goedkeuring van Meta — nog niet actief.</div>
-      </div>
-      <div class="feat-compact">
-        <div class="feat-compact-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
-        <div class="feat-compact-title">Slimme wachtlijst</div>
-        <div class="feat-compact-desc">Bij een annulering krijgt de eerste klant op de wachtlijst automatisch een link om de vrijgekomen plek te claimen.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- AI SECTION -->
-<section class="ai-section" id="ai">
-  <div class="ai-inner">
-    <div>
-      <div class="ai-label-row">
-        <img src="images/kai-mascotte.png" alt="Kai" class="ai-kai-avatar">
-        <div class="ai-label">Kaissistent</div>
-      </div>
-      <h2 class="ai-title">Kai doet het werk<br>dat jij liever niet doet</h2>
-      <p class="ai-sub">Terwijl jij je klanten helpt, regelt Kai de rest. Geen dashboards afstruinen, geen extra werk, gewoon elke week uren bespaard.</p>
-      <div class="ai-features">
-        <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-          <div class="ai-feat-text"><strong>Beantwoordt klantvragen</strong>"Kai vertelde een bezoeker wat jullie openingstijden zijn, zonder dat jij iets hoefde te doen."</div>
-        </div>
-        <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg></div>
-          <div class="ai-feat-text"><strong>Stuurt herinneringen</strong>"Kai heeft vandaag automatisch 12 herinneringen verstuurd, zonder dat jij er iets voor hoefde te doen."</div>
-        </div>
-        <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
-          <div class="ai-feat-text"><strong>Geeft prijsadvies</strong>"Kai zag dat 'Knippen' op maandagochtend het populairst is en stelde een kleine toeslag voor."</div>
-        </div>
-        <div class="ai-feat">
-          <div class="ai-feat-icon"><svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="12" y1="20" x2="12" y2="10"/><line x1="18" y1="20" x2="18" y2="4"/><line x1="6" y1="20" x2="6" y2="16"/></svg></div>
-          <div class="ai-feat-text"><strong>Denkt met je mee</strong>"Kai ziet dat donderdag je drukste dag wordt. Misschien is het tijd voor een extra paar handen?"</div>
-        </div>
-      </div>
-      <p style="font-size:12px;color:rgba(255,255,255,.35);margin-top:20px;font-style:italic;">Kai is er altijd, nooit opdringerig, en altijd behulpzaam.</p>
-    </div>
-    <div class="ai-visual">
-      <div class="ai-chat" id="ai-chat">
-      <div class="ai-chat-head">
-        <div class="ai-chat-dot"></div>
-        <img src="images/kai-mascotte.png" alt="Kai" class="ai-chat-avatar">
+        <p class="pricing-note">
+          WhatsApp is nog niet actief. Bij jaarlijkse betaling wordt het
+          getoonde jaarbedrag in rekening gebracht. Pakketprijzen zijn
+          ongewijzigd.
+        </p>
+      </section>
+      <section class="founder-strip">
+        <span class="founder-symbol" aria-hidden="true">↗</span>
         <div>
-          <div class="ai-chat-head-text">Kai <span class="ai-chat-live">● Live</span></div>
-          <div class="ai-chat-head-sub">Actief · Verwerkt je data realtime</div>
+          <span class="eyebrow">KLEIN GENOEG OM JE TE KENNEN.</span>
+          <h2>Een nieuw platform.<br />Een <em>persoonlijke</em> start.</h2>
+        </div>
+        <div>
+          <p>
+            Geen anoniem loket. Als vroege gebruiker heb je direct contact met
+            de bouwer van Kronr. Je vragen, ideeën en feedback helpen het
+            platform vooruit.
+          </p>
+          <a class="text-link dark-link" href="mailto:hallo@kronr.nl"
+            >Zeg eens hallo ↗</a
+          >
+        </div>
+      </section>
+      <section class="faq-section section-pad" id="faq">
+        <div>
+          <span class="eyebrow">05 / GOED OM TE WETEN</span>
+          <h2>Nog iets<br /><em>op je lijstje?</em></h2>
+        </div>
+        <div class="faq-list">
+          <details>
+            <summary>Kan ik Kronr nu al gebruiken?<span>+</span></summary>
+            <p>
+              Je kunt de demo bekijken. Nieuwe accounts zijn nog niet geopend:
+              via de launchupdate laten we je weten wanneer je kunt beginnen.
+            </p>
+          </details>
+          <details>
+            <summary>Rekent Kronr commissie?<span>+</span></summary>
+            <p>
+              Kronr rekent geen commissie over je boekingen. De pakketprijs
+              staat hierboven. Kosten van een betaalprovider staan los van een
+              boekingscommissie.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Kan mijn bestaande klantenbestand mee?<span>+</span>
+            </summary>
+            <p>
+              Kronr heeft een importfunctie voor klantgegevens. Bespreek vooraf
+              je bestand en wat je wilt overzetten, zodat duidelijk is wat
+              mogelijk is.
+            </p>
+          </details>
+          <details>
+            <summary>Werkt WhatsApp al?<span>+</span></summary>
+            <p>
+              Nee. WhatsApp-herinneringen zijn nog niet actief. We presenteren
+              deze als aankomende functie, niet als onderdeel dat je nu al kunt
+              gebruiken.
+            </p>
+          </details>
+          <details>
+            <summary>
+              Waar vind ik informatie over mijn gegevens?<span>+</span>
+            </summary>
+            <p>
+              Bekijk ons <a href="/privacybeleid/">privacybeleid</a> en de
+              <a href="/verwerkersovereenkomst/">verwerkersovereenkomst</a>.
+              Vragen? Mail naar
+              <a href="mailto:hallo@kronr.nl">hallo@kronr.nl</a>.
+            </p>
+          </details>
+        </div>
+      </section>
+      <section class="closing-section">
+        <span class="eyebrow">MINDER REGELEN. MEER JIJ.</span>
+        <h2>Klaar voor<br />een <em>mooie flow?</em></h2>
+        <div>
+          <a class="button button-plum" href="/login/#registreer"
+            >Ontvang de launchupdate ↗</a
+          ><a class="text-link dark-link" href="/demo/"
+            >Eerst even rondkijken ↗</a
+          >
+        </div>
+        <span class="closing-flower" aria-hidden="true">✳</span>
+      </section>
+    </main>
+    <footer>
+      <div class="footer-top">
+        <a class="brand" href="/" aria-label="Kronr — homepage"
+          ><img
+            src="/images/kronr-mark.svg"
+            alt=""
+            width="32"
+            height="32"
+          /><span>kronr.</span></a
+        >
+        <p>Meer ruimte voor je vak.</p>
+        <a href="mailto:hallo@kronr.nl">hallo@kronr.nl ↗</a>
+      </div>
+      <div class="footer-links">
+        <div>
+          <span>ONTDEKKEN</span><a href="/demo/">Demo</a
+          ><a href="#prijzen">Prijzen</a><a href="/login/">Inloggen</a>
+        </div>
+        <div>
+          <span>KRONR</span><a href="/over-ons/">Over ons</a
+          ><a href="/blog/">Journal</a><a href="/vacatures/">Vacatures</a>
+        </div>
+        <div>
+          <span>GOED GEREGELD</span><a href="/privacybeleid/">Privacybeleid</a
+          ><a href="/algemene-voorwaarden/">Voorwaarden</a
+          ><a href="/verwerkersovereenkomst/">Verwerkersovereenkomst</a
+          ><a href="/cookies/">Cookies</a>
+        </div>
+        <div class="footer-signoff">
+          Een frisse kijk.<br />Een fijne werkdag.<br /><em>Dat is Kronr.</em>
         </div>
       </div>
-      <div class="chat-msg ai chat-msg-hidden">
-        <div class="chat-av ai-av">K</div>
-        <div class="chat-bubble-wrap">
-          <div class="chat-bubble ai-bubble">Goedemorgen! 👋<br>Ik zie dat 18 klanten al 8+ weken niet zijn geweest.<br>Zal ik een WhatsApp campagne voorstellen?</div>
-          <div class="chat-timestamp">09:41</div>
-        </div>
+      <div class="footer-bottom">
+        <span>© 2026 Kronr</span
+        ><span>Gemaakt met aandacht. Voor jouw zaak.</span
+        ><a href="#main">Terug naar boven ↑</a>
       </div>
-      <div class="chat-msg user chat-msg-hidden">
-        <div class="chat-bubble-wrap" style="margin-left:auto;">
-          <div class="chat-bubble user-bubble">Ja, graag! Met 15% korting op hun volgende bezoek.</div>
-          <div class="chat-timestamp">09:41 <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-        </div>
-      </div>
-      <div class="chat-msg ai chat-msg-hidden">
-        <div class="chat-av ai-av">K</div>
-        <div class="chat-bubble-wrap">
-          <div class="chat-bubble ai-bubble">Bericht klaar. Geschatte extra omzet: €680. Versturen?</div>
-          <div class="chat-timestamp">09:42</div>
-        </div>
-      </div>
-      <div class="chat-msg user chat-msg-hidden">
-        <div class="chat-bubble-wrap" style="margin-left:auto;">
-          <div class="chat-bubble user-bubble">Verstuur maar! 🙌</div>
-          <div class="chat-timestamp">09:42 <svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
-        </div>
-      </div>
-      <div class="chat-msg ai chat-msg-hidden">
-        <div class="chat-av ai-av">K</div>
-        <div class="chat-bubble-wrap">
-          <div class="chat-bubble ai-bubble">✅ Campagne verstuurd! 18 berichten verzonden via WhatsApp.</div>
-          <div class="chat-timestamp">09:43</div>
-        </div>
-      </div>
-      <div class="chat-msg ai chat-msg-hidden">
-        <div class="chat-av ai-av">K</div>
-        <div class="chat-bubble-wrap">
-          <div class="chat-bubble ai-bubble">📈 Deze campagne levert naar schatting €680 extra omzet op.</div>
-          <div class="chat-timestamp">09:43</div>
-        </div>
-      </div>
-      <div class="chat-typing chat-typing-indicator" id="chat-typing-ind"><div class="chat-typing-dots"><span></span><span></span><span></span></div><span class="chat-typing-label">Kai is aan het typen...</span></div>
-    </div>
-    </div>
-  </div>
-</section>
-
-<!-- PRICING -->
-<section class="section pricing" id="prijzen">
-  <div class="section-inner">
-    <div class="section-label">Eerlijke prijzen</div>
-    <h2 class="section-title">Geen verrassingen.<br>Nooit commissie.</h2>
-    <p class="section-sub" style="margin-bottom:8px;">Geen commissie. Geen verrassingen. Gewoon duidelijke prijzen.</p>
-    <p style="font-size:14px;color:var(--mu);margin-bottom:24px;max-width:520px;">Losse abonnementen voor boekingen, WhatsApp, kassa en boekhouding tellen snel op, en dan is de tijd die je kwijt bent aan het overschakelen tussen al die systemen nog niet eens meegerekend. Bij Kronr is het één abonnement, voor alles.</p>
-    <p style="font-size:15px;color:var(--mu);margin-bottom:8px;">Kies het pakket dat past bij jouw salon. Je kunt altijd later upgraden.</p>
-    <div class="pricing-benefits">
-      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen commissie</div>
-      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Geen verborgen kosten</div>
-      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Maandelijks opzegbaar</div>
-      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Nederlandse support</div>
-      <div class="pricing-benefit"><svg fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg>Gratis overstappen</div>
-    </div>
-    <div style="display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:36px;font-size:14px;">
-      <span id="idx-period-lbl-m" style="cursor:pointer;color:var(--mu);" onclick="idxSetPeriod('monthly')">Maandelijks</span>
-      <label style="position:relative;display:inline-block;width:42px;height:24px;">
-        <input type="checkbox" id="idx-period-toggle" checked onchange="idxSetPeriod(this.checked?'yearly':'monthly')" style="opacity:0;width:100%;height:100%;margin:0;cursor:pointer;">
-        <span style="position:absolute;inset:0;background:var(--ink);border-radius:24px;pointer-events:none;transition:background .15s;"></span>
-        <span style="position:absolute;top:3px;left:3px;width:18px;height:18px;background:#fff;border-radius:50%;transition:left .15s;" id="idx-period-knob"></span>
-      </label>
-      <span id="idx-period-lbl-y" style="cursor:pointer;color:var(--gd);font-weight:700;" onclick="idxSetPeriod('yearly')">Jaarlijks <span style="color:var(--gd);">(2 maanden gratis)</span></span>
-    </div>
-    <div class="pricing-grid">
-      <div class="price-card" data-aos data-aos-delay="0">
-        <div class="price-name">Starter</div>
-        <div class="price-amount"><sup>€</sup><span id="idx-amt-starter">19</span></div>
-        <div class="price-per" id="idx-per-starter">per maand · 1 medewerker</div>
-        <ul class="price-features">
-          <li>Agenda & online boeken</li>
-          <li>Kassa & betalingen</li>
-          <li>Klantenbeheer</li>
-          <li>Email herinneringen</li>
-          <li>Basis rapportages</li>
-        </ul>
-        <a href="/login/" class="price-btn">Start 14 dagen gratis</a>
-      </div>
-      <div class="price-card popular">
-        <div class="price-badge"><div class="price-badge-star"><svg viewBox="0 0 24 24"><polygon points="12 2 14.9 9.3 22.5 9.3 16.3 13.9 18.5 21.2 12 16.8 5.5 21.2 7.7 13.9 1.5 9.3 9.1 9.3"/></svg></div>Meest gekozen</div>
-        <div class="price-name">Pro</div>
-        <div class="price-amount"><sup>€</sup><span id="idx-amt-pro">39</span></div>
-        <div class="price-per" id="idx-per-pro">per maand · t/m 5 medewerkers</div>
-        <ul class="price-features">
-          <li>Alles van Starter</li>
-          <li>WhatsApp herinneringen <span style="opacity:.55;font-size:11px;">(binnenkort)</span></li>
-          <li>Cadeaubonnen</li>
-          <li>Uitgebreide rapportages</li>
-          <li>Kai-inzichten</li>
-          <li>Boekhoudkoppeling</li>
-        </ul>
-        <a href="/login/" class="price-btn">Start 14 dagen gratis</a>
-      </div>
-      <div class="price-card" data-aos data-aos-delay="90">
-        <div class="price-name">Business</div>
-        <div class="price-amount"><sup>€</sup><span id="idx-amt-business">69</span></div>
-        <div class="price-per" id="idx-per-business">per maand · onbeperkt</div>
-        <ul class="price-features">
-          <li>Alles van Pro</li>
-          <li>Onbeperkt medewerkers</li>
-          <li>Kaissistent</li>
-          <li>Marketing campagnes</li>
-          <li>Meerdere locaties</li>
-          <li>Prioriteit support</li>
-        </ul>
-        <a href="/login/" class="price-btn">Start 14 dagen gratis</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- TESTIMONIALS -->
-<section class="testimonials">
-  <div class="section-inner">
-    <div class="section-label">Nog vers</div>
-    <h2 class="section-title">Net gelanceerd.<br>Daarom krijg jij meer aandacht.</h2>
-    <p class="section-sub" style="margin-bottom:52px;">Kronr is een nieuw platform. Als vroege gebruiker praat je rechtstreeks met de ontwikkelaar, zonder callcenter, zonder wachtrij en zonder ticket-systeem.</p>
-    <div class="early-grid">
-      <div class="early-card" data-aos data-aos-delay="0">
-        <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></div>
-        <div class="early-title">Directe lijn</div>
-        <div class="early-desc">Vraag of feedback? Je mailt of appt rechtstreeks met de bouwer van Kronr.</div>
-      </div>
-      <div class="early-card" data-aos data-aos-delay="100">
-        <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
-        <div class="early-title">Invloed op de roadmap</div>
-        <div class="early-desc">Jouw wensen bepalen mee welke features er als volgende gebouwd worden.</div>
-      </div>
-      <div class="early-card" data-aos data-aos-delay="200">
-        <div class="early-icon"><svg fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg></div>
-        <div class="early-title">Eerlijke prijs, altijd</div>
-        <div class="early-desc">Als vroege gebruiker houd je je instaptarief, ook als de prijzen later stijgen.</div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- CTA FINAL -->
-<section class="cta-final">
-  <h2 class="cta-final-title">Je begon een salon<br>om mensen mooier te maken.<br>Niet om administratie te doen.</h2>
-  <p class="cta-final-sub">Run je salon. Niet je software. Start vandaag nog gratis.</p>
-  <a href="/login/" class="btn-white">Start 14 dagen gratis <span class="btn-arrow">→</span></a>
-  <p class="cta-final-note">Geen creditcard nodig · Opzegbaar per maand</p>
-  <p class="cta-final-note" style="margin-top:4px;font-weight:600;color:rgba(255,255,255,.7);">Binnen 15 minuten aan de slag. Geen creditcard nodig.</p>
-</section>
-
-<!-- FAQ -->
-<section class="faq-section" id="faq">
-  <div class="section-inner" style="max-width:780px;margin:0 auto;">
-    <div class="section-label" style="text-align:center;">Veelgestelde vragen</div>
-    <h2 class="section-title" style="text-align:center;">Nog vragen?</h2>
-    <div class="faq-list">
-      <details class="faq-item">
-        <summary>Heb ik een creditcard nodig om te starten?</summary>
-        <p>Nee. Je start direct met 14 dagen gratis proberen, zonder betaalgegevens. Pas als je na de proefperiode doorgaat, koppel je een betaalmethode.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Rekent Kronr commissie over mijn omzet?</summary>
-        <p>Nee, nooit. Je betaalt één vast maandbedrag, ongeacht hoeveel afspraken of omzet je via Kronr verwerkt.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Kan ik mijn gegevens overzetten vanuit een ander pakket?</summary>
-        <p>Ja. We helpen je klanten, diensten en agenda over te zetten vanuit de meeste bekende salonpakketten, zodat je binnen 15 minuten operationeel bent.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Is Kronr geschikt voor meerdere locaties of medewerkers?</summary>
-        <p>Ja, Kronr ondersteunt meerdere locaties, medewerkerrooster en -rechten vanuit één abonnement.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Wat gebeurt er met mijn data en is dit AVG/GDPR-proof?</summary>
-        <p>Al je gegevens worden veilig binnen de EU opgeslagen en verwerkt conform de AVG/GDPR. Lees meer in ons <a href="/privacybeleid/">privacybeleid</a> en de <a href="/verwerkersovereenkomst/">verwerkersovereenkomst</a>.</p>
-      </details>
-      <details class="faq-item">
-        <summary>Kan ik maandelijks opzeggen?</summary>
-        <p>Ja, je abonnement is elke maand opzegbaar. Geen langlopend contract of opzegtermijn.</p>
-      </details>
-    </div>
-  </div>
-</section>
-<script type="application/ld+json">
-{
-  "@context": "https://schema.org",
-  "@type": "FAQPage",
-  "mainEntity": [
-    {"@type":"Question","name":"Heb ik een creditcard nodig om te starten?","acceptedAnswer":{"@type":"Answer","text":"Nee. Je start direct met 14 dagen gratis proberen, zonder betaalgegevens. Pas als je na de proefperiode doorgaat, koppel je een betaalmethode."}},
-    {"@type":"Question","name":"Rekent Kronr commissie over mijn omzet?","acceptedAnswer":{"@type":"Answer","text":"Nee, nooit. Je betaalt één vast maandbedrag, ongeacht hoeveel afspraken of omzet je via Kronr verwerkt."}},
-    {"@type":"Question","name":"Kan ik mijn gegevens overzetten vanuit een ander pakket?","acceptedAnswer":{"@type":"Answer","text":"Ja. We helpen je klanten, diensten en agenda over te zetten vanuit de meeste bekende salonpakketten, zodat je binnen 15 minuten operationeel bent."}},
-    {"@type":"Question","name":"Is Kronr geschikt voor meerdere locaties of medewerkers?","acceptedAnswer":{"@type":"Answer","text":"Ja, Kronr ondersteunt meerdere locaties, medewerkerrooster en -rechten vanuit één abonnement."}},
-    {"@type":"Question","name":"Wat gebeurt er met mijn data en is dit AVG/GDPR-proof?","acceptedAnswer":{"@type":"Answer","text":"Al je gegevens worden veilig binnen de EU opgeslagen en verwerkt conform de AVG/GDPR."}},
-    {"@type":"Question","name":"Kan ik maandelijks opzeggen?","acceptedAnswer":{"@type":"Answer","text":"Ja, je abonnement is elke maand opzegbaar. Geen langlopend contract of opzegtermijn."}}
-  ]
-}
-</script>
-
-<!-- FOOTER -->
-<footer>
-  <div class="footer-inner">
-    <div class="footer-top">
-      <div>
-        <div class="footer-logo">Kronr<em>.</em></div>
-        <p class="footer-desc">Alles wat je nodig hebt om je salon soepel te laten draaien. Gebouwd door ondernemers, voor ondernemers.</p>
-        <form class="footer-notify" id="notify-form">
-          <label class="footer-notify-label" for="notify-email">Blijf op de hoogte</label>
-          <div class="footer-notify-row">
-            <input type="email" id="notify-email" class="footer-notify-input" placeholder="jouw@email.nl" required autocomplete="email">
-            <button type="submit" class="footer-notify-btn" id="notify-btn">Aanmelden</button>
-          </div>
-          <p class="footer-notify-msg" id="notify-msg" style="display:none;"></p>
-        </form>
-      </div>
-      <div>
-        <div class="footer-col-title">Product</div>
-        <ul class="footer-links">
-          <li><a href="#features">Features</a></li>
-          <li><a href="#prijzen">Prijzen</a></li>
-          <li><a href="#ai">Kai</a></li>
-          <li><a href="/login/">Inloggen</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Voor wie</div>
-        <ul class="footer-links">
-          <li><a href="#voor-wie-kappers" class="js-vw-link" data-industry="kappers">Kappers</a></li>
-          <li><a href="#voor-wie-nagels" class="js-vw-link" data-industry="nagels">Nagelstudio's</a></li>
-          <li><a href="#voor-wie-beauty" class="js-vw-link" data-industry="beauty">Schoonheidsspecialisten</a></li>
-          <li><a href="#voor-wie-sport" class="js-vw-link" data-industry="sport">Sportscholen</a></li>
-          <li><a href="#voor-wie" class="js-vw-link">Alle branches</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Bedrijf</div>
-        <ul class="footer-links">
-          <li><a href="/over-ons/">Over ons</a></li>
-          <li><a href="/blog/">Blog</a></li>
-          <li><a href="/vacatures/">Vacatures</a></li>
-          <li><a href="mailto:hallo@kronr.nl">Contact</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Juridisch</div>
-        <ul class="footer-links">
-          <li><a href="/privacybeleid/">Privacybeleid</a></li>
-          <li><a href="/algemene-voorwaarden/">Algemene voorwaarden</a></li>
-          <li><a href="/verwerkersovereenkomst/">Verwerkersovereenkomst</a></li>
-          <li><a href="/gdpr/">GDPR</a></li>
-          <li><a href="/cookies/">Cookies</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Gidsen</div>
-        <ul class="footer-links">
-          <li><a href="/demo/">Live demo</a></li>
-          <li><a href="#faq">Veelgestelde vragen</a></li>
-          <li><a href="/vs/salonized/">Kronr vs. Salonized</a></li>
-          <li><a href="/vs/fresha/">Kronr vs. Fresha</a></li>
-          <li><a href="/vs/treatwell/">Kronr vs. Treatwell</a></li>
-        </ul>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <div class="footer-copy">© 2026 Kronr · Alle rechten voorbehouden · Betalingen beveiligd via Stripe</div>
-      <div class="footer-legal">
-        <a href="/privacybeleid/">Privacy</a>
-        <a href="/algemene-voorwaarden/">Voorwaarden</a>
-      </div>
-    </div>
-  </div>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-// Nav scroll effect
-window.addEventListener('scroll',()=>{
-  document.getElementById('nav').classList.toggle('scrolled',window.scrollY>20);
-});
-
-// 3D-tilt op de belangrijkste kaarten bij hover (features, prijzen,
-// testimonials, early-access) -- alleen op precisie-pointers (geen touch)
-if(window.matchMedia('(hover: hover) and (pointer: fine)').matches && !window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-  document.querySelectorAll('.feat-compact, .price-card, .early-card, .testi-card').forEach(kaart=>{
-    kaart.addEventListener('mousemove',e=>{
-      const rect=kaart.getBoundingClientRect();
-      const px=(e.clientX-rect.left)/rect.width-0.5;
-      const py=(e.clientY-rect.top)/rect.height-0.5;
-      kaart.style.transform=`translateY(-6px) perspective(900px) rotateX(${py*-5}deg) rotateY(${px*5}deg)`;
-    });
-    kaart.addEventListener('mouseleave',()=>{ kaart.style.transform=''; });
-  });
-}
-
-// Magnetische glow op de primaire knoppen: volgt de cursor via CSS-variabelen
-document.querySelectorAll('.btn-primary').forEach(btn=>{
-  btn.addEventListener('mousemove',e=>{
-    const rect=btn.getBoundingClientRect();
-    btn.style.setProperty('--gx',(e.clientX-rect.left)+'px');
-    btn.style.setProperty('--gy',(e.clientY-rect.top)+'px');
-  });
-});
-
-// Scroll-voortgangsbalk bovenaan de pagina
-const scrollProgressEl=document.getElementById('scrollProgress');
-if(scrollProgressEl){
-  window.addEventListener('scroll',()=>{
-    const hoogte=document.documentElement.scrollHeight-window.innerHeight;
-    const pct=hoogte>0?(window.scrollY/hoogte)*100:0;
-    scrollProgressEl.style.width=pct+'%';
-  },{passive:true});
-}
-
-// ── Blijf op de hoogte: e-mail-inschrijving voor de launch-aankondiging ──
-// window.supabase kan ontbreken als de CDN-load faalt (ad-blocker, trage
-// verbinding, firewall) — zonder deze guard gooide createClient() dan een
-// exception die de rest van dit hele scriptblok liet crashen, inclusief de
-// doelgroep-tabs, tellers en alle andere interactiviteit op de pagina.
-const notifySb=window.supabase ? window.supabase.createClient('https://pscybcirexnltqvziixt.supabase.co','sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6') : null;
-const NOTIFY_EMAIL_REGEX=/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-document.getElementById('notify-form').addEventListener('submit', async(e)=>{
-  e.preventDefault();
-  const input=document.getElementById('notify-email');
-  const btn=document.getElementById('notify-btn');
-  const msg=document.getElementById('notify-msg');
-  const email=input.value.trim();
-
-  msg.style.display='none';
-  msg.classList.remove('ok','err');
-
-  if(!NOTIFY_EMAIL_REGEX.test(email)){
-    msg.textContent='Vul een geldig e-mailadres in.';
-    msg.classList.add('err');
-    msg.style.display='block';
-    return;
-  }
-
-  if(!notifySb){
-    msg.textContent='Kon niet verbinden. Probeer het later opnieuw.';
-    msg.classList.add('err');
-    msg.style.display='block';
-    return;
-  }
-
-  btn.disabled=true;btn.textContent='Bezig...';
-
-  const{error}=await notifySb.from('launch_interesse').insert({email:email.toLowerCase()});
-
-  btn.disabled=false;btn.textContent='Aanmelden';
-
-  if(error){
-    // Duplicate-key (23505): dit e-mailadres staat al ingeschreven — geen
-    // fout voor de bezoeker, gewoon bevestigen dat we ze al hebben.
-    if(error.code==='23505'){
-      msg.textContent='Dit e-mailadres staat al ingeschreven!';
-      msg.classList.add('ok');
-    } else {
-      msg.textContent='Er ging iets mis. Probeer het later opnieuw.';
-      msg.classList.add('err');
-    }
-  } else {
-    msg.textContent='Bedankt! We laten het je weten zodra we live gaan.';
-    msg.classList.add('ok');
-    input.value='';
-    // Bevestigingsmail is 'best effort' — als dit faalt blijft de
-    // inschrijving zelf gewoon geldig, dat merkt de bezoeker niet.
-    fetch('https://kronr-mail.isaak-elia.workers.dev/interesse-bevestiging',{
-      method:'POST',headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({email:email.toLowerCase()})
-    }).catch(()=>{});
-  }
-  msg.style.display='block';
-});
-
-const IDX_PRIJS_M = {starter:{bedrag:19,per:'per maand · 1 medewerker'}, pro:{bedrag:39,per:'per maand · t/m 5 medewerkers'}, business:{bedrag:69,per:'per maand · onbeperkt'}};
-const IDX_PRIJS_Y = {starter:{bedrag:190,per:'per jaar · 1 medewerker'}, pro:{bedrag:390,per:'per jaar · t/m 5 medewerkers'}, business:{bedrag:690,per:'per jaar · onbeperkt'}};
-
-function idxSetPeriod(p){
-  document.getElementById('idx-period-toggle').checked = (p==='yearly');
-  document.getElementById('idx-period-knob').style.left = (p==='yearly') ? '21px' : '3px';
-  document.getElementById('idx-period-lbl-m').style.color = (p==='monthly') ? 'var(--ink)' : 'var(--mu)';
-  document.getElementById('idx-period-lbl-m').style.fontWeight = (p==='monthly') ? '700' : '400';
-  document.getElementById('idx-period-lbl-y').style.color = (p==='yearly') ? 'var(--gd)' : 'var(--mu)';
-  document.getElementById('idx-period-lbl-y').style.fontWeight = (p==='yearly') ? '700' : '400';
-  const prijzen = p==='yearly' ? IDX_PRIJS_Y : IDX_PRIJS_M;
-  ['starter','pro','business'].forEach(pl=>{
-    document.getElementById('idx-amt-'+pl).textContent=prijzen[pl].bedrag;
-    document.getElementById('idx-per-'+pl).textContent=prijzen[pl].per;
-  });
-}
-
-function toggleMob(){
-  document.getElementById('mob-nav').classList.add('on');
-  document.body.style.overflow='hidden';
-}
-function closeMob(){
-  document.getElementById('mob-nav').classList.remove('on');
-  document.body.style.overflow='';
-}
-
-// Smooth scroll for anchor links
-document.querySelectorAll('a[href^="#"]').forEach(a=>{
-  a.addEventListener('click',e=>{
-    const target=document.querySelector(a.getAttribute('href'));
-    if(target){e.preventDefault();target.scrollIntoView({behavior:'smooth',block:'start'});}
-  });
-});
-
-// Scroll reveal animaties -- schaal+fade i.p.v. alleen een lichte
-// schuif, voor een steviger effect door de hele pagina.
-const revealEls = document.querySelectorAll('[data-aos], .section-label, .section-title, .section-sub, .feat-compact, .price-card, .testi-card, .early-card');
-const observer = new IntersectionObserver((entries) => {
-  entries.forEach(e => {
-    if(e.isIntersecting) {
-      e.target.style.opacity = '1';
-      e.target.style.transform = 'translateY(0) scale(1)';
-      if(e.target.classList.contains('feat-compact')) e.target.classList.add('is-revealed');
-      observer.unobserve(e.target);
-    }
-  });
-}, {threshold: 0.1});
-revealEls.forEach((el, i) => {
-  const delay = el.dataset.aosDelay ? parseInt(el.dataset.aosDelay) : (el.classList.contains('feat-compact') ? (i % 4) * 70 : 0);
-  el.style.opacity = '0';
-  el.style.transform = 'translateY(28px) scale(.96)';
-  el.style.transition = `opacity 0.7s cubic-bezier(.2,.8,.2,1) ${delay}ms, transform 0.7s cubic-bezier(.2,.8,.2,1) ${delay}ms`;
-  observer.observe(el);
-});
-
-// Counter animation
-function animateCounters(){
-  document.querySelectorAll('.stat-num').forEach(el=>{
-    const text=el.innerHTML;
-    const match=text.match(/^([0-9.]+)/);
-    if(!match) return;
-    const num=parseFloat(match[1]);
-    const suffix=text.slice(match[1].length);
-    let start=0;const dur=1500;const step=num/dur*16;
-    const timer=setInterval(()=>{
-      start=Math.min(start+step,num);
-      el.innerHTML=start>=10?Math.floor(start)+suffix:(start.toFixed(0))+suffix;
-      if(start>=num)clearInterval(timer);
-    },16);
-  });
-}
-
-const statsObs=new IntersectionObserver(entries=>{
-  if(entries[0].isIntersecting){animateCounters();statsObs.disconnect();}
-},{threshold:.3});
-statsObs.observe(document.querySelector('.stats-bar'));
-
-idxSetPeriod('yearly');
-
-// Voor-wie sectie: interactieve branche-tabs
-(function(){
-  const data = {
-    kappers: {
-      title: 'Kappers & barbiers',
-      desc: 'Een lege stoel kost geld. Kronr houdt je agenda vol, zonder dat jij erover na hoeft te denken.',
-      benefits: ['Geen dubbele boekingen, ook niet als het druk is', 'Klanten die niet komen? Automatische herinneringen voorkomen het meeste', 'Lege plekken vullen zich vanzelf met terugkerende klanten'],
-      kai: 'Ik heb een lege plek om 14:00 automatisch opgevuld.',
-      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-kappers.jpg" alt="Kronr agenda voor kappers en barbiers" loading="lazy"></div>`
-    },
-    nagels: {
-      title: 'Nagelstudio\'s',
-      desc: 'Welke kleur en techniek had ze ook alweer? Kronr onthoudt het voor je, tot op de laatste kleurcode.',
-      benefits: ['Kleuren- en techniekgeschiedenis per klant, altijd bij de hand', 'Meerdere behandelaren tegelijk plannen, zonder verwarring', 'Materiaalgebruik automatisch bijgehouden'],
-      kai: 'Ik heb de vorige kleur van Sophie alvast klaargezet: Rood 42.',
-      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-nagels.jpg" alt="Kronr klantkaart voor nagelstudio's" loading="lazy"></div>`
-    },
-    beauty: {
-      title: 'Schoonheidsspecialisten',
-      desc: 'Bij honderden klanten vergeet je onvermijdelijk iets. Kronr vergeet nooit een allergie, notitie of afspraak.',
-      benefits: ['Allergieën en notities springen meteen in het oog', 'Volledige behandelhistorie per klant', 'Herhaalafspraken worden automatisch voorgesteld'],
-      kai: 'Emma heeft een parfumallergie. Vergeet dit niet.',
-      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-beauty.jpg" alt="Kronr klantkaart voor schoonheidsspecialisten" loading="lazy"></div>`
-    },
-    spa: {
-      title: 'Spa & wellness',
-      desc: 'Puzzelen met kamers en apparatuur kost tijd die je niet hebt. Kronr regelt de planning, jij regelt de rust.',
-      benefits: ['Kamers en apparatuur nooit dubbel geboekt', 'Cadeaubonnen en pakketten ingebouwd', 'Terugkerende gasten automatisch herkend'],
-      kai: 'Er is nog een kamer vrij om 14:00. Zal ik die reserveren?',
-      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-spa.jpg" alt="Kronr agenda voor spa en wellness" loading="lazy"></div>`
-    },
-    tattoo: {
-      title: 'Tattoo & piercing',
-      desc: 'Geen uren meer kwijt aan klanten die niet komen opdagen: aanbetalingen worden automatisch geregeld.',
-      benefits: ['Aanbetaling verplicht bij boeking', 'Lange sessies eenvoudig inplannen', 'Intake- en referentiefoto\'s veilig bewaard'],
-      kai: 'Deze klant heeft nog geen aanbetaling gedaan. Wil je een herinnering sturen?',
-      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-tattoo.jpg" alt="Kronr klantkaart voor tattoo en piercing" loading="lazy"></div>`
-    },
-    sport: {
-      title: 'Sport & fitness',
-      desc: 'Een yogales, bootcamp of spinclass boek je niet 1-op-1, maar met een hele groep tegelijk. Kronr bewaakt de capaciteit, zodat een les nooit overboekt raakt.',
-      benefits: ['Groepslessen met vaste capaciteit, automatisch bewaakt', 'Klanten boeken zelf een plek via de widget, geen dubbele boekingen mogelijk', 'Instructeur en ruimte gekoppeld per les, no-shows apart te registreren'],
-      kai: 'De les van 18:00 zit nog op 8 van de 12 plekken. Zal ik hem extra onder de aandacht brengen?',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Yoga - woensdag 18:00 (8/12)</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Sophie</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Daan</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Geboekt</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Nieuwe plek</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Vrij</div></div>
-      </div>`
-    },
-    dieren: {
-      title: 'Dierenverzorging',
-      desc: 'Een chihuahua trimmen kost geen uur, een Bernese Mountain Dog wel. Kronr rekent automatisch de juiste prijs en tijd per formaat.',
-      benefits: ['Staffelprijzen per hondenmaat of ras, automatisch juiste tarief bij het boeken', 'Klantkaart met temperament, allergieën en trimvoorkeuren per huisdier', 'Herhaalafspraken (elke 6-8 weken) eenvoudig in te plannen'],
-      kai: 'Buddy (grote maat) staat om 10:00 gepland — 45 minuten, op basis van zijn ras.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Buddy (groot)</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Milo (klein)</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Rex (middel)</div></div>
-      </div>`
-    },
-    fysio: {
-      title: 'Fysiotherapie & paramedisch',
-      desc: 'Een behandelplan onthouden voor 200 patiënten kan niemand. Kronr wel — elke voortgang, notitie en vervolgafspraak staat direct bij de patiënt.',
-      benefits: ['Behandelnotities en voortgang per patiënt overzichtelijk bijgehouden', 'Terugkerende afspraken (bv. wekelijks) automatisch ingepland', 'Nette facturen voor eigen risico/declaratie, geen losse kwitantie meer nodig'],
-      kai: 'Meneer Bakker heeft nog 2 behandelingen in zijn traject van 6. Zal ik de volgende inplannen?',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Sessie 3/6</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Intake</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Sessie 5/6</div></div>
-      </div>`
-    },
-    dans: {
-      title: 'Dansscholen',
-      desc: 'Van proefles tot een heel seizoen: Kronr regelt de planning voor losse lessen én groepen die maandenlang samen dansen.',
-      benefits: ['Groepslessen per niveau of leeftijdscategorie, met capaciteit bewaakt', 'Klanten boeken zelf een plek via de widget, geen dubbele boekingen', 'Instructeur- en zaalplanning in één overzicht'],
-      kai: 'De beginnersles van donderdag zit bijna vol — nog 2 plekken.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Salsa Beginners - do 19:00 (10/12)</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Lieke</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Tom</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Geboekt</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Nieuwe plek</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Vrij</div></div>
-      </div>`
-    },
-    massage: {
-      title: 'Massagepraktijken',
-      desc: 'Een uur op de tafel is geld — een no-show kost je dat uur dubbel. Kronr beschermt je agenda met aanbetalingen en herinneringen.',
-      benefits: ['Aanbetaling bij het boeken, geen verrassingen achteraf', 'Automatische herinneringen verminderen no-shows', 'Klantnotities (blessures, voorkeuren) altijd bij de hand'],
-      kai: 'Deze klant heeft al 2x niet afgezegd. Wil je een aanbetaling verplicht maken?',
-      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-spa.jpg" alt="Kronr agenda voor massagepraktijken" loading="lazy"></div>`
-    },
-    wenkbrauw: {
-      title: 'Wenkbrauw- & wimperstudio\'s',
-      desc: 'Korte afspraken, hoge frequentie — en dus ook het meeste last van no-shows. Kronr vult je rooster en beschermt je tijd.',
-      benefits: ['Automatische herinneringen vlak voor de afspraak', 'Snel opeenvolgende sloten zonder overlap', 'Terugkerende klanten (elke 3-4 weken) makkelijk opnieuw inplannen'],
-      kai: 'Sanne komt om de 3 weken. Zal ik haar volgende afspraak alvast voorstellen?',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Wimpers</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:30</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Wenkbrauwen</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Wimpers</div></div>
-      </div>`
-    },
-    rijschool: {
-      title: 'Rijscholen',
-      desc: 'Elke leerling heeft zijn eigen instructeur, tempo en lespakket. Kronr houdt moeiteloos bij wie waar staat.',
-      benefits: ['Vaste instructeur-koppeling per leerling', 'Terugkerende lessen automatisch ingepland', 'Lespakketten en betalingen in één overzicht'],
-      kai: 'Milan heeft nog 4 lessen in zijn pakket. Zijn volgende les staat gepland voor donderdag.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Rijles - Milan</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">15:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Rijles - Fenna</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">16:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Tussentijdse toets</div></div>
-      </div>`
-    },
-    pt: {
-      title: 'Personal trainers',
-      desc: 'Van 1-op-1 sessies tot een kleine bootcamp-groep: Kronr regelt beide zonder dat jij tussen twee systemen hoeft te schakelen.',
-      benefits: ['1-op-1 sessies én groepslessen (bootcamp) in dezelfde agenda', 'Strakke capaciteitsbewaking bij groepstrainingen', 'Klanthistorie en voortgang per klant bijgehouden'],
-      kai: 'Je bootcamp van zaterdag zit op 6 van de 8 plekken.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">08:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">1-op-1 - Rik</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Bootcamp (6/8)</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:30</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">1-op-1 - Anouk</div></div>
-      </div>`
-    },
-    klimhal: {
-      title: 'Klimhal & boksschool',
-      desc: 'Groepslessen met een vaste capaciteit, plus losse instapmomenten — Kronr bewaakt beide zonder dat een les ooit overboekt raakt.',
-      benefits: ['Groepslessen met capaciteit, automatisch bewaakt', 'Klanten boeken zelf een plek via de widget', 'Losse dagkaarten of instapmomenten los van de lessen te verkopen'],
-      kai: 'De boksles van 19:00 is nu vol. Wil je een extra les inplannen?',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Boksles - 19:00 (12/12)</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Jayden</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Geboekt</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Noa</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Geboekt</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">Wachtlijst</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">2 wachtend</div></div>
-      </div>`
-    },
-    hondentrainer: {
-      title: 'Hondentrainers',
-      desc: 'Een puppycursus loopt in groepjes, een gedragsprobleem vraagt om 1-op-1 aandacht. Kronr plant allebei moeiteloos.',
-      benefits: ['Groepscursussen (bv. puppytraining) met capaciteit bewaakt', '1-op-1 gedragstrainingen in dezelfde agenda', 'Voortgang en bijzonderheden per hond bijgehouden'],
-      kai: 'De puppycursus van dinsdag heeft nog 3 plekken vrij.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Puppycursus (5/8)</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">1-op-1 - Buddy</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">14:30</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">1-op-1 - Rex</div></div>
-      </div>`
-    },
-    fotografie: {
-      title: 'Fotografie & videografie',
-      desc: 'Een sessie die niet doorgaat kost je een halve dag. Kronr beschermt je agenda met een verplichte aanbetaling bij het boeken.',
-      benefits: ['Aanbetaling verplicht bij het boeken, geen verrassingen', 'Lange, variabele sessieduur eenvoudig inplannen', 'Klantgegevens en wensen per shoot bewaard'],
-      kai: 'Deze shoot heeft nog geen aanbetaling. Zal ik een herinnering sturen?',
-      visual: `<div class="vw-visual-shot"><div class="vw-visual-shot-bar"><span></span><span></span><span></span></div><img src="images/voorwie-tattoo.jpg" alt="Kronr agenda voor fotografie en videografie" loading="lazy"></div>`
-    },
-    garage: {
-      title: 'Garages & autobedrijven',
-      desc: 'Niet elke medewerker, maar elke brug is de bottleneck. Kronr plant op basis van wat bij jou écht de beperkende factor is.',
-      benefits: ['Plannen op ruimte/werkplek in plaats van alleen op medewerker', 'Onderdelen en producten los verkopen via de kassa', 'Variabele, langere behandelduur eenvoudig in te schatten'],
-      kai: 'Brug 2 is morgen de hele dag volgeboekt, brug 1 heeft nog ruimte.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">APK - Brug 1</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Onderhoud - Brug 2</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Banden - Brug 1</div></div>
-      </div>`
-    },
-    coworking: {
-      title: 'Vergaderruimtes & co-working',
-      desc: 'Geen medewerker nodig, wel een ruimte die niet dubbel geboekt mag worden. Kronr bewaakt de capaciteit per ruimte, per tijdslot.',
-      benefits: ['Ruimtes nooit dubbel geboekt, ook niet bij drukte', 'Klanten boeken zelf online een tijdslot', 'Facturatie en betalingen in één overzicht'],
-      kai: 'Vergaderruimte B is vanmiddag nog vrij van 14:00 tot 16:00.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Ruimte A</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Ruimte C</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Ruimte B - vrij</div></div>
-      </div>`
-    },
-    dietist: {
-      title: 'Diëtisten & voedingscoaches',
-      desc: 'Een traject van meerdere maanden vraagt om overzicht, niet chaos. Kronr houdt voortgang en vervolgafspraken bij.',
-      benefits: ['Trajecten met meerdere sessies overzichtelijk bijgehouden', 'Terugkerende consulten automatisch ingepland', 'Klantnotities en voortgang altijd direct bij de hand'],
-      kai: 'Dit traject zit op sessie 4 van de 8. Zal ik de volgende inplannen?',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">09:30</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Intake</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sessie 4/8</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Sessie 2/6</div></div>
-      </div>`
-    },
-    tandarts: {
-      title: 'Tandartsen',
-      desc: 'Voor de agenda, herinneringen en betalingen kan Kronr je praktijk prima ondersteunen — let op: dit is geen vervanging voor een gespecialiseerd patiëntendossier-systeem.',
-      benefits: ['Agenda en online afspraken voor de praktijk', 'Automatische herinneringen om no-shows te voorkomen', 'Facturatie gekoppeld aan je boekhouding'],
-      kai: 'Er is morgen nog een gaatje om 11:00 bij dr. De Vries.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">09:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Controle</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Vulling</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Vrij</div></div>
-      </div>`
-    },
-    dierenarts: {
-      title: 'Dierenartsen',
-      desc: 'Voor de planning, herinneringen en kassa is Kronr geschikt — voor medische dossiervoering gebruik je waarschijnlijk nog je gespecialiseerde software ernaast.',
-      benefits: ['Agenda per dierenarts en per behandelkamer', 'Herinneringen zodat klanten hun afspraak niet vergeten', 'Kassa en facturatie in hetzelfde overzicht'],
-      kai: 'Milo (kat) staat om 14:00 gepland voor een controle.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Vaccinatie - Rex</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">14:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Controle - Milo</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">15:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Operatie - Bo</div></div>
-      </div>`
-    },
-    psycholoog: {
-      title: 'Psychologen & therapeuten',
-      desc: 'Kronr regelt je agenda en herhaalafspraken — de inhoudelijke, privacygevoelige dossiervoering laat je bewust buiten dit systeem.',
-      benefits: ['Vaste wekelijkse of tweewekelijkse afspraken automatisch ingepland', 'Geen kassa-verplichting nodig voor wie dat niet wil gebruiken', 'Facturen met eigen praktijkgegevens'],
-      kai: 'Uw cliënt van 15:00 heeft nog geen bevestiging gestuurd.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Sessie</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:00</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Sessie</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">15:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Sessie</div></div>
-      </div>`
-    },
-    anders: {
-      title: 'Elke andere branche',
-      desc: 'Van massagesalon tot wenkbrauwstudio tot medisch centrum: Kronr past zich aan wat jouw bedrijf nodig heeft, niet andersom.',
-      benefits: ['Online boekingen en agenda voor elk type afspraak', 'Facturatie en boekhoudkoppeling ingebouwd', 'Kai denkt met je mee, ongeacht je specialisatie'],
-      kai: 'Geen probleem. Kronr past zich aan jouw manier van werken aan.',
-      visual: `<div class="mini-agenda">
-        <div class="mini-agenda-head">Agenda vandaag</div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">10:00</div><div class="mini-agenda-apt" style="background:#e8d5f5;color:#6b3fa0;">Afspraak</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">11:30</div><div class="mini-agenda-apt" style="background:#c8f0d8;color:#1a7a40;">Afspraak</div></div>
-        <div class="mini-agenda-row"><div class="mini-agenda-time">13:00</div><div class="mini-agenda-apt" style="background:#ffd9c0;color:#c05a00;">Afspraak</div></div>
-      </div>`
-    }
-  };
-
-  const tabs = document.querySelectorAll('.vw-pill');
-  const titleEl = document.getElementById('vwTitle');
-  const descEl = document.getElementById('vwDesc');
-  const benefitsEl = document.getElementById('vwBenefits');
-  const visualEl = document.getElementById('vwVisual');
-  const textWrapEl = document.querySelector('.vw-panel-text');
-  const andersReplyEl = document.getElementById('vwAndersReply');
-  const andersReplyTextEl = document.getElementById('vwAndersReplyText');
-  const andersReplyCursorEl = document.getElementById('vwAndersReplyCursor');
-  if(!tabs.length || !titleEl) return;
-
-  function vulIn(key){
-    const d = data[key];
-    titleEl.textContent = d.title;
-    descEl.textContent = d.desc;
-    benefitsEl.innerHTML = d.benefits.map(b => `<li>${b}</li>`).join('');
-    visualEl.innerHTML = d.visual + `<div class="vw-kai-bubble"><img src="images/kai-mascotte.png" alt="Kai" class="vw-kai-avatar"><div class="vw-kai-text"><strong>Kai</strong> "${d.kai}"</div></div>`;
-    tabs.forEach(t => {
-      const actief = t.dataset.industry === key;
-      t.classList.toggle('active', actief);
-      t.setAttribute('aria-selected', actief ? 'true' : 'false');
-    });
-  }
-
-  function verbergAndersReply(){
-    andersReplyEl.style.display = 'none';
-    andersReplyTextEl.textContent = '';
-    if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'inline-block';
-  }
-
-  function speelAndersReplyAf(){
-    const d = data.anders;
-    tabs.forEach(t => {
-      const actief = t.dataset.industry === 'anders';
-      t.classList.toggle('active', actief);
-      t.setAttribute('aria-selected', actief ? 'true' : 'false');
-    });
-
-    andersReplyTextEl.textContent = '';
-    andersReplyEl.style.display = 'flex';
-    if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'inline-block';
-
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-      andersReplyTextEl.textContent = d.kai;
-      if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'none';
-      bezig = false;
-      return;
-    }
-
-    let i = 0;
-    function tikAnders(){
-      i++;
-      andersReplyTextEl.textContent = d.kai.slice(0, i);
-      if(i < d.kai.length){
-        setTimeout(tikAnders, 32);
-      } else {
-        if(andersReplyCursorEl) andersReplyCursorEl.style.display = 'none';
-        bezig = false;
-      }
-    }
-    tikAnders();
-  }
-
-  let bezig = false;
-  function toonBranche(key){
-    if(!data[key] || bezig) return;
-    bezig = true;
-
-    if(key === 'anders'){
-      // Als er al een branche-paneel open staat, dat eerst soepel
-      // sluiten (max-height-animatie) — pas daarna begint Kai met typen.
-      const paneelStaatOpen = layoutEl.classList.contains('vw-visible');
-      if(paneelStaatOpen){
-        layoutEl.classList.remove('vw-visible');
-        setTimeout(() => speelAndersReplyAf(), 600);
-      } else {
-        speelAndersReplyAf();
-      }
-      return;
-    }
-
-    const komtVanAnders = andersReplyEl.style.display === 'flex';
-    if(komtVanAnders) verbergAndersReply();
-
-    const eersteKeerOpenen = !layoutEl.classList.contains('vw-visible');
-    if(eersteKeerOpenen){
-      vulIn(key);
-      layoutEl.classList.add('vw-visible');
-      bezig = false;
-      return;
-    }
-
-    textWrapEl.classList.add('vw-fade-out');
-    visualEl.classList.add('vw-fade-out');
-    setTimeout(() => {
-      vulIn(key);
-      textWrapEl.classList.remove('vw-fade-out');
-      visualEl.classList.remove('vw-fade-out');
-      bezig = false;
-    }, 180);
-  }
-
-  // Footerlinks als 'Kappers', 'Nagelstudio's' etc. openen direct de juiste
-  // branche-tab in deze sectie, i.p.v. alleen naar #voor-wie te scrollen.
-  document.querySelectorAll('.js-vw-link').forEach(link => {
-    link.addEventListener('click', e => {
-      const key = link.dataset.industry;
-      if(!key) return;
-      e.preventDefault();
-      document.getElementById('voor-wie').scrollIntoView({behavior:'smooth'});
-      if(!pillsEl.classList.contains('vw-visible')) speelKaiIntroAf();
-      setTimeout(() => toonBranche(key), pillsEl.classList.contains('vw-visible') ? 0 : 500);
-    });
-  });
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', () => toonBranche(tab.dataset.industry));
-  });
-
-  // Kai spreekt eerst ("Voor welke branche werk jij?"), daarna komen de
-  // pil-knoppen en het paneel animerend in beeld — eenmalig bij scroll.
-  const kaiIntroEl = document.getElementById('vwKaiIntroText');
-  const kaiCursorEl = document.getElementById('vwKaiIntroCursor');
-  const pillsEl = document.getElementById('vwPills');
-  const layoutEl = document.getElementById('vwLayout');
-  const kaiZin = 'Welke branche heb jij?';
-
-  function speelKaiIntroAf(){
-    if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-      kaiIntroEl.textContent = kaiZin;
-      if(kaiCursorEl) kaiCursorEl.style.display = 'none';
-      pillsEl.classList.add('vw-visible');
-      return;
-    }
-    let i = 0;
-    function tikKai(){
-      i++;
-      kaiIntroEl.textContent = kaiZin.slice(0, i);
-      if(i < kaiZin.length){
-        setTimeout(tikKai, 45);
-      } else {
-        if(kaiCursorEl) kaiCursorEl.style.display = 'none';
-        setTimeout(() => {
-          pillsEl.classList.add('vw-visible');
-        }, 300);
-      }
-    }
-    tikKai();
-  }
-
-  const vwSection = document.getElementById('voor-wie');
-  if(vwSection){
-    const vwObs = new IntersectionObserver(entries => {
-      if(entries[0].isIntersecting){
-        vwSection.classList.add('vw-glow-visible');
-        speelKaiIntroAf();
-        vwObs.disconnect();
-      }
-    }, {threshold: .3});
-    vwObs.observe(vwSection);
-  }
-})();
-
-// 'Zo werkt het': tijdlijn die tijdens scrollen de actieve stap groter maakt
-(function(){
-  const stappen = document.querySelectorAll('.howit-step');
-  const lijnVulling = document.getElementById('howitLineFill');
-  if(!stappen.length) return;
-
-  const totaal = stappen.length;
-
-  function zetActief(idx){
-    stappen.forEach((s, i) => s.classList.toggle('howit-active', i === idx));
-    if(lijnVulling) lijnVulling.style.height = `${((idx + 1) / totaal) * 100}%`;
-  }
-
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if(entry.isIntersecting){
-        const idx = Array.from(stappen).indexOf(entry.target);
-        zetActief(idx);
-      }
-    });
-  }, { rootMargin: '-42% 0px -42% 0px', threshold: 0 });
-
-  stappen.forEach(s => obs.observe(s));
-})();
-
-// Hero-titel: cyclisch "getypt" slotwoord (voor wie de tijd is)
-(function(){
-  const woorden=['klanten','team','zelf'];
-  const el=document.getElementById('heroCycleWord');
-  const spatieEl=document.getElementById('heroJeSpace');
-  if(!el) return;
-
-  function updateSpatie(idx){
-    if(spatieEl) spatieEl.style.display = woorden[idx]==='zelf' ? 'none' : 'inline';
-  }
-
-  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches){
-    el.textContent=woorden[0];
-    updateSpatie(0);
-    return;
-  }
-
-  let woordIdx=0, charIdx=0, aanHetWissen=false;
-  const typSnelheid=65, wisSnelheid=35, pauzeNaTypen=1800, pauzeNaWissen=300;
-  updateSpatie(woordIdx);
-
-  function tik(){
-    const huidig=woorden[woordIdx];
-    if(!aanHetWissen){
-      charIdx++;
-      el.textContent=huidig.slice(0,charIdx);
-      if(charIdx===huidig.length){
-        aanHetWissen=true;
-        setTimeout(tik,pauzeNaTypen);
-        return;
-      }
-      setTimeout(tik,typSnelheid);
-    } else {
-      charIdx--;
-      el.textContent=huidig.slice(0,charIdx);
-      if(charIdx===0){
-        aanHetWissen=false;
-        woordIdx=(woordIdx+1)%woorden.length;
-        updateSpatie(woordIdx);
-        setTimeout(tik,pauzeNaWissen);
-        return;
-      }
-      setTimeout(tik,wisSnelheid);
-    }
-  }
-  tik();
-})();
-
-// AI-chat "typt zichzelf": berichten verschijnen na elkaar, met typing-indicator ertussen
-function speelAiChatAf(){
-  const berichten=[...document.querySelectorAll('#ai-chat .chat-msg-hidden')];
-  const typingInd=document.getElementById('chat-typing-ind');
-  let i=0;
-  function volgende(){
-    if(i>=berichten.length){ typingInd.classList.remove('shown'); return; }
-    typingInd.classList.add('shown');
-    setTimeout(()=>{
-      typingInd.classList.remove('shown');
-      berichten[i].classList.add('shown');
-      i++;
-      setTimeout(volgende, 450);
-    }, 550);
-  }
-  volgende();
-}
-const aiChatEl=document.getElementById('ai-chat');
-if(aiChatEl){
-  const aiChatObs=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting){ speelAiChatAf(); aiChatObs.disconnect(); }
-  },{threshold:.4});
-  aiChatObs.observe(aiChatEl);
-}
-
-// ── Micro-animatie 1: agenda — rijen verschijnen na elkaar, dan schuift
-// er een nieuwe afspraak in met een conflict-detectie-badge ──
-function speelAgendaAf(){
-  const rijen=[...document.querySelectorAll('#feat-agenda-visual .mini-agenda-row')];
-  const badge=document.getElementById('feat-conflict-badge');
-  rijen.forEach((rij,i)=>{
-    setTimeout(()=>{
-      rij.classList.add('shown');
-      if(rij.classList.contains('new-row')){
-        setTimeout(()=>badge.classList.add('shown'), 450);
-      }
-    }, i*220);
-  });
-}
-const agendaEl=document.getElementById('feat-agenda-visual');
-if(agendaEl){
-  const agendaObs=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting){ speelAgendaAf(); agendaObs.disconnect(); }
-  },{threshold:.4});
-  agendaObs.observe(agendaEl);
-}
-
-// ── Micro-animatie 2: boekingswidget — selectie schuift naar een ander
-// tijdslot, daarna bevestigt de knop zichzelf ──
-function speelWidgetAf(){
-  const slot1=document.getElementById('feat-slot-1');
-  const slot2=document.getElementById('feat-slot-2');
-  const slot3=document.getElementById('feat-slot-3');
-  const btn=document.getElementById('feat-widget-btn');
-  setTimeout(()=>{
-    slot2.classList.remove('selected');
-    slot2.textContent='16:30';
-    slot3.classList.add('selected');
-    slot3.textContent='17:00 geselecteerd';
-  }, 1400);
-  setTimeout(()=>{
-    btn.classList.add('confirmed');
-    btn.textContent='✓ Afspraak bevestigd';
-  }, 2600);
-  setTimeout(()=>{
-    // Terug naar de begintoestand, voor wie de sectie nogmaals bekijkt
-    slot3.classList.remove('selected');
-    slot3.textContent='17:00';
-    slot2.classList.add('selected');
-    slot2.textContent='16:30 geselecteerd';
-    btn.classList.remove('confirmed');
-    btn.textContent='Afspraak bevestigen';
-  }, 5200);
-}
-const widgetEl=document.getElementById('feat-widget-visual');
-if(widgetEl){
-  const widgetObs=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting){ speelWidgetAf(); widgetObs.disconnect(); }
-  },{threshold:.4});
-  widgetObs.observe(widgetEl);
-}
-
-// ── Micro-animatie 3: AI-suggesties verschijnen na elkaar ──
-function speelAiBubblesAf(){
-  document.querySelectorAll('#feat-ai-visual .feat-ai-bubble').forEach((b,i)=>{
-    setTimeout(()=>b.classList.add('shown'), i*280);
-  });
-}
-const aiVisualEl=document.getElementById('feat-ai-visual');
-if(aiVisualEl){
-  const aiVisualObs=new IntersectionObserver(entries=>{
-    if(entries[0].isIntersecting){ speelAiBubblesAf(); aiVisualObs.disconnect(); }
-  },{threshold:.4});
-  aiVisualObs.observe(aiVisualEl);
-}
-
-// ── Parallax + 3D-tilt op de hero-mockup: scroll beweegt 'm lichtjes
-// trager dan de pagina, en op desktop kantelt-ie licht mee met de muis.
-// Beide effecten schrijven naar dezelfde transform, dus gecombineerd
-// in één functie zodat ze elkaar niet overschrijven. ──
-const heroScreenshotEl=document.querySelector('.hero-screenshot');
-if(heroScreenshotEl){
-  let scrollOffset=0, tiltX=0, tiltY=0;
-  const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const magKanTilt=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
-
-  function pasHeroTransformToe(){
-    heroScreenshotEl.style.transform=`translateY(${scrollOffset}px) perspective(1200px) rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
-  }
-
-  window.addEventListener('scroll',()=>{
-    const rect=heroScreenshotEl.parentElement.getBoundingClientRect();
-    if(rect.bottom<0||rect.top>window.innerHeight) return; // buiten beeld, niks doen
-    scrollOffset=Math.max(0,-rect.top)*0.08;
-    pasHeroTransformToe();
-  },{passive:true});
-
-  if(!reduceMotion && magKanTilt){
-    heroScreenshotEl.style.transition='transform .15s ease-out';
-    heroScreenshotEl.addEventListener('mousemove',e=>{
-      const rect=heroScreenshotEl.getBoundingClientRect();
-      const px=(e.clientX-rect.left)/rect.width-0.5;
-      const py=(e.clientY-rect.top)/rect.height-0.5;
-      tiltX=py*-4;
-      tiltY=px*4;
-      pasHeroTransformToe();
-    });
-    heroScreenshotEl.addEventListener('mouseleave',()=>{
-      tiltX=0;tiltY=0;
-      pasHeroTransformToe();
-    });
-  }
-}
-
-// ── UTM-tracking: campagneparameters uit de landingsurl vasthouden en
-// meegeven aan de belangrijkste CTA's, zodat attributie bewaard blijft
-// tot en met de signup (sessionStorage overleeft navigatie tussen pagina's) ──
-(function(){
-  const utmKeys=['utm_source','utm_medium','utm_campaign','utm_term','utm_content'];
-  const params=new URLSearchParams(location.search);
-  const incoming={};
-  let heeftUtm=false;
-  utmKeys.forEach(k=>{ if(params.has(k)){ incoming[k]=params.get(k); heeftUtm=true; } });
-  if(heeftUtm) sessionStorage.setItem('kronr_utm', JSON.stringify(incoming));
-
-  const opgeslagen=sessionStorage.getItem('kronr_utm');
-  if(!opgeslagen) return;
-  let utm;
-  try{ utm=JSON.parse(opgeslagen); }catch(e){ return; }
-  if(!utm || !Object.keys(utm).length) return;
-
-  document.querySelectorAll('a[href^="/login/"], a[href^="/demo/"]').forEach(a=>{
-    try{
-      const url=new URL(a.href, location.origin);
-      Object.entries(utm).forEach(([k,v])=>url.searchParams.set(k,v));
-      a.href=url.pathname+url.search;
-    }catch(e){}
-  });
-})();
-</script>
-
-<!-- Mobile menu -->
-<div class="mob-nav" id="mob-nav">
-  <div class="mob-nav-head">
-    <div class="mob-nav-logo">Kronr<em>.</em></div>
-    <button class="mob-close" onclick="closeMob()">✕</button>
-  </div>
-  <div class="mob-links">
-    <a href="#voor-wie" class="mob-link" onclick="closeMob()">Voor wie</a>
-    <a href="#features" class="mob-link" onclick="closeMob()">Features</a>
-    <a href="#ai" class="mob-link" onclick="closeMob()">Kai</a>
-    <a href="#prijzen" class="mob-link" onclick="closeMob()">Prijzen</a>
-  </div>
-  <div class="mob-nav-foot">
-    <a href="/demo/" class="mob-btn-login">Bekijk demo</a>
-    <a href="/login/" class="mob-btn-login">Inloggen</a>
-    <a href="/login/" class="mob-btn-start">Start 14 dagen gratis →</a>
-  </div>
-</div>
-
-<!-- Cookiemelding: puur informatief, geen accept/weiger-keuze nodig
-     omdat Kronr alleen functionele en beveiligingscookies gebruikt
-     (Supabase Auth-sessie, Cloudflare Turnstile) — zie /cookies/. -->
-<div class="cookie-notice" id="cookieNotice">
-  <p class="cookie-notice-text">We gebruiken alleen functionele cookies om Kronr te laten werken en te beveiligen — geen marketing- of trackingcookies. <a href="/cookies/">Meer info</a></p>
-  <div class="cookie-notice-actions">
-    <button class="cookie-notice-btn" id="cookieNoticeBtn">Begrepen</button>
-    <button class="cookie-notice-close" id="cookieNoticeClose" aria-label="Sluiten">✕</button>
-  </div>
-</div>
-<script>
-(function(){
-  const KEY='kronr_cookienotice_gezien';
-  const el=document.getElementById('cookieNotice');
-  if(!el) return;
-  function sluit(){
-    localStorage.setItem(KEY,'1');
-    el.classList.remove('show');
-  }
-  if(localStorage.getItem(KEY)) return;
-  requestAnimationFrame(()=>el.classList.add('show'));
-  document.getElementById('cookieNoticeBtn').addEventListener('click',sluit);
-  document.getElementById('cookieNoticeClose').addEventListener('click',sluit);
-})();
-</script>
-</body>
+    </footer>
+  </body>
 </html>

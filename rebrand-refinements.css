@@ -1,0 +1,263 @@
+/* Final brand layer, shared shapes and an interactive product story. */
+.booking-journey {
+  overflow: clip !important;
+}
+.journey-story [data-journey-action] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 15px 22px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--lime);
+  color: var(--plum);
+  font: 600 14px var(--sans);
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    transform 0.2s;
+}
+.journey-story [data-journey-action]:hover {
+  background: #f0ffb1;
+  transform: translateY(-2px);
+}
+.brand img,
+.brand > span {
+  display: none;
+}
+.brand::after {
+  content: "";
+  display: block;
+  width: 130px;
+  height: 38px;
+  background: currentColor;
+  mask: url("/images/kronr-wordmark.svg") center/contain no-repeat;
+}
+.product-scene {
+  transform: none;
+}
+.scene-overline,
+.scene-note {
+  font-size: 11px;
+}
+.appointment strong {
+  font-size: 11px;
+}
+.appointment > span {
+  font-size: 9px;
+}
+.product-main .eyebrow {
+  font-size: 10px;
+}
+.booking-journey {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(25px, 6vw, 90px);
+  background: var(--plum);
+  color: var(--ivory);
+  border-radius: 28px;
+  padding: clamp(24px, 5vw, 72px);
+  margin: 48px 0 32px;
+  position: relative;
+  overflow: hidden;
+}
+.booking-journey::before {
+  content: "";
+  position: absolute;
+  width: 400px;
+  height: 400px;
+  border: 75px solid #d8c9ef12;
+  border-radius: 50%;
+  left: -180px;
+  bottom: -260px;
+  pointer-events: none;
+}
+.journey-story {
+  align-self: center;
+  position: relative;
+}
+.journey-progress {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  color: #c2b8cc;
+}
+.journey-progress [aria-current="step"] {
+  color: var(--lime);
+  border-bottom: 2px solid;
+  padding-bottom: 8px;
+}
+.journey-story h3 {
+  font: clamp(46px, 5vw, 76px) / 0.98 var(--serif);
+  letter-spacing: -0.025em;
+  margin: 38px 0 24px;
+  max-width: 400px;
+}
+.journey-story p {
+  font-size: 16px;
+  line-height: 1.7;
+  max-width: 370px;
+  min-height: 82px;
+  color: #ded5e5;
+}
+.journey-story .btn {
+  margin: 22px 0;
+}
+.journey-story > small {
+  display: block;
+  color: #c2b8cc;
+  font-size: 11px;
+  line-height: 1.6;
+}
+.journey-window {
+  background: var(--ivory);
+  color: var(--ink);
+  border-radius: 16px;
+  padding: 28px;
+  box-shadow: 0 24px 60px #10071740;
+  min-height: 450px;
+  position: relative;
+}
+.journey-window-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-size: 10px;
+  padding-bottom: 22px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 30px;
+}
+.journey-window h4 {
+  font: 54px/0.98 var(--serif);
+  margin: 16px 0 28px;
+  letter-spacing: -1.5px;
+}
+.journey-window p {
+  font-size: 13px;
+  line-height: 1.6;
+}
+.journey-service {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 20px;
+  font-size: 14px;
+}
+.journey-service small,
+.journey-note small {
+  display: block;
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+.journey-times {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.journey-times button {
+  flex: 1;
+  border: 1px solid var(--line);
+  padding: 13px 8px;
+  border-radius: 8px;
+  background: white;
+  color: var(--ink);
+  font: inherit;
+  cursor: pointer;
+}
+.journey-times button[aria-pressed="true"] {
+  background: var(--plum);
+  color: var(--lime);
+  border-color: var(--plum);
+}
+.journey-appointment {
+  background: var(--lilac);
+  padding: 22px;
+  border-left: 4px solid #725187;
+  border-radius: 8px;
+  font-size: 14px;
+}
+.journey-appointment p {
+  margin: 10px 0;
+}
+.journey-appointment > span {
+  font-size: 12px;
+}
+.journey-note {
+  margin-top: 24px;
+  font-size: 13px;
+}
+.journey-paid {
+  padding: 20px;
+  background: var(--lime);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  font-size: 16px;
+}
+.editorial-photo {
+  border-radius: 48% 48% 12px 12px;
+  overflow: hidden;
+}
+.photo-stamp {
+  border-radius: 50%;
+  transform: rotate(-12deg);
+}
+@media (min-width: 1101px) {
+  .hero-grid {
+    grid-template-columns: 0.82fr 1.18fr;
+    gap: 35px;
+  }
+}
+@media (max-width: 900px) {
+  .booking-journey {
+    grid-template-columns: 1fr;
+  }
+  .journey-story h3 {
+    max-width: none;
+  }
+  .journey-story p {
+    min-height: 0;
+  }
+  .journey-window {
+    min-height: 430px;
+  }
+  .journey-story .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+@media (max-width: 540px) {
+  .journey-window {
+    padding: 20px;
+    min-height: 420px;
+  }
+  .journey-window h4 {
+    font-size: 45px;
+  }
+  .journey-progress {
+    font-size: 9px;
+    gap: 9px;
+  }
+  .journey-times {
+    gap: 6px;
+  }
+  .appointment strong {
+    font-size: 9px;
+  }
+  .appointment > span {
+    font-size: 7px;
+  }
+  .brand::after {
+    width: 110px;
+    height: 32px;
+  }
+  .scene-note {
+    font-size: 10px;
+  }
+}
