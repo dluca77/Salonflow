@@ -97,6 +97,8 @@ a{color:inherit;}
   .ah:nth-child(n+4):nth-child(-n+5){display:none;}
 }
 </style>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/brand-surfaces.css">
 </head>
 <body>
 
@@ -163,7 +165,7 @@ const AGENDA = `
   ${KPI_ROW}
   <div class="panel">
     <div class="panel-head"><span>Agenda vandaag</span><span>Week →</span></div>
-    <div class="agenda-rows">
+    <div class="agenda-scroll" tabindex="0" role="region" aria-label="Voorbeeldagenda; schuif horizontaal om alle medewerkers te zien"><div class="agenda-rows">
       <div class="ah"></div><div class="ah">Jasmijn</div><div class="ah">Sara</div><div class="ah">Tom</div><div class="ah">Nina</div>
       <div class="atime">9:00</div>
       <div class="aslot"><div class="apt c0" onclick="toast('Knippen — Fem de Vries, 09:00')">Fem: Knippen</div></div>
@@ -180,7 +182,7 @@ const AGENDA = `
       <div class="aslot"></div>
       <div class="aslot"></div>
       <div class="aslot"><div class="apt c0" onclick="toast('Knippen — Lars P., 11:00')">Lars: Knippen</div></div>
-    </div>
+    </div></div>
   </div>`;
 
 const KASSA = `
