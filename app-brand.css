@@ -43,6 +43,28 @@ select {
   background: #ffffff0d;
   color: #fff;
 }
+.si,.mob-item{color:#c6bbce;font-size:13px;min-height:40px}
+.si:hover,.mob-item:hover{background:#ffffff0d;color:#fff}
+.mob-item.on{border-left-color:#e3f291;color:#fff}
+.sb-mob{background:#251a2e;visibility:hidden}
+.sb-mob.on{visibility:visible}
+.mob-logo>a{font-size:0;display:block;width:116px;height:34px;background:url('/images/kronr-wordmark-light.svg?v=4') center/contain no-repeat}
+.tb-logo{font-size:0;width:92px;height:30px;background:url('/images/kronr-wordmark.svg?v=4') center/contain no-repeat}
+.tb-logo em{display:none}
+.mob-x{color:#f7f5ef;width:44px;height:44px}
+.main{min-width:0}
+.topbar{min-height:60px}
+.card,.kpi-row{box-shadow:0 3px 12px #251a2e03}
+.greeting-title,.kpi-val,.notes-inp{font-family:'DM Sans',sans-serif;font-variant-numeric:tabular-nums}
+.kpi-val{letter-spacing:-1px}
+.svc-prijs,.bon-price,.tot-row.main .tot-val,.cb-saldo-val,.kval,.dr-v-gold,.kav,.foto-preview,.detail-av,.mt,.success-title{font-family:'DM Sans',sans-serif;font-variant-numeric:tabular-nums}
+.svc{border-radius:12px}
+.kcard{padding:18px 14px;border-radius:10px}
+.kcard:hover{background:#fffdfa}
+.kav{border-radius:50%}
+.modal{border-radius:16px;box-shadow:0 24px 80px #251a2e22}
+@media(max-width:600px){input,select,textarea{font-size:16px}.topbar{min-height:56px}.kpi{padding:18px 16px}.greeting-title{font-size:24px}.modal{max-height:90dvh;overflow-y:auto;border-radius:16px 16px 0 0}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 .sb-av {
   background: #d8c9ef;
   color: #251a2e;

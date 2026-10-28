@@ -135,6 +135,12 @@ h1 {
   border: 1px solid var(--bd);
   border-radius: 7px;
 }
+.tab,.btn-main,.btn-google{min-height:48px}
+.finput{font-size:16px}
+.left-logo:focus-visible{outline-color:#e3f291}
+.right-title{margin:0}
+.auth-mobile-brand{display:none}
+@media(max-width:768px){.auth-mobile-brand{display:block;width:max-content;margin-bottom:36px}.auth-mobile-brand img{display:block}.right{padding-top:28px}}
 .tab.active {
   color: var(--ink);
   border-color: var(--ink);

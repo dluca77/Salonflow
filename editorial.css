@@ -1,0 +1,28 @@
+/* Shared public pages: the same identity from first visit to the small print. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap');
+:root{--ink:#251a2e;--ink2:#392b43;--mu:#716679;--mu2:#716679;--iv:#f7f5ef;--wm:#eeebf1;--bd:#ded7e3;--gd:#725187;--gd2:#533467;--gd-light:#eee7f2;--white:#fffdfa}
+body{font-family:'DM Sans',sans-serif;background:var(--iv)}
+nav{background:#251a2ef5;border-color:#ffffff18}
+.nav-inner{height:80px;max-width:1280px;padding-inline:clamp(20px,4vw,56px)}
+.nav-logo,.footer-logo{font-size:0;display:block;flex-shrink:0}
+.nav-logo em,.footer-logo em{display:none}
+.nav-logo::after,.footer-logo::after{content:'';display:block;width:125px;height:38px;background:url('/images/kronr-wordmark-light.svg?v=4') center/contain no-repeat}
+.nav-login,.nav-back{color:#f7f5ef}
+.nav-cta{background:#e3f291;color:var(--ink);padding:13px 20px;border-radius:8px}
+.nav-cta:hover{background:#eff8c4;color:var(--ink)}
+.content-wrap{max-width:860px;padding-top:148px;padding-bottom:100px}
+.content-title{font-family:'Instrument Serif',Georgia,serif;font-size:clamp(44px,5.8vw,76px);font-weight:400;letter-spacing:-1.8px;line-height:1.04;text-wrap:balance;margin-bottom:28px}
+.content-label{letter-spacing:1.8px;font-size:11px}
+.content-sub{font-size:18px;line-height:1.7;max-width:680px;padding-bottom:32px;border-bottom:1px solid var(--bd)}
+.prose{max-width:720px}
+.prose p,.prose li{font-size:16px;line-height:1.85}
+.prose h2{font-family:'Instrument Serif',Georgia,serif;font-size:36px;font-weight:400;letter-spacing:-.6px;margin-top:48px}
+.prose h3{font-family:'DM Sans',sans-serif;font-size:18px}
+.prose a{text-underline-offset:4px}
+.journal-title{font-family:'Instrument Serif',Georgia,serif!important;font-size:30px!important;font-weight:400!important;letter-spacing:-.5px}
+footer{background:var(--ink)}
+.footer-logo{margin-bottom:22px}
+:focus-visible{outline:3px solid #956fc5;outline-offset:5px}
+nav :focus-visible,footer :focus-visible{outline-color:#e3f291}
+@media(max-width:600px){.nav-inner{height:72px;gap:12px}.nav-logo::after{width:100px;height:32px}.nav-actions{gap:14px}.nav-login{font-size:12px}.nav-cta{font-size:12px;padding:12px}.content-wrap{padding:112px 24px 64px}.content-title{font-size:46px;letter-spacing:-1.2px}.content-sub{font-size:16px}.prose h2{font-size:31px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
