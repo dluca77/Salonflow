@@ -1,25 +1,97 @@
-/* Subtle desktop perspective only. Scrolling never changes the selected step. */
+/* Native scrolling with a bounded sticky track. No wheel/touch interception. */
 (() => {
   const scene = document.querySelector("[data-spatial]");
-  if (!scene) return;
+  if (!scene || !Element.prototype.animate) return;
+  const wrap = scene.closest(".spatial-wrap");
+  const track = document.createElement("div");
+  track.className = "spatial-track";
+  wrap.before(track);
+  track.append(wrap);
   const reduced = matchMedia("(prefers-reduced-motion: reduce)");
-  const fine = matchMedia("(hover: hover) and (pointer: fine)");
-  const resetTilt = () => {
-    scene.style.setProperty("--rx", "0deg");
-    scene.style.setProperty("--ry", "0deg");
-  };
-  scene.addEventListener("pointermove", (event) => {
-    if (reduced.matches || !fine.matches) return;
-    const box = scene.getBoundingClientRect();
-    const x = (event.clientX - box.left) / box.width - 0.5;
-    const y = (event.clientY - box.top) / box.height - 0.5;
-    scene.style.setProperty("--rx", `${-y * 3}deg`);
-    scene.style.setProperty("--ry", `${x * 4}deg`);
+  const cards = [...scene.querySelectorAll(".space-card")];
+  let animations = [],
+    frame = 0,
+    lastStage = -1;
+  function geometry() {
+    const top = parseFloat(getComputedStyle(wrap).top) || 0;
+    return {
+      start: track.getBoundingClientRect().top + scrollY - top,
+      distance: Math.max(1, track.offsetHeight - wrap.offsetHeight),
+    };
+  }
+  function update() {
+    frame = 0;
+    if (reduced.matches) return;
+    const { start, distance } = geometry();
+    const progress = Math.max(0, Math.min(1, (scrollY - start) / distance));
+    animations.forEach(
+      (animation) => (animation.currentTime = progress * 1000),
+    );
+    const stage = Math.round(progress * 2);
+    if (stage !== lastStage) {
+      lastStage = stage;
+      scene.dispatchEvent(new CustomEvent("spatial-stage", { detail: stage }));
+    }
+  }
+  function schedule() {
+    if (!frame) frame = requestAnimationFrame(update);
+  }
+  function build() {
+    animations.forEach((animation) => animation.cancel());
+    animations = [];
+    document.documentElement.classList.toggle("scroll-story", !reduced.matches);
+    track.style.height = reduced.matches ? "auto" : "";
+    if (reduced.matches) return;
+    const base = matchMedia("(max-width: 540px)").matches ? 440 : 530;
+    scene.style.setProperty("--scene-fit", String(scene.clientHeight / base));
+    track.style.height =
+      wrap.offsetHeight + Math.min(innerHeight * 1.1, 900) + "px";
+    scene.classList.add("measuring-scene");
+    const frames = cards.map(() => []);
+    for (let stage = 0; stage < 3; stage++) {
+      scene.dataset.stage = stage;
+      cards.forEach((card, i) => {
+        const style = getComputedStyle(card);
+        frames[i].push({
+          transform: style.transform,
+          opacity: style.opacity,
+          filter: style.filter,
+          offset: stage / 2,
+        });
+      });
+    }
+    animations = cards.map((card, i) => {
+      const animation = card.animate(frames[i], {
+        duration: 1000,
+        fill: "both",
+        easing: "linear",
+      });
+      animation.pause();
+      return animation;
+    });
+    scene.classList.remove("measuring-scene");
+    lastStage = -1;
+    update();
+  }
+  document.querySelectorAll("[data-scene-step]").forEach((button) => {
+    button.addEventListener("click", () => {
+      if (reduced.matches) return;
+      const { start, distance } = geometry();
+      window.scrollTo({
+        top: Math.max(
+          0,
+          start + (Number(button.dataset.sceneStep) / 2) * distance,
+        ),
+        behavior: "smooth",
+      });
+    });
   });
-  scene.addEventListener("pointerleave", resetTilt);
-  reduced.addEventListener("change", resetTilt);
-  fine.addEventListener("change", resetTilt);
-  document.addEventListener("visibilitychange", () => {
-    if (document.hidden) resetTilt();
+  addEventListener("scroll", schedule, { passive: true });
+  let resizeFrame;
+  addEventListener("resize", () => {
+    cancelAnimationFrame(resizeFrame);
+    resizeFrame = requestAnimationFrame(build);
   });
+  reduced.addEventListener("change", build);
+  build();
 })();
