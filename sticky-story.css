@@ -1,0 +1,71 @@
+/* The track supplies scroll distance; the product stays in the viewport. */
+.scroll-story .hero-grid {
+  align-items: start;
+  min-height: 0;
+}
+.scroll-story .hero-copy {
+  position: sticky;
+  top: 150px;
+  padding-top: 65px;
+}
+.spatial-track {
+  min-width: 0;
+  padding-bottom: 0;
+}
+.scroll-story .spatial-wrap {
+  position: sticky;
+  top: 100px;
+}
+.scroll-story .spatial-scene {
+  height: clamp(240px, calc(100svh - 300px), 530px);
+}
+.scroll-story .spatial-world {
+  height: 530px;
+  transform-origin: 50% 0;
+  transform: scale(var(--scene-fit, 1));
+  transition: none;
+}
+.scroll-story .space-card,
+.measuring-scene .space-card {
+  transition: none !important;
+}
+.scroll-story #scene-play {
+  display: none;
+}
+.scroll-story .spatial-wrap .scene-controls {
+  margin-top: 12px;
+}
+.scroll-story .scene-note {
+  margin-bottom: 0;
+}
+@media (max-width: 900px) {
+  .scroll-story .hero-copy {
+    position: relative;
+    top: auto;
+    padding-top: 0;
+  }
+  .scroll-story .spatial-wrap {
+    top: 85px;
+  }
+  .spatial-track {
+    padding-bottom: 0;
+  }
+}
+@media (max-width: 540px) {
+  .scroll-story .spatial-scene {
+    height: clamp(240px, calc(100svh - 280px), 440px);
+  }
+  .scroll-story .spatial-world {
+    height: 440px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .spatial-track {
+    padding-bottom: 0;
+  }
+  .scroll-story .hero-copy,
+  .scroll-story .spatial-wrap {
+    position: relative;
+    top: auto;
+  }
+}
