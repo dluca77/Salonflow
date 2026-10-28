@@ -32,6 +32,8 @@
     <link rel="stylesheet" href="/rebrand.css" />
     <script src="/rebrand.js" defer></script>
     <link rel="stylesheet" href="/rebrand-refinements.css" />
+    <link rel="stylesheet" href="/spatial.css" />
+    <script src="/spatial.js" defer></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Naar de inhoud</a>
@@ -102,111 +104,101 @@
               <span>Geen commissie</span><span>Persoonlijke support</span>
             </div>
           </div>
-          <div class="scene-wrap">
+          <div class="scene-wrap spatial-wrap">
             <div class="scene-overline">
-              <span><i class="status-dot"></i> EEN DAG IN JOUW SALON</span
-              ><span>Interactief voorbeeld</span>
+              <span><i class="status-dot"></i> JOUW WERKDAG, IN BALANS</span
+              ><span>Scroll & ontdek.</span>
             </div>
-            <div class="product-scene" id="product-scene" data-stage="0">
-              <div class="product-top">
-                <span class="mini-brand">kronr.</span><span>Studio Nova ⌄</span
-                ><span class="avatar">JD</span>
-              </div>
-              <div class="product-body">
-                <aside class="product-rail" aria-hidden="true">
-                  <span class="rail-active">▦</span><span>◷</span><span>♧</span
-                  ><span>↗</span><span class="rail-bottom">✳</span>
-                </aside>
-                <div class="product-main">
-                  <div class="product-greeting">
-                    <div>
-                      <span class="micro-label"
-                        >WOENSDAG, 21 OKTOBER · VOORBEELD</span
-                      >
-                      <h2>Een mooie dag, Julia <span>✳</span></h2>
-                    </div>
-                    <span class="small-badge">Jouw overzicht</span>
+            <div
+              class="spatial-scene"
+              id="product-scene"
+              data-stage="0"
+              data-spatial
+            >
+              <div class="spatial-light" aria-hidden="true"></div>
+              <div class="spatial-world">
+                <div class="brand-sculpture" aria-hidden="true">
+                  <div class="sculpture-ring ring-one"></div>
+                  <div class="sculpture-ring ring-two"></div>
+                  <div class="sculpture-pearl"></div>
+                </div>
+                <article class="space-card space-booking">
+                  <div class="space-card-top">
+                    <span>01 / ONLINE BOEKEN</span
+                    ><span class="space-icon">↗</span>
                   </div>
-                  <div class="product-metrics">
-                    <div>
-                      <span>Afspraken</span
-                      ><strong id="scene-count">08<span>vandaag</span></strong>
-                    </div>
-                    <div>
-                      <span>Omzet vandaag</span
-                      ><strong id="scene-revenue"
+                  <h2>Een moment<br />voor Lisa.</h2>
+                  <div class="space-service">
+                    Knippen & styling<span>Julia · 60 minuten</span>
+                  </div>
+                  <div class="space-time">
+                    <span>Woensdag</span><strong>11:00</strong><b>✓</b>
+                  </div>
+                  <div class="space-card-foot">
+                    Een nieuwe boeking. Zonder telefoontje.
+                  </div>
+                </article>
+                <article class="space-card space-agenda">
+                  <div class="space-card-top">
+                    <span>02 / JOUW AGENDA</span
+                    ><span class="space-icon">▦</span>
+                  </div>
+                  <h2>Alles op<br />zijn plek.</h2>
+                  <div class="space-agenda-row">
+                    <time>10:00</time
+                    ><span>Emma<small>Knippen & styling</small></span>
+                  </div>
+                  <div class="space-agenda-row space-new">
+                    <time>11:00</time
+                    ><span>Lisa<small>Online geboekt bij Julia</small></span
+                    ><b>✓</b>
+                  </div>
+                  <div class="space-totals">
+                    <span
+                      >Afspraken
+                      <strong id="scene-count"
+                        >08<span>vandaag</span></strong
+                      ></span
+                    ><span
+                      >Omzet
+                      <strong id="scene-revenue"
                         >€ 640<span>voorbeeld</span></strong
-                      >
-                    </div>
-                    <div class="metric-chart">
-                      <span>Een fijne flow</span>
-                      <div aria-hidden="true">
-                        <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
-                      </div>
-                    </div>
+                      ></span
+                    >
                   </div>
-                  <div class="calendar-top">
-                    <strong>Je agenda</strong><span>Vandaag ⌄</span>
+                </article>
+                <article class="space-card space-payment">
+                  <div class="space-card-top">
+                    <span>03 / NETJES AFGEROND</span
+                    ><span class="space-icon">✓</span>
                   </div>
-                  <div class="mini-calendar">
-                    <div class="calendar-head">
-                      <span></span><span>Julia</span><span>Noor</span
-                      ><span>Sam</span>
-                    </div>
-                    <div class="calendar-grid">
-                      <div class="calendar-times">
-                        <span>09:00</span><span>10:00</span><span>11:00</span
-                        ><span>12:00</span>
-                      </div>
-                      <div class="calendar-column">
-                        <div class="appointment lilac">
-                          <strong>Emma</strong><span>Knippen & styling</span
-                          ><small>09:00 — 10:00</small>
-                        </div>
-                        <div class="appointment lime incoming-appointment">
-                          <strong>Lisa</strong><span>Knippen & styling</span
-                          ><small>11:00 — 12:00</small>
-                        </div>
-                      </div>
-                      <div class="calendar-column">
-                        <div class="appointment peach lower">
-                          <strong>Sophie</strong><span>Balayage</span
-                          ><small>10:00 — 12:00</small>
-                        </div>
-                      </div>
-                      <div class="calendar-column">
-                        <div class="appointment sage">
-                          <strong>Alex</strong><span>Knippen</span
-                          ><small>09:00 — 09:45</small>
-                        </div>
-                        <div class="calendar-break">Even opladen ☕</div>
-                      </div>
-                    </div>
+                  <div class="space-paid-mark" aria-hidden="true">✓</div>
+                  <h2>Mooi werk.<br />Helemaal rond.</h2>
+                  <div class="space-amount">€ 72<span>,00</span></div>
+                  <div class="space-card-foot">
+                    Knippen & styling · voorbeeldbetaling
                   </div>
-                  <div class="product-bottom">
-                    <span><i class="status-dot"></i> Alles op één plek.</span
-                    ><span>Dat werkt lekker.</span>
-                  </div>
+                </article>
+                <div class="space-path" aria-hidden="true">
+                  <span></span><span></span><span></span>
                 </div>
               </div>
-              <div class="booking-toast" id="scene-toast">
-                <span class="toast-icon">↗</span>
-                <div>
-                  <strong id="scene-toast-title">Lisa boekt online</strong
-                  ><span id="scene-toast-sub"
-                    >Knippen & styling · woensdag 11:00</span
-                  >
-                </div>
-                <span class="toast-check">✓</span>
-              </div>
+            </div>
+            <div class="spatial-caption" aria-live="polite">
+              <strong id="scene-toast-title">Lisa boekt online</strong
+              ><span id="scene-toast-sub"
+                >Knippen & styling · woensdag 11:00</span
+              >
             </div>
             <div class="scene-controls" aria-label="Voorbeeldwerkdag">
               <div class="scene-steps">
                 <button data-scene-step="0" aria-pressed="true">
-                  <span>01</span> Boeken</button
-                ><button data-scene-step="1" aria-pressed="false">
-                  <span>02</span> Plannen</button
-                ><button data-scene-step="2" aria-pressed="false">
+                  <span>01</span> Boeken
+                </button>
+                <button data-scene-step="1" aria-pressed="false">
+                  <span>02</span> Plannen
+                </button>
+                <button data-scene-step="2" aria-pressed="false">
                   <span>03</span> Afronden
                 </button>
               </div>
@@ -219,7 +211,7 @@
               </button>
             </div>
             <p class="scene-note">
-              Fictieve salon en voorbeelddata. Klik door de drie stappen.
+              Fictieve salon en voorbeelddata. Scroll of kies een stap.
             </p>
           </div>
         </div>

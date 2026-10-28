@@ -38,6 +38,9 @@
   function setStage(next) {
     step = next;
     scene.dataset.stage = String(next);
+    scene.querySelectorAll(".space-card").forEach((card, i) => {
+      card.setAttribute("aria-hidden", String(i !== next));
+    });
     steps.forEach((button, i) =>
       button.setAttribute("aria-pressed", String(i === next)),
     );
@@ -80,7 +83,11 @@
           stop();
           continue;
         }
-        if (!played && !reduced.matches) {
+        if (
+          !played &&
+          !reduced.matches &&
+          !scene.hasAttribute("data-spatial")
+        ) {
           played = true;
           start();
         }
@@ -88,7 +95,12 @@
     },
     { threshold: 0.6 },
   );
+  setStage(0);
   observer.observe(scene);
+  scene.addEventListener("spatial-stage", (event) => {
+    stop();
+    setStage(Math.max(0, Math.min(2, event.detail)));
+  });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stop();
   });
