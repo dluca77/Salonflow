@@ -1,95 +1,37 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const vm = require("node:vm");
-function fixture(reduce = false) {
+function fixture(reduce = false, finePointer = true) {
   const handlers = {},
-    sceneHandlers = {},
-    buttons = [],
-    frames = [],
-    stages = [];
-  let top = 350;
-  const motion = { matches: reduce, addEventListener() {} };
+    styles = {};
   const scene = {
-    style: { setProperty() {} },
-    addEventListener: (type, fn) => (sceneHandlers[type] = fn),
-    getBoundingClientRect: () => ({
-      top,
-      bottom: top + 530,
-      height: 530,
-      width: 600,
-      left: 0,
-    }),
-    dispatchEvent: (event) => stages.push(event.detail),
-  };
-  const document = {
-    hidden: false,
-    querySelector: () => scene,
-    querySelectorAll: () => [{ addEventListener: (_, fn) => buttons.push(fn) }],
-    addEventListener() {},
+    style: { setProperty: (key, value) => (styles[key] = value) },
+    addEventListener: (type, fn) => (handlers[type] = fn),
+    getBoundingClientRect: () => ({ top: 0, left: 0, width: 600, height: 500 }),
   };
   vm.runInNewContext(fs.readFileSync("spatial.js", "utf8"), {
-    document,
-    innerHeight: 900,
-    matchMedia: (query) =>
-      query.includes("reduced") ? motion : { matches: true },
-    addEventListener: (name, fn) => (handlers[name] = fn),
-    requestAnimationFrame: (fn) => {
-      frames.push(fn);
-      return frames.length;
-    },
-    CustomEvent: function (type, init) {
-      this.type = type;
-      this.detail = init.detail;
-    },
+    document: { querySelector: () => scene, addEventListener() {} },
+    matchMedia: (query) => ({
+      matches: query.includes("reduced") ? reduce : finePointer,
+      addEventListener() {},
+    }),
+    addEventListener: (type) =>
+      assert.notEqual(type, "scroll", "scroll must not control the scene"),
   });
-  const flush = () => {
-    while (frames.length) frames.shift()();
-  };
-  flush();
-  return {
-    stages,
-    frames,
-    flush,
-    buttons,
-    document,
-    handlers,
-    move(value) {
-      top = value;
-      handlers.scroll();
-      flush();
-    },
-  };
+  return { handlers, styles };
 }
 const normal = fixture();
-normal.move(100);
-normal.move(-50);
-assert.deepEqual(normal.stages, [1, 2], "scroll advances through both stages");
-normal.move(350);
-assert.equal(normal.stages.at(-1), 0, "scrolling back restores booking");
-normal.buttons[0]();
-normal.move(-50);
-assert.equal(
-  normal.stages.at(-1),
-  0,
-  "manual choice has priority over scrolling",
-);
-const quiet = fixture(true);
-quiet.move(-50);
-assert.deepEqual(quiet.stages, [], "reduced motion disables scroll animation");
-const background = fixture();
-background.document.hidden = true;
-background.move(-50);
-assert.deepEqual(
-  background.stages,
-  [],
-  "background tab does no animation work",
-);
-const coalesced = fixture();
-coalesced.handlers.scroll();
-coalesced.handlers.scroll();
-assert.equal(coalesced.frames.length, 1, "scroll events share one frame");
-coalesced.flush();
-assert.equal(coalesced.frames.length, 0, "no permanent animation loop");
+normal.handlers.pointermove({ clientX: 600, clientY: 500 });
+assert.equal(normal.styles["--ry"], "2deg");
+normal.handlers.pointerleave();
+assert.equal(normal.styles["--ry"], "0deg");
+for (const f of [fixture(true), fixture(false, false)]) {
+  f.handlers.pointermove({ clientX: 600, clientY: 500 });
+  assert.deepEqual(f.styles, {}, "touch and reduced motion have no tilt");
+}
+const home = fs.readFileSync("index.html", "utf8");
+assert.ok(!home.includes('class="brand-sculpture"'));
+assert.ok(!home.includes("Scroll of kies"));
 console.log(
-  "Spatial checks passed: stages, reverse scroll, manual priority, reduced motion, hidden tab and frame scheduling.",
+  "Spatial checks passed: no scroll-driven steps, no sculpture, reduced motion, touch and pointer reset.",
 );
