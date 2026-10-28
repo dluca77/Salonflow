@@ -2,7 +2,8 @@
 .logo,.left-logo,.mock-logo{font-size:0!important}
 .logo em,.left-logo em,.mock-logo em{display:none}
 .left-logo::before{display:none!important}
-.logo::after,.left-logo::after,.mock-logo::after{content:"";display:block;width:125px;height:38px;background:currentColor;mask:url("/images/kronr-wordmark.svg?v=3") center/contain no-repeat}
+.logo::after,.left-logo::after,.mock-logo::after{content:"";display:block;width:125px;height:38px;background:url("/images/kronr-wordmark-light.svg?v=4") center/contain no-repeat}
+.mock-logo::after{background-image:url("/images/kronr-wordmark.svg?v=4")}
 .mock-logo::after{width:85px;height:28px}
 :root {
   --iv: #f8f6ef;

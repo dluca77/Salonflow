@@ -15,7 +15,8 @@
 .brand::after {
   width: 125px;
   height: 38px;
-  mask-image: url("/images/kronr-wordmark.svg?v=3");
+  mask: none;
+  background: url("/images/kronr-wordmark-light.svg?v=4") center/contain no-repeat;
 }
 .site-header {
   background: #251a2ef2;

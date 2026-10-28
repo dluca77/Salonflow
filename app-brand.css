@@ -35,8 +35,8 @@ select {
   display: block;
   width: 116px;
   height: 34px;
-  background: #f8f6ef;
-  mask: url("/images/kronr-wordmark.svg?v=3") center/contain no-repeat;
+  background: url("/images/kronr-wordmark-light.svg?v=4") center/contain no-repeat;
+  mask: none;
 }
 .si.on {
   border-left-color: #e3f291;
