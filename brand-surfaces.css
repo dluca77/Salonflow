@@ -1,4 +1,9 @@
 /* Visual bridge for existing demo/auth. Authentication and payment logic unchanged. */
+.logo,.left-logo,.mock-logo{font-size:0!important}
+.logo em,.left-logo em,.mock-logo em{display:none}
+.left-logo::before{display:none!important}
+.logo::after,.left-logo::after,.mock-logo::after{content:"";display:block;width:125px;height:38px;background:currentColor;mask:url("/images/kronr-wordmark.svg?v=2") center/contain no-repeat}
+.mock-logo::after{width:85px;height:28px}
 :root {
   --iv: #f8f6ef;
   --wm: #eeebf1;
