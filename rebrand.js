@@ -97,10 +97,6 @@
   );
   setStage(0);
   observer.observe(scene);
-  scene.addEventListener("spatial-stage", (event) => {
-    stop();
-    setStage(Math.max(0, Math.min(2, event.detail)));
-  });
   document.addEventListener("visibilitychange", () => {
     if (document.hidden) stop();
   });
