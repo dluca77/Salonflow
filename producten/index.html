@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kronr | Producten</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
@@ -91,10 +91,10 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js"></script>
+<script src="/kronr.js?v=20261029"></script>
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=6">
-<script src="/app-navigation.js?v=1" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=7">
+<script src="/app-navigation.js?v=2" defer></script>
 </head>
 <body>
 <div class="app">
@@ -141,6 +141,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
   </div>
 
   <div class="content">
+    <div class="page-intro"><div><span class="eyebrow">VOORRAAD & VERKOOP</span><h1>Je producten, op orde.</h1><p>Beheer je assortiment, prijzen en voorraad op één plek.</p></div></div>
+    <div id="product-feedback" role="status" aria-live="polite"></div>
     <div class="lage-voorraad-banner" id="lage-voorraad-banner"></div>
     <div class="prod-table">
       <div class="pt-head">
@@ -157,25 +159,26 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
 <!-- Nieuw/bewerk product modal -->
 <div class="mbg" id="m-product" onclick="if(event.target===this)closeM('m-product')">
-  <div class="modal">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="p-modal-titel">
+    <button type="button" class="pt-btn modal-close" onclick="closeM('m-product')" aria-label="Sluiten">Sluiten</button>
     <div class="mh"></div>
     <div class="mt" id="p-modal-titel">Nieuw product</div>
     <div class="msub">Voor verkoop via de kassa</div>
     <div class="err-box" id="p-err"></div>
     <input type="hidden" id="p-id">
-    <div class="fr"><label class="fl">Naam</label><input class="fi" id="p-naam" type="text" placeholder="bijv. Shampoo 250ml"></div>
+    <div class="fr"><label class="fl" for="p-naam">Naam</label><input class="fi" id="p-naam" type="text" placeholder="bijv. Shampoo 250ml"></div>
     <div class="fg">
-      <div class="fr"><label class="fl">Prijs (€)</label><input class="fi" id="p-prijs" type="number" min="0" step="0.5" placeholder="15"></div>
-      <div class="fr"><label class="fl">Voorraad (aantal)</label><input class="fi" id="p-voorraad" type="number" min="0" step="1" placeholder="20"></div>
+      <div class="fr"><label class="fl" for="p-prijs">Prijs (€)</label><input class="fi" id="p-prijs" type="number" min="0" step="0.01" placeholder="15"></div>
+      <div class="fr"><label class="fl" for="p-voorraad">Voorraad (aantal)</label><input class="fi" id="p-voorraad" type="number" min="0" step="1" placeholder="20"></div>
     </div>
-    <div class="fr"><label class="fl">Waarschuwen bij voorraad onder</label><input class="fi" id="p-drempel" type="number" min="0" step="1" placeholder="3"></div>
+    <div class="fr"><label class="fl" for="p-drempel">Waarschuwen bij voorraad onder</label><input class="fi" id="p-drempel" type="number" min="0" step="1" placeholder="3"></div>
     <div class="fr">
       <label class="fl" style="display:flex;align-items:center;gap:8px;">
         <input type="checkbox" id="p-actief" style="width:16px;height:16px;" checked>
         Actief (te koop in de kassa)
       </label>
     </div>
-    <button class="btsv" onclick="slaProductOp()">Opslaan</button>
+    <button id="p-save" class="btsv" onclick="slaProductOp()">Opslaan</button>
   </div>
 </div>
 
@@ -184,6 +187,7 @@ let PRODUCTEN=[];
 
 async function laadProducten(){
   const{data,error}=await sb.from('producten').select('*').eq('salon_id',SALON_ID).order('naam');
+  if(error){document.getElementById('product-feedback').textContent='Producten konden niet worden geladen. Probeer het opnieuw.';return;}
   PRODUCTEN=data||[];
   renderProducten();
   laadLageVoorraadBanner();
@@ -203,6 +207,7 @@ function renderProducten(){
       <div class="pt-voorraad${laag?' laag':''}">${p.voorraad_aantal}${laag?' ⚠':''}</div>
       <div class="pt-acties">
         <button class="pt-btn" onclick="openBewerkProduct('${p.id}')">Bewerken</button>
+        <button class="pt-btn danger" onclick="verwijderProduct('${p.id}',this)">Verwijderen</button>
       </div>
     </div>`;
   }).join('');
@@ -246,29 +251,53 @@ async function slaProductOp(){
   const id=document.getElementById('p-id').value;
   const naam=document.getElementById('p-naam').value.trim();
   const prijs=parseFloat(document.getElementById('p-prijs').value);
-  const voorraad=parseInt(document.getElementById('p-voorraad').value);
-  const drempel=parseInt(document.getElementById('p-drempel').value)||3;
+  const voorraadTekst=document.getElementById('p-voorraad').value.trim();
+  const voorraad=voorraadTekst===''?NaN:Number(voorraadTekst);
+  const drempelTekst=document.getElementById('p-drempel').value.trim();
+  const drempel=drempelTekst===''?NaN:Number(drempelTekst);
   const actief=document.getElementById('p-actief').checked;
   const errEl=document.getElementById('p-err');
 
-  if(!naam || isNaN(prijs) || prijs<0 || isNaN(voorraad) || voorraad<0){
+  if(!naam || naam.length>200 || !Number.isFinite(prijs) || prijs<0 || !Number.isInteger(voorraad) || voorraad<0 || !Number.isInteger(drempel) || drempel<0){
     errEl.textContent='Vul een geldige naam, prijs en voorraadaantal in.';
     errEl.style.display='block';
     return;
   }
 
-  const payload={salon_id:SALON_ID,naam,prijs,voorraad_aantal:voorraad,lage_voorraad_drempel:drempel,actief};
-  const{error}=id
-    ? await sb.from('producten').update(payload).eq('id',id)
-    : await sb.from('producten').insert(payload);
-
-  if(error){
-    errEl.textContent='Kon niet opslaan: '+error.message;
+  const save=document.getElementById('p-save');
+  if(save.disabled)return;
+  save.disabled=true;save.textContent='Opslaan…';
+  try{
+    const payload={salon_id:SALON_ID,naam,prijs,voorraad_aantal:voorraad,lage_voorraad_drempel:drempel,actief};
+    const result=id
+      ? await sb.from('producten').update(payload).eq('id',id).eq('salon_id',SALON_ID).select('id').single()
+      : await sb.from('producten').insert(payload).select('id').single();
+    if(result.error)throw result.error;
+    closeM('m-product');
+    document.getElementById('product-feedback').textContent=id?'Product bijgewerkt.':'Product toegevoegd.';
+    await laadProducten();
+  }catch(error){
+    errEl.textContent='Opslaan is niet gelukt. Controleer je verbinding en je toegangsrechten.';
     errEl.style.display='block';
-    return;
-  }
-  closeM('m-product');
-  laadProducten();
+  }finally{save.disabled=false;save.textContent='Opslaan';}
+}
+
+async function verwijderProduct(id,button){
+  const product=PRODUCTEN.find(p=>p.id===id);
+  if(!product||!confirm('Product “'+product.naam+'” verwijderen? Dit kan niet ongedaan worden gemaakt.'))return;
+  button.disabled=true;
+  const feedback=document.getElementById('product-feedback');
+  try{
+    const {data,error}=await sb.from('producten').delete().eq('id',id).eq('salon_id',SALON_ID).select('id').single();
+    if(error)throw error;
+    if(!data)throw new Error('Not deleted');
+    feedback.textContent='Product verwijderd.';
+    await laadProducten();
+  }catch(error){
+    feedback.textContent=error.code==='23503'
+      ? 'Dit product is gekoppeld aan eerdere verkopen. Zet het via Bewerken op inactief om de verkoophistorie te bewaren.'
+      : 'Verwijderen is niet gelukt. Controleer je verbinding en je toegangsrechten.';
+  }finally{button.disabled=false;}
 }
 
 function openSB(){document.getElementById('sb').classList.add('on');document.getElementById('ov').classList.add('on');document.body.style.overflow='hidden';}

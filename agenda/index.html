@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Kronr | Agenda</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
@@ -260,9 +260,9 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js"></script>
-<link rel="stylesheet" href="/app-brand.css?v=6">
-<script src="/app-navigation.js?v=1" defer></script>
+<script src="/kronr.js?v=20261029"></script>
+<link rel="stylesheet" href="/app-brand.css?v=7">
+<script src="/app-navigation.js?v=2" defer></script>
 </head>
 <body>
 <div class="app">
@@ -317,12 +317,14 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 
     <!-- Nav + filter -->
     <div class="tb-nav">
-      <button class="ta" onclick="prev()">‹</button>
-      <div style="display:flex;flex-direction:column;align-items:center;min-width:110px;cursor:pointer;" onclick="goToday()">
-        <span style="font-size:10px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;color:var(--gd);" id="view-label">Week</span>
-        <span class="td" id="td" style="font-size:12px;font-weight:500;color:var(--ink);"></span>
+      <button id="agenda-prev" class="ta" onclick="prev()" aria-label="Vorige week">‹</button>
+      <div style="display:flex;flex-direction:column;align-items:center;min-width:110px;">
+        <select id="view-label" aria-label="Agendaweergave" onchange="setView(this.value)" style="font:inherit;font-size:12px;font-weight:600;color:var(--gd);border:0;border-radius:8px;background:transparent;min-height:32px;cursor:pointer;">
+          <option value="day">Dag</option><option value="week" selected>Week</option><option value="month">Maand</option><option value="werkweek">Werkweek</option><option value="medewerker">Team</option>
+        </select>
+        <button class="td" id="td" onclick="goToday()" title="Ga naar vandaag" style="font:inherit;font-size:12px;font-weight:500;color:var(--ink);border:0;background:transparent;cursor:pointer;"></button>
       </div>
-      <button class="ta" onclick="next()">›</button>
+      <button id="agenda-next" class="ta" onclick="next()" aria-label="Volgende week">›</button>
     </div>
     <div class="fw" id="fw">
       <button class="fb" onclick="openWachtlijstOverzicht()" title="Wachtlijst" style="position:relative;">
@@ -496,7 +498,7 @@ const STATUS_LABELS={gepland:'Gepland',bevestigd:'Bevestigd',niet_bevestigd:'Nie
 const STATUS_COLORS={gepland:'#8a7d6e',bevestigd:'#2d6a4f',niet_bevestigd:'#e07020',gearriveerd:'#1a60a8',in_behandeling:'#7c4daa',afgerond:'#888',  'no-show':'#c02020',geannuleerd:'#c02020',verplaatst:'#d08020'};
 
 // ── STATE ───────────────────────────────────────────────────────────────────
-let view='week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],WACHTLIJST=[],firstLoad=true;
+let view=window.matchMedia('(max-width:768px)').matches?'day':'week',cur=new Date(),APTS=[],MEDS=[],DIENSTEN=[],WACHTLIJST=[],firstLoad=true;
 let filterMed=null,modalTab='afspraak',geselecteerdeApt=null,pendingSave=null;
 let geselecteerdeDiensten=[];
 cur.setHours(0,0,0,0);
@@ -519,7 +521,21 @@ function getDays(){
 }
 
 // ── DATA LADEN ───────────────────────────────────────────────────────────────
+let agendaPreferenceLoaded=false;
+function agendaPreferenceKey(){return 'kronr.agenda.view.'+(typeof SESSION_USER!=='undefined'?SESSION_USER?.id:'guest')+'.'+SALON_ID;}
+function syncAgendaNavigation(){
+ document.getElementById('view-label').value=view;
+ const unit=view==='month'?'maand':(view==='day'||view==='medewerker')?'dag':'week';
+ for(const [id,label] of [['agenda-prev','Vorige '],['agenda-next','Volgende ']]){
+  const button=document.getElementById(id);button.setAttribute('aria-label',label+unit);button.title=label+unit;
+ }
+}
 async function loadData(){
+  if(!agendaPreferenceLoaded){
+    agendaPreferenceLoaded=true;
+    try{const saved=localStorage.getItem(agendaPreferenceKey());if(['day','week','month','werkweek','medewerker'].includes(saved))view=saved;}catch{}
+    syncAgendaNavigation();
+  }
   const calEl=document.getElementById('cal');
   const savedScroll=(!firstLoad&&calEl)?calEl.scrollTop:null;
   const s=new Date(cur);s.setDate(s.getDate()-60);
@@ -1127,7 +1143,7 @@ async function toonKlantBriefing(){
     const res=await fetch('https://kronr-ai.isaak-elia.workers.dev/klant-briefing',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
+      body:JSON.stringify({salon_id:SALON_ID,
         klant_naam:klantNaam,
         notities:a.notities||a.interne_opmerking||'',
         laatste_afspraken:laatsteAfspraken
@@ -1267,6 +1283,7 @@ async function checkWachtlijstMatch(afspraak){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
+        salon_id:SALON_ID,
         email:data.klant_email,
         klant_naam:data.klant_naam,
         salon_naam:SALON?.naam||'',
@@ -1488,11 +1505,13 @@ document.addEventListener('click',e=>{
 
 // ── NAVIGATIE ────────────────────────────────────────────────────────────────
 function setView(v){
+  if(!['day','week','month','werkweek','medewerker'].includes(v))return;
   view=v;
+  try{localStorage.setItem(agendaPreferenceKey(),v);}catch{}
+  syncAgendaNavigation();
   // view tabs zijn in filter dropdown
   const map={day:'vt-d',werkweek:'vt-ww',week:'vt-w',month:'vt-m',medewerker:'vt-med'};
   const vlabels={day:'Dag',werkweek:'Werkweek',week:'Week',month:'Maand',medewerker:'Team'};
-  const lbl=document.getElementById('view-label');if(lbl)lbl.textContent=vlabels[v]||v;
 
   // Reset cal-inner voor maand vs time views
   if(v!=='month'){
@@ -1505,18 +1524,16 @@ function setView(v){
 
 function goToday(){cur=new Date();cur.setHours(0,0,0,0);render();}
 function clickDay(k){cur=new Date(k);cur.setHours(0,0,0,0);setView('day');}
-function prev(){
-  if(view==='day') cur.setDate(cur.getDate()-1);
-  else if(view==='month') cur.setMonth(cur.getMonth()-1);
-  else cur.setDate(cur.getDate()-(view==='werkweek'?5:7));
-  render();
+function shiftAgendaDate(date,mode,direction){
+ const result=new Date(date);
+ if(mode==='month'){
+  const day=result.getDate();result.setDate(1);result.setMonth(result.getMonth()+direction);
+  const last=new Date(result.getFullYear(),result.getMonth()+1,0).getDate();result.setDate(Math.min(day,last));
+ }else result.setDate(result.getDate()+direction*((mode==='day'||mode==='medewerker')?1:7));
+ return result;
 }
-function next(){
-  if(view==='day') cur.setDate(cur.getDate()+1);
-  else if(view==='month') cur.setMonth(cur.getMonth()+1);
-  else cur.setDate(cur.getDate()+(view==='werkweek'?5:7));
-  render();
-}
+function prev(){cur=shiftAgendaDate(cur,view,-1);loadData();}
+function next(){cur=shiftAgendaDate(cur,view,1);loadData();}
 
 // ── MODALS ───────────────────────────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('on');document.body.style.overflow='hidden';}
@@ -1529,6 +1546,8 @@ function closeSB(){document.getElementById('sb').classList.remove('on');document
 // ── NOW LINE UPDATE ───────────────────────────────────────────────────────────
 setInterval(()=>{const n=new Date();document.querySelectorAll('.now-line').forEach(nl=>{nl.style.top=((n.getHours()-SH)*60+n.getMinutes())/15*RH+'px';});},30000);
 
+const initialViewLabel=document.getElementById('view-label');
+if(initialViewLabel)syncAgendaNavigation();
 // ── INIT ─────────────────────────────────────────────────────────────────────
 if(typeof kronrInit==='function') kronrInit(loadData,'agenda');
 else window.addEventListener('load',()=>{typeof kronrInit==='function'?kronrInit(loadData,'agenda'):(document.documentElement.style.opacity='1',render());});

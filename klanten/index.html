@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Kronr | Klanten</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
@@ -182,8 +182,8 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 <script src="/kronr.js"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=6">
-<script src="/app-navigation.js?v=1" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=7">
+<script src="/app-navigation.js?v=2" defer></script>
 </head>
 <body>
 <div class="app">
@@ -339,7 +339,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 
     <div class="btns-row">
       <button class="btn-sec" id="btn-bewerk-klant" onclick="editK()">Bewerken</button>
-      <button class="btn-prim" onclick="closeM('m-detail')">Afspraak plannen →</button>
+      <button class="btn-prim" onclick="window.location.href='/agenda/'">Afspraak plannen →</button>
     </div>
     <button id="btn-blokkeer" class="btn-blokkeer" onclick="toggleBlokkade()">Blokkeer deze klant</button>
   </div>

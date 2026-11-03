@@ -34,3 +34,30 @@
   });
   sync();
 })();
+// Consistent keyboard and close controls for app dialogs.
+(() => {
+  document.querySelectorAll('.mbg').forEach(backdrop=>{
+    const panel=backdrop.querySelector('.modal');
+    if(!panel)return;
+    panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
+    const title=panel.querySelector('.mt,[id$="-naam"]');
+    if(title){if(!title.id)title.id=backdrop.id+'-title';panel.setAttribute('aria-labelledby',title.id);}
+    let close=panel.querySelector('.modal-close');
+    if(!close){close=document.createElement('button');close.type='button';close.className='pt-btn modal-close';close.textContent='Sluiten';close.setAttribute('aria-label','Venster sluiten');close.addEventListener('click',()=>backdrop.click());panel.prepend(close);}
+    let previous=null,opened=false;
+    new MutationObserver(()=>{
+      const active=backdrop.classList.contains('on');
+      if(active&&!opened){previous=document.activeElement;close.focus();}
+      if(!active&&opened&&previous?.isConnected)previous.focus();
+      opened=active;
+    }).observe(backdrop,{attributes:true,attributeFilter:['class']});
+    panel.addEventListener('keydown',event=>{
+      if(event.key==='Escape'){event.preventDefault();close.click();return;}
+      if(event.key!=='Tab')return;
+      const items=[...panel.querySelectorAll('button,a[href],input,select,textarea,[tabindex="0"]')].filter(el=>!el.disabled&&el.getClientRects().length);
+      const first=items[0],last=items.at(-1);
+      if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}
+      else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}
+    });
+  });
+})();

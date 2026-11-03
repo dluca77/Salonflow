@@ -1,0 +1,15 @@
+const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
+const source=fs.readFileSync('agenda/index.html','utf8');
+const body=source.slice(source.indexOf('function shiftAgendaDate('),source.indexOf('function prev(){'));
+const context=vm.createContext({Date});vm.runInContext(body,context);
+const shift=(date,mode,n)=>context.shiftAgendaDate(new Date(date+'T12:00:00'),mode,n);
+assert.equal(shift('2026-01-31','month',1).getMonth(),1);
+assert.equal(shift('2026-01-31','month',1).getDate(),28);
+assert.equal(shift('2024-01-31','month',1).getDate(),29);
+assert.equal(shift('2026-03-31','month',-1).getDate(),28);
+assert.equal(shift('2026-11-03','week',1).getDate(),10);
+assert.equal(shift('2026-11-03','werkweek',1).getDate(),10);
+assert.equal(shift('2026-11-03','day',-1).getDate(),2);
+assert.equal(shift('2026-11-03','medewerker',1).getDate(),4);
+assert.equal(shift('2026-12-31','month',1).getFullYear(),2027);
+console.log('PASS: day, week, workweek, team, month-end, leap year and year boundary navigation.');
