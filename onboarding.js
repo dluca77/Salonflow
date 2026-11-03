@@ -68,7 +68,9 @@ async function toonOnboardingChecklist() {
     if (trialBanner && trialBanner.style.display !== 'none') {
       trialBanner.insertAdjacentElement('afterend', kaart);
     } else {
-      content.insertBefore(kaart, content.firstChild.nextSibling);
+      const greeting=content.querySelector('.greeting');
+      if(greeting)greeting.insertAdjacentElement('afterend',kaart);
+      else content.prepend(kaart);
     }
   }
 }
@@ -115,7 +117,9 @@ async function toonWebsiteUpsellNudge() {
     } else if (trialBanner && trialBanner.style.display !== 'none') {
       trialBanner.insertAdjacentElement('afterend', kaart);
     } else {
-      content.insertBefore(kaart, content.firstChild.nextSibling);
+      const greeting=content.querySelector('.greeting');
+      if(greeting)greeting.insertAdjacentElement('afterend',kaart);
+      else content.prepend(kaart);
     }
   }
 }
