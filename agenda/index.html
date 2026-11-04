@@ -261,7 +261,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="/kronr.js?v=20261104"></script>
-<link rel="stylesheet" href="/app-brand.css?v=8">
+<link rel="stylesheet" href="/app-brand.css?v=9">
 <script src="/app-navigation.js?v=2" defer></script>
 </head>
 <body>
@@ -317,14 +317,17 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 
     <!-- Nav + filter -->
     <div class="tb-nav">
-      <button id="agenda-prev" class="ta" onclick="prev()" aria-label="Vorige week">‹</button>
-      <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;">
-        <select id="view-label" aria-label="Agendaweergave" onchange="setView(this.value)" style="font:inherit;font-size:12px;font-weight:600;color:var(--gd);border:0;border-radius:8px;background:transparent;min-height:32px;cursor:pointer;">
-          <option value="day">Dag</option><option value="week" selected>Week</option><option value="month">Maand</option><option value="werkweek">Werkweek</option><option value="medewerker">Team</option>
-        </select>
-        <button class="td" id="td" onclick="goToday()" title="Ga naar vandaag" style="font:inherit;font-size:12px;font-weight:500;color:var(--ink);border:0;background:transparent;cursor:pointer;"></button>
+      <div class="agenda-views" role="group" aria-label="Agendaweergave" id="view-label">
+        <button type="button" data-agenda-view="day" onclick="setView('day')" aria-pressed="false">Dag</button>
+        <button type="button" data-agenda-view="week" onclick="setView('week')" aria-pressed="true">Week</button>
+        <button type="button" data-agenda-view="month" onclick="setView('month')" aria-pressed="false">Maand</button>
       </div>
-      <button id="agenda-next" class="ta" onclick="next()" aria-label="Volgende week">›</button>
+      <div class="agenda-date-nav">
+        <button id="agenda-prev" class="ta" onclick="prev()" aria-label="Vorige week">‹</button>
+        <button class="td" id="td" onclick="goToday()" title="Ga naar vandaag"></button>
+        <button id="agenda-next" class="ta" onclick="next()" aria-label="Volgende week">›</button>
+      </div>
+      <span class="agenda-extra-view" id="agenda-extra-view" hidden></span>
     </div>
     <div class="fw" id="fw">
       <button class="fb" onclick="openWachtlijstOverzicht()" title="Wachtlijst" style="position:relative;">
@@ -524,7 +527,10 @@ function getDays(){
 let agendaPreferenceLoaded=false;
 function agendaPreferenceKey(){return 'kronr.agenda.view.'+(typeof SESSION_USER!=='undefined'?SESSION_USER?.id:'guest')+'.'+SALON_ID;}
 function syncAgendaNavigation(){
- document.getElementById('view-label').value=view;
+ document.querySelectorAll('[data-agenda-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.agendaView===view)));
+ const extra=document.getElementById('agenda-extra-view');
+ extra.hidden=!['werkweek','medewerker'].includes(view);
+ extra.textContent=view==='werkweek'?'Werkweek':view==='medewerker'?'Team':'';
  const unit=view==='month'?'maand':(view==='day'||view==='medewerker')?'dag':'week';
  for(const [id,label] of [['agenda-prev','Vorige '],['agenda-next','Volgende ']]){
   const button=document.getElementById(id);button.setAttribute('aria-label',label+unit);button.title=label+unit;
