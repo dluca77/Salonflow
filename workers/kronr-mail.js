@@ -249,8 +249,8 @@ async function handleBevestiging(request, env, headers) {
         <!-- Body -->
         <tr><td style="padding:32px 32px 8px;">
           <p style="margin:0 0 4px;font-size:13px;color:#8a7d6e;letter-spacing:1px;text-transform:uppercase;">Afspraak bevestigd</p>
-          <h1 style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#1a1714;">Tot binnenkort, ${klant_naam.split(" ")[0]}!</h1>
-          <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#3a342e;">Je afspraak bij <strong>${salon_naam || "de salon"}</strong> staat bevestigd. Hieronder de details:</p>
+          <h1 style="margin:0 0 20px;font-family:Georgia,'Times New Roman',serif;font-size:24px;color:#1a1714;">Tot binnenkort, ${escapeHtml(klant_naam.split(" ")[0])}!</h1>
+          <p style="margin:0 0 24px;font-size:14px;line-height:1.6;color:#3a342e;">Je afspraak bij <strong>${escapeHtml(salon_naam || "de salon")}</strong> staat bevestigd. Hieronder de details:</p>
         </td></tr>
 
         <!-- Afspraak-kaart -->
@@ -259,7 +259,7 @@ async function handleBevestiging(request, env, headers) {
             <tr>
               <td style="padding:18px 20px;border-bottom:1px solid #e2d9ce;">
                 <span style="font-size:12px;color:#8a7d6e;">Dienst</span><br>
-                <span style="font-size:15px;font-weight:bold;color:#1a1714;">${dienst_naam || "Afspraak"}</span>
+                <span style="font-size:15px;font-weight:bold;color:#1a1714;">${escapeHtml(dienst_naam || "Afspraak")}</span>
               </td>
             </tr>
             <tr>
@@ -291,7 +291,7 @@ async function handleBevestiging(request, env, headers) {
 
         <!-- Footer -->
         <tr><td style="padding:20px 32px;background:#faf8f4;border-top:1px solid #e2d9ce;text-align:center;">
-          <p style="margin:0;font-size:11px;color:#c2b5a4;">Verstuurd via Kronr namens ${salon_naam || "je salon"}</p>
+          <p style="margin:0;font-size:11px;color:#c2b5a4;">Verstuurd via Kronr namens ${escapeHtml(salon_naam || "je salon")}</p>
         </td></tr>
 
       </table>

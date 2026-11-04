@@ -1563,10 +1563,9 @@ async function verwerkAanbetalingReturn(){
 
   history.replaceState(null,'',window.location.pathname);
 
-  const{data:a}=await sb.from('afspraken')
-    .select('*,medewerkers(naam),diensten(naam,prijs)')
-    .eq('id',afspraakId)
-    .single();
+  let token;try{token=sessionStorage.getItem('kronr.booking.'+afspraakId);}catch{}
+  if(!token)return;
+  const{data:a}=await sb.rpc('kronr_boeking_status',{p_id:afspraakId,p_token:token});
 
   if(!a){
     // Kan niet meer gevonden worden — toon in ieder geval geen kapotte pagina
@@ -1579,30 +1578,30 @@ async function verwerkAanbetalingReturn(){
   document.getElementById('cf-datum').textContent=dt.toLocaleDateString('nl-NL',{day:'numeric',month:'long',year:'numeric'});
   document.getElementById('cf-tijd').textContent=dt.toLocaleTimeString('nl-NL',{hour:'2-digit',minute:'2-digit'});
   document.getElementById('cf-prijs').textContent='€'+(a.diensten?.prijs??'—');
-  zetStempelLink(a.klant_email);
+
 
   const titelEl=document.querySelector('#step5 .step-title');
   const subEl=document.querySelector('#step5 .step-sub');
   const aanbRow=document.getElementById('cf-aanbetaling-row');
   const kaartRow=document.getElementById('cf-kaart-row');
 
-  const alleGeslaagd = (aanbResultaat!=='geannuleerd') && (kaartResultaat!=='geannuleerd');
+  const alleGeslaagd = (!aanbResultaat||aanbResultaat==='geen'||a.aanbetaling_status==='betaald') && (!kaartResultaat||kaartResultaat==='geen'||a.noshow_fee_status==='vastgelegd');
 
-  if(aanbResultaat==='succes'){
+  if(a.aanbetaling_status==='betaald'){
     aanbRow.style.display='flex';
     document.getElementById('cf-aanbetaling').textContent='€'+(a.aanbetaling_bedrag??'—')+' ontvangen ✓';
     document.getElementById('cf-aanbetaling').style.color='var(--gd)';
-  } else if(aanbResultaat==='geannuleerd'){
+  } else if(aanbResultaat&&aanbResultaat!=='geen'){
     aanbRow.style.display='flex';
     document.getElementById('cf-aanbetaling').textContent='€'+(a.aanbetaling_bedrag??'—')+' nog niet ontvangen';
     document.getElementById('cf-aanbetaling').style.color='var(--red)';
   }
 
-  if(kaartResultaat==='succes'){
+  if(a.noshow_fee_status==='vastgelegd'){
     kaartRow.style.display='flex';
     document.getElementById('cf-kaart').textContent='Vastgelegd ✓';
     document.getElementById('cf-kaart').style.color='var(--gd)';
-  } else if(kaartResultaat==='geannuleerd'){
+  } else if(kaartResultaat&&kaartResultaat!=='geen'){
     kaartRow.style.display='flex';
     document.getElementById('cf-kaart').textContent='Nog niet vastgelegd';
     document.getElementById('cf-kaart').style.color='var(--red)';
@@ -1687,7 +1686,8 @@ async function bevestigen(){
   // boek_les-RPC (die zelf de capaciteit bewaakt).
   if(state.gekozen_les_id){
     const naamGroepsles=voor+(achter?' '+achter:'');
-    const{data:boeking,error:lesErr}=await sb.rpc('boek_les',{
+    const{data:boeking,error:lesErr}=await sb.rpc('kronr_boek_les',{
+      p_abonnement_id:state.gebruikt_abonnement_id||null,
       p_les_id:state.gekozen_les_id, p_klant_naam:naamGroepsles,
       p_klant_email:email, p_klant_telefoon:telSchoon||null
     });
@@ -1696,17 +1696,6 @@ async function bevestigen(){
       errEl.textContent=lesErr.message&&lesErr.message.includes('vol')?'Deze les zit helaas net vol geboekt. Kies een ander lesmoment.':'Deze les kon niet geboekt worden. Kies een ander lesmoment.';
       errEl.style.display='block';
       return;
-    }
-
-    // Abonnementstegoed pas NA een gelukte boeking verbruiken — boek_les
-    // bewaakt zelf de capaciteit en kan falen (les net vol), dus eerst de
-    // plek veiligstellen. Mislukt het verbruiken van het tegoed alsnog
-    // (zeldzaam, bv. race met een andere boeking van dezelfde klant), dan
-    // heeft de klant de plek al — niet de boeking terugdraaien, gewoon
-    // loggen (zelfde aanpak als de bevestigingsmail hieronder).
-    if(state.gebruikt_abonnement_id){
-      const{error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id,p_email:state.gebruikt_abonnement_email});
-      if(credErr) console.warn('Kon abonnementstegoed niet verbruiken na groepsles-boeking:',credErr);
     }
 
     fetch('https://kronr-mail.isaak-elia.workers.dev/bevestiging',{
@@ -1731,20 +1720,6 @@ async function bevestigen(){
     return;
   }
 
-  // Abonnement-tegoed? Dan EERST atomisch verbruiken (voorkomt dat 2
-  // gelijktijdige boekingen hetzelfde laatste tegoed dubbel gebruiken) —
-  // pas als dat lukt, de afspraak aanmaken met de koppeling erbij.
-  if(state.gebruikt_abonnement_id){
-    const{data:gelukt,error:credErr}=await sb.rpc('verbruik_abonnement_credit',{p_abonnement_id:state.gebruikt_abonnement_id,p_email:state.gebruikt_abonnement_email});
-    if(credErr || !gelukt){
-      state.gebruikt_abonnement_id=null;
-      btn.disabled=false;btn.textContent='Afspraak bevestigen';
-      errEl.textContent='Je abonnementstegoed kon niet worden gebruikt (mogelijk net op door een andere boeking). Probeer het opnieuw, of boek zonder abonnement.';
-      errEl.style.display='block';
-      return;
-    }
-  }
-
   // Datum → ISO
   const parts=state.datum.split(' ');
   const dag=parseInt(parts[0]);
@@ -1756,27 +1731,7 @@ async function bevestigen(){
   const naam=voor+(achter?' '+achter:'');
   let nieuweAfspraak, error;
 
-  // Traject (bv. tattoo-sessies, fysio-traject): op basis van het al
-  // ingevulde e-mailadres automatisch een bestaand actief traject vinden
-  // of een nieuwe starten — geen aparte stap nodig voor de klant. Non-
-  // fataal: als dit om wat voor reden dan ook mislukt, gaat de boeking
-  // gewoon door zonder traject-koppeling.
   let trajectId=null, trajectSessieNummer=null;
-  if(state.traject_sessies){
-    try{
-      const{data:trajectData,error:trajectErr}=await sb.rpc('vind_of_maak_traject',{
-        p_salon_id:SALON_ID, p_email:email, p_dienst_id:state.dienst_id,
-        p_klant_naam:naam, p_totaal_sessies:state.traject_sessies
-      });
-      const traject=Array.isArray(trajectData)?trajectData[0]:trajectData;
-      if(!trajectErr && traject){
-        trajectId=traject.id;
-        trajectSessieNummer=traject.geboekte_sessies;
-      }
-    }catch(e){
-      console.warn('Kon traject niet vinden/aanmaken:',e);
-    }
-  }
 
   if(state.wil_koppel){
     // Koppelbehandeling: 2 ruimtes ÉN 2 medewerkers tegelijk nodig, voor
@@ -1817,7 +1772,7 @@ async function bevestigen(){
       {...basisRij, medewerker_id:medewerkerIds[0], ruimte_id:ruimteIds[0]},
       {...basisRij, medewerker_id:medewerkerIds[1], ruimte_id:ruimteIds[1]}
     ];
-    const insertResult=await sb.from('afspraken').insert(rijen).select('id,annuleer_token');
+    const insertResult=await sb.rpc('kronr_boek_afspraken',{p_rows:rijen,p_extra:state.extra_diensten.map(e=>e.id)});
     error=insertResult.error;
     nieuweAfspraak=insertResult.data ? insertResult.data[0] : null;
   } else {
@@ -1851,7 +1806,7 @@ async function bevestigen(){
       }
     }
 
-    const insertResult=await sb.from('afspraken').insert({
+    const insertResult=await sb.rpc('kronr_boek_afspraken',{p_extra:state.extra_diensten.map(e=>e.id),p_rows:[{
       salon_id:SALON_ID||null,
       locatie_id:HUIDIGE_BOEK_LOCATIE_ID||null,
       dienst_id:state.dienst_id||null,
@@ -1869,7 +1824,7 @@ async function bevestigen(){
       gebruikt_abonnement_id:state.gebruikt_abonnement_id||null,
       traject_id:trajectId,
       traject_sessienummer:trajectSessieNummer
-    }).select('id,annuleer_token').single();
+    }]}).single();
     error=insertResult.error;
     nieuweAfspraak=insertResult.data;
   }
@@ -1882,18 +1837,8 @@ async function bevestigen(){
     errEl.style.display='block';return;
   }
 
-  // Extra diensten (optioneel bijgeboekt naast de hoofddienst) koppelen aan
-  // de zojuist aangemaakte afspraak. Non-fataal: als dit om wat voor reden
-  // dan ook mislukt, blijft de hoofdboeking gewoon staan — de salon ziet
-  // in het ergste geval een paar minuten extra duur niet terug, maar de
-  // klant heeft wel gewoon een geldige afspraak.
-  if(state.extra_diensten.length && nieuweAfspraak){
-    const{error:extraErr}=await sb.rpc('voeg_extra_diensten_toe',{
-      p_afspraak_id:nieuweAfspraak.id,
-      p_dienst_ids:state.extra_diensten.map(e=>e.id)
-    });
-    if(extraErr) console.warn('Kon extra diensten niet koppelen:',extraErr);
-  }
+  trajectId=nieuweAfspraak?.traject_id;
+  trajectSessieNummer=nieuweAfspraak?.traject_sessienummer;
 
   // Aanbetaling en/of verplichte kaartgegevens? Dan eerst naar Stripe
   // Checkout (op de eigen Stripe-account van de salon) voordat we de
@@ -1911,10 +1856,7 @@ async function bevestigen(){
 
   if((needsPayment || needsCardOnFile) && nieuweAfspraak){
     try{
-      await sb.from('afspraken').update({
-        ...(needsPayment ? {aanbetaling_status:'in_afwachting', aanbetaling_bedrag:state.aanb_bedrag} : {}),
-        ...(needsCardOnFile ? {noshow_fee_status:'in_afwachting'} : {})
-      }).eq('id',nieuweAfspraak.id);
+      sessionStorage.setItem('kronr.booking.'+nieuweAfspraak.id,nieuweAfspraak.annuleer_token);
 
       const successUrl=window.location.origin+window.location.pathname+'?aanbetaling='+(needsPayment?'succes':'geen')+'&kaart='+(needsCardOnFile?'succes':'geen')+'&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:'');
       const cancelUrl=window.location.origin+window.location.pathname+'?aanbetaling='+(needsPayment?'geannuleerd':'geen')+'&kaart='+(needsCardOnFile?'geannuleerd':'geen')+'&afspraak='+nieuweAfspraak.id+(SALON_ID?'&salon='+SALON_ID:'');
