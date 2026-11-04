@@ -1,3 +1,4 @@
+import { authorizeSalon, validUuid, jsonError } from './authorization.js';
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
@@ -8,7 +9,8 @@ function corsHeaders(origin) {
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Vary": "Origin",
     "Content-Type": "application/json"
   };
 }
@@ -21,6 +23,24 @@ var index_default = {
     if (request.method === "OPTIONS") return new Response(null, { headers });
     if (request.method !== "POST") {
       return new Response(JSON.stringify({ error: "Alleen POST toegestaan" }), { status: 405, headers });
+    }
+    const privateRoutes={'/campagne':'klanten','/medewerker-uitnodiging':'medewerkers','/wachtlijst-plek':'agenda'};
+    if (privateRoutes[url.pathname]) {
+      let input;
+      try { input=await request.clone().json(); } catch {return jsonError('Ongeldige JSON',400,headers);}
+      const access=await authorizeSalon(request,env,input?.salon_id,{module:privateRoutes[url.pathname],ownerOnly:url.pathname==='/medewerker-uitnodiging'});
+      if(!access.ok)return jsonError(access.error,access.status,headers);
+    }
+    try {
+      const ip=request.headers.get('CF-Connecting-IP');
+      if(ip){
+        const hash=await mailHash(ip);
+        const allowed=await supabaseQuery(env,'rpc/kronr_claim_request',{method:'POST',body:JSON.stringify({p_key:'mail-ip:'+hash,p_limit:30,p_seconds:600})});
+        if(!allowed)return jsonError('Te veel aanvragen. Probeer het later opnieuw.',429,headers);
+      }
+      request=await validatedMailRequest(request,env,url.pathname);
+    } catch(error) {
+      return jsonError(error.publicMessage||'Aanvraag kon niet worden gecontroleerd',error.status||503,headers);
     }
     if (url.pathname === "/bevestiging") {
       return handleBevestiging(request, env, headers);
@@ -47,7 +67,55 @@ var index_default = {
     ctx.waitUntil(verstuurReviewVerzoeken(env));
   }
 };
+function mailInputError(message='Ongeldige aanvraag',status=400){return Object.assign(new Error(message),{publicMessage:message,status});}
+async function validatedMailRequest(request,env,path){
+ const body=await request.clone().json().catch(()=>{throw mailInputError('Ongeldige JSON');});
+ if(!body||typeof body!=='object'||Array.isArray(body))throw mailInputError();
+ if(path==='/bevestiging'){
+  if(!validUuid(body.annuleer_token))throw mailInputError('Boekingsbewijs ontbreekt');
+  let row=(await supabaseQuery(env,`afspraken?annuleer_token=eq.${body.annuleer_token}&select=id,klant_email,klant_naam,datum_tijd,duur_min,salons(naam),diensten(naam)`))?.[0];
+  if(!row){
+   const booking=(await supabaseQuery(env,`les_boekingen?annuleer_token=eq.${body.annuleer_token}&select=id,klant_email,klant_naam,lessen(datum_tijd,duur_min,salons(naam),diensten(naam))`))?.[0];
+   if(booking)row={...booking,...booking.lessen};
+  }
+  if(!row)throw mailInputError('Boeking niet gevonden',404);
+  Object.assign(body,{email:row.klant_email,klant_naam:row.klant_naam,salon_naam:row.salons?.naam,dienst_naam:row.diensten?.naam,datum_tijd:row.datum_tijd,duur_min:row.duur_min,afspraak_id:row.id});
+ } else if(path==='/medewerker-uitnodiging'){
+  let link;try{link=new URL(body.activatie_link);}catch{throw mailInputError();}
+  const token=link.searchParams.get('token');
+  if(!validUuid(token))throw mailInputError();
+  const staff=(await supabaseQuery(env,`medewerkers?salon_id=eq.${body.salon_id}&uitnodiging_token=eq.${token}&uitnodiging_status=eq.uitgenodigd&select=email,naam,salons(naam)`))?.[0];
+  if(!staff)throw mailInputError('Uitnodiging niet gevonden',404);
+  Object.assign(body,{email:staff.email,naam:escapeHtml(staff.naam),salon_naam:escapeHtml(staff.salons?.naam||''),activatie_link:`https://kronr.nl/medewerker-activeren/?token=${token}`});
+ } else if(path==='/wachtlijst-plek'){
+  if(!validUuid(body.claim_token))throw mailInputError();
+  let row=(await supabaseQuery(env,`wachtlijst?salon_id=eq.${body.salon_id}&claim_token=eq.${body.claim_token}&status=eq.actief&select=klant_email,klant_naam,voorgestelde_datum_tijd,salons(naam),diensten(naam)`))?.[0];
+  if(!row){
+   const candidate=(await supabaseQuery(env,`lessen_wachtlijst?claim_token=eq.${body.claim_token}&status=eq.voorgesteld&select=klant_email,klant_naam,lessen(salon_id,datum_tijd,salons(naam),diensten(naam))`))?.[0];
+   if(candidate?.lessen?.salon_id===body.salon_id)row={...candidate,...candidate.lessen,voorgestelde_datum_tijd:candidate.lessen.datum_tijd};
+  }
+  if(!row?.voorgestelde_datum_tijd)throw mailInputError('Wachtlijstplek niet gevonden',404);
+  Object.assign(body,{email:row.klant_email,klant_naam:escapeHtml(row.klant_naam),salon_naam:escapeHtml(row.salons?.naam||''),dienst_naam:escapeHtml(row.diensten?.naam||''),datum_tijd:row.voorgestelde_datum_tijd});
+ } else if(path==='/campagne'){
+  if(typeof body.onderwerp!=='string'||body.onderwerp.length>200||typeof body.inhoud!=='string'||body.inhoud.length>10000||!Array.isArray(body.ontvangers)||body.ontvangers.length>500)throw mailInputError();
+  const wanted=new Set(body.ontvangers.map(o=>String(o.email||'').trim().toLowerCase()));
+  const customers=await supabaseQuery(env,`klanten?salon_id=eq.${body.salon_id}&marketing_opt_out=not.is.true&select=naam,email,afmeld_token`);
+  body.ontvangers=customers.filter(o=>wanted.has(String(o.email||'').toLowerCase())&&validUuid(o.afmeld_token));
+  const salon=(await supabaseQuery(env,`salons?id=eq.${body.salon_id}&select=naam`))?.[0];body.salon_naam=salon?.naam;
+ } else if(path==='/interesse-bevestiging'){
+  if(typeof body.email!=='string'||body.email.length>254||!body.email.includes('@'))throw mailInputError();
+  const row=(await supabaseQuery(env,`launch_interesse?email=eq.${encodeURIComponent(body.email.toLowerCase())}&select=id`))?.[0];
+  if(!row)throw mailInputError('Inschrijving niet gevonden',404);
+ }
+ return new Request(request.url,{method:'POST',headers:request.headers,body:JSON.stringify(body)});
+}
+async function mailHash(value){
+ return Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value))),b=>b.toString(16).padStart(2,'0')).join('');
+}
 async function stuurMail(env, { to, subject, html, attachments }) {
+  const digest=await mailHash(JSON.stringify({to,subject,html}));
+  const allowed=await supabaseQuery(env,'rpc/kronr_claim_request',{method:'POST',body:JSON.stringify({p_key:'mail:'+digest,p_limit:3,p_seconds:3600})});
+  if(!allowed)throw new Error('Te veel e-mailaanvragen');
   const payload = {
     from: env.RESEND_FROM || "Kronr <onboarding@resend.dev>",
     to: [to],
@@ -59,6 +127,7 @@ async function stuurMail(env, { to, subject, html, attachments }) {
     method: "POST",
     headers: {
       "Authorization": `Bearer ${env.RESEND_API_KEY}`,
+      "Idempotency-Key": 'kronr-'+digest,
       "Content-Type": "application/json"
     },
     body: JSON.stringify(payload)
@@ -310,18 +379,21 @@ async function handleStempelkaartCode(request, env, headers) {
   } catch (e) {
     return new Response(JSON.stringify({ error: "Ongeldige JSON body" }), { status: 400, headers });
   }
-  const { salon_id, email, code } = body;
-  if (!salon_id || !email || !code) {
-    return new Response(JSON.stringify({ error: "salon_id, email en code zijn verplicht" }), { status: 400, headers });
+  const { salon_id, email } = body;
+  if (!validUuid(salon_id) || typeof email!=='string' || email.length>254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return jsonError('Vul een geldig e-mailadres in',400,headers);
   }
+  let code;
   let salonNaam = "je salon";
   try {
-    const salons = await supabaseQuery(env, `salons?id=eq.${salon_id}&select=naam`);
+    const salons = await supabaseQuery(env, `salons?id=eq.${salon_id}&stempelkaart_actief=eq.true&select=naam`);
+    if(!salons?.length)return jsonError('Stempelkaart niet beschikbaar',404,headers);
     if (Array.isArray(salons) && salons[0] && salons[0].naam) {
       salonNaam = salons[0].naam;
     }
+    code=await supabaseQuery(env,'rpc/vraag_stempelkaart_code_aan',{method:'POST',body:JSON.stringify({p_salon_id:salon_id,p_email:email.trim().toLowerCase()})});
   } catch (err) {
-    console.error("Kon salonnaam niet ophalen voor stempelkaart-code:", err.message);
+    return jsonError(err.message.includes('Te veel')?'Te veel pogingen. Probeer het over een uur opnieuw.':'Code kon niet worden aangemaakt',err.message.includes('Te veel')?429:503,headers);
   }
   const html = `<!DOCTYPE html><html lang="nl"><body style="margin:0;padding:0;background:#faf8f4;font-family:Helvetica,Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#faf8f4;padding:32px 16px;"><tr><td align="center"><table width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2d9ce;"><tr><td style="background:#1a1714;padding:28px 32px;text-align:center;"><span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:bold;color:#faf8f4;letter-spacing:0.5px;">Kronr<span style="color:#8c6d3f;">.</span></span></td></tr><tr><td style="padding:32px 32px 8px;"><p style="margin:0 0 4px;font-size:13px;color:#8a7d6e;letter-spacing:1px;text-transform:uppercase;">Jouw verificatiecode</p><h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#1a1714;">Hoi,</h1><p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#3a342e;">Gebruik deze code om je stempelkaart bij <strong>` + escapeHtml(salonNaam) + `</strong> te bekijken:</p><p style="text-align:center;margin:0 0 20px;font-size:28px;font-weight:bold;letter-spacing:6px;color:#8c6d3f;">` + escapeHtml(code) + `</p><p style="margin:0;font-size:13px;color:#8a7d6e;">Deze code is 10 minuten geldig. Heb je dit niet aangevraagd? Dan kun je deze mail negeren.</p></td></tr><tr><td style="padding:20px 32px;background:#faf8f4;border-top:1px solid #e2d9ce;text-align:center;"><p style="margin:0;font-size:11px;color:#c2b5a4;">Verstuurd via Kronr namens ` + escapeHtml(salonNaam) + `</p></td></tr></table></td></tr></table></body></html>`;
   try {
@@ -331,7 +403,7 @@ async function handleStempelkaartCode(request, env, headers) {
       html
     });
   } catch (err) {
-    console.error("Stempelkaart-code mail mislukt voor " + email + ":", err.message);
+    return jsonError('E-mail kon niet worden verstuurd. Probeer het later opnieuw.',502,headers);
   }
   return new Response(JSON.stringify({ ok: true }), { headers });
 }

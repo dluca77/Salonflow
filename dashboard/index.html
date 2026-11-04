@@ -174,7 +174,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js"></script>
+<script src="/kronr.js?v=20261029"></script>
 <script src="/onboarding.js"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
@@ -579,10 +579,10 @@ async function laadInzichten(d){
   }catch(e){}
 
   try{
-    const res=await fetch('https://kronr-ai.isaak-elia.workers.dev', {
+    const res=await kronrWorkerFetch('https://kronr-ai.isaak-elia.workers.dev', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
+      body:JSON.stringify({salon_id:SALON_ID,
         salon_naam: SALON?.naam,
         vandaag_count: d.vandaag.length,
         week_count: d.all.length,

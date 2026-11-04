@@ -1,3 +1,4 @@
+import {processStripeWebhook} from './stripe-webhook.js';
 var __defProp = Object.defineProperty;
 var __name = (target, value) => __defProp(target, "name", { value, configurable: true });
 
@@ -7,6 +8,7 @@ var UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 function geldigUuid(v) {
   return typeof v === "string" && UUID_RE.test(v);
 }
+function safeReturnUrl(value){try{return ALLOWED_ORIGINS.includes(new URL(value).origin);}catch{return false;}}
 __name(geldigUuid, "geldigUuid");
 function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
@@ -27,10 +29,10 @@ var index_default = {
       return new Response(null, { headers });
     }
     if (url.pathname === "/webhook") {
-      return handleWebhook(request, env);
+      return processStripeWebhook(request, env, false, {query:supabaseQuery,get:stripeGet});
     }
     if (url.pathname === "/webhook-connect") {
-      return handleWebhookConnect(request, env);
+      return processStripeWebhook(request, env, true, {query:supabaseQuery,get:stripeGet});
     }
     if (url.pathname === "/create-checkout") {
       return handleCreateCheckout(request, env, headers);
@@ -91,12 +93,13 @@ async function verifieerEigenaarschap(request, env, salon_id) {
   return { ok: true, gebruiker };
 }
 __name(verifieerEigenaarschap, "verifieerEigenaarschap");
-async function stripeRequest(env, path, params, { connectedAccount } = {}) {
+async function stripeRequest(env, path, params, { connectedAccount, idempotencyKey } = {}) {
   const headers = {
     "Authorization": `Bearer ${env.STRIPE_SECRET_KEY}`,
     "Content-Type": "application/x-www-form-urlencoded"
   };
   if (connectedAccount) headers["Stripe-Account"] = connectedAccount;
+  if (idempotencyKey) headers['Idempotency-Key']=idempotencyKey;
   const res = await fetch(`https://api.stripe.com/v1/${path}`, {
     method: "POST",
     headers,
@@ -312,17 +315,28 @@ async function handleCreateDepositCheckout(request, env, headers) {
   } catch (e) {
     return new Response(JSON.stringify({ error: "Ongeldige JSON" }), { status: 400, headers });
   }
-  const { salon_id, afspraak_id, bedrag, email, success_url, cancel_url, save_card } = body;
+  let { salon_id, afspraak_id, bedrag, email, success_url, cancel_url, save_card } = body;
+  if(!safeReturnUrl(success_url)||!safeReturnUrl(cancel_url)||!geldigUuid(body.annuleer_token))return new Response(JSON.stringify({error:'Ongeldig boekingsbewijs of terugkeeradres'}),{status:400,headers});
   if (!salon_id || !afspraak_id || !bedrag || !success_url || !cancel_url) {
     return new Response(JSON.stringify({ error: "salon_id, afspraak_id, bedrag, success_url en cancel_url zijn verplicht" }), { status: 400, headers });
   }
   if (!geldigUuid(salon_id) || !geldigUuid(afspraak_id)) {
     return new Response(JSON.stringify({ error: "Ongeldig ID-formaat" }), { status: 400, headers });
   }
-  const afspraakRows = await supabaseQuery(env, `afspraken?id=eq.${afspraak_id}&select=salon_id`);
+  const afspraakRows = await supabaseQuery(env, `afspraken?id=eq.${afspraak_id}&annuleer_token=eq.${body.annuleer_token}&select=salon_id,klant_email,dienst_variant_id,diensten(prijs,aanbetaling_type,aanbetaling_bedrag)`);
   if (afspraakRows?.[0]?.salon_id !== salon_id) {
     return new Response(JSON.stringify({ error: "Deze afspraak hoort niet bij deze salon" }), { status: 403, headers });
   }
+  const service=afspraakRows[0].diensten;
+  let price=Number(service?.prijs);
+  if(afspraakRows[0].dienst_variant_id){
+    const variant=(await supabaseQuery(env,`dienst_varianten?id=eq.${afspraakRows[0].dienst_variant_id}&salon_id=eq.${salon_id}&select=prijs`))?.[0];
+    if(!variant)return new Response(JSON.stringify({error:'Dienstvariant niet gevonden'}),{status:400,headers});
+    price=Number(variant.prijs);
+  }
+  bedrag=service?.aanbetaling_type==='percentage'?Math.round(price*Number(service.aanbetaling_bedrag))/100:Number(service?.aanbetaling_bedrag);
+  if(!Number.isFinite(bedrag)||bedrag<=0||bedrag>price)return new Response(JSON.stringify({error:'Geen geldige aanbetaling ingesteld'}),{status:400,headers});
+  email=afspraakRows[0].klant_email;
   try {
     const accountId = await getConnectedAccountId(env, salon_id);
     if (!accountId) {
@@ -364,14 +378,15 @@ async function handleCreateSetupCheckout(request, env, headers) {
   } catch (e) {
     return new Response(JSON.stringify({ error: "Ongeldige JSON" }), { status: 400, headers });
   }
-  const { salon_id, afspraak_id, email, success_url, cancel_url } = body;
+  const { salon_id, afspraak_id, success_url, cancel_url } = body;
+  if(!safeReturnUrl(success_url)||!safeReturnUrl(cancel_url)||!geldigUuid(body.annuleer_token))return new Response(JSON.stringify({error:'Ongeldig boekingsbewijs of terugkeeradres'}),{status:400,headers});
   if (!salon_id || !afspraak_id || !success_url || !cancel_url) {
     return new Response(JSON.stringify({ error: "salon_id, afspraak_id, success_url en cancel_url zijn verplicht" }), { status: 400, headers });
   }
   if (!geldigUuid(salon_id) || !geldigUuid(afspraak_id)) {
     return new Response(JSON.stringify({ error: "Ongeldig ID-formaat" }), { status: 400, headers });
   }
-  const afspraakRows = await supabaseQuery(env, `afspraken?id=eq.${afspraak_id}&select=salon_id`);
+  const afspraakRows = await supabaseQuery(env, `afspraken?id=eq.${afspraak_id}&annuleer_token=eq.${body.annuleer_token}&select=salon_id,klant_email`);
   if (afspraakRows?.[0]?.salon_id !== salon_id) {
     return new Response(JSON.stringify({ error: "Deze afspraak hoort niet bij deze salon" }), { status: 403, headers });
   }
@@ -383,7 +398,7 @@ async function handleCreateSetupCheckout(request, env, headers) {
     const params = new URLSearchParams();
     params.append("mode", "setup");
     params.append("payment_method_types[0]", "card");
-    if (email) params.append("customer_email", email);
+    if (afspraakRows[0].klant_email) params.append("customer_email", afspraakRows[0].klant_email);
     params.append("success_url", success_url);
     params.append("cancel_url", cancel_url);
     params.append("metadata[afspraak_id]", afspraak_id);
@@ -423,7 +438,7 @@ async function handleChargeNoshowFee(request, env, headers) {
     }
     const geclaimd = await supabaseQuery(
       env,
-      `afspraken?id=eq.${afspraak_id}&salon_id=eq.${salon_id}&noshow_fee_status=eq.vastgelegd`,
+      `afspraken?id=eq.${afspraak_id}&salon_id=eq.${salon_id}&status=eq.no-show&noshow_fee_status=eq.vastgelegd`,
       {
         method: "PATCH",
         body: JSON.stringify({ noshow_fee_status: "incasso_bezig" })
@@ -450,7 +465,7 @@ async function handleChargeNoshowFee(request, env, headers) {
     params.append("off_session", "true");
     params.append("confirm", "true");
     try {
-      await stripeRequest(env, "payment_intents", params, { connectedAccount: accountId });
+      await stripeRequest(env, "payment_intents", params, { connectedAccount: accountId, idempotencyKey:'noshow-'+afspraak_id });
       await supabaseQuery(env, `afspraken?id=eq.${afspraak_id}`, {
         method: "PATCH",
         body: JSON.stringify({ noshow_fee_status: "geincasseerd" })
@@ -515,230 +530,6 @@ async function handleCreateSubscriptionCheckout(request, env, headers) {
   }
 }
 __name(handleCreateSubscriptionCheckout, "handleCreateSubscriptionCheckout");
-async function alIsVerwerkt(env, eventId) {
-  try {
-    await supabaseQuery(env, "stripe_verwerkte_events", {
-      method: "POST",
-      headers: { "Prefer": "return=minimal" },
-      body: JSON.stringify({ event_id: eventId })
-    });
-    return false;
-  } catch (err) {
-    if (err.message && err.message.includes("23505")) {
-      return true;
-    }
-    throw err;
-  }
-}
-__name(alIsVerwerkt, "alIsVerwerkt");
-function planFromPriceId(priceId, env) {
-  if (priceId === env.PRICE_STARTER_M || priceId === env.PRICE_STARTER_Y) return "starter";
-  if (priceId === env.PRICE_PRO_M || priceId === env.PRICE_PRO_Y) return "pro";
-  if (priceId === env.PRICE_BUSINESS_M || priceId === env.PRICE_BUSINESS_Y) return "business";
-  return "pro";
-}
-__name(planFromPriceId, "planFromPriceId");
-async function handleWebhook(request, env) {
-  const sig = request.headers.get("stripe-signature");
-  const body = await request.text();
-  let event;
-  try {
-    event = await verifyStripeSignature(body, sig, env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    return new Response(`Webhook-signature ongeldig: ${err.message}`, { status: 400 });
-  }
-  try {
-    if (await alIsVerwerkt(env, event.id)) {
-      return new Response("ok (al eerder verwerkt)", { status: 200 });
-    }
-  } catch (err) {
-    return new Response(`Idempotentie-check mislukt: ${err.message}`, { status: 500 });
-  }
-  try {
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        if (session.mode === "subscription" && session.metadata?.salon_id) {
-          await supabaseQuery(env, `salons?id=eq.${session.metadata.salon_id}`, {
-            method: "PATCH",
-            body: JSON.stringify({
-              plan: session.metadata.plan || "starter",
-              stripe_customer_id: session.customer,
-              stripe_subscription_id: session.subscription
-            })
-          });
-        }
-        break;
-      }
-      case "customer.subscription.updated": {
-        const sub = event.data.object;
-        const actief = sub.status === "active" || sub.status === "trialing";
-        const nieuwPlan = actief ? planFromPriceId(sub.items?.data?.[0]?.price?.id, env) : "free";
-        await supabaseQuery(env, `salons?stripe_customer_id=eq.${sub.customer}`, {
-          method: "PATCH",
-          body: JSON.stringify({ plan: nieuwPlan })
-        });
-        break;
-      }
-      case "customer.subscription.deleted": {
-        const sub = event.data.object;
-        await supabaseQuery(env, `salons?stripe_customer_id=eq.${sub.customer}`, {
-          method: "PATCH",
-          body: JSON.stringify({ plan: "free" })
-        });
-        break;
-      }
-    }
-    return new Response("ok", { status: 200 });
-  } catch (err) {
-    return new Response(`Verwerken mislukt: ${err.message}`, { status: 500 });
-  }
-}
-__name(handleWebhook, "handleWebhook");
-async function handleWebhookConnect(request, env) {
-  const sig = request.headers.get("stripe-signature");
-  const body = await request.text();
-  let event;
-  try {
-    event = await verifyStripeSignature(body, sig, env.STRIPE_CONNECT_WEBHOOK_SECRET);
-  } catch (err) {
-    return new Response(`Webhook-signature ongeldig: ${err.message}`, { status: 400 });
-  }
-  try {
-    if (await alIsVerwerkt(env, event.id)) {
-      return new Response("ok (al eerder verwerkt)", { status: 200 });
-    }
-  } catch (err) {
-    return new Response(`Idempotentie-check mislukt: ${err.message}`, { status: 500 });
-  }
-  const connectedAccountId = event.account;
-  try {
-    switch (event.type) {
-      case "checkout.session.completed": {
-        const session = event.data.object;
-        const meta = session.metadata || {};
-        if (session.mode === "subscription" && meta.plan_id) {
-          await supabaseQuery(env, "klant_abonnementen", {
-            method: "POST",
-            body: JSON.stringify({
-              salon_id: meta.salon_id,
-              plan_id: meta.plan_id,
-              klant_naam: meta.klant_naam,
-              klant_email: session.customer_details?.email || null,
-              stripe_subscription_id: session.subscription,
-              stripe_customer_id: session.customer,
-              status: "actief",
-              credits_resterend: 0
-            })
-          });
-          break;
-        }
-        if (meta.afspraak_id && (session.mode === "setup" || meta.save_card === "1")) {
-          let paymentMethodId = null;
-          const customerId = session.customer;
-          if (session.mode === "setup" && session.setup_intent) {
-            const setupIntent = await stripeGet(env, `setup_intents/${session.setup_intent}`, { connectedAccount: connectedAccountId });
-            paymentMethodId = setupIntent.payment_method;
-          } else if (session.payment_intent) {
-            const paymentIntent = await stripeGet(env, `payment_intents/${session.payment_intent}`, { connectedAccount: connectedAccountId });
-            paymentMethodId = paymentIntent.payment_method;
-          }
-          const patch = {
-            stripe_customer_id: customerId,
-            stripe_payment_method_id: paymentMethodId,
-            noshow_fee_status: "vastgelegd"
-          };
-          if (session.setup_intent) patch.stripe_setup_intent_id = session.setup_intent;
-          await supabaseQuery(env, `afspraken?id=eq.${meta.afspraak_id}`, {
-            method: "PATCH",
-            body: JSON.stringify(patch)
-          });
-          if (session.mode === "payment") {
-            await supabaseQuery(env, `afspraken?id=eq.${meta.afspraak_id}`, {
-              method: "PATCH",
-              body: JSON.stringify({
-                aanbetaling_status: "betaald",
-                stripe_payment_intent_id: session.payment_intent
-              })
-            });
-          }
-          break;
-        }
-        if (meta.afspraak_id) {
-          await supabaseQuery(env, `afspraken?id=eq.${meta.afspraak_id}`, {
-            method: "PATCH",
-            body: JSON.stringify({
-              aanbetaling_status: "betaald",
-              stripe_payment_intent_id: session.payment_intent
-            })
-          });
-        }
-        break;
-      }
-      case "invoice.paid": {
-        const invoice = event.data.object;
-        const subscriptionId = invoice.subscription;
-        if (!subscriptionId) break;
-        const aboRows = await supabaseQuery(env, `klant_abonnementen?stripe_subscription_id=eq.${subscriptionId}&select=id,plan_id,credits_resterend`);
-        const abo = aboRows?.[0];
-        if (!abo) break;
-        const planRows = await supabaseQuery(env, `abonnement_plannen?id=eq.${abo.plan_id}&select=credits_per_maand`);
-        const creditsPerMaand = planRows?.[0]?.credits_per_maand || 0;
-        await supabaseQuery(env, `klant_abonnementen?id=eq.${abo.id}`, {
-          method: "PATCH",
-          body: JSON.stringify({ credits_resterend: (abo.credits_resterend || 0) + creditsPerMaand })
-        });
-        break;
-      }
-      case "customer.subscription.deleted": {
-        const sub = event.data.object;
-        await supabaseQuery(env, `klant_abonnementen?stripe_subscription_id=eq.${sub.id}`, {
-          method: "PATCH",
-          body: JSON.stringify({ status: "opgezegd", opgezegd_op: (/* @__PURE__ */ new Date()).toISOString() })
-        });
-        break;
-      }
-    }
-    return new Response("ok", { status: 200 });
-  } catch (err) {
-    return new Response(`Verwerken mislukt: ${err.message}`, { status: 500 });
-  }
-}
-__name(handleWebhookConnect, "handleWebhookConnect");
-function timingSafeGelijk(a, b) {
-  if (a.length !== b.length) return false;
-  let verschil = 0;
-  for (let i = 0; i < a.length; i++) {
-    verschil |= a.charCodeAt(i) ^ b.charCodeAt(i);
-  }
-  return verschil === 0;
-}
-__name(timingSafeGelijk, "timingSafeGelijk");
-async function verifyStripeSignature(payload, sigHeader, secret) {
-  if (!sigHeader) throw new Error("Geen stripe-signature header");
-  const parts = Object.fromEntries(sigHeader.split(",").map((p) => p.split("=")));
-  const timestamp = parts.t;
-  const signature = parts.v1;
-  if (!timestamp || !signature) throw new Error("Ongeldige signature-header");
-  const nu = Math.floor(Date.now() / 1e3);
-  const leeftijd = nu - parseInt(timestamp, 10);
-  if (leeftijd > 300 || leeftijd < -60) {
-    throw new Error("Webhook-timestamp te oud of ongeldig (mogelijke replay)");
-  }
-  const signedPayload = `${timestamp}.${payload}`;
-  const key = await crypto.subtle.importKey(
-    "raw",
-    new TextEncoder().encode(secret),
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"]
-  );
-  const sigBytes = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(signedPayload));
-  const expected = [...new Uint8Array(sigBytes)].map((b) => b.toString(16).padStart(2, "0")).join("");
-  if (!timingSafeGelijk(expected, signature)) throw new Error("Signature komt niet overeen");
-  return JSON.parse(payload);
-}
-__name(verifyStripeSignature, "verifyStripeSignature");
 export {
   index_default as default
 };

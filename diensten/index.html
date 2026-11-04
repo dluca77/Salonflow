@@ -140,7 +140,7 @@ select.fi{cursor:pointer;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js"></script>
+<script src="/kronr.js?v=20261029"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
 <link rel="stylesheet" href="/app-brand.css?v=7">
@@ -502,10 +502,10 @@ async function laadPrijsAdviesVoorDiensten(){
   }
 
   try{
-    const res=await fetch('https://kronr-ai.isaak-elia.workers.dev/prijsadvies',{
+    const res=await kronrWorkerFetch('https://kronr-ai.isaak-elia.workers.dev/prijsadvies',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({salon_naam:SALON?.naam, diensten:data.diensten, tijdslots:data.tijdslots, totaal_boekingen:data.totaalBoekingen})
+      body:JSON.stringify({salon_id:SALON_ID,salon_naam:SALON?.naam, diensten:data.diensten, tijdslots:data.tijdslots, totaal_boekingen:data.totaalBoekingen})
     });
     if(!res.ok) throw new Error('AI-call mislukt');
     const result=await res.json();

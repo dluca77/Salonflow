@@ -4,14 +4,37 @@
 // (OAuth) en synchroniseert kassa-betalingen als facturen.
 // ═══════════════════════════════════════════════════════════
 
+import { authorizeSalon, validUuid, jsonError } from './authorization.js';
 const ALLOWED_ORIGINS = ['https://kronr.nl', 'https://www.kronr.nl'];
+const REDIRECT_URI = 'https://kronr.nl/instellingen/?moneybird_return=1';
+
+async function oauthKey(env) {
+  return crypto.subtle.importKey('raw',new TextEncoder().encode(env.MONEYBIRD_CLIENT_SECRET),{name:'HMAC',hash:'SHA-256'},false,['sign','verify']);
+}
+async function makeOauthState(env,salonId,userId,redirectUri) {
+  const payload=btoa(JSON.stringify({salonId,userId,redirectUri,expires:Date.now()+10*60*1000,nonce:crypto.randomUUID()})).replace(/=/g,'').replace(/\+/g,'-').replace(/\//g,'_');
+  const signature=await crypto.subtle.sign('HMAC',await oauthKey(env),new TextEncoder().encode(payload));
+  return payload+'.'+Array.from(new Uint8Array(signature),b=>b.toString(16).padStart(2,'0')).join('');
+}
+async function validOauthState(env,state,salonId,userId) {
+  try {
+    if(typeof state!=='string'||state.length>1000)return false;
+    const parts=state.split('.');
+    if(parts.length!==2||!/^[a-f0-9]{64}$/.test(parts[1]))return false;
+    const signature=Uint8Array.from(parts[1].match(/../g),s=>parseInt(s,16));
+    if(!await crypto.subtle.verify('HMAC',await oauthKey(env),signature,new TextEncoder().encode(parts[0])))return false;
+    const data=JSON.parse(atob(parts[0].replace(/-/g,'+').replace(/_/g,'/')));
+    return data.salonId===salonId&&data.userId===userId&&Number.isFinite(data.expires)&&data.expires>Date.now()&&data.expires<=Date.now()+10*60*1000;
+  } catch {return false;}
+}
 
 function corsHeaders(origin) {
   const allow = ALLOWED_ORIGINS.includes(origin) ? origin : ALLOWED_ORIGINS[0];
   return {
     'Access-Control-Allow-Origin': allow,
     'Access-Control-Allow-Methods': 'POST, OPTIONS',
-    'Access-Control-Allow-Headers': 'Content-Type',
+    'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    'Vary': 'Origin',
     'Content-Type': 'application/json',
   };
 }
@@ -27,8 +50,14 @@ export default {
       return new Response(JSON.stringify({ error: 'Alleen POST toegestaan' }), { status: 405, headers });
     }
 
-    if (url.pathname === '/create-oauth-link') return handleCreateOauthLink(request, env, headers);
-    if (url.pathname === '/exchange-oauth-code') return handleExchangeOauthCode(request, env, headers);
+    if (!['/create-oauth-link','/exchange-oauth-code','/sync-betaling'].includes(url.pathname)) return jsonError('Onbekend endpoint',404,headers);
+    let input;
+    try { input=await request.clone().json(); } catch { return jsonError('Ongeldige JSON',400,headers); }
+    if (!input || Array.isArray(input) || typeof input!=='object') return jsonError('Ongeldige aanvraag',400,headers);
+    const access=await authorizeSalon(request,env,input.salon_id,{ownerOnly:url.pathname!=='/sync-betaling',module:'kassa',allowed:['gebruiken','bewerken']});
+    if(!access.ok) return jsonError(access.error,access.status,headers);
+    if (url.pathname === '/create-oauth-link') return handleCreateOauthLink(request, env, headers, access.user.id);
+    if (url.pathname === '/exchange-oauth-code') return handleExchangeOauthCode(request, env, headers, access.user.id);
 
     if (url.pathname === '/sync-betaling') {
       // BELANGRIJK: kassa.html roept dit endpoint 'fire and forget' aan
@@ -46,6 +75,11 @@ export default {
       } catch (e) {
         return new Response(JSON.stringify({ error: 'Ongeldige JSON' }), { status: 400, headers });
       }
+      if(!validUuid(body.betaling_id)) return jsonError('Ongeldig betaling_id',400,headers);
+      try {
+        const rows=await supabaseQuery(env,`betalingen?id=eq.${body.betaling_id}&salon_id=eq.${body.salon_id}&select=id`);
+        if(!rows?.length) return jsonError('Betaling niet gevonden in deze salon',404,headers);
+      } catch { return jsonError('Betaling kon niet worden gecontroleerd',503,headers); }
       ctx.waitUntil(handleSyncBetalingAchtergrond(body, env));
       return new Response(JSON.stringify({ accepted: true }), { headers });
     }
@@ -76,7 +110,7 @@ function berekenVerloopdatum(expiresIn) {
   return new Date(Date.now() + geldig * 1000).toISOString();
 }
 
-async function handleCreateOauthLink(request, env, headers) {
+async function handleCreateOauthLink(request, env, headers, userId) {
   let body;
   try { body = await request.json(); } catch (e) {
     return new Response(JSON.stringify({ error: 'Ongeldige JSON' }), { status: 400, headers });
@@ -85,16 +119,23 @@ async function handleCreateOauthLink(request, env, headers) {
   if (!salon_id || !return_url) {
     return new Response(JSON.stringify({ error: 'salon_id en return_url zijn verplicht' }), { status: 400, headers });
   }
+  let redirectUri;
+  try {
+    const target=new URL(return_url);
+    if(!ALLOWED_ORIGINS.includes(target.origin)||target.pathname!=='/instellingen/'||target.search!=='?moneybird_return=1'||target.hash)throw new Error();
+    redirectUri=target.href;
+  }catch{return jsonError('Ongeldige terugkeer-URL',400,headers);}
   const authUrl = new URL('https://moneybird.com/oauth/authorize');
   authUrl.searchParams.set('client_id', env.MONEYBIRD_CLIENT_ID);
-  authUrl.searchParams.set('redirect_uri', return_url);
+  authUrl.searchParams.set('redirect_uri', redirectUri);
   authUrl.searchParams.set('response_type', 'code');
   authUrl.searchParams.set('scope', 'sales_invoices bank settings');
-  authUrl.searchParams.set('state', salon_id);
-  return new Response(JSON.stringify({ url: authUrl.toString() }), { headers });
+  const state=await makeOauthState(env,salon_id,userId,redirectUri);
+  authUrl.searchParams.set('state', state);
+  return new Response(JSON.stringify({ url: authUrl.toString(), state }), { headers });
 }
 
-async function handleExchangeOauthCode(request, env, headers) {
+async function handleExchangeOauthCode(request, env, headers, userId) {
   let body;
   try { body = await request.json(); } catch (e) {
     return new Response(JSON.stringify({ error: 'Ongeldige JSON' }), { status: 400, headers });
@@ -103,7 +144,8 @@ async function handleExchangeOauthCode(request, env, headers) {
   if (!salon_id || !code) {
     return new Response(JSON.stringify({ error: 'salon_id en code zijn verplicht' }), { status: 400, headers });
   }
-  const redirectUri = 'https://kronr.nl/instellingen/?moneybird_return=1';
+  if(!await validOauthState(env,body.state,salon_id,userId)) return jsonError('Koppelsessie ongeldig of verlopen. Start opnieuw.',400,headers);
+  const redirectUri = JSON.parse(atob(body.state.split('.')[0].replace(/-/g,'+').replace(/_/g,'/'))).redirectUri;
   try {
     const tokenRes = await fetch('https://moneybird.com/oauth/token', {
       method: 'POST',
@@ -296,9 +338,13 @@ async function handleSyncBetalingAchtergrond(body, env) {
   try {
     const { accessToken, administrationId } = await haalGeldigToken(env, salon_id);
 
-    const betalingRows = await supabaseQuery(env, `betalingen?id=eq.${betaling_id}&select=bedrag,datum`);
+    const betalingRows = await supabaseQuery(env, `betalingen?id=eq.${betaling_id}&salon_id=eq.${salon_id}&select=bedrag,datum,cadeaubon_bedrag_gebruikt,moneybird_factuur_id`);
     const betaling = betalingRows?.[0];
     if (!betaling) throw new Error('Betaling niet gevonden');
+    if(betaling.moneybird_factuur_id)return;
+    const claimed=await supabaseQuery(env,'rpc/kronr_claim_request',{method:'POST',body:JSON.stringify({p_key:'moneybird:'+betaling_id,p_limit:1,p_seconds:300})});
+    if(!claimed)return;
+    const invoiceTotal=Number(betaling.bedrag)+Number(betaling.cadeaubon_bedrag_gebruikt||0);
 
     // Prijzen komen binnen als het daadwerkelijk betaalde bedrag
     // (dus inclusief btw). Reken om naar excl.-btw + geef het echte
@@ -314,10 +360,11 @@ async function handleSyncBetalingAchtergrond(body, env) {
     const { btw21, btw0 } = await haalBtwTarieven(accessToken, administrationId);
     const naarExclBtw = (bedragInclBtw) => Math.round((bedragInclBtw / 1.21) * 100) / 100;
 
-    const verkoopItems = await supabaseQuery(env, `verkoop_items?betaling_id=eq.${betaling_id}&select=naam,prijs,aantal,type`);
+    const verkoopItems = await supabaseQuery(env, `verkoop_items?betaling_id=eq.${betaling_id}&salon_id=eq.${salon_id}&select=naam,prijs,aantal,type`);
+    if(verkoopItems?.some(i=>['fooi','cadeaubon_verkoop'].includes(i.type))&&!btw0)throw new Error('Stel eerst een 0%-btw-tarief in Moneybird in voor fooi/cadeaubonnen');
     const regels = (verkoopItems && verkoopItems.length)
       ? verkoopItems.map(i => (
-          i.type === 'fooi'
+          ['fooi','cadeaubon_verkoop'].includes(i.type)
             ? { description: i.naam, price: i.prijs, amount: i.aantal, ...(btw0 ? { tax_rate_id: btw0 } : {}) }
             : { description: i.naam, price: naarExclBtw(i.prijs), amount: i.aantal, tax_rate_id: btw21 }
         ))
@@ -340,13 +387,13 @@ async function handleSyncBetalingAchtergrond(body, env) {
     const berekenTotaal = (rs) => rs.reduce((som, r) =>
       som + (r.tax_rate_id === btw21 ? Math.round(r.price * r.amount * 1.21 * 100) / 100 : r.price * r.amount), 0);
     const belasteRegels = regels.filter(r => r.tax_rate_id === btw21);
-    if (Math.round((betaling.bedrag - berekenTotaal(regels)) * 100) !== 0 && belasteRegels.length) {
+    if (Math.round((invoiceTotal - berekenTotaal(regels)) * 100) !== 0 && belasteRegels.length) {
       const laatsteRegel = belasteRegels[belasteRegels.length - 1];
       const basisPrijs = laatsteRegel.price;
       let besteStap = 0, kleinsteVerschil = Infinity;
       for (let stap = -5; stap <= 5; stap++) {
         laatsteRegel.price = Math.round((basisPrijs + stap * 0.01) * 100) / 100;
-        const verschil = Math.abs(betaling.bedrag - berekenTotaal(regels));
+        const verschil = Math.abs(invoiceTotal - berekenTotaal(regels));
         if (verschil < kleinsteVerschil) { kleinsteVerschil = verschil; besteStap = stap; }
       }
       laatsteRegel.price = Math.round((basisPrijs + besteStap * 0.01) * 100) / 100;
@@ -367,7 +414,7 @@ async function handleSyncBetalingAchtergrond(body, env) {
             date: datum,
             currency: 'EUR',
             details_attributes: regels,
-            payments_attributes: [{ payment_date: datum, price: betaling.bedrag }],
+            payments_attributes: [{ payment_date: datum, price: invoiceTotal }],
           },
         }),
       }

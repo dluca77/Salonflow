@@ -101,25 +101,20 @@ async function vraagCodeAan(){
   const btn=document.getElementById('btn-zoek');
   btn.disabled=true;btn.textContent='Bezig...';
 
-  // Stap 1: code aanmaken (server-side, rate-limited)
-  const{data:code,error}=await sb.rpc('vraag_stempelkaart_code_aan',{p_salon_id:SALON_ID,p_email:email});
-
-  if(error){
+  // The server generates and sends the code; it never returns it to the browser.
+  try {
+    const response=await fetch(AI_MAIL_WORKER_URL,{
+      method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({salon_id:SALON_ID,email})
+    });
+    if(!response.ok){
+      const result=await response.json().catch(()=>({}));
+      throw new Error(result.error||'Kon geen code versturen. Probeer het later opnieuw.');
+    }
+  } catch(error) {
     btn.disabled=false;btn.textContent='Verstuur verificatiecode';
-    errEl.textContent=error.message.includes('Te veel')?error.message:'Kon geen code versturen. Probeer het later opnieuw.';
-    errEl.style.display='block';
-    return;
+    errEl.textContent=error.message;errEl.style.display='block';return;
   }
-
-  // Stap 2: code laten mailen (non-fataal als dit misgaat qua UI-flow —
-  // de code bestaat al server-side, dus we tonen de invoerstap sowieso;
-  // als het mailtje echt niet aankomt, kan de klant het gewoon opnieuw
-  // aanvragen).
-  fetch(AI_MAIL_WORKER_URL,{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({salon_id:SALON_ID, email, code})
-  }).catch(()=>{});
 
   geverifieerdEmail=email;
   btn.disabled=false;btn.textContent='Verstuur verificatiecode';

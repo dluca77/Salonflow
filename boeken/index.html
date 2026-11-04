@@ -1713,7 +1713,7 @@ async function bevestigen(){
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
-        email, klant_naam:naamGroepsles, salon_naam:window.SALON_NAAM||'',
+        annuleer_token:(Array.isArray(boeking)?boeking[0]:boeking)?.annuleer_token, email, klant_naam:naamGroepsles, salon_naam:window.SALON_NAAM||'',
         dienst_naam:state.dienst+' (groepsles)', datum_tijd:document.getElementById('sum-datum').textContent,
         duur_min:state.duur
       })
@@ -1926,6 +1926,7 @@ async function bevestigen(){
         body:JSON.stringify({
           salon_id:SALON_ID,
           afspraak_id:nieuweAfspraak.id,
+          annuleer_token:nieuweAfspraak.annuleer_token,
           bedrag:needsPayment?state.aanb_bedrag:undefined,
           save_card:needsCardOnFile,
           email,

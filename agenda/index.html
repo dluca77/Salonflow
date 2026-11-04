@@ -1140,7 +1140,7 @@ async function toonKlantBriefing(){
       dienst:x.diensten?.naam
     }));
 
-    const res=await fetch('https://kronr-ai.isaak-elia.workers.dev/klant-briefing',{
+    const res=await kronrWorkerFetch('https://kronr-ai.isaak-elia.workers.dev/klant-briefing',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({salon_id:SALON_ID,
@@ -1279,7 +1279,7 @@ async function checkWachtlijstMatch(afspraak){
     // Dienstnaam ophalen voor een nettere mail
     const{data:dienstData}=await sb.from('diensten').select('naam').eq('id',afspraak.dienst_id).maybeSingle();
 
-    await fetch('https://kronr-mail.isaak-elia.workers.dev/wachtlijst-plek',{
+    await kronrWorkerFetch('https://kronr-mail.isaak-elia.workers.dev/wachtlijst-plek',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -1512,6 +1512,7 @@ function setView(v){
   // view tabs zijn in filter dropdown
   const map={day:'vt-d',werkweek:'vt-ww',week:'vt-w',month:'vt-m',medewerker:'vt-med'};
   const vlabels={day:'Dag',werkweek:'Werkweek',week:'Week',month:'Maand',medewerker:'Team'};
+  
 
   // Reset cal-inner voor maand vs time views
   if(v!=='month'){

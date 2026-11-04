@@ -191,7 +191,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js"></script>
+<script src="/kronr.js?v=20261029"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
 <link rel="stylesheet" href="/app-brand.css?v=7">
@@ -911,7 +911,7 @@ async function koppelMoneybird(){
   btn.disabled=true;btn.innerHTML='<span class="spinner-inline"></span>';
 
   try{
-    const res=await fetch('https://kronr-moneybird.isaak-elia.workers.dev/create-oauth-link',{
+    const res=await kronrWorkerFetch('https://kronr-moneybird.isaak-elia.workers.dev/create-oauth-link',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -922,6 +922,7 @@ async function koppelMoneybird(){
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
     if(!data.url) throw new Error(data.error||'Onbekende fout');
+    sessionStorage.setItem('kronr_moneybird_state',data.state);
     window.location.href=data.url;
   }catch(e){
     btn.disabled=false;btn.textContent=origLabel;
@@ -933,17 +934,21 @@ async function verwerkMoneybirdReturn(){
   const params=new URLSearchParams(window.location.search);
   if(!params.get('moneybird_return')) return;
   const code=params.get('code');
+  const state=params.get('state');
+  const expectedState=sessionStorage.getItem('kronr_moneybird_state');
+  sessionStorage.removeItem('kronr_moneybird_state');
 
   history.replaceState(null,'',window.location.pathname+'#abonnement');
   setTab('abonnement');
 
   if(!code) return; // gebruiker geannuleerd
+  if(!state||state!==expectedState){showMsg('msg-mb','Koppelsessie ongeldig. Start het koppelen opnieuw.');return;}
 
   try{
-    const res=await fetch('https://kronr-moneybird.isaak-elia.workers.dev/exchange-oauth-code',{
+    const res=await kronrWorkerFetch('https://kronr-moneybird.isaak-elia.workers.dev/exchange-oauth-code',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({salon_id:SALON_ID, code})
+      body:JSON.stringify({salon_id:SALON_ID, code, state})
     });
     if(!res.ok) throw new Error('HTTP '+res.status);
     const data=await res.json();
