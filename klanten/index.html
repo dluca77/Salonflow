@@ -179,7 +179,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js"></script>
+<script src="/kronr.js?v=20261029"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
 <link rel="stylesheet" href="/app-brand.css?v=7">
@@ -492,10 +492,11 @@ async function verstuurCampagne(){
   }
 
   try{
-    const res=await fetch('https://kronr-mail.isaak-elia.workers.dev/campagne',{
+    const res=await kronrWorkerFetch('https://kronr-mail.isaak-elia.workers.dev/campagne',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
+        salon_id:SALON_ID,
         salon_naam:SALON?.naam||'',
         onderwerp, inhoud,
         ontvangers:ontvangers.map(k=>({naam:k.naam,email:k.email,afmeld_token:k.afmeld_token}))

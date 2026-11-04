@@ -191,7 +191,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js"></script>
+<script src="/kronr.js?v=20261029"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
 <link rel="stylesheet" href="/app-brand.css?v=7">
@@ -792,7 +792,7 @@ async function betaal(){
     // kassa niet en laat de bon nooit mislukken als dit faalt — eventuele
     // fouten worden zichtbaar in instellingen (boekhouding_laatste_sync_fout).
     if(SALON?.boekhouding_provider==='moneybird'){
-      fetch('https://kronr-moneybird.isaak-elia.workers.dev/sync-betaling',{
+      kronrWorkerFetch('https://kronr-moneybird.isaak-elia.workers.dev/sync-betaling',{
         method:'POST',
         headers:{'Content-Type':'application/json'},
         body:JSON.stringify({salon_id:SALON_ID, betaling_id:betaling.id})

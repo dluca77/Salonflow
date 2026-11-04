@@ -211,6 +211,15 @@ async function automatiseerVerlopenData() {
   }
 }
 
+// For authenticated Worker requests; never silently downgrade to an anonymous call.
+async function kronrWorkerFetch(url, options = {}) {
+  const {data:{session}}=await sb.auth.getSession();
+  if(!session?.access_token) throw new Error('Je sessie is verlopen. Log opnieuw in.');
+  const headers=new Headers(options.headers || {});
+  headers.set('Authorization','Bearer '+session.access_token);
+  return fetch(url,{...options,headers});
+}
+
 async function kronrInit(callback, paginaModule) {
   try {
     const { data: { session } } = await sb.auth.getSession();
@@ -240,24 +249,28 @@ async function kronrInit(callback, paginaModule) {
     let { data: salon, error } = await sb.from('salons')
       .select('*')
       .eq('owner_id', session.user.id)
-      .single();
+      .maybeSingle();
+    if(error) throw error;
 
     // Geen salon als eigenaar? Kan een medewerker zijn — die heeft
     // een eigen inlog gekoppeld aan een medewerkersprofiel, niet aan
     // een salons.owner_id. Check dat VOORDAT we aannemen dat dit een
     // gloednieuwe eigenaar is en er een nieuwe salon wordt aangemaakt.
     if (!salon) {
-      const { data: medewerker } = await sb.from('medewerkers')
+      const { data: medewerker, error: medewerkerError } = await sb.from('medewerkers')
         .select('*')
         .eq('auth_user_id', session.user.id)
         .maybeSingle();
 
+      if (medewerkerError) throw medewerkerError;
+      if (medewerker && !medewerker.actief) throw new Error('Je medewerkersaccount is niet actief.');
       if (medewerker) {
-        const { data: medewerkerSalon } = await sb.from('salons')
+        const { data: medewerkerSalon, error: medewerkerSalonError } = await sb.from('salons')
           .select('*')
           .eq('id', medewerker.salon_id)
           .single();
 
+        if(medewerkerSalonError || !medewerkerSalon) throw medewerkerSalonError || new Error('Salon niet beschikbaar');
         if (medewerkerSalon) {
           salon = medewerkerSalon;
           IS_MEDEWERKER = true;
