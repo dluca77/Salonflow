@@ -260,8 +260,8 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261029"></script>
-<link rel="stylesheet" href="/app-brand.css?v=7">
+<script src="/kronr.js?v=20261104"></script>
+<link rel="stylesheet" href="/app-brand.css?v=8">
 <script src="/app-navigation.js?v=2" defer></script>
 </head>
 <body>
@@ -304,7 +304,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 
 <div class="main">
   <!-- Topbar -->
-  <div class="topbar">
+  <div class="topbar agenda-topbar">
     <button class="hbg" onclick="openSB()"><svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
     <div class="tb-title">Agenda</div>
     <!-- Zoeken -->
@@ -318,7 +318,7 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
     <!-- Nav + filter -->
     <div class="tb-nav">
       <button id="agenda-prev" class="ta" onclick="prev()" aria-label="Vorige week">‹</button>
-      <div style="display:flex;flex-direction:column;align-items:center;min-width:110px;">
+      <div style="display:flex;flex-direction:column;align-items:center;min-width:90px;">
         <select id="view-label" aria-label="Agendaweergave" onchange="setView(this.value)" style="font:inherit;font-size:12px;font-weight:600;color:var(--gd);border:0;border-radius:8px;background:transparent;min-height:32px;cursor:pointer;">
           <option value="day">Dag</option><option value="week" selected>Week</option><option value="month">Maand</option><option value="werkweek">Werkweek</option><option value="medewerker">Team</option>
         </select>
@@ -900,7 +900,7 @@ function renderMedewerker(){
 
   // Headers: medewerker namen
   document.getElementById('cdh').innerHTML=cols.map(m=>`
-    <div class="chd" style="min-width:110px;">
+    <div class="chd" style="min-width:90px;">
       <div class="dn" style="font-size:11px;letter-spacing:0;">${m.naam}</div>
       <div style="font-size:10px;color:var(--mu2);margin-top:2px;">${m.rol||''}</div>
     </div>`).join('');

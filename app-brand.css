@@ -121,3 +121,17 @@ button:disabled{opacity:.55;cursor:wait}
 #d-naam{font-family:'DM Sans',sans-serif!important;font-size:22px!important;line-height:1.25;letter-spacing:-.6px;overflow-wrap:anywhere}
 .detail-av{border-radius:14px}.detail-head{clear:both}.dr{gap:16px}.dr-v{overflow-wrap:anywhere;min-width:0}
 .btn-prim,.btn-sec{min-height:44px;border-radius:10px}
+
+/* Calendar navigation stays centered within the workspace, independent of actions. */
+.agenda-topbar{position:relative;flex-wrap:nowrap;min-height:72px}
+.agenda-topbar .tb-nav{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;gap:4px}
+.agenda-topbar .fw{margin-left:auto;flex-shrink:0}
+@media(min-width:769px) and (max-width:1100px){.agenda-topbar .search-wrap{display:none}}
+@media(max-width:768px){
+ .agenda-topbar{padding:10px 12px;min-height:64px;gap:4px}
+ .agenda-topbar .tb-nav{gap:2px}
+ .agenda-topbar .ta{width:26px;min-width:26px}
+ .agenda-topbar .fw{gap:4px}
+ .agenda-topbar .fb{width:30px;min-width:30px}
+}
+html[data-app-loading="true"] .main{cursor:progress}

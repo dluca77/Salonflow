@@ -71,8 +71,14 @@ let IS_MEDEWERKER = false;
 let MEDEWERKER = null;
 let MEDEWERKER_RECHTEN = null;
 
-// Verberg pagina direct zodat er geen flits is
-document.documentElement.style.opacity = '0';
+// Keep the app shell visible while authenticated data loads.
+document.documentElement.dataset.appLoading = 'true';
+function setAppLoading(loading){
+ document.documentElement.dataset.appLoading=String(loading);
+ const main=document.querySelector('.main');
+ if(main){main.inert=loading;main.setAttribute('aria-busy',String(loading));}
+}
+document.addEventListener('DOMContentLoaded',()=>setAppLoading(document.documentElement.dataset.appLoading==='true'),{once:true});
 
 function locatieStorageKey(salonId) { return 'kronr_locatie_' + salonId; }
 
@@ -362,8 +368,8 @@ async function kronrInit(callback, paginaModule) {
     console.error('kronrInit fout:', e);
     toonVerbindingsfoutBanner();
   } finally {
-    // Altijd pagina zichtbaar maken, ook bij fout
-    document.documentElement.style.opacity = '1';
+    // Release controls after initialization, including a recoverable error.
+    setAppLoading(false);
   }
 }
 
