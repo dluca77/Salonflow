@@ -154,3 +154,6 @@ html[data-app-loading="true"] .main{cursor:progress}
  .agenda-topbar .ta{min-height:36px}
  .agenda-date-nav .td{min-width:110px;max-width:120px;font-size:11px}
 }
+
+/* Hidden permission controls must remain hidden despite component display rules. */
+[hidden]{display:none!important}

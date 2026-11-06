@@ -2,7 +2,7 @@
 <html lang="nl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mijn rooster | Kronr</title>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="manifest" href="/manifest.json">
@@ -96,7 +96,7 @@ async function init(){
 
   const{data,error}=await sb.from('medewerkers').select('*').eq('auth_user_id',session.user.id).maybeSingle();
 
-  if(error||!data){
+  if(error||!data||!data.actief){
     document.getElementById('wrap').innerHTML=`
       <div class="card" style="text-align:center;">
         <div class="card-title">Geen gekoppeld account gevonden</div>
@@ -109,6 +109,10 @@ async function init(){
   document.getElementById('topbar-naam').textContent=MEDEWERKER.naam;
 
   await Promise.all([laadRooster(), laadVerlof()]);
+  const modules={agenda:'Agenda',klanten:'Klanten',kassa:'Kassa',diensten:'Diensten',rapportages:'Rapportages'};
+  const links=Object.entries(modules).filter(([key])=>['bekijken','bewerken','gebruiken'].includes(MEDEWERKER.rechten?.[key])).map(([key,label])=>`<a class="btn btn-prim" style="display:inline-block;width:auto;text-decoration:none;margin:4px" href="/${key}/">${label}</a>`).join('');
+  if(links) document.getElementById('wrap').insertAdjacentHTML('afterbegin',`<nav class="card" aria-label="Mijn werkruimte">${links}</nav>`);
+
 }
 
 async function laadRooster(){

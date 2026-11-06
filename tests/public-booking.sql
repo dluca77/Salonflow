@@ -4,9 +4,10 @@ declare u uuid:=gen_random_uuid();s uuid:=gen_random_uuid();m uuid:=gen_random_u
 begin
  insert into auth.users(id,email) values(u,'booking-audit-'||u||'@example.invalid');
  insert into salons(id,owner_id,naam,plan) values(s,u,'Booking audit','free');
+ update salons set openingstijden='{}'::jsonb where id=s;
  insert into medewerkers(id,salon_id,naam,actief) values(m,s,'Audit medewerker',true);
  insert into diensten(id,salon_id,naam,actief,prijs,duur_min) values(d,s,'Audit behandeling',true,50,30),(e,s,'Extra',true,10,15);
- r:=jsonb_build_object('salon_id',s,'medewerker_id',m,'dienst_id',d,'datum_tijd',now()+interval '2 days','klant_naam','Test klant','klant_email','booking@example.invalid','status','afgerond','duur_min',1);
+ r:=jsonb_build_object('salon_id',s,'medewerker_id',m,'dienst_id',d,'datum_tijd',((current_date+8)::timestamp+time '12:00') at time zone 'Europe/Amsterdam','klant_naam','Test klant','klant_email','booking@example.invalid','status','afgerond','duur_min',1);
  select * into receipt from kronr_boek_afspraken(jsonb_build_array(r),array[e]);
  if receipt.id is null or receipt.annuleer_token is null then raise exception 'Missing booking receipt'; end if;
  if not exists(select 1 from afspraken where id=receipt.id and duur_min=45 and status='gepland') then raise exception 'Client forged booking fields'; end if;

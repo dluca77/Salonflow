@@ -174,12 +174,12 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261104"></script>
+<script src="/kronr.js?v=20261106"></script>
 <script src="/onboarding.js"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=8">
-<script src="/app-navigation.js?v=2" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=10">
+<script src="/app-navigation.js?v=3" defer></script>
 </head>
 <body>
 <div class="app">
@@ -426,7 +426,7 @@ async function loadData(){
   const zevenDagenGeleden=new Date();zevenDagenGeleden.setDate(zevenDagenGeleden.getDate()-7);
   const[aR,mR,kR,kNieuwR,boeR,betR]=await Promise.all([
     metLocatie(sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID)).gte('datum_tijd',ws.toISOString()).lte('datum_tijd',we.toISOString()).order('datum_tijd'),
-    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true),
+    kronrTeamOverzicht(),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID),
     sb.from('klanten').select('id',{count:'exact',head:true}).eq('salon_id',SALON_ID).gte('created_at',maandStart.toISOString()),
     metLocatie(sb.from('afspraken').select('*,diensten(naam,prijs)').eq('salon_id',SALON_ID).eq('status','gepland').not('klant_email','is',null).gte('created_at',zevenDagenGeleden.toISOString())).order('created_at',{ascending:false}).limit(5),
@@ -566,7 +566,7 @@ async function laadInzichten(d){
     const ins=[];
     if(!d.vandaag.length) ins.push('Nog geen afspraken vandaag. Deel je boekingslink om nieuwe klanten aan te trekken.');
     else if(d.vandaag.length>=5) ins.push(`Je hebt ${d.vandaag.length} afspraken vandaag, een drukke dag. Zorg voor pauzes.`);
-    else ins.push(`Je hebt ${d.vandaag.length} afspraak${d.vandaag.length!==1?'en':''} vandaag. Er is nog ruimte voor nieuwe boekingen.`);
+    else ins.push(`Je hebt ${d.vandaag.length} ${d.vandaag.length===1?'afspraak':'afspraken'} vandaag. Er is nog ruimte voor nieuwe boekingen.`);
     if(d.all.length) ins.push(`Deze week staan er ${d.all.length} afspraken gepland.`);
     if(d.meds.length) ins.push(`Je hebt ${d.meds.length} actieve medewerker${d.meds.length!==1?'s':''}.`);
     return ins;

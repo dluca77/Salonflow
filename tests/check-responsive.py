@@ -85,6 +85,7 @@ window.supabase = {
         signOut: function(){ return Promise.resolve({}); }
       },
       rpc: function(name){
+        if(name==='kronr_team_overzicht') return chain({data:[medewerkerRow],error:null});
         if(name==='get_salon_via_slug') return chain({data:[salonRow], error:null});
         return chain({data:null, error:null});
       },

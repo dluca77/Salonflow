@@ -173,22 +173,14 @@ function toonGeenToegangScherm() {
 }
 
 // ── Automatisch verlopen data opruimen ──
-// Afspraken waarvan de tijd voorbij is en die nog een 'actieve' status
-// hebben, gaan automatisch op 'afgerond'. Wachtlijst-aanvragen waarvan
+// Wachtlijst-aanvragen waarvan
 // de voorkeursperiode voorbij is, gaan op 'verlopen' (niet verwijderd —
 // blijft zichtbaar in de historie, maar telt niet meer mee als actief).
 async function automatiseerVerlopenData() {
   const nu = new Date().toISOString();
 
-  try {
-    await sb.from('afspraken')
-      .update({ status: 'afgerond' })
-      .eq('salon_id', SALON_ID)
-      .lt('datum_tijd', nu)
-      .in('status', ['gepland', 'bevestigd', 'niet_bevestigd', 'gearriveerd', 'in_behandeling']);
-  } catch (e) {
-    console.warn('Automatisch afronden van verlopen afspraken mislukt:', e);
-  }
+  // Een verstreken starttijd bewijst niet dat een behandeling is uitgevoerd.
+  // Alleen de expliciete agenda-/kassa-actie mag de afspraak afronden.
 
   try {
     // Aanvragen met een specifieke voorkeursperiode: verlopen zodra die
@@ -271,10 +263,7 @@ async function kronrInit(callback, paginaModule) {
       if (medewerkerError) throw medewerkerError;
       if (medewerker && !medewerker.actief) throw new Error('Je medewerkersaccount is niet actief.');
       if (medewerker) {
-        const { data: medewerkerSalon, error: medewerkerSalonError } = await sb.from('salons')
-          .select('*')
-          .eq('id', medewerker.salon_id)
-          .single();
+        const { data: medewerkerSalon, error: medewerkerSalonError } = await sb.rpc('kronr_medewerker_context',{p_salon:medewerker.salon_id});
 
         if(medewerkerSalonError || !medewerkerSalon) throw medewerkerSalonError || new Error('Salon niet beschikbaar');
         if (medewerkerSalon) {
@@ -312,6 +301,19 @@ async function kronrInit(callback, paginaModule) {
     SALON_ID = salon.id;
     SALON = salon;
 
+    if (IS_MEDEWERKER && !paginaModule) {
+      window.location.replace('/medewerker-portal/');
+      return;
+    }
+    if (IS_MEDEWERKER) {
+      const modules={agenda:'agenda',klanten:'klanten',kassa:'kassa',producten:'kassa',diensten:'diensten',rapportages:'rapportages'};
+      document.querySelectorAll('a[href]').forEach(link=>{
+        const route=link.getAttribute('href').split('/')[1];
+        if (modules[route] && !heeftRecht(modules[route],'bekijken')) link.hidden=true;
+        if (['instellingen','medewerkers','dashboard'].includes(route)) link.hidden=true;
+      });
+    }
+
     // ── Proefperiode-vergrendeling ──
     // Na 14 dagen op het gratis plan wordt alles op slot gezet, behalve
     // instellingen (waar iemand alsnog een pakket kan kiezen).
@@ -337,10 +339,9 @@ async function kronrInit(callback, paginaModule) {
     HUIDIGE_LOCATIE_ID = LOCATIES.find(l => l.id === opgeslagenLocatieId)?.id || LOCATIES[0]?.id || null;
     renderLocatieSwitcher();
 
-    // Automatisch verlopen data opruimen (afgeronde afspraken, verlopen
-    // wachtlijst) VOORDAT de aanroepende pagina zijn eigen data ophaalt —
+    // Verlopen wachtlijstaanvragen opruimen VOORDAT de aanroepende pagina zijn eigen data ophaalt —
     // zodat KPI's/tellingen altijd met de actuele status rekenen.
-    await automatiseerVerlopenData();
+    if (!IS_MEDEWERKER) await automatiseerVerlopenData();
 
     // Update sidebar
     document.querySelectorAll('.salon-naam').forEach(el => el.textContent = salon.naam);
@@ -440,4 +441,13 @@ if ('serviceWorker' in navigator) {
       console.warn('Service worker registratie mislukt:', e);
     });
   });
+}
+
+// Roster display excludes invitation tokens and personal staff contact details.
+async function kronrTeamOverzicht(filterLocatie=false){
+  const result=await sb.rpc('kronr_team_overzicht',{p_salon:SALON_ID});
+  if(result.error) return result;
+  let data=result.data||[];
+  if(filterLocatie && HUIDIGE_LOCATIE_ID) data=data.filter(m=>m.locatie_id===HUIDIGE_LOCATIE_ID);
+  return {data:data.sort((a,b)=>a.naam.localeCompare(b.naam,'nl')),error:null};
 }
