@@ -51,6 +51,7 @@ var index_default = {
     if (url.pathname === "/medewerker-uitnodiging") {
       return handleMedewerkerUitnodiging(request, env, headers);
     }
+    if (url.pathname === "/abonnement-code") return handleAbonnementCode(request,env,headers);
     if (url.pathname === "/stempelkaart-code") {
       return handleStempelkaartCode(request, env, headers);
     }
@@ -563,3 +564,39 @@ __name(verstuurReviewVerzoeken, "verstuurReviewVerzoeken");
 export {
   index_default as default
 };
+
+async function handleAbonnementCode(request, env, headers) {
+  let body;
+  try {
+    body = await request.json();
+  } catch (e) {
+    return new Response(JSON.stringify({ error: "Ongeldige JSON body" }), { status: 400, headers });
+  }
+  const { salon_id, email } = body;
+  if (!validUuid(salon_id) || typeof email!=='string' || email.length>254 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return jsonError('Vul een geldig e-mailadres in',400,headers);
+  }
+  let code;
+  let salonNaam = "je salon";
+  try {
+    const salons = await supabaseQuery(env, `salons?id=eq.${salon_id}&select=naam`);
+    if(!salons?.length)return jsonError('Salon niet beschikbaar',404,headers);
+    if (Array.isArray(salons) && salons[0] && salons[0].naam) {
+      salonNaam = salons[0].naam;
+    }
+    code=await supabaseQuery(env,'rpc/vraag_stempelkaart_code_aan',{method:'POST',body:JSON.stringify({p_salon_id:salon_id,p_email:email.trim().toLowerCase()})});
+  } catch (err) {
+    return jsonError(err.message.includes('Te veel')?'Te veel pogingen. Probeer het over een uur opnieuw.':'Code kon niet worden aangemaakt',err.message.includes('Te veel')?429:503,headers);
+  }
+  const html = `<!DOCTYPE html><html lang="nl"><body style="margin:0;padding:0;background:#faf8f4;font-family:Helvetica,Arial,sans-serif;"><table width="100%" cellpadding="0" cellspacing="0" style="background:#faf8f4;padding:32px 16px;"><tr><td align="center"><table width="480" cellpadding="0" cellspacing="0" style="max-width:480px;width:100%;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e2d9ce;"><tr><td style="background:#1a1714;padding:28px 32px;text-align:center;"><span style="font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:bold;color:#faf8f4;letter-spacing:0.5px;">Kronr<span style="color:#8c6d3f;">.</span></span></td></tr><tr><td style="padding:32px 32px 8px;"><p style="margin:0 0 4px;font-size:13px;color:#8a7d6e;letter-spacing:1px;text-transform:uppercase;">Jouw verificatiecode</p><h1 style="margin:0 0 16px;font-family:Georgia,'Times New Roman',serif;font-size:22px;color:#1a1714;">Hoi,</h1><p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#3a342e;">Gebruik deze code om je abonnement bij <strong>` + escapeHtml(salonNaam) + `</strong> te bekijken:</p><p style="text-align:center;margin:0 0 20px;font-size:28px;font-weight:bold;letter-spacing:6px;color:#8c6d3f;">` + escapeHtml(code) + `</p><p style="margin:0;font-size:13px;color:#8a7d6e;">Deze code is 10 minuten geldig. Heb je dit niet aangevraagd? Dan kun je deze mail negeren.</p></td></tr><tr><td style="padding:20px 32px;background:#faf8f4;border-top:1px solid #e2d9ce;text-align:center;"><p style="margin:0;font-size:11px;color:#c2b5a4;">Verstuurd via Kronr namens ` + escapeHtml(salonNaam) + `</p></td></tr></table></td></tr></table></body></html>`;
+  try {
+    await stuurMail(env, {
+      to: email,
+      subject: `Jouw verificatiecode voor ${salonNaam}`,
+      html
+    });
+  } catch (err) {
+    return jsonError('E-mail kon niet worden verstuurd. Probeer het later opnieuw.',502,headers);
+  }
+  return new Response(JSON.stringify({ ok: true }), { headers });
+}

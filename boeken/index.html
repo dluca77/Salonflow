@@ -369,7 +369,9 @@ body.embed .layout{grid-template-columns:1fr;max-width:none;}
       <div id="abo-panel-check">
         <div style="font-size:12px;font-weight:600;margin-bottom:8px;">Al een abonnement voor deze dienst?</div>
         <input class="fi" id="abo-check-email" type="email" placeholder="Je e-mailadres" style="width:100%;padding:9px 10px;border:1px solid var(--bd);border-radius:10px;font-size:12px;margin-bottom:8px;">
-        <button onclick="checkAbonnementTegoed()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-size:11px;cursor:pointer;">Check tegoed</button>
+        <div id="abo-code-wrap" hidden><label for="abo-code" style="font-size:12px">Code uit je e-mail</label><input class="fi" id="abo-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="6 cijfers" style="width:100%;margin:8px 0;"></div>
+        <button id="abo-check-btn" onclick="checkAbonnementTegoed()" style="width:100%;padding:9px;background:var(--ink);color:#fff;border:none;border-radius:10px;font-size:11px;cursor:pointer;">Stuur verificatiecode</button>
+        <button type="button" onclick="nieuweAbonnementCode()" style="border:0;background:none;text-decoration:underline;padding:8px 0;font:inherit;font-size:12px;cursor:pointer">Nieuwe code aanvragen</button>
         <div id="abo-check-err" style="display:none;color:var(--red);font-size:11px;margin-top:6px;"></div>
         <a href="#" id="abo-nieuw-link" onclick="return openAboAanmelden(event)" style="display:block;text-align:center;margin-top:10px;font-size:11px;color:var(--gd2);">Nog geen abonnement? Bekijk prijzen →</a>
       </div>
@@ -1037,30 +1039,44 @@ function kiesLes(el,lesId,datumStr,tijdStr,duurMin){
   document.getElementById('btn1').disabled=false;
 }
 
+let abonnementBewijs=null;
+let abonnementCodeEmail=null;
 async function checkAbonnementTegoed(){
-  const email=document.getElementById('abo-check-email').value.trim();
-  const errEl=document.getElementById('abo-check-err');
-  errEl.style.display='none';
-  if(!email || !email.includes('@')){
-    errEl.textContent='Vul een geldig e-mailadres in.';errEl.style.display='block';return;
+ const email=document.getElementById('abo-check-email').value.trim().toLowerCase();
+ const errEl=document.getElementById('abo-check-err');
+ const btn=document.getElementById('abo-check-btn');
+ errEl.style.display='none';
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){errEl.textContent='Vul een geldig e-mailadres in.';errEl.style.display='block';return;}
+ btn.disabled=true;
+ try{
+  if(abonnementCodeEmail!==email){
+   abonnementBewijs=null;
+   const res=await fetch('https://kronr-mail.isaak-elia.workers.dev/abonnement-code',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({salon_id:SALON_ID,email})});
+   if(!res.ok) throw new Error('Code kon niet worden verstuurd. Probeer het later opnieuw.');
+   abonnementCodeEmail=email;
+   document.getElementById('abo-code-wrap').hidden=false;
+   document.getElementById('abo-code').value='';
+   document.getElementById('abo-code').focus();
+   btn.textContent='Bevestig code en check tegoed';
+   errEl.textContent='Code verstuurd. Kijk ook in je ongewenste e-mail.';errEl.style.display='block';
+   return;
   }
-
-  const{data,error}=await sb.rpc('get_abonnement_tegoed',{p_salon_id:SALON_ID,p_email:email,p_dienst_id:state.dienst_id});
+  if(!abonnementBewijs){
+   const code=document.getElementById('abo-code').value.trim();
+   if(!/^\d{6}$/.test(code)) throw new Error('Vul de 6-cijferige code uit je e-mail in.');
+   const proof=await sb.rpc('kronr_verifieer_email',{p_salon:SALON_ID,p_email:email,p_code:code});
+   if(proof.error||!proof.data) throw new Error('Code onjuist of verlopen. Vraag een nieuwe code aan.');
+   abonnementBewijs=proof.data;
+  }
+  const{data,error}=await sb.rpc('kronr_abonnement_tegoed',{p_salon:SALON_ID,p_email:email,p_dienst:state.dienst_id,p_token:abonnementBewijs});
   const info=Array.isArray(data)?data[0]:data;
-
-  if(error||!info||!info.heeft_tegoed){
-    errEl.textContent='Geen (actief) abonnement met tegoed gevonden voor dit e-mailadres.';errEl.style.display='block';
-    return;
-  }
-
-  state.gebruikt_abonnement_id=info.abonnement_id;
-  state.gebruikt_abonnement_email=email;
-  document.getElementById('abo-panel-check').style.display='none';
-  document.getElementById('abo-panel-gevonden').style.display='block';
-  document.getElementById('abo-credits-tekst').textContent=info.credits_resterend+'x';
-
-  document.getElementById('sum-prijs').textContent='€0 (abonnement)';
+  if(error||!info?.heeft_tegoed) throw new Error('Geen actief abonnement met tegoed voor deze dienst gevonden.');
+  state.gebruikt_abonnement_id=info.abonnement_id;state.gebruikt_abonnement_email=email;state.abonnement_token=abonnementBewijs;
+  document.getElementById('abo-panel-check').style.display='none';document.getElementById('abo-panel-gevonden').style.display='block';
+  document.getElementById('abo-credits-tekst').textContent=info.credits_resterend+'x';document.getElementById('sum-prijs').textContent='€0 (abonnement)';
+ }catch(e){errEl.textContent=e.message;errEl.style.display='block';}finally{btn.disabled=false;}
 }
+function nieuweAbonnementCode(){abonnementCodeEmail=null;abonnementBewijs=null;checkAbonnementTegoed();}
 
 function verwijderAbonnementGebruik(){
   state.gebruikt_abonnement_id=null;
@@ -1679,6 +1695,7 @@ async function bevestigen(){
     const naamGroepsles=voor+(achter?' '+achter:'');
     const{data:boeking,error:lesErr}=await sb.rpc('kronr_boek_les',{
       p_abonnement_id:state.gebruikt_abonnement_id||null,
+      p_token:state.abonnement_token||null,
       p_les_id:state.gekozen_les_id, p_klant_naam:naamGroepsles,
       p_klant_email:email, p_klant_telefoon:telSchoon||null
     });
@@ -1813,6 +1830,7 @@ async function bevestigen(){
       klant_telefoon:telSchoon||null,
       notities:notitie||null,
       gebruikt_abonnement_id:state.gebruikt_abonnement_id||null,
+      abonnement_token:state.abonnement_token||null,
       traject_id:trajectId,
       traject_sessienummer:trajectSessieNummer
     }]}).single();
