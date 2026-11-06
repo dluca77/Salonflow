@@ -137,11 +137,11 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261104"></script>
+<script src="/kronr.js?v=20261106"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=8">
-<script src="/app-navigation.js?v=2" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=10">
+<script src="/app-navigation.js?v=3" defer></script>
 </head>
 <body>
 <div class="app">
@@ -344,7 +344,7 @@ async function loadData(){
   const[betRes,aptRes,medRes]=await Promise.all([
     sb.from('betalingen').select('bedrag,methode,datum').eq('salon_id',SALON_ID).gte('datum',start.toISOString()).lte('datum',end.toISOString()),
     sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs)').eq('salon_id',SALON_ID).gte('datum_tijd',start.toISOString()).lte('datum_tijd',end.toISOString()),
-    sb.from('medewerkers').select('*').eq('salon_id',SALON_ID).eq('actief',true)
+    kronrTeamOverzicht()
   ]);
 
   const betalingen=betRes.data||[];

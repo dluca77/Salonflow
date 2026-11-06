@@ -36,11 +36,11 @@
 })();
 // Consistent keyboard and close controls for app dialogs.
 (() => {
-  document.querySelectorAll('.mbg').forEach(backdrop=>{
-    const panel=backdrop.querySelector('.modal');
+  document.querySelectorAll('.mbg,.modal-bg').forEach(backdrop=>{
+    const panel=backdrop.querySelector('.modal,.conflict-modal');
     if(!panel)return;
     panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
-    const title=panel.querySelector('.mt,[id$="-naam"]');
+    const title=panel.querySelector('.mt,.mh,.modal-title,.conflict-title,[id$="-naam"]');
     if(title){if(!title.id)title.id=backdrop.id+'-title';panel.setAttribute('aria-labelledby',title.id);}
     let close=panel.querySelector('.modal-close');
     if(!close){close=document.createElement('button');close.type='button';close.className='pt-btn modal-close';close.textContent='Sluiten';close.setAttribute('aria-label','Venster sluiten');close.addEventListener('click',()=>backdrop.click());panel.prepend(close);}

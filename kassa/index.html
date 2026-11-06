@@ -191,11 +191,11 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261104"></script>
+<script src="/kronr.js?v=20261106"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=8">
-<script src="/app-navigation.js?v=2" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=10">
+<script src="/app-navigation.js?v=3" defer></script>
 </head>
 <body>
 <div class="app">
@@ -391,7 +391,7 @@ function euro(bedrag){ return Number(bedrag).toFixed(2).replace('.', ','); }
 async function loadData(){
   const [dR,mR,pR]=await Promise.all([
     metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).eq('actief',true).order('categorie').order('naam'),
-    metLocatie(sb.from('medewerkers').select('*').eq('salon_id',SALON_ID)).eq('actief',true).order('naam'),
+    kronrTeamOverzicht(true),
     sb.from('producten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
   ]);
   allDiensten=dR.data||[];

@@ -260,9 +260,9 @@ html,body{height:100%;font-family:'Inter',sans-serif;background:var(--iv);color:
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261104"></script>
-<link rel="stylesheet" href="/app-brand.css?v=9">
-<script src="/app-navigation.js?v=2" defer></script>
+<script src="/kronr.js?v=20261106"></script>
+<link rel="stylesheet" href="/app-brand.css?v=10">
+<script src="/app-navigation.js?v=3" defer></script>
 </head>
 <body>
 <div class="app">
@@ -548,7 +548,7 @@ async function loadData(){
   const e=new Date(cur);e.setDate(e.getDate()+90);
   const[aR,mR,dR,wR]=await Promise.all([
     metLocatie(sb.from('afspraken').select('*,medewerkers(naam),diensten(naam,prijs,duur_min),dienst_varianten(naam),referentie_foto_url,behandeltrajecten(totaal_sessies)').eq('salon_id',SALON_ID)).gte('datum_tijd',s.toISOString()).lte('datum_tijd',e.toISOString()).order('datum_tijd'),
-    metLocatie(sb.from('medewerkers').select('*').eq('salon_id',SALON_ID)).eq('actief',true),
+    kronrTeamOverzicht(true),
     metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).eq('actief',true),
     sb.from('wachtlijst').select('id,voorkeur_vanaf,voorkeur_tot').eq('salon_id',SALON_ID).eq('status','actief')
   ]);
@@ -1261,7 +1261,8 @@ function afrekenenHuidige(){
 async function updateStatus(val){
   if(!geselecteerdeApt) return;
   const a=geselecteerdeApt;
-  await sb.from('afspraken').update({status:val}).eq('id',a.id);
+  const{error}=await sb.from('afspraken').update({status:val}).eq('id',a.id).eq('salon_id',SALON_ID).select('id').single();
+  if(error){toast('Status niet opgeslagen: '+error.message);return;}
   a.status=val;
   toast('Status bijgewerkt: '+STATUS_LABELS[val]);
   closePop();
@@ -1441,7 +1442,8 @@ async function doSave({naam,datum,tijd,mId,status,herhaling,herhalingEinde,notit
     type:'afspraak'
   };
   if(geselecteerdeApt?.id&&!geselecteerdeApt._herhaald){
-    await sb.from('afspraken').update(payload).eq('id',geselecteerdeApt.id);
+    const{error}=await sb.from('afspraken').update(payload).eq('id',geselecteerdeApt.id).eq('salon_id',SALON_ID).select('id').single();
+    if(error){toast('Afspraak niet opgeslagen: '+error.message);btn.disabled=false;btn.textContent='Opslaan';return;}
     toast('Afspraak bijgewerkt');
   } else {
     const{error}=await sb.from('afspraken').insert({...payload,locatie_id:HUIDIGE_LOCATIE_ID||null});
@@ -1462,7 +1464,8 @@ async function slaBlokOp(){
   const omschr=document.getElementById('iblok-omschr').value.trim();
   if(!datum){toast('Vul een datum in.');return;}
   const dt=new Date(datum+'T'+van);
-  await sb.from('afspraken').insert({salon_id:SALON_ID,klant_naam:type.charAt(0).toUpperCase()+type.slice(1),bloktijd_type:type,type:'bloktijd',medewerker_id:mId||null,datum_tijd:dt.toISOString(),duur_min:duur,notities:omschr||null,status:'bevestigd',locatie_id:HUIDIGE_LOCATIE_ID||null});
+  const{error}=await sb.from('afspraken').insert({salon_id:SALON_ID,klant_naam:type.charAt(0).toUpperCase()+type.slice(1),bloktijd_type:type,type:'bloktijd',medewerker_id:mId||null,datum_tijd:dt.toISOString(),duur_min:duur,notities:omschr||null,status:'bevestigd',locatie_id:HUIDIGE_LOCATIE_ID||null});
+  if(error){toast('Bloktijd niet opgeslagen: '+error.message);return;}
   closeModal('modal-apt');await loadData();toast('Bloktijd aangemaakt');
 }
 

@@ -140,11 +140,11 @@ select.fi{cursor:pointer;}
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261104"></script>
+<script src="/kronr.js?v=20261106"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=8">
-<script src="/app-navigation.js?v=2" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=10">
+<script src="/app-navigation.js?v=3" defer></script>
 </head>
 <body>
 <div class="app">
@@ -604,7 +604,8 @@ function renderRows(){
 
 async function toggleDienst(id, huidig){
   const nieuw=!huidig;
-  await sb.from('diensten').update({actief:nieuw}).eq('id',id);
+  const{error}=await sb.from('diensten').update({actief:nieuw}).eq('id',id).eq('salon_id',SALON_ID);
+  if(error){alert('Dienst niet gewijzigd: '+error.message);return;}
   const d=DIENSTEN.find(x=>x.id===id);
   if(d){d.actief=nieuw;}
   renderRows();
@@ -731,7 +732,8 @@ async function voegVariantToe(){
 }
 
 async function toggleVariantActief(id, huidigActief){
-  await sb.from('dienst_varianten').update({actief:!huidigActief}).eq('id',id);
+  const{error}=await sb.from('dienst_varianten').update({actief:!huidigActief}).eq('id',id).eq('salon_id',SALON_ID);
+  if(error){alert('Variant niet gewijzigd: '+error.message);return;}
   await loadData();
   renderVariantenLijst();
 }

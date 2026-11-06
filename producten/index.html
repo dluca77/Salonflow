@@ -91,10 +91,10 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261104"></script>
+<script src="/kronr.js?v=20261106"></script>
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=8">
-<script src="/app-navigation.js?v=2" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=10">
+<script src="/app-navigation.js?v=3" defer></script>
 </head>
 <body>
 <div class="app">
@@ -186,6 +186,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 let PRODUCTEN=[];
 
 async function laadProducten(){
+  if(typeof IS_MEDEWERKER!=='undefined' && IS_MEDEWERKER) document.querySelector('.btn-add').hidden=true;
   const{data,error}=await sb.from('producten').select('*').eq('salon_id',SALON_ID).order('naam');
   if(error){document.getElementById('product-feedback').textContent='Producten konden niet worden geladen. Probeer het opnieuw.';return;}
   PRODUCTEN=data||[];
@@ -205,7 +206,7 @@ function renderProducten(){
       <div class="pt-naam">${escapeHtml(p.naam)}${p.actief?'':' <span style="color:var(--mu2);font-size:11px;">(inactief)</span>'}</div>
       <div class="pt-prijs">€${p.prijs}</div>
       <div class="pt-voorraad${laag?' laag':''}">${p.voorraad_aantal}${laag?' ⚠':''}</div>
-      <div class="pt-acties">
+      <div class="pt-acties" ${typeof IS_MEDEWERKER!=='undefined' && IS_MEDEWERKER?'hidden':''}>
         <button class="pt-btn" onclick="openBewerkProduct('${p.id}')">Bewerken</button>
         <button class="pt-btn danger" onclick="verwijderProduct('${p.id}',this)">Verwijderen</button>
       </div>
@@ -222,6 +223,7 @@ function laadLageVoorraadBanner(){
 }
 
 function openNieuwProduct(){
+  if(typeof IS_MEDEWERKER!=='undefined' && IS_MEDEWERKER)return;
   document.getElementById('p-modal-titel').textContent='Nieuw product';
   document.getElementById('p-id').value='';
   document.getElementById('p-naam').value='';
@@ -234,6 +236,7 @@ function openNieuwProduct(){
 }
 
 function openBewerkProduct(id){
+  if(typeof IS_MEDEWERKER!=='undefined' && IS_MEDEWERKER)return;
   const p=PRODUCTEN.find(x=>x.id===id);
   if(!p) return;
   document.getElementById('p-modal-titel').textContent='Product bewerken';
@@ -248,6 +251,7 @@ function openBewerkProduct(id){
 }
 
 async function slaProductOp(){
+  if(typeof IS_MEDEWERKER!=='undefined' && IS_MEDEWERKER)return;
   const id=document.getElementById('p-id').value;
   const naam=document.getElementById('p-naam').value.trim();
   const prijs=parseFloat(document.getElementById('p-prijs').value);

@@ -137,11 +137,11 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 }
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="/kronr.js?v=20261104"></script>
+<script src="/kronr.js?v=20261106"></script>
 
 <script>setTimeout(()=>{document.documentElement.style.opacity="1";},3000);</script>
-<link rel="stylesheet" href="/app-brand.css?v=8">
-<script src="/app-navigation.js?v=2" defer></script>
+<link rel="stylesheet" href="/app-brand.css?v=10">
+<script src="/app-navigation.js?v=3" defer></script>
 </head>
 <body>
 <div class="app">
@@ -522,7 +522,7 @@ async function verstuurUitnodiging(){
   }
 
   try{
-    await kronrWorkerFetch('https://kronr-mail.isaak-elia.workers.dev/medewerker-uitnodiging',{
+    const response=await kronrWorkerFetch('https://kronr-mail.isaak-elia.workers.dev/medewerker-uitnodiging',{
       method:'POST',
       headers:{'Content-Type':'application/json'},
       body:JSON.stringify({
@@ -533,8 +533,11 @@ async function verstuurUitnodiging(){
         activatie_link:window.location.origin+'/medewerker-activeren?token='+token
       })
     });
+    if(!response.ok) throw new Error('Mailverzending mislukt');
   }catch(e){
-    console.warn('Uitnodigingsmail kon niet verstuurd worden:',e);
+    btn.disabled=false;
+    showMsg('msg-uitnodiging','Uitnodiging niet verzonden. Probeer opnieuw.');
+    return;
   }
 
   btn.disabled=false;
