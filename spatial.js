@@ -45,7 +45,7 @@
     const base = matchMedia("(max-width: 540px)").matches ? 440 : 530;
     scene.style.setProperty("--scene-fit", String(scene.clientHeight / base));
     track.style.height =
-      wrap.offsetHeight + Math.min(innerHeight * 1.1, 900) + "px";
+      wrap.offsetHeight + Math.min((scene.clientHeight + 280) * 1.1, 900) + "px";
     scene.classList.add("measuring-scene");
     const frames = cards.map(() => []);
     for (let stage = 0; stage < 3; stage++) {
@@ -88,10 +88,26 @@
   });
   addEventListener("scroll", schedule, { passive: true });
   let resizeFrame;
-  addEventListener("resize", () => {
+  let layoutWidth = document.documentElement.clientWidth;
+  let sceneHeight = scene.clientHeight;
+  function onLayoutChange() {
+    // Mobile browser chrome changes innerHeight while scrolling. Only rebuild
+    // when the actual layout width or stable svh-based scene size changes.
+    const width = document.documentElement.clientWidth;
+    const height = scene.clientHeight;
+    if (width === layoutWidth && height === sceneHeight) {
+      schedule();
+      return;
+    }
+    layoutWidth = width;
+    sceneHeight = height;
     cancelAnimationFrame(resizeFrame);
     resizeFrame = requestAnimationFrame(build);
-  });
+  }
+  addEventListener("resize", onLayoutChange);
+  if (typeof ResizeObserver !== "undefined") {
+    new ResizeObserver(onLayoutChange).observe(scene);
+  }
   reduced.addEventListener("change", build);
   build();
 })();
