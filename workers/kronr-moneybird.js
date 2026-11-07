@@ -399,7 +399,13 @@ async function handleSyncBetalingAchtergrond(body, env) {
       laatsteRegel.price = Math.round((basisPrijs + besteStap * 0.01) * 100) / 100;
     }
 
-    const datum = (betaling.datum || new Date().toISOString()).slice(0, 10);
+    const datum = String(betaling.datum || betaling.created_at || '').slice(0,10);
+    if(!/^\d{4}-\d{2}-\d{2}$/.test(datum)) throw new Error('Betaaldatum ontbreekt; synchronisatie gestopt');
+    const existingInvoice=await findExternalInvoice(accessToken,administrationId,datum,betaling_id);
+    if(existingInvoice){
+      await supabaseQuery(env,`betalingen?id=eq.${betaling_id}`,{method:'PATCH',body:JSON.stringify({boekhouding_sync_status:'gesynchroniseerd',moneybird_factuur_id:String(existingInvoice.id)})});
+      return;
+    }
     const contactId = await haalOfMaakKassaKlantContact(accessToken, administrationId);
 
     const invoiceRes = await fetch(
@@ -457,4 +463,19 @@ async function handleSyncBetalingAchtergrond(body, env) {
 
     console.error('sync-betaling mislukt:', err.message);
   }
+}
+
+// Recover an invoice after remote success/local failure before attempting another POST.
+// API supports day filters and pagination, not a reference filter for external invoices.
+export async function findExternalInvoice(token,administration,date,reference){
+ const day=date.replaceAll('-','');
+ for(let page=1;page<=25;page++){
+  const filter=encodeURIComponent('period:'+day+'..'+day+',state:all');
+  const response=await fetch(`https://moneybird.com/api/v2/${administration}/external_sales_invoices.json?filter=${filter}&per_page=100&page=${page}`,{headers:{Authorization:'Bearer '+token}});
+  if(!response.ok)throw new Error('Bestaande Moneybird-facturen konden niet worden gecontroleerd');
+  const rows=await response.json();if(!Array.isArray(rows))throw new Error('Ongeldig antwoord van Moneybird');
+  const match=rows.find(row=>row.reference===reference);if(match)return match;
+  if(rows.length<100)return null;
+ }
+ throw new Error('Te veel facturen om veilig op dubbele verwerking te controleren');
 }

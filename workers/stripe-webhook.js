@@ -52,7 +52,7 @@ export async function processStripeWebhook(request,env,connected,{query,get}){
     actions.push({kind:'appointment',account,appointment_id:meta.afspraak_id,paid:true,payment_intent:obj.payment_intent});
    }else if(event.type==='invoice.paid'){
     const subscription=obj.subscription||obj.parent?.subscription_details?.subscription;
-    if(subscription)actions.push({kind:'credits',account,subscription});
+    if(subscription)actions.push({kind:'credits',account,subscription,invoice:obj.id});
    }else if(event.type==='customer.subscription.deleted')actions.push({kind:'abo_cancel',account,subscription:obj.id});
   }
   await query(env,'rpc/kronr_apply_stripe_event',{method:'POST',body:JSON.stringify({p_event_id:event.id,p_actions:actions})});
