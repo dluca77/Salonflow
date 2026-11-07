@@ -10,7 +10,7 @@ for (const file of ["index.html", "demo/index.html", "login/index.html"]) {
       new vm.Script(code, { filename: file });
   }
   for (const [, href, label] of html.matchAll(
-    /<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi,
+    /<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a\s*>/gi,
   )) {
     if (
       /Start.*gratis|launchupdate|Blijf op de hoogte|Houd me op de hoogte/i.test(
