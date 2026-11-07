@@ -20,23 +20,6 @@
   window.matchMedia("(min-width: 901px)").addEventListener("change", (e) => {
     if (e.matches && menu.open) closeMenu();
   });
-  document.querySelectorAll("[data-view]").forEach((button) =>
-    button.addEventListener("click", () => {
-      document
-        .querySelectorAll("[data-view]")
-        .forEach((item) =>
-          item.setAttribute("aria-pressed", String(item === button)),
-        );
-      document.querySelectorAll(".preview-panel").forEach((panel) => {
-        panel.hidden = panel.id !== "panel-" + button.dataset.view;
-      });
-      document.getElementById("preview-label").textContent = {
-        agenda: "Jouw agenda",
-        klanten: "Jouw klanten",
-        kassa: "Jouw kassa",
-      }[button.dataset.view];
-    }),
-  );
   const amounts = {
     monthly: { starter: 19, pro: 39, business: 69 },
     yearly: { starter: 190, pro: 390, business: 690 },
