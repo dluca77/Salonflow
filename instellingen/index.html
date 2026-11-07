@@ -701,11 +701,14 @@ async function loadData(){
   document.getElementById('widget-embed-code').value =
 `<iframe src="https://kronr.nl/boeken/?salon=${SALON_ID}"
   style="width:100%;min-height:600px;border:none;"
-  title="Boek een afspraak bij ${SALON.naam || 'ons'}"></iframe>
+  title="Boek een afspraak bij ${escapeHtml(SALON.naam || 'ons')}"></iframe>
 <script>
+(function(){
+var frame=document.currentScript.previousElementSibling;
 window.addEventListener('message',function(e){
-  if(e.data&&e.data.type==='kronr:hoogte')document.currentScript.previousElementSibling.style.height=e.data.height+'px';
+  if(e.origin==='https://kronr.nl' && e.source===frame.contentWindow && e.data && e.data.type==='kronr:hoogte' && Number.isFinite(e.data.height)) frame.style.height=Math.max(300,Math.min(12000,e.data.height))+'px';
 });
+})();
 <\/script>`;
   document.getElementById('s-annuleer-cutoff').value = SALON.annuleer_cutoff_uren ?? 24;
   document.getElementById('s-stempel-actief').checked = SALON.stempelkaart_actief || false;
