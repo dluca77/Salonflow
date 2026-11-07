@@ -24,7 +24,7 @@ for (const file of ["index.html", "demo/index.html", "login/index.html"]) {
   }
 }
 const home = fs.readFileSync("index.html", "utf8");
-const script = fs.readFileSync("rebrand.js", "utf8");
+const script = fs.readFileSync("homepage.js", "utf8");
 new vm.Script(script, { filename: "rebrand.js" });
 assert.ok(
   /url\.search\s*\+\s*url\.hash/.test(script),
@@ -57,7 +57,7 @@ for (const [, url] of home.matchAll(/(?:href|src)="([^"]+)"/g)) {
   }
 }
 assert.equal((home.match(/<h1\b/g) || []).length, 1);
-assert.ok(script.includes("prefers-reduced-motion"));
+assert.ok(fs.readFileSync("homepage.css", "utf8").includes("prefers-reduced-motion"));
 assert.ok(home.includes("Fictieve salon en voorbeelddata"));
 console.log(
   "Rebrand checks passed: local routes/assets, anchor targets, one H1, motion preference and example-data label.",
