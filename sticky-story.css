@@ -69,3 +69,9 @@
     top: auto;
   }
 }
+
+/* Animate compositor-friendly transform/opacity only, not large filtered layers. */
+.scroll-story .space-card {
+  filter: none !important;
+  will-change: transform, opacity;
+}

@@ -11,7 +11,11 @@
   const cards = [...scene.querySelectorAll(".space-card")];
   let animations = [],
     frame = 0,
-    lastStage = -1;
+    lastStage = -1,
+    target = 0,
+    rendered = null,
+    lastTime = 0,
+    scrollDirty = true;
   function geometry() {
     const top = parseFloat(getComputedStyle(wrap).top) || 0;
     return {
@@ -19,11 +23,7 @@
       distance: Math.max(1, track.offsetHeight - wrap.offsetHeight),
     };
   }
-  function update() {
-    frame = 0;
-    if (reduced.matches) return;
-    const { start, distance } = geometry();
-    const progress = Math.max(0, Math.min(1, (scrollY - start) / distance));
+  function paint(progress) {
     animations.forEach(
       (animation) => (animation.currentTime = progress * 1000),
     );
@@ -33,10 +33,38 @@
       scene.dispatchEvent(new CustomEvent("spatial-stage", { detail: stage }));
     }
   }
+  function update(time) {
+    frame = 0;
+    if (reduced.matches || document.hidden) return;
+    if (scrollDirty) {
+      const { start, distance } = geometry();
+      target = Math.max(0, Math.min(1, (scrollY - start) / distance));
+      scrollDirty = false;
+    }
+    // Time-based damping behaves alike on 60/120 Hz screens. Only the cards
+    // ease toward the finger; native page scrolling is never delayed.
+    const elapsed = lastTime ? Math.min(64, Math.max(0, time - lastTime)) : 16;
+    lastTime = time;
+    rendered =
+      rendered === null
+        ? target
+        : rendered + (target - rendered) * (1 - Math.exp(-elapsed / 65));
+    if (Math.abs(target - rendered) < 0.0005) rendered = target;
+    paint(rendered);
+    if (rendered !== target) frame = requestAnimationFrame(update);
+    else lastTime = 0;
+  }
   function schedule() {
-    if (!frame) frame = requestAnimationFrame(update);
+    scrollDirty = true;
+    if (!frame && !reduced.matches && !document.hidden)
+      frame = requestAnimationFrame(update);
   }
   function build() {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    rendered = null;
+    lastTime = 0;
+    scrollDirty = true;
     animations.forEach((animation) => animation.cancel());
     animations = [];
     document.documentElement.classList.toggle("scroll-story", !reduced.matches);
@@ -45,7 +73,9 @@
     const base = matchMedia("(max-width: 540px)").matches ? 440 : 530;
     scene.style.setProperty("--scene-fit", String(scene.clientHeight / base));
     track.style.height =
-      wrap.offsetHeight + Math.min((scene.clientHeight + 280) * 1.1, 900) + "px";
+      wrap.offsetHeight +
+      Math.min((scene.clientHeight + 280) * 1.1, 900) +
+      "px";
     scene.classList.add("measuring-scene");
     const frames = cards.map(() => []);
     for (let stage = 0; stage < 3; stage++) {
@@ -55,7 +85,6 @@
         frames[i].push({
           transform: style.transform,
           opacity: style.opacity,
-          filter: style.filter,
           offset: stage / 2,
         });
       });
@@ -71,7 +100,7 @@
     });
     scene.classList.remove("measuring-scene");
     lastStage = -1;
-    update();
+    schedule();
   }
   document.querySelectorAll("[data-scene-step]").forEach((button) => {
     button.addEventListener("click", () => {
@@ -108,6 +137,13 @@
   if (typeof ResizeObserver !== "undefined") {
     new ResizeObserver(onLayoutChange).observe(scene);
   }
+  document.addEventListener("visibilitychange", () => {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    lastTime = 0;
+    rendered = null;
+    if (!document.hidden) schedule();
+  });
   reduced.addEventListener("change", build);
   build();
 })();
