@@ -20,3 +20,8 @@ Verification completed:
 Retained clearly marked records: inactive KRONR CONTROLE 11 NOV — NIET VERKOPEN product and cancelled KRONR CONTROLE 11 NOV appointment. No real sale or new test email sent.
 
 Limits: no physical iOS/Android test, no separate employee browser login, no new hosted Stripe test checkout. Stripe signatures/webhook behavior covered by mocked provider tests and DB regression; this does not certify a complete external payment journey. Earlier test email delivery was confirmed by owner. Registration/prelaunch policy unchanged.
+
+Additional live release verification on 12 November:
+- Mobile 390px: services, settings, checkout, customers, staff, reports and agenda have no document overflow. Day/week/month controls and period steps exercised.
+- Desktop 1440px: combination appointment persisted both services; reopening edit restored both and 75-minute duration. Test KRONR CONTROLE 12 NOV MULTI (dated 11 Nov) cancelled afterwards.
+- Live report month excluded cancelled tests; year displayed actual stored payments and calendar-month buckets. Chart height, all edit statuses, local-date grouping, cancellation visibility/conflicts and search detail opening corrected after these checks.

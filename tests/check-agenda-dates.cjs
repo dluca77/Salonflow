@@ -1,2 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');process.env.TZ='Europe/Amsterdam';
 const s=fs.readFileSync('agenda/index.html','utf8');const ctx={Date,filterMed:null,APTS:[{id:1,datum_tijd:'2026-11-11T23:30:00Z',status:'bevestigd'},{id:2,datum_tijd:'2026-11-12T09:00:00Z',status:'geannuleerd'},{id:3,datum_tijd:'2026-11-12T10:00:00Z',status:'verplaatst'}],dk:d=>[d.getFullYear(),String(d.getMonth()+1).padStart(2,'0'),String(d.getDate()).padStart(2,'0')].join('-')};vm.createContext(ctx);vm.runInContext(s.slice(s.indexOf('function getApts(d){'),s.indexOf('\n}',s.indexOf('function getApts(d){'))+2),ctx);assert.deepEqual(Array.from(ctx.getApts(new Date('2026-11-12T12:00:00Z')),a=>a.id),[1]);console.log('PASS agenda local midnight and cancelled/moved exclusions');
+
+vm.runInContext(s.slice(s.indexOf('function checkConflict('),s.indexOf('// ── ZOEKEN')),ctx);
+ctx.APTS=[{id:'c',medewerker_id:'m',status:'geannuleerd',datum_tijd:'2026-11-12T10:00:00Z',duur_min:30}];assert.equal(ctx.checkConflict('m',new Date('2026-11-12T10:00:00Z'),30),null);
+ctx.APTS.push({id:'block',type:'bloktijd',status:'bevestigd',medewerker_id:null,datum_tijd:'2026-11-12T10:00:00Z',duur_min:30});assert.equal(ctx.checkConflict('m',new Date('2026-11-12T10:00:00Z'),30).id,'block');
+console.log('PASS conflict ignores cancellations and includes team-wide blocks');
