@@ -978,7 +978,8 @@ function checkConflict(medId,start,dur,skipId){
   if(!medId) return null;
   const end=new Date(start.getTime()+dur*60000);
   return APTS.find(a=>{
-    if(a.id===skipId||a.medewerker_id!==medId||a._herhaald) return false;
+    if(a.id===skipId||['geannuleerd','verplaatst'].includes(a.status)) return false;
+    if(a.medewerker_id!==medId && !(a.type==='bloktijd'&&!a.medewerker_id)) return false;
     const as=new Date(a.datum_tijd);
     const ae=new Date(as.getTime()+(a.duur_min||45)*60000);
     return start<ae&&end>as;
@@ -996,19 +997,21 @@ function doSearch(q){
     if(!res.length){el.innerHTML='<div class="sr-empty">Geen resultaten</div>';return;}
     el.innerHTML=res.map(a=>{
       const dt=new Date(a.datum_tijd);
-      return`<div class="sr-item" onclick="springNaarApt('${a.datum_tijd}')">
+      return`<div class="sr-item" onclick="springNaarApt('${a.datum_tijd}','${a.id}')">
         <div class="sr-naam">${escapeHtml(a.klant_naam)||'Onbekend'}</div>
-        <div class="sr-meta">${DN[dt.getDay()]} ${dt.getDate()} ${MNS[dt.getMonth()]} · ${ft(dt.getHours(),dt.getMinutes())} · ${a.diensten?.naam||''}</div>
+        <div class="sr-meta">${DN[dt.getDay()]} ${dt.getDate()} ${MNS[dt.getMonth()]} · ${ft(dt.getHours(),dt.getMinutes())} · ${escapeHtml(a.diensten?.naam||'')}</div>
       </div>`;
     }).join('');
   },200);
 }
 function toggleSearch(on){document.getElementById('search-results').classList.toggle('on',on);}
-function springNaarApt(dt){
+function springNaarApt(dt,id){
   cur=new Date(dt);cur.setHours(0,0,0,0);
   setView('day');
   document.getElementById('search-inp').value='';
   document.getElementById('search-results').classList.remove('on');
+  const afspraak=APTS.find(a=>a.id===id);
+  if(afspraak)showPop(afspraak,null);
 }
 
 // ── POPUP ────────────────────────────────────────────────────────────────────
