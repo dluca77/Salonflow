@@ -1288,7 +1288,7 @@ async function berekenBeschikbareSlots(datum){
   function medewerkerOverlapt(medewerkerId, slotStart, slotEind){
     if(medewerkersMetVerlof.has(medewerkerId)) return true;
     return bestaandeAfspraken.some(a=>{
-      if(a.medewerker_id!==medewerkerId) return false;
+      if(a.medewerker_id && a.medewerker_id!==medewerkerId) return false;
       const aStart=new Date(a.datum_tijd);
       const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
       return slotStart<aEind && slotEind>aStart;
@@ -1361,7 +1361,7 @@ async function vindBeschikbareMedewerker(dt, duurMin){
   for(const medewerkerId of alleMedewerkerIds){
     if(medewerkersMetVerlof.has(medewerkerId)) continue;
     const overlapt=bestaandeAfspraken.some(a=>{
-      if(a.medewerker_id!==medewerkerId) return false;
+      if(a.medewerker_id && a.medewerker_id!==medewerkerId) return false;
       const aStart=new Date(a.datum_tijd);
       const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
       return dt<aEind && slotEind>aStart;
@@ -1430,7 +1430,7 @@ async function vindBeschikbareMedewerkers(dt, duurMin, aantal){
   for(const medewerkerId of alleMedewerkerIds){
     if(medewerkersMetVerlof.has(medewerkerId)) continue;
     const overlapt=bestaandeAfspraken.some(a=>{
-      if(a.medewerker_id!==medewerkerId) return false;
+      if(a.medewerker_id && a.medewerker_id!==medewerkerId) return false;
       const aStart=new Date(a.datum_tijd);
       const aEind=new Date(aStart.getTime()+(a.duur_min||30)*60000);
       return dt<aEind && slotEind>aStart;

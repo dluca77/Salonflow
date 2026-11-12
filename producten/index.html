@@ -204,7 +204,7 @@ function renderProducten(){
     const laag=p.voorraad_aantal<=p.lage_voorraad_drempel;
     return `<div class="pt-row">
       <div class="pt-naam">${escapeHtml(p.naam)}${p.actief?'':' <span style="color:var(--mu2);font-size:11px;">(inactief)</span>'}</div>
-      <div class="pt-prijs">€${p.prijs}</div>
+      <div class="pt-prijs">${Number(p.prijs).toLocaleString('nl-NL',{style:'currency',currency:'EUR'})}</div>
       <div class="pt-voorraad${laag?' laag':''}">${p.voorraad_aantal}${laag?' ⚠':''}</div>
       <div class="pt-acties" ${typeof IS_MEDEWERKER!=='undefined' && IS_MEDEWERKER?'hidden':''}>
         <button class="pt-btn" onclick="openBewerkProduct('${p.id}')">Bewerken</button>
