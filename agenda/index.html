@@ -709,7 +709,7 @@ function heeftWachtlijstOpDag(d){
 
 function getApts(d){
   const key=dk(d);
-  return APTS.filter(a=>a.datum_tijd.startsWith(key)&&(!filterMed||a.medewerker_id===filterMed));
+  return APTS.filter(a=>!['geannuleerd','verplaatst'].includes(a.status)&&dk(new Date(a.datum_tijd))===key&&(!filterMed||a.medewerker_id===filterMed));
 }
 
 function buildAptCard(a,i){
@@ -881,7 +881,7 @@ function renderMaand(){
       ${days.map(d=>{
         const isToday=d.getTime()===today.getTime();
         const isOther=d.getMonth()!==curM;
-        const dayApts=APTS.filter(a=>a.datum_tijd.startsWith(dk(d))&&(!filterMed||a.medewerker_id===filterMed));
+        const dayApts=APTS.filter(a=>!['geannuleerd','verplaatst'].includes(a.status)&&dk(new Date(a.datum_tijd))===dk(d)&&(!filterMed||a.medewerker_id===filterMed));
         const visible=dayApts.slice(0,3);
         const rest=dayApts.length-3;
         return`<div class="month-day${isOther?' other-month':''}${isToday?' today':''}" onclick="clickDay('${dk(d)}')">
@@ -944,7 +944,7 @@ function renderMedewerker(){
       col.appendChild(nl);
     }
 
-    APTS.filter(a=>a.datum_tijd.startsWith(key)&&a.medewerker_id===m.id).forEach((a,i)=>{
+    APTS.filter(a=>!['geannuleerd','verplaatst'].includes(a.status)&&dk(new Date(a.datum_tijd))===key&&a.medewerker_id===m.id).forEach((a,i)=>{
       col.appendChild(buildAptCard(a,i));
     });
     dc.appendChild(col);

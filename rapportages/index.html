@@ -80,7 +80,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
 .card-title{font-size:13.5px;font-weight:500;color:var(--ink);}
 .card-sub{font-size:10px;letter-spacing:1px;color:var(--mu2);}
 .chart-wrap{padding:20px 18px;}
-.bars{display:flex;align-items:flex-end;gap:6px;height:100px;}
+.bars{display:flex;align-items:flex-end;gap:6px;height:140px;}
 .bar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;}
 .bar{width:100%;min-height:3px;transition:height 0.4s ease;cursor:pointer;}
 .bar:hover{filter:brightness(1.1);}
@@ -439,8 +439,8 @@ async function loadData(){
         <div class="bars">
           ${weeks.map((v,i)=>`
             <div class="bar-wrap">
-              <div class="bar-val">€${Math.round(v)}</div>
-              <div class="bar" style="height:${Math.round(v/maxW*100)}%;background:${i===3?'var(--gd)':'var(--bd2)'}"></div>
+              <div class="bar-val">${v?'€'+Math.round(v):'&nbsp;'}</div>
+              <div class="bar" style="height:${Math.round(v/maxW*100)}px;background:${i===3?'var(--gd)':'var(--bd2)'}"></div>
               <div class="bar-lbl">${bucketLabels[i]}</div>
             </div>`).join('')}
         </div>
