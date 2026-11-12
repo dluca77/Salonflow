@@ -220,7 +220,7 @@ function wk(d){
 // laatste 8 weken. Puur functie, los van DOM/Supabase, apart getest.
 const PRIJSADVIES_DAGEN=['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'];
 function berekenPrijsAdviesData(afspraken){
-  const relevant=afspraken.filter(a=>!['geannuleerd','no-show'].includes(a.status) && a.diensten?.naam);
+  const relevant=afspraken.filter(a=>!['geannuleerd','verplaatst','no-show'].includes(a.status) && a.type!=='bloktijd' && a.diensten?.naam);
 
   const perDienst={};
   relevant.forEach(a=>{
@@ -347,40 +347,50 @@ async function loadData(){
     kronrTeamOverzicht()
   ]);
 
+  if(betRes.error || aptRes.error || medRes.error){
+    document.getElementById('content').innerHTML='<div class="card" role="alert" style="padding:24px">Rapportage kon niet worden geladen. Probeer opnieuw via een periodeknop.</div>';
+    return;
+  }
   const betalingen=betRes.data||[];
-  const afspraken=aptRes.data||[];
+  const afspraken=(aptRes.data||[]).filter(a=>!['geannuleerd','verplaatst'].includes(a.status) && a.type!=='bloktijd');
   const medewerkers=medRes.data||[];
 
   const omzet=betalingen.reduce((s,b)=>s+parseFloat(b.bedrag||0),0);
   const apts=afspraken.length;
-  const gemBon=apts>0?(omzet/apts).toFixed(2).replace('.',','):0;
+  const gemBon=betalingen.length>0?(omzet/betalingen.length).toFixed(2).replace('.',','):'0,00';
   const noshow=afspraken.filter(a=>a.status==='no-show').length;
   const noshowPct=apts>0?((noshow/apts)*100).toFixed(1).replace('.',','):0;
 
-  // Bar chart: omzet per week/maand
-  const weeks=[0,0,0,0];
+  // Kalendermaanden voor kwartaal/jaar; dagen 1–7, 8–14 enz. voor maand.
+  const monthly=['kwartaal','jaar'].includes(activePeriod);
+  const bucketCount=monthly?(activePeriod==='jaar'?12:3):Math.ceil(end.getDate()/7);
+  const weeks=Array(bucketCount).fill(0);
+  const bucketLabels=weeks.map((_,i)=>monthly
+    ?new Date(start.getFullYear(),start.getMonth()+i,1).toLocaleDateString('nl-NL',{month:'short'})
+    :`${i*7+1}–${Math.min((i+1)*7,end.getDate())}`);
   betalingen.forEach(b=>{
     const d=new Date(b.datum);
-    const w=Math.min(3,Math.floor((d.getDate()-1)/7));
-    weeks[w]+=parseFloat(b.bedrag||0);
+    const w=monthly?(d.getFullYear()-start.getFullYear())*12+d.getMonth()-start.getMonth():Math.floor((d.getDate()-1)/7);
+    if(w>=0 && w<weeks.length) weeks[w]+=Number(b.bedrag||0);
   });
+
   const maxW=Math.max(...weeks,1);
 
   // Per medewerker
   const medStats=medewerkers.map(m=>{
-    const mApts=afspraken.filter(a=>a.medewerker_id===m.id);
-    const mOmzet=mApts.reduce((s,a)=>s+(a.diensten?.prijs||0),0);
+    const mApts=afspraken.filter(a=>a.medewerker_id===m.id && a.status!=='no-show');
+    const mOmzet=mApts.reduce((s,a)=>s+Number(a.diensten?.prijs||0),0);
     return{...m,apts:mApts.length,omzet:mOmzet};
   }).sort((a,b)=>b.omzet-a.omzet);
 
   // Top diensten
   const dienstCount={};
   afspraken.forEach(a=>{
-    if(!a.diensten?.naam)return;
+    if(!a.diensten?.naam || a.status==='no-show')return;
     const k=a.diensten.naam;
     if(!dienstCount[k])dienstCount[k]={naam:k,prijs:a.diensten.prijs||0,count:0,omzet:0};
     dienstCount[k].count++;
-    dienstCount[k].omzet+=a.diensten.prijs||0;
+    dienstCount[k].omzet+=Number(a.diensten.prijs||0);
   });
   const topDiensten=Object.values(dienstCount).sort((a,b)=>b.omzet-a.omzet).slice(0,5);
 
@@ -388,7 +398,7 @@ async function loadData(){
   const insights=[];
   if(omzet>0) insights.push(`Totale omzet deze periode: €${omzet.toFixed(0)}.`);
   else insights.push('Nog geen betalingen in deze periode. Gebruik de kassa om betalingen te registreren.');
-  if(apts>0) insights.push(`${apts} afspraken verwerkt, gemiddelde bon €${gemBon}.`);
+  if(apts>0) insights.push(`${apts} afspraken in deze periode, gemiddelde kassabon €${gemBon}.`);
   if(noshow>0) insights.push(`${noshow} no-show${noshow>1?'s':''} (${noshowPct}%). Stuur herinneringen om dit te verlagen.`);
   else if(apts>0) insights.push('Geen no-shows, uitstekend!');
 
@@ -410,7 +420,7 @@ async function loadData(){
       <div class="kpi">
         <div class="kpi-label">Gem. bon</div>
         <div class="kpi-val">€${gemBon}</div>
-        <div class="kpi-change">per afspraak</div>
+        <div class="kpi-change">per kassabetaling</div>
       </div>
       <div class="kpi">
         <div class="kpi-label">No-show</div>
@@ -422,7 +432,7 @@ async function loadData(){
     <!-- Bar chart -->
     <div class="card">
       <div class="card-head">
-        <div class="card-title">Omzet per week</div>
+        <div class="card-title">Omzet per ${monthly?'maand':'daggroep'}</div>
         <div class="card-sub">gebaseerd op kassabetalingen</div>
       </div>
       <div class="chart-wrap">
@@ -431,7 +441,7 @@ async function loadData(){
             <div class="bar-wrap">
               <div class="bar-val">€${Math.round(v)}</div>
               <div class="bar" style="height:${Math.round(v/maxW*100)}%;background:${i===3?'var(--gd)':'var(--bd2)'}"></div>
-              <div class="bar-lbl">W${i+1}</div>
+              <div class="bar-lbl">${bucketLabels[i]}</div>
             </div>`).join('')}
         </div>
       </div>
@@ -444,11 +454,11 @@ async function loadData(){
         <div class="tc-row">
           <div>
             <div class="tc-name">${escapeHtml(m.naam)}</div>
-            <div class="tc-sub">${m.apts} afspraken · ${m.rol}</div>
+            <div class="tc-sub">${m.apts} afspraken · ${escapeHtml(m.rol||'')}</div>
           </div>
           <div>
             <div class="tc-val">€${m.omzet}</div>
-            <div class="tc-meta">omzet</div>
+            <div class="tc-meta">boekingswaarde*</div>
           </div>
         </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);">Nog geen medewerkers</div>`}
     </div>
@@ -464,11 +474,12 @@ async function loadData(){
           </div>
           <div>
             <div class="tc-val">€${d.omzet}</div>
-            <div class="tc-meta">omzet</div>
+            <div class="tc-meta">boekingswaarde*</div>
           </div>
         </div>`).join(''):`<div style="padding:24px;text-align:center;font-size:14.5px;font-weight:500;color:var(--mu2);">Nog geen afspraken met diensten</div>`}
     </div>
 
+    <p style="font-size:12px;color:var(--mu2)">* Boekingswaarde op basis van huidige dienstprijzen, exclusief no-shows. Dit is geen ontvangen omzet.</p>
     <!-- AI insights -->
     <div class="ai-card">
       <div class="ai-head">

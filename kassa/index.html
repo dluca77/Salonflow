@@ -400,7 +400,7 @@ async function loadData(){
 
   const prodGrid=document.getElementById('prod-grid');
   if(!allProducten.length){
-    prodGrid.innerHTML=`<div class="svc-loading">Nog geen producten.<br><a href="/producten/" style="color:var(--gd);text-decoration:none;font-size:13.5px;font-weight:500;">Producten toevoegen →</a></div>`;
+    prodGrid.innerHTML=`<div class="svc-loading" style="grid-column:1/-1">Nog geen producten.<br><a href="/producten/" style="color:var(--gd);text-decoration:none;font-size:13.5px;font-weight:500;">Producten toevoegen →</a></div>`;
   } else {
     prodGrid.innerHTML=allProducten.map(p=>{
       const opRaak=p.voorraad_aantal<=0;

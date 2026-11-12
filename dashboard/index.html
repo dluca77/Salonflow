@@ -554,7 +554,7 @@ async function loadData(){
 }
 
 async function laadInzichten(d){
-  const cacheKey='kronr_ai_'+SALON_ID+'_'+dk(new Date());
+  const cacheKey='kronr_ai_v2_'+SALON_ID+'_'+dk(new Date());
   const toon=(lijst)=>{
     ['ins1','ins2','ins3'].forEach((id,i)=>{
       const el=document.getElementById(id);
@@ -572,6 +572,10 @@ async function laadInzichten(d){
     return ins;
   };
 
+  if(!d.vandaag.length && !d.all.length){
+    toon(['Er staan deze week nog geen afspraken in Kronr.', 'Controleer je diensten en beschikbaarheid voordat je je boekingslink deelt.']);
+    return;
+  }
   // Gecached vandaag? Toon meteen, geen nieuwe AI-call nodig
   try{
     const cached=JSON.parse(localStorage.getItem(cacheKey)||'null');

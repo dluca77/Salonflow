@@ -23,5 +23,8 @@ vm.createContext(ctx);vm.runInContext(source.slice(start,end),ctx);
  assert.equal(await ctx.vindBeschikbareMedewerker(dt,30),'staff');
  assert.equal(await ctx.vindBeschikbareRuimte(dt,30),'room');
  assert.ok((await ctx.berekenBeschikbareSlots(dt)).length>0);
+ ctx.sb={rpc:async name=>({data:name==='get_bezette_tijden'?[{medewerker_id:null,datum_tijd:dt.toISOString(),duur_min:60}]:[]})};
+ assert.equal(await ctx.vindBeschikbareMedewerker(dt,30),null,'Team-wide block must exclude every employee');
+ assert.equal(await ctx.vindBeschikbareMedewerkers(dt,30,1),null,'Team-wide block must exclude duo booking too');
  console.log('PASS: availability failures never become free slots; successful availability and local date preserved');
 })().catch(e=>{console.error(e);process.exit(1)});

@@ -1,0 +1,22 @@
+Backoffice verification — 12 November 2026
+
+Scope: preserve current homepage/design; Stripe remains test-only.
+
+Fixed in this release:
+- Salon-wide blocks now prevent public appointments; overlap queries include blocks beginning before the requested range.
+- Lesson waitlist claims reject cancelled/past lessons and blocked customers.
+- Agenda edit restores stored duration, recurrence and all extra services. Appointment and extra services now save atomically under existing agenda-edit permissions.
+- Reports exclude cancelled/moved entries and blocked time; average receipt uses payment count. Quarter/year charts use calendar months. Catalog-price totals are explicitly booking value, not received revenue. Failed queries show an error, not fabricated zero totals.
+- Empty dashboard shows neutral onboarding guidance; AI avoids unsupported causal conclusions.
+- Product prices use Dutch currency formatting; empty product grid spans mobile columns.
+
+Verification completed:
+- All tests/check-*.cjs and tests/check-*.mjs passed. Provider interactions in these Node tests are mocked.
+- Live Supabase: combined transaction with product CRUD, checkout/server pricing, stock, gift cards, public booking, customer blocks, membership proof, payment idempotency, waitlist, staff role/isolation and final booking guards passed; rolled back test fixtures.
+- Live Supabase multiservice transaction: insert, repeated edit, extra removal, invalid-service atomic rollback and foreign-user denial passed.
+- Real owner UI: inactive product created and price changed; appointment created, time edited, then cancelled; mobile checkout calculated VAT/total and cleared without a payment.
+- Mobile Chrome owner screens inspected; release-specific live verification is recorded in the delivery message.
+
+Retained clearly marked records: inactive KRONR CONTROLE 11 NOV — NIET VERKOPEN product and cancelled KRONR CONTROLE 11 NOV appointment. No real sale or new test email sent.
+
+Limits: no physical iOS/Android test, no separate employee browser login, no new hosted Stripe test checkout. Stripe signatures/webhook behavior covered by mocked provider tests and DB regression; this does not certify a complete external payment journey. Earlier test email delivery was confirmed by owner. Registration/prelaunch policy unchanged.

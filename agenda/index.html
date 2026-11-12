@@ -1324,14 +1324,26 @@ async function checkWachtlijstMatch(afspraak){
 
 async function verwijderHuidige(){
   if(!geselecteerdeApt||!confirm('Afspraak verwijderen?')) return;
-  await sb.from('afspraken').delete().eq('id',geselecteerdeApt.id);
+  const {error}=await sb.from('afspraken').delete().eq('id',geselecteerdeApt.id).eq('salon_id',SALON_ID).select('id').single();
+  if(error){toast('Afspraak niet verwijderd: '+error.message);return;}
   closePop();await loadData();toast('Afspraak verwijderd');
 }
 
-function bewerkHuidige(){
+async function bewerkHuidige(){
   if(!geselecteerdeApt) return;
   const a=geselecteerdeApt;
+  const {data:extras,error}=await sb.rpc('get_extra_diensten_voor_afspraken',{p_afspraak_ids:[a.id]});
+  if(error){toast('Behandelingen konden niet worden geladen. Probeer opnieuw.');return;}
+  if(geselecteerdeApt?.id!==a.id)return;
   const dt=new Date(a.datum_tijd);
+  document.getElementById('modal-apt-title').textContent='Afspraak bewerken';
+  setModalTab('afspraak',document.querySelector('.mtab'));
+  geselecteerdeDiensten=a.dienst_id?[{dienst_id:a.dienst_id,naam:a.diensten?.naam||'',prijs:a.diensten?.prijs||0,duur_min:Math.max(1,(a.duur_min||45)-(extras||[]).reduce((sum,e)=>sum+e.duur_min,0))}]:[];
+  geselecteerdeDiensten.push(...(extras||[]));
+  renderDienstenLijst();
+  document.getElementById('iherhaling').value=a.herhaling||'geen';
+  document.getElementById('iherhaling-einde').value=a.herhaling_einde||'';
+  document.getElementById('herhaling-einde-wrap').style.display=a.herhaling?'':'none';
   document.getElementById('ik').value=a.klant_naam||'';
   document.getElementById('idat').value=dk(dt);
   document.getElementById('itijd').value=ft(dt.getHours(),dt.getMinutes());
@@ -1344,6 +1356,8 @@ function bewerkHuidige(){
 
 // ── NIEUWE AFSPRAAK ───────────────────────────────────────────────────────────
 function openNieuw(date,time,medId=''){
+  document.getElementById('modal-apt-title').textContent='Nieuwe afspraak';
+  setModalTab('afspraak',document.querySelector('.mtab'));
   geselecteerdeApt=null;
   geselecteerdeDiensten=[];
   renderDienstenLijst();
@@ -1379,7 +1393,7 @@ function renderDienstenLijst(){
     <div class="dienst-row">
       <select class="fi" style="flex:1;" onchange="selectDienst(${i},this.value)">
         <option value="">Kies behandeling...</option>
-        ${DIENSTEN.map(ds=>`<option value="${ds.id}" ${d.dienst_id===ds.id?'selected':''}>${ds.naam} · €${ds.prijs} · ${ds.duur_min}min</option>`).join('')}
+        ${DIENSTEN.map(ds=>`<option value="${ds.id}" ${d.dienst_id===ds.id?'selected':''}>${escapeHtml(ds.naam)} · €${ds.prijs} · ${ds.duur_min}min</option>`).join('')}
       </select>
       <button class="dienst-row-del" onclick="verwijderDienst(${i})">×</button>
     </div>`).join('');
@@ -1409,9 +1423,11 @@ async function slaOp(){
 
   if(!naam||!datum||!tijd){toast('Vul klant, datum en tijd in.');return;}
 
+  if(geselecteerdeDiensten.some(d=>!d.dienst_id)){toast('Kies een behandeling of verwijder de lege regel.');return;}
+  if(new Set(geselecteerdeDiensten.map(d=>d.dienst_id)).size!==geselecteerdeDiensten.length){toast('Kies iedere behandeling maximaal één keer.');return;}
   const dt=new Date(datum+'T'+tijd);
   const eersteD=geselecteerdeDiensten[0];
-  const duur=geselecteerdeDiensten.reduce((s,d)=>s+(d.duur_min||30),0)||45;
+  const duur=geselecteerdeDiensten.reduce((s,d)=>s+(d.duur_min||30),0)||(geselecteerdeApt?.duur_min||45);
 
   // Conflict check
   if(mId){
@@ -1441,15 +1457,13 @@ async function doSave({naam,datum,tijd,mId,status,herhaling,herhalingEinde,notit
     notities:notitie||null,
     type:'afspraak'
   };
-  if(geselecteerdeApt?.id&&!geselecteerdeApt._herhaald){
-    const{error}=await sb.from('afspraken').update(payload).eq('id',geselecteerdeApt.id).eq('salon_id',SALON_ID).select('id').single();
-    if(error){toast('Afspraak niet opgeslagen: '+error.message);btn.disabled=false;btn.textContent='Opslaan';return;}
-    toast('Afspraak bijgewerkt');
-  } else {
-    const{error}=await sb.from('afspraken').insert({...payload,locatie_id:HUIDIGE_LOCATIE_ID||null});
-    if(error){toast('Fout: '+error.message);btn.disabled=false;btn.textContent='Opslaan';return;}
-    toast('Afspraak aangemaakt');
-  }
+  const editId=geselecteerdeApt?.id&&!geselecteerdeApt._herhaald?geselecteerdeApt.id:null;
+  const {error}=await sb.rpc('kronr_bewaar_agenda_afspraak',{
+    p_data:{...payload,locatie_id:HUIDIGE_LOCATIE_ID||null},p_id:editId,
+    p_extra:geselecteerdeDiensten.slice(1).map(d=>d.dienst_id)
+  });
+  if(error){toast('Afspraak niet opgeslagen: '+error.message);btn.disabled=false;btn.textContent='Opslaan';return;}
+  toast(editId?'Afspraak bijgewerkt':'Afspraak aangemaakt');
   btn.disabled=false;btn.textContent='Opslaan';
   closeModal('modal-apt');geselecteerdeApt=null;
   await loadData();

@@ -79,7 +79,7 @@ async function handleDashboardInzichten(request, env, headers) {
   } catch (e) {
     return new Response(JSON.stringify({ error: "Ongeldige JSON body" }), { status: 400, headers });
   }
-  const prompt = `Je bent een data-analist voor salon-eigenaren op het Kronr-platform (software voor kappers, nagelstudio's en spa's). Analyseer onderstaande cijfers en geef 2-3 korte, concrete inzichten in het Nederlands. Elk inzicht is maximaal 1 zin, praktisch bruikbaar en gebaseerd op de daadwerkelijke cijfers — geen generieke tips. Antwoord ALLEEN met een JSON-array van strings, zonder markdown-opmaak, zonder uitleg.
+  const prompt = `Je bent een data-analist voor salon-eigenaren op het Kronr-platform (software voor kappers, nagelstudio's en spa's). Analyseer onderstaande cijfers en geef 2-3 korte, concrete inzichten in het Nederlands. Elk inzicht is maximaal 1 zin, praktisch bruikbaar en gebaseerd op de daadwerkelijke cijfers — geen generieke tips. Trek geen conclusies over oorzaken, trends, marketingprestaties of defecte beschikbaarheid uit één momentopname. Een lege agenda kan een nieuw account betekenen. Benoem ontbrekende informatie; vermijd alarmerende kwalificaties zoals kritiek. Antwoord ALLEEN met een JSON-array van strings, zonder markdown-opmaak, zonder uitleg.
 
 Salon: ${stats.salon_naam || "Onbekend"}
 Afspraken vandaag: ${stats.vandaag_count ?? 0}
