@@ -7,3 +7,5 @@ assert.equal(ctx.geselecteerdeDiensten[0].dienst_id,'service');assert.equal(ctx.
 console.log('PASS: edit hydrates persisted service, full duration, recurrence and title rather than stale form state');
 
 })();
+
+for(const status of ['gearriveerd','in_behandeling','afgerond','no-show','geannuleerd','verplaatst']) assert.ok(source.match(/id="istatus"[\s\S]*?<\/select>/)[0].includes('value="'+status+'"'));
