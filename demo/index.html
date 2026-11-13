@@ -1,157 +1,112 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="nl">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Live demo | Kronr</title>
-<meta name="description" content="Klik zelf door een voorbeeld van het Kronr-dashboard — agenda, kassa en klanten. Geen account nodig.">
-<meta name="robots" content="index,follow">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="canonical" href="https://kronr.nl/demo/">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --iv:#faf8f4;--white:#ffffff;--wm:#f3ede4;--bd:#e2d9ce;--bd2:#c8bdb0;
-  --gd:#8c6d3f;--gd2:#6e5230;--ink:#1a1714;--ink2:#3a342e;--mu:#8a7d6e;--mu2:#c2b5a4;
-}
-*{box-sizing:border-box;margin:0;padding:0;}
-html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;}
-a{color:inherit;}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:20px 32px;border-bottom:1px solid var(--bd);background:var(--white);}
-.logo{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;}
-.logo em{font-style:normal;color:var(--gd);}
-.topbar-actions{display:flex;align-items:center;gap:16px;}
-.back-link{font-size:13px;color:var(--mu);text-decoration:none;font-weight:500;}
-.btn-primary{background:var(--ink);color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:600;text-decoration:none;}
-.demo-banner{text-align:center;padding:28px 20px 8px;}
-.demo-banner h1{font-family:'Playfair Display',serif;font-size:clamp(22px,3.4vw,32px);margin-bottom:8px;}
-.demo-banner p{color:var(--mu);font-size:14px;max-width:520px;margin:0 auto;}
-.demo-tag{display:inline-block;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);font-weight:700;margin-bottom:10px;}
-
-.demo-wrap{max-width:1040px;margin:24px auto 80px;padding:0 20px;}
-.demo-tabs{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
-.demo-tab{background:var(--white);border:1px solid var(--bd);border-radius:8px;padding:9px 16px;font-size:13px;font-weight:600;color:var(--mu);cursor:pointer;transition:.15s;}
-.demo-tab.active{background:var(--ink);color:#fff;border-color:var(--ink);}
-.demo-tab:hover:not(.active){border-color:var(--gd);color:var(--ink);}
-
-.app-mockup{background:var(--iv);border-radius:16px;overflow:hidden;border:1px solid var(--bd);box-shadow:0 32px 80px rgba(15,13,11,.12),0 8px 24px rgba(15,13,11,.08);min-height:560px;display:flex;flex-direction:column;}
-.mock-nav{height:48px;background:var(--white);border-bottom:1px solid var(--bd);display:flex;align-items:center;padding:0 18px;gap:12px;}
-.mock-dots{display:flex;gap:6px;}
-.mock-dot{width:11px;height:11px;border-radius:50%;}
-.mock-logo{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;margin-left:8px;}
-.mock-logo em{color:var(--gd);font-style:normal;}
-.mock-body{flex:1;display:flex;}
-.mock-sidebar{width:56px;background:#1a1714;display:flex;flex-direction:column;align-items:center;padding:14px 0;gap:10px;}
-.mock-si{width:32px;height:32px;background:rgba(255,255,255,.08);border-radius:7px;}
-.mock-si.on{background:rgba(140,109,63,.5);}
-.mock-content{flex:1;padding:22px;}
-
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px;}
-.kpi{background:var(--white);border:1px solid var(--bd);border-radius:10px;padding:14px;}
-.kpi-l{font-size:11px;color:var(--mu);margin-bottom:6px;font-weight:500;}
-.kpi-v{font-size:22px;font-weight:700;letter-spacing:-.3px;}
-
-.panel{background:var(--white);border:1px solid var(--bd);border-radius:10px;overflow:hidden;}
-.panel-head{padding:12px 16px;border-bottom:1px solid var(--bd);font-size:13px;font-weight:600;display:flex;justify-content:space-between;}
-.panel-head span:last-child{color:var(--gd);font-size:12px;}
-
-.agenda-rows{display:grid;grid-template-columns:56px repeat(4,1fr);gap:1px;background:var(--bd);}
-.ah{background:var(--iv);padding:8px;font-size:10px;text-align:center;color:var(--mu2);font-weight:600;}
-.aslot{background:var(--white);height:44px;position:relative;}
-.apt{position:absolute;inset:2px;border-radius:5px;padding:5px 7px;font-size:10px;font-weight:600;overflow:hidden;cursor:pointer;transition:opacity .15s;}
-.apt:hover{opacity:.85;}
-.apt.c0{background:#e8d5f5;color:#6b3fa0;}
-.apt.c1{background:#ffd9c0;color:#c05a00;}
-.apt.c2{background:#c8f0d8;color:#1a7a40;}
-.apt.c3{background:#c8e8ff;color:#1a5fa0;}
-.atime{background:var(--iv);padding:8px;font-size:10px;color:var(--mu2);text-align:right;}
-
-.kassa-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px;}
-.cart-item{display:flex;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
-.cart-total{display:flex;justify-content:space-between;padding:14px 16px;font-size:15px;font-weight:700;background:var(--iv);}
-.pay-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:16px;}
-.pay-btn{border:1px solid var(--bd);background:var(--white);border-radius:8px;padding:12px;text-align:center;font-size:12px;font-weight:600;cursor:pointer;}
-.pay-btn.on{background:var(--ink);color:#fff;border-color:var(--ink);}
-
-.klant-rows{display:flex;flex-direction:column;}
-.klant-row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--bd);font-size:13px;}
-.klant-avatar{width:32px;height:32px;border-radius:50%;background:var(--wm);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--gd2);flex-shrink:0;}
-.klant-name{font-weight:600;flex:1;}
-.klant-meta{color:var(--mu);font-size:11px;}
-.stempel-dots{display:flex;gap:3px;}
-.stempel-dot{width:9px;height:9px;border-radius:50%;background:var(--bd);}
-.stempel-dot.on{background:var(--gd);}
-
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:12px 20px;border-radius:8px;font-size:13px;font-weight:500;opacity:0;transition:.25s;pointer-events:none;z-index:50;}
-.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
-
-.demo-cta{text-align:center;margin-top:32px;padding:28px;background:var(--white);border:1px solid var(--bd);border-radius:14px;}
-.demo-cta h2{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:8px;}
-.demo-cta p{color:var(--mu);font-size:13px;margin-bottom:18px;}
-
-@media(max-width:720px){
-  .kpi-row{grid-template-columns:repeat(2,1fr);}
-  .kassa-grid{grid-template-columns:1fr;}
-  .agenda-rows{grid-template-columns:44px repeat(2,1fr);}
-  .ah:nth-child(n+4):nth-child(-n+5){display:none;}
-}
-</style>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="/brand-surfaces.css?v=6">
-<link rel="stylesheet" href="/demo/demo.css?v=1">
-</head>
-<body>
-
-<div class="topbar">
-  <a class="logo" href="/" aria-label="Kronr — homepage">Kronr<em>.</em></a>
-  <div class="topbar-actions">
-    <a href="/" class="back-link">← Terug naar site</a>
-    <a href="/login/#registreer" class="btn-primary">Blijf op de hoogte</a>
-  </div>
-</div>
-
-<div class="demo-banner">
-  <div class="demo-tag">Live demo</div>
-  <h1>Voel hoe je werkdag kan lopen.</h1>
-  <p>Open een afspraak, bekijk een klantprofiel en probeer de kassa. Een fictieve salon om zelf te ontdekken, zonder account of echte betalingen.</p>
-</div>
-
-<div class="demo-wrap">
-  <div class="demo-tabs" role="group" aria-label="Kies een voorbeeldscherm">
-    <button class="demo-tab active" data-tab="agenda">Agenda</button>
-    <button class="demo-tab" data-tab="kassa">Kassa</button>
-    <button class="demo-tab" data-tab="klanten">Klanten</button>
-  </div>
-
-  <div class="app-mockup">
-    <div class="mock-nav">
-      <div class="mock-dots">
-        <div class="mock-dot" style="background:#ff5f57;"></div>
-        <div class="mock-dot" style="background:#febc2e;"></div>
-        <div class="mock-dot" style="background:#28c840;"></div>
-      </div>
-      <div class="mock-logo">Kronr<em>.</em></div>
-    </div>
-    <div class="mock-body">
-      <div class="mock-sidebar">
-        <button class="mock-si" data-side="agenda" aria-label="Agenda"></button>
-        <button class="mock-si" data-side="kassa" aria-label="Kassa"></button>
-        <button class="mock-si" data-side="klanten" aria-label="Klanten"></button>
-      </div>
-      <div class="mock-content" id="tabContent"></div>
-    </div>
-  </div>
-
-  <div class="demo-cta">
-    <h2>Zo simpel ziet het er straks bij jou uit</h2>
-    <p>Je eigen diensten, je eigen team, je eigen ritme. Ontvang een bericht zodra Kronr opengaat.</p>
-    <a href="/login/#registreer" class="btn-primary">Ontvang de launchupdate →</a>
-  </div>
-</div>
-
-<dialog class="demo-detail" id="demo-detail" aria-labelledby="detail-title"><div class="detail-header"><h2 id="detail-title"></h2><button class="detail-close" data-close aria-label="Sluiten" autofocus>×</button></div><div id="detail-body"></div></dialog>
-
-<script src="/demo/demo.js?v=1" defer></script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Probeer een salonwerkdag | Kronr productdemo</title>
+    <meta
+      name="description"
+      content="Boek, verplaats en reken een fictieve afspraak af. Ontdek agenda, klantbeheer, kassa en rapportages in de Kronr productdemo, zonder account."
+    />
+    <link rel="canonical" href="https://kronr.nl/demo/" />
+    <link rel="icon" href="/images/kronr-mark.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#251a2e" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="/demo/demo.css?v=2" />
+    <script src="/demo/model.js?v=2" defer></script>
+    <script src="/demo/demo.js?v=2" defer></script>
+  </head>
+  <body>
+    <a class="skip" href="#demo-main">Naar de demo</a>
+    <header class="topbar">
+      <a href="/" aria-label="Kronr — homepage"
+        ><img
+          src="/images/kronr-wordmark-light.svg"
+          width="125"
+          height="40"
+          alt="kronr."
+      /></a>
+      <nav aria-label="Demo navigatie">
+        <a href="/" class="back-link">Terug naar de site</a
+        ><a class="primary" href="/#kennismaken">Kennismaken ↗</a>
+      </nav>
+    </header>
+    <main id="demo-main">
+      <section class="intro">
+        <span class="eyebrow">ZELF PROBEREN · ZONDER ACCOUNT</span>
+        <h1>Eén klant.<br />Een hele <em>werkdag.</em></h1>
+        <p>
+          Volg Lisa van online boeking naar de laatste regel op de bon.
+          Verplaats haar afspraak, bekijk haar voorkeuren en zie wat er in de
+          rapportage verandert.
+        </p>
+        <div class="honesty">
+          <span class="status-dot"></span
+          ><span
+            >Interactieve simulatie met fictieve gegevens. Geen echte boekingen,
+            berichten of betalingen. Dit is een vereenvoudigde
+            productrondleiding, geen ingelogde backoffice.</span
+          >
+        </div>
+      </section>
+      <section class="workspace" aria-label="Interactieve productrondleiding">
+        <div class="workspace-top">
+          <span>STUDIO NOVA <small>FICTIEVE SALON</small></span
+          ><button class="quiet" id="reset-demo">Begin opnieuw ↺</button>
+        </div>
+        <div class="app-layout">
+          <nav class="demo-nav" aria-label="Onderdelen van de demo">
+            <button data-tab="boeken">01 <span>Online boeken</span></button
+            ><button data-tab="agenda">02 <span>Agenda</span></button
+            ><button data-tab="klanten">03 <span>Klanten</span></button
+            ><button data-tab="kassa">04 <span>Kassa</span></button
+            ><button data-tab="rapportages">05 <span>Rapportages</span></button>
+          </nav>
+          <div class="work-area">
+            <div id="guide" class="guide"></div>
+            <div id="screen" tabindex="-1"></div>
+          </div>
+        </div>
+        <div
+          class="demo-status"
+          id="demo-status"
+          role="status"
+          aria-live="polite"
+        ></div>
+      </section>
+      <section class="demo-footer">
+        <div>
+          <span class="eyebrow">VAN VOORBEELD NAAR JOUW PRAKTIJK</span>
+          <h2>Hoe werkt dit<br />in <em>jouw salon?</em></h2>
+          <p>
+            Bespreek je diensten, team en huidige systeem. Nieuwe registraties
+            zijn nog gesloten; een kennismaking is geen abonnement.
+          </p>
+        </div>
+        <div>
+          <a class="primary" href="/#kennismaken"
+            >Vraag een kennismaking aan ↗</a
+          ><a class="secondary-link" href="/#overstappen"
+            >Overstappen, support en beschikbaarheid ↗</a
+          >
+        </div>
+      </section>
+      <noscript
+        ><p class="honesty">
+          Voor de interactieve demo is JavaScript nodig.
+          <a href="/#product">Bekijk de productuitleg</a> of
+          <a href="/#kennismaken">vraag een kennismaking aan</a>.
+        </p></noscript
+      >
+    </main>
+    <footer>
+      Alle namen en bedragen in deze demo zijn voorbeelden. Je keuzes verdwijnen
+      bij herladen.
+    </footer>
+  </body>
 </html>
