@@ -175,3 +175,130 @@
     transition: none;
   }
 }
+/* Real application captures; existing hero, palette and motion remain unchanged. */
+.real-product {
+  position: relative;
+}
+.anchor-target {
+  scroll-margin-top: 110px;
+}
+.screen-switch {
+  display: flex;
+  gap: 8px;
+  margin: 28px 0 18px;
+}
+.screen-switch button {
+  min-height: 48px;
+  border: 1px solid #dcd4e1;
+  border-radius: 8px;
+  padding: 12px 22px;
+  background: transparent;
+  color: #251a2e;
+  font:
+    600 14px "DM Sans",
+    sans-serif;
+  cursor: pointer;
+}
+.screen-switch button[aria-pressed="true"] {
+  background: #251a2e;
+  color: #f8f6ef;
+  border-color: #251a2e;
+}
+.real-screen {
+  margin: 0;
+  border: 1px solid #dcd4e1;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 20px 60px #251a2e0d;
+}
+.real-screen > a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #eeebf1;
+  aspect-ratio: 1440/900;
+  padding: 16px;
+}
+.real-screen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  max-height: 700px;
+}
+.real-screen figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  border-top: 1px solid #dcd4e1;
+  font-size: 12px;
+  line-height: 1.5;
+}
+.real-screen figcaption span:last-child {
+  color: #716679;
+}
+.screen-bottom {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 32px;
+  margin-top: 28px;
+}
+.screen-bottom p {
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.7;
+}
+.screen-bottom .button {
+  flex-shrink: 0;
+}
+.screen-note {
+  font-size: 11px;
+  color: #716679;
+  line-height: 1.6;
+  margin-top: 16px;
+  max-width: 760px;
+}
+.contact-section {
+  position: relative;
+}
+.contact-section .anchor-target {
+  position: absolute;
+  top: 0;
+}
+@media (max-width: 700px) {
+  .real-screen > a {
+    padding: 5px;
+  }
+  .real-screen figcaption {
+    display: block;
+    padding: 14px;
+    font-size: 11px;
+  }
+  .real-screen figcaption span {
+    display: block;
+  }
+  .real-screen figcaption span + span {
+    margin-top: 6px;
+  }
+  .screen-bottom {
+    display: block;
+  }
+  .screen-bottom .button {
+    margin-top: 18px;
+  }
+  .screen-switch button {
+    padding: 12px 18px;
+  }
+  .screen-note {
+    font-size: 11px;
+  }
+  .real-product .section-heading p {
+    font-size: 15px;
+  }
+  .real-screen {
+    border-radius: 10px;
+  }
+}
