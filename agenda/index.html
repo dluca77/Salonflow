@@ -558,13 +558,16 @@ async function loadData(){
     metLocatie(sb.from('diensten').select('*').eq('salon_id',SALON_ID)).eq('actief',true),
     sb.from('wachtlijst').select('id,voorkeur_vanaf,voorkeur_tot').eq('salon_id',SALON_ID).eq('status','actief')
   ]);
+  // A failed query is not an empty agenda. Preserve the previous view and
+  // let the shared error handler offer a retry instead of suggesting free time.
+  for(const result of [aR,mR,dR,wR]) if(result.error) throw result.error;
   APTS=aR.data||[];MEDS=mR.data||[];DIENSTEN=dR.data||[];WACHTLIJST=wR.data||[];
   // Herhaalafspraken uitbreiden
   APTS=expandHerhaling(APTS);
   // Medewerker selects vullen
-  const medOpts='<option value="">Geen voorkeur</option>'+MEDS.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
+  const medOpts='<option value="">Geen voorkeur</option>'+MEDS.map(m=>`<option value="${escapeHtml(m.id)}">${escapeHtml(m.naam)}</option>`).join('');
   document.getElementById('im').innerHTML=medOpts;
-  document.getElementById('iblok-med').innerHTML='<option value="">Alle medewerkers</option>'+MEDS.map(m=>`<option value="${m.id}">${m.naam}</option>`).join('');
+  document.getElementById('iblok-med').innerHTML='<option value="">Alle medewerkers</option>'+MEDS.map(m=>`<option value="${escapeHtml(m.id)}">${escapeHtml(m.naam)}</option>`).join('');
   const ini=(document.querySelector('.salon-naam')?.textContent||'').split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase()||'??';
   document.querySelectorAll('.salon-init').forEach(el=>el.textContent=ini);
   render();

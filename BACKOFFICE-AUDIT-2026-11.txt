@@ -25,3 +25,24 @@ Additional live release verification on 12 November:
 - Mobile 390px: services, settings, checkout, customers, staff, reports and agenda have no document overflow. Day/week/month controls and period steps exercised.
 - Desktop 1440px: combination appointment persisted both services; reopening edit restored both and 75-minute duration. Test KRONR CONTROLE 12 NOV MULTI (dated 11 Nov) cancelled afterwards.
 - Live report month excluded cancelled tests; year displayed actual stored payments and calendar-month buckets. Chart height, all edit statuses, local-date grouping, cancellation visibility/conflicts and search detail opening corrected after these checks.
+
+Verification — 16 November 2026
+
+Changes:
+- Agenda and checkout now reject failed queries instead of presenting failed data as an empty successful result.
+- Employee login recovers from unavailable SDK/network errors; failed invitation acceptance retains the token and does not redirect. Duplicate submission guarded; fields labelled and errors announced.
+- Checkout catalog, receipt lines and generated receipt consistently use Dutch currency formatting.
+- A manually assigned plan without a Stripe customer no longer offers a broken billing portal link.
+- Homepage images now show the actual application rendered locally with fictional Studio Nova data, visibly labelled within each image and in its caption. No production records were added.
+
+Completed:
+- All Node check-*.cjs and check-*.mjs tests passed, including new load-failure and staff-login regressions. External-provider and database calls in these tests are mocked.
+- Live owner session: nine main routes loaded; measured no document overflow at 320, 390, 768 pixels. Desktop routes also loaded. This is Chromium viewport testing, not physical device certification.
+- Local actual UI + isolated staff fixture: read-only agenda detail has no edit/payment/delete actions; direct kassa navigation shows Geen toegang.
+- Local actual checkout: selected employee, treatment EUR72.00 + product EUR18.50 = EUR90.50; VAT EUR15.71; both desktop and mobile UI verified.
+- Production billing portal attempt correctly returned no Stripe customer for this salon. UI corrected to communicate assigned package without billing.
+
+Remaining external validation:
+- User confirmed no separate employee test account exists; real employee authentication cannot be certified by fixture or unit tests.
+- Hosted Stripe test checkout not completed: the current salon has no Stripe billing customer. Stripe configuration unchanged and remains test-only; no live payment taken.
+- Physical iOS/Android testing and real salon pilot remain outstanding. No claim of a fully verified public paid launch.

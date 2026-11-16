@@ -788,9 +788,9 @@ function setPeriod(p){
 function toonPlan(){
   const plan = SALON.plan || 'free';
   document.getElementById('plan-label').textContent = PLAN_NAAM[plan] || 'Gratis';
-  document.getElementById('plan-sub').textContent = plan==='free' ? 'Nog geen actief abonnement' : PLAN_PRIJS_M[plan].per;
+  document.getElementById('plan-sub').textContent = plan==='free' ? 'Nog geen actief abonnement' : SALON.stripe_customer_id ? (PLAN_PRIJS_M[plan]?.per || '') : 'Pakket toegewezen · geen Stripe-facturering gekoppeld';
   document.getElementById('plan-dot').className = plan==='free' ? 'mfa-dot off' : 'mfa-dot on';
-  document.getElementById('btn-plan-portal').style.display = plan==='free' ? 'none' : 'inline-block';
+  document.getElementById('btn-plan-portal').style.display = plan!=='free' && SALON.stripe_customer_id ? 'inline-block' : 'none';
   document.getElementById('plan-upgrade-wrap').style.display = plan==='business' ? 'none' : 'block';
   ['starter','pro','business'].forEach(p=>{
     const btn=document.getElementById('btn-upg-'+p);
