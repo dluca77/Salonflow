@@ -285,7 +285,7 @@ html,body{height:100%;background:var(--iv);color:var(--ink);font-family:'Inter',
       </div>
       <div class="bon-totals">
         <div class="tot-row"><span>Subtotaal</span><span id="sub">€0</span></div>
-        <div class="tot-row"><span>BTW 21%</span><span id="btw">€0.00</span></div>
+        <div class="tot-row"><span>BTW 21%</span><span id="btw">€0,00</span></div>
         <div class="tot-row main"><span>Totaal</span><span class="tot-val" id="tot">€0</span></div>
       </div>
       <div class="pm-wrap">
@@ -394,6 +394,7 @@ async function loadData(){
     kronrTeamOverzicht(true),
     sb.from('producten').select('*').eq('salon_id',SALON_ID).eq('actief',true).order('naam')
   ]);
+  for(const result of [dR,mR,pR]) if(result.error) throw result.error;
   allDiensten=dR.data||[];
   allMedewerkers=mR.data||[];
   allProducten=pR.data||[];
@@ -406,7 +407,7 @@ async function loadData(){
       const opRaak=p.voorraad_aantal<=0;
       return `<div class="svc${opRaak?' vol':''}" ${opRaak?'':`onclick="add('${jsAttr(p.naam)}',${p.prijs},'product',true,null,'${p.id}')"`}>
         <div class="svc-name">${escapeHtml(p.naam)}</div>
-        <div class="svc-prijs">€${p.prijs}</div>
+        <div class="svc-prijs">€${euro(p.prijs)}</div>
         <div class="svc-dur">${opRaak?'Niet op voorraad':p.voorraad_aantal+' op voorraad'}</div>
       </div>`;
     }).join('');
@@ -427,7 +428,7 @@ async function loadData(){
     grid.innerHTML=allDiensten.map(d=>`
       <div class="svc" onclick="add('${jsAttr(d.naam)}',${d.prijs},'dienst',${d.prijs_incl_btw!==false},'${d.id}')">
         <div class="svc-name">${escapeHtml(d.naam)}</div>
-        <div class="svc-prijs">€${d.prijs}</div>
+        <div class="svc-prijs">€${euro(d.prijs)}</div>
         <div class="svc-dur">${d.duur_min} min</div>
       </div>`).join('');
   }
@@ -570,7 +571,7 @@ function renderBon(){
       <div class="bon-qty" onclick="addQty(${idx})">${i.qty}×</div>
       <div class="bon-med-tag${i.medewerker_id?'':' geen'}" title="${escapeHtml(i.medewerker_naam||'Geen medewerker')}">${i.medewerker_id?escapeHtml(medewerkerInit(i.medewerker_id)):'?'}</div>
       <div class="bon-name">${escapeHtml(i.naam)}${i.type==='cadeaubon_verkoop'?' <span style="color:var(--gd);font-size:10px;">(cadeaubon)</span>':''}</div>
-      <div class="bon-price">€${i.total}</div>
+      <div class="bon-price">€${euro(i.total)}</div>
       <div class="bon-del" onclick="del(${idx})">×</div>
     </div>`).join('');
   document.getElementById('bon-count').textContent=bon.length+' item'+(bon.length!==1?'s':'');
@@ -808,7 +809,7 @@ async function betaal(){
   btn.disabled=false;btn.textContent='Afrekenen';
 
   document.getElementById('suc-sub').textContent=methodeLabel+' · €'+euro(t.totaal);
-  let receiptHtml=bon.map(i=>`<div class="rrow"><span>${escapeHtml(i.naam)}</span><span>€${i.total}</span></div>`).join('')+
+  let receiptHtml=bon.map(i=>`<div class="rrow"><span>${escapeHtml(i.naam)}</span><span>€${euro(i.total)}</span></div>`).join('')+
     `<div class="rrow"><span>BTW 21%</span><span>€${euro(t.btw)}</span></div>`;
   if(cadeaubonActief){
     receiptHtml+=`<div class="rrow"><span>Betaald met cadeaubon ${cadeaubonActief.code}</span><span>-€${euro(t.cbGebruikt)}</span></div>`;
@@ -817,7 +818,7 @@ async function betaal(){
   if(nieuweCadeaubonCodes.length){
     receiptHtml+=nieuweCadeaubonCodes.map(c=>
       `<div class="rrow" style="background:var(--wm);margin-top:8px;padding:10px;border-radius:10px;flex-direction:column;align-items:flex-start;">
-        <span style="font-size:11px;color:var(--mu);text-transform:uppercase;">Nieuwe cadeaubon (€${c.bedrag})</span>
+        <span style="font-size:11px;color:var(--mu);text-transform:uppercase;">Nieuwe cadeaubon (€${euro(c.bedrag)})</span>
         <span style="font-family:monospace;font-size:18px;font-weight:700;letter-spacing:2px;color:var(--gd2);">${c.code}</span>
       </div>`
     ).join('');
