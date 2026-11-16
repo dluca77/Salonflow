@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="/spatial.css?v=spatial-3" />
     <link rel="stylesheet" href="/sticky-story.css?v=smooth-scroll-5" />
     <link rel="stylesheet" href="/design-finish.css?v=3" />
-    <link rel="stylesheet" href="/product-story.css?v=1" />
+    <link rel="stylesheet" href="/product-story.css?v=2" />
     <script src="/spatial.js?v=smooth-scroll-5" defer></script>
   </head>
   <body>
@@ -251,244 +251,62 @@
         ><span>Jouw ritme</span>
       </div>
       <section
-        class="flow-section section-pad"
+        class="product-section section-pad real-product"
         id="flow"
-        aria-labelledby="flow-title"
-      >
-        <div class="section-heading">
-          <span class="eyebrow">01 / VAN DRUK NAAR FLOW</span>
-          <h2 id="flow-title">
-            Een werkdag die<br /><em>met je meebeweegt.</em>
-          </h2>
-          <p>
-            Geen wirwar aan losse tools. Van de eerste boeking tot het laatste
-            betaalmoment: alles sluit op elkaar aan.
-          </p>
-        </div>
-        <div class="booking-journey" data-stage="0">
-          <div class="journey-story">
-            <div
-              class="journey-progress"
-              aria-label="Stappen van het voorbeeld"
-            >
-              <span data-journey-step>01 / BOEKEN</span
-              ><span data-journey-step>02 / AGENDA</span
-              ><span data-journey-step>03 / AFREKENEN</span>
-            </div>
-            <h3 data-journey-title>Jouw klant kiest.</h3>
-            <p data-journey-status aria-live="polite">
-              Kies een tijd en probeer een voorbeeldboeking.
-            </p>
-            <button class="btn btn-lime" data-journey-action>
-              Boek deze voorbeeldplek →
-            </button>
-            <small
-              >Interactief voorbeeld · fictieve gegevens.<br />Je maakt geen
-              echte boeking of betaling.</small
-            >
-          </div>
-          <div class="journey-window">
-            <div class="journey-window-head">
-              <span>STUDIO NOVA</span><span>powered by kronr.</span>
-            </div>
-            <div data-journey-panel>
-              <span class="eyebrow">EEN MOMENT VOOR JEZELF</span>
-              <h4>Mooi begint<br />met aandacht.</h4>
-              <div class="journey-service">
-                <span>Knippen & styling<small>Julia · 60 minuten</small></span
-                ><b>€ 72</b>
-              </div>
-              <p>Woensdag · beschikbare voorbeeldtijden</p>
-              <div
-                class="journey-times"
-                role="group"
-                aria-label="Kies een voorbeeldtijd"
-              >
-                <button data-time="09:30" aria-pressed="false">09:30</button
-                ><button data-time="11:00" aria-pressed="true">11:00</button
-                ><button data-time="14:30" aria-pressed="false">14:30</button>
-              </div>
-            </div>
-            <div data-journey-panel hidden>
-              <span class="eyebrow">WOENSDAG / JULIA</span>
-              <h4>Een plek.<br />Alles erbij.</h4>
-              <div class="journey-appointment">
-                <strong
-                  ><span data-chosen-time>11:00</span> · Lisa de Vries</strong
-                >
-                <p>Knippen & styling · 60 min</p>
-                <span>Online geboekt ✓</span>
-              </div>
-              <div class="journey-note">
-                Klantnotitie<small
-                  >Graag de lengte behouden, alleen de punten.</small
-                >
-              </div>
-            </div>
-            <div data-journey-panel hidden>
-              <span class="eyebrow">VOORBEELDBON</span>
-              <h4>Tot de<br />volgende keer.</h4>
-              <div class="journey-service">
-                <span
-                  >Lisa · <span data-chosen-time>11:00</span
-                  ><small>Knippen & styling</small></span
-                ><b>€ 72,00</b>
-              </div>
-              <div class="journey-paid">✓ Voorbeeld afgerond</div>
-              <p>Afspraak, klant en betaling in één overzicht.</p>
-            </div>
-          </div>
-        </div>
-        <script src="/journey.js" defer></script>
-        <a class="text-link dark-link" href="/demo/"
-          >Probeer de interactieve demo ↗</a
-        >
-      </section>
-      <section
-        class="product-section section-pad"
-        id="product"
         aria-labelledby="product-title"
       >
+        <span id="product" class="anchor-target"></span>
         <div class="section-heading">
-          <span class="eyebrow">ÉÉN WERKDAG. ZES DUIDELIJKE ONDERDELEN.</span>
-          <h2 id="product-title">Zie wat je<br /><em>ermee doet.</em></h2>
+          <span class="eyebrow">DE ECHTE BACKOFFICE</span>
+          <h2 id="product-title">Dit is waar<br /><em>je werkt.</em></h2>
           <p>
-            Volg Lisa door een fictieve werkdag. De demo rekent en onthoudt je
-            keuzes zolang de pagina open is; er worden geen klantgegevens of
-            betalingen verstuurd.
+            Je planning en kassa, zoals ze er nu in Kronr uitzien. Bekijk de
+            schermen of probeer de werkdag in de interactieve demo.
           </p>
         </div>
-        <div class="product-grid">
-          <a href="/demo/#boeken"
-            ><span class="product-number">01 / BOEKEN</span>
-            <h3>Je klant kiest een tijd.</h3>
-            <p>
-              Een behandeling, medewerker en tijdslot. De voorbeeldboeking
-              verschijnt direct in de demo-agenda.
-            </p>
-            <span class="product-link">Maak een voorbeeldboeking ↗</span></a
-          >
-          <a href="/demo/#agenda"
-            ><span class="product-number">02 / AGENDA</span>
-            <h3>Jij houdt het overzicht.</h3>
-            <p>
-              Open de afspraak en verplaats haar naar een ander beschikbaar
-              voorbeeldtijdstip.
-            </p>
-            <span class="product-link">Probeer de agenda ↗</span></a
-          >
-          <a href="/demo/#klanten"
-            ><span class="product-number">03 / KLANTEN</span>
-            <h3>Voorkeuren bij de hand.</h3>
-            <p>
-              Bekijk een klantnotitie en de afspraak van dezelfde klant. Geen
-              los briefje naast de kassa.
-            </p>
-            <span class="product-link">Bekijk het klantprofiel ↗</span></a
-          >
-          <a href="/demo/#kassa"
-            ><span class="product-number">04 / KASSA</span>
-            <h3>Van behandeling naar bon.</h3>
-            <p>
-              Voeg een verzorgingsproduct toe, controleer het totaal en
-              registreer een voorbeeldbetaling.
-            </p>
-            <span class="product-link">Stel een bon samen ↗</span></a
-          >
-          <a href="/demo/#rapportages"
-            ><span class="product-number">05 / RAPPORTAGES</span>
-            <h3>Weet wat is afgerekend.</h3>
-            <p>
-              Zie het verschil tussen een geplande afspraak en een
-              geregistreerde betaling.
-            </p>
-            <span class="product-link">Volg het bedrag ↗</span></a
-          >
-          <a href="#overstappen"
-            ><span class="product-number">06 / JOUW START</span>
-            <h3>Eerst kijken of het past.</h3>
-            <p>
-              Bespreek je team, diensten en huidige werkwijze. We maken
-              duidelijk wat kan en wat nog niet.
-            </p>
-            <span class="product-link">Zo bereid je de overstap voor ↓</span></a
-          >
+        <div
+          class="screen-switch"
+          role="group"
+          aria-label="Bekijk een backofficescherm"
+        >
+          <button data-screen="agenda" aria-pressed="true">01 Agenda</button
+          ><button data-screen="kassa" aria-pressed="false">02 Kassa</button>
         </div>
-      </section>
-      <section
-        class="editorial-section"
-        id="voor-wie"
-        aria-labelledby="people-title"
-      >
-        <div class="editorial-photo">
-          <img
-            src="/images/blog-klantretentie.jpg"
-            alt="Een stylist bespreekt het haar van haar klant in de salon"
-            loading="lazy"
-            width="1200"
-            height="900"
-          />
-        </div>
-        <div class="editorial-copy">
-          <span class="eyebrow">02 / ACHTER ELKE MOOIE ZAAK</span>
-          <h2 id="people-title">Dit is waarom<br /><em>je het doet.</em></h2>
-          <p>
-            Dat kleine verschil. Die nieuwe coupe. Een klant die zichzelf weer
-            ziet. Dáár wil je je aandacht bij houden.
+        <figure class="real-screen">
+          <a
+            id="screen-link"
+            href="/images/backoffice/agenda.png"
+            target="_blank"
+            rel="noopener"
+            aria-label="Open het echte agendascherm op volledig formaat"
+            ><img
+              id="backoffice-screen"
+              src="/images/backoffice/agenda.png"
+              alt="Echte Kronr-agenda met weekweergave, datumknoppen en medewerkerfilter; zonder afspraken in beeld"
+              width="1440"
+              height="740"
+              loading="lazy"
+          /></a>
+          <figcaption>
+            <span id="screen-caption"
+              >Agenda · weekoverzicht met dag-, week- en maandkeuze.</span
+            ><span>Echt schermbeeld · open afbeelding om in te zoomen ↗</span>
+          </figcaption>
+        </figure>
+        <div class="screen-bottom">
+          <p id="voor-wie">
+            Voor kappers, nagelstudio’s, beauty en wellness. Van online afspraak
+            naar klantnotities, bon en rapportage.
           </p>
-          <p>
-            Voor een kapper begint dat bij een duidelijke planning. Voor een
-            nagelstudio bij terugkerende klanten. Voor een beauty- of
-            wellnesszaak bij de juiste duur, medewerker en behandelnotities.
-          </p>
-          <div class="industry-tags">
-            <span>Kappers</span><span>Nagelstudio’s</span><span>Beauty</span
-            ><span>Wellness</span>
-          </div>
-          <a class="text-link dark-link" href="mailto:hallo@kronr.nl"
-            >Bespreek jouw werkwijze ↗</a
+          <a class="button button-plum" href="/demo/"
+            >Probeer de productdemo ↗</a
           >
         </div>
-      </section>
-      <section
-        class="kai-section section-pad"
-        id="ai"
-        aria-labelledby="kai-title"
-      >
-        <div class="kai-copy">
-          <span class="eyebrow">03 / EEN FRISSE BLIK ERBIJ</span>
-          <h2 id="kai-title">Jij hebt het talent.<br /><em>Dit is Kai.</em></h2>
-          <p>
-            Een assistent om mee te denken. Van een eerste bericht tot een idee
-            voor je salon. Jij houdt de regie.
-          </p>
-          <a class="text-link" href="#prijzen">Bekijk Kai per pakket ↗</a>
-          <p class="kai-disclaimer">
-            Illustratief concept. Functies verschillen per pakket.
-            WhatsApp-verzending is nog niet beschikbaar.
-          </p>
-        </div>
-        <div class="kai-stage">
-          <div class="kai-orb" aria-hidden="true">✳</div>
-          <div class="kai-chat">
-            <div class="kai-chat-label">
-              <span>✳ Kai</span><span>CONCEPTPREVIEW</span>
-            </div>
-            <div class="kai-user">
-              Hoe nodig ik een klant vriendelijk uit om weer langs te komen?
-            </div>
-            <div class="kai-answer">
-              <span>✳</span>
-              <p>
-                Hé Emma, tijd voor een moment voor jezelf? We zien je graag weer
-                in de salon. Kies gerust een tijd die jou uitkomt.
-              </p>
-            </div>
-            <div class="kai-review">
-              Een eerste versie. Jij maakt het persoonlijk. <span>↗</span>
-            </div>
-          </div>
-        </div>
+        <p class="screen-note">
+          Opnamen van de huidige applicatie, zonder klant- of accountnamen.
+          Agenda zonder afspraken en kassa met lege bon; geen resultaten of
+          klantverhalen gesimuleerd.
+        </p>
       </section>
       <section
         class="pricing-section section-pad"
@@ -496,7 +314,7 @@
         aria-labelledby="pricing-title"
       >
         <div class="section-heading">
-          <span class="eyebrow">04 / RUIMTE OM TE GROEIEN</span>
+          <span class="eyebrow">PAKKETTEN VOOR JOUW TEAM</span>
           <h2 id="pricing-title">Jouw ambities.<br /><em>Jouw pakket.</em></h2>
           <p>
             Geen commissie over je boekingen. Kies het pakket dat past bij jouw
@@ -577,86 +395,9 @@
           </article>
         </div>
         <p class="pricing-note">
-          Bij Pro zijn maximaal 5 medewerkers inbegrepen: €39 per maand of €390
-          per jaar. Dit zijn abonnementskosten; eventuele betaalproviderkosten
-          komen daar los bij. WhatsApp is nog niet actief. Jaarbetaling wordt
-          als één jaarbedrag getoond.
+          Eventuele betaalproviderkosten staan los van het abonnement.
+          Jaarbetaling wordt als één jaarbedrag getoond.
         </p>
-      </section>
-      <section class="founder-strip">
-        <span class="founder-symbol" aria-hidden="true">↗</span>
-        <div>
-          <span class="eyebrow">KLEIN GENOEG OM JE TE KENNEN.</span>
-          <h2>Een nieuw platform.<br />Een <em>persoonlijke</em> start.</h2>
-        </div>
-        <div>
-          <p>
-            Geen anoniem loket. Als vroege gebruiker heb je direct contact met
-            de bouwer van Kronr. Je vragen, ideeën en feedback helpen het
-            platform vooruit.
-          </p>
-          <a class="text-link dark-link" href="mailto:hallo@kronr.nl"
-            >Zeg eens hallo ↗</a
-          >
-        </div>
-      </section>
-      <section
-        class="product-section section-pad"
-        id="overstappen"
-        aria-labelledby="switch-title"
-      >
-        <div class="section-heading">
-          <span class="eyebrow">BEGINNEN ZONDER AANNAMES</span>
-          <h2 id="switch-title">
-            Jouw salon.<br /><em>Een doordachte start.</em>
-          </h2>
-          <p>
-            Je vertrouwt software je werkdag toe. Daarom bespreken we de
-            praktische vragen vóór je overstapt.
-          </p>
-        </div>
-        <div class="start-grid">
-          <article>
-            <span class="product-number">01 / JOUW WERKWIJZE</span>
-            <h3>Wat moet er mee?</h3>
-            <p>
-              Vertel met hoeveel mensen je werkt, welke diensten je aanbiedt en
-              welk systeem je nu gebruikt. Een groepsles of meerdere locaties
-              vraagt om een andere inrichting dan één behandelstoel.
-            </p>
-          </article>
-          <article>
-            <span class="product-number">02 / JE GEGEVENS</span>
-            <h3>Eerst de mogelijkheden.</h3>
-            <p>
-              We bespreken welke gegevens je wilt overzetten en wat haalbaar is.
-              Een volledige automatische migratie is geen toezegging. Deel in je
-              eerste mail geen klantgegevens.
-            </p>
-          </article>
-          <article>
-            <span class="product-number">03 / CONTACT & CONTROLE</span>
-            <h3>Weet waar je terechtkunt.</h3>
-            <p>
-              Vragen gaan naar
-              <a href="mailto:hallo@kronr.nl">hallo@kronr.nl</a>. Je hebt
-              contact met de bouwer. Er is geen toegezegde 24/7-helpdesk of
-              vaste reactietijd.
-            </p>
-          </article>
-        </div>
-        <div class="availability-note">
-          <strong>Wat is de status?</strong>
-          <p>
-            Je kunt de productdemo nu gebruiken zonder account. Nieuwe
-            registraties zijn nog gesloten. WhatsApp is nog niet beschikbaar en
-            betalingen worden voorlopig alleen in testmodus gecontroleerd. Een
-            kennismaking is geen abonnement of bevestiging dat je direct kunt
-            starten.
-          </p>
-          <a href="/privacybeleid/">Privacybeleid ↗</a>
-          <a href="/verwerkersovereenkomst/">Verwerkersovereenkomst ↗</a>
-        </div>
       </section>
       <section
         class="contact-section section-pad"
@@ -664,26 +405,27 @@
         aria-labelledby="contact-title"
       >
         <div>
-          <span class="eyebrow">VERTEL ONS OVER JOUW ZAAK</span>
+          <span id="overstappen" class="anchor-target"></span
+          ><span class="eyebrow">JOUW SALON. JOUW START.</span>
           <h2 id="contact-title">
             Eerst kennismaken.<br /><em>Dan beslissen.</em>
           </h2>
           <p>
-            Vertel welk type salon je hebt, hoe groot je team is en waar je nu
-            tegenaan loopt. Dan kunnen we gericht bespreken of Kronr past.
+            Vertel ons over je team en huidige systeem. Je spreekt met de bouwer
+            over wat past en welke gegevens eventueel mee kunnen. We bevestigen
+            vooraf wat mogelijk is.
           </p>
         </div>
         <div class="contact-card">
           <h3>Vraag een kennismaking aan</h3>
           <p>
-            De knop opent een concept in je mailprogramma. Jij kiest wat je
-            deelt en verstuurt de aanvraag zelf. Er wordt nog geen afspraak
-            ingepland.
+            Mail je vraag of vraag een kennismaking aan. De knop opent je
+            mailprogramma; er wordt nog geen afspraak ingepland.
           </p>
           <a
             class="button button-lime"
             href="mailto:hallo@kronr.nl?subject=Kennismaken%20met%20Kronr&amp;body=Hallo%20Kronr%2C%0A%0AIk%20wil%20graag%20kennismaken.%0AType%20salon%3A%20%0AAantal%20medewerkers%3A%20%0AHuidig%20systeem%3A%20%0AMijn%20vraag%3A%20%0A"
-            >Open mijn mailprogramma ↗</a
+            >Mail voor een kennismaking ↗</a
           >
           <p class="contact-alternative">
             Liever zelf mailen?
@@ -694,16 +436,16 @@
       </section>
       <section class="faq-section section-pad" id="faq">
         <div>
-          <span class="eyebrow">05 / GOED OM TE WETEN</span>
+          <span class="eyebrow">GOED OM TE WETEN</span>
           <h2>Nog iets<br /><em>op je lijstje?</em></h2>
         </div>
         <div class="faq-list">
           <details>
             <summary>Kan ik Kronr nu al gebruiken?<span>+</span></summary>
             <p>
-              Je kunt de demo bekijken. Nieuwe accounts zijn nog niet geopend:
-              vraag een kennismaking aan om je wensen en de actuele
-              beschikbaarheid te bespreken.
+              De demo is vrij te gebruiken. Nieuwe accounts zijn nog gesloten.
+              WhatsApp is nog niet beschikbaar en betalingen staan voorlopig op
+              testmodus. Bespreek de actuele mogelijkheden in een kennismaking.
             </p>
           </details>
           <details>
@@ -726,14 +468,6 @@
             </p>
           </details>
           <details>
-            <summary>Werkt WhatsApp al?<span>+</span></summary>
-            <p>
-              Nee. WhatsApp-herinneringen zijn nog niet actief. We presenteren
-              deze als aankomende functie, niet als onderdeel dat je nu al kunt
-              gebruiken.
-            </p>
-          </details>
-          <details>
             <summary>
               Waar vind ik informatie over mijn gegevens?<span>+</span>
             </summary>
@@ -745,18 +479,6 @@
             </p>
           </details>
         </div>
-      </section>
-      <section class="closing-section">
-        <span class="eyebrow">MINDER REGELEN. MEER JIJ.</span>
-        <h2>Past Kronr<br />bij <em>jouw salon?</em></h2>
-        <div>
-          <a class="button button-plum" href="#kennismaken"
-            >Vraag een kennismaking aan ↗</a
-          ><a class="text-link dark-link" href="/demo/"
-            >Bekijk de productdemo ↗</a
-          >
-        </div>
-        <span class="closing-flower" aria-hidden="true">✳</span>
       </section>
     </main>
     <footer>
@@ -798,5 +520,6 @@
         ><a href="#main">Terug naar boven ↑</a>
       </div>
     </footer>
+    <script src="/product-screens.js?v=1" defer></script>
   </body>
 </html>
