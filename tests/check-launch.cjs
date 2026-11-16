@@ -57,7 +57,7 @@ for (const [, url] of home.matchAll(/(?:href|src)="([^"]+)"/g)) {
   }
 }
 assert.equal((home.match(/<h1\b/g) || []).length, 1);
-assert.ok(script.includes("prefers-reduced-motion"));
+assert.ok(fs.readFileSync("arrival.css", "utf8").includes("prefers-reduced-motion"));
 assert.ok(home.includes("Fictieve salon en voorbeelddata"));
 console.log(
   "Rebrand checks passed: local routes/assets, anchor targets, one H1, motion preference and example-data label.",
