@@ -20,8 +20,8 @@ const vm=require('node:vm');
 function setup(reduce=false){
  const make=()=>({attrs:{},style:{},events:{},setAttribute(k,v){this.attrs[k]=v},addEventListener(k,v){this.events[k]=v},querySelector(){return this.bar||(this.bar=make())}});
  const shape=make(),layers=[make(),make(),make()],captions=[make(),make(),make()],steps=[make(),make(),make()];
- const nodes={'film-shape':shape,'film-toggle':make(),'film-status':make(),'film-booking-text':make(),'film-agenda-text':make(),'film-receipt-text':make()};
- const film={querySelector:()=>shape,querySelectorAll:s=>s.includes('layer')?layers:s.includes('caption')?captions:steps};
+ const nodes={'film-shape':shape,'film-light':make(),'film-sheen':make(),'film-toggle':make(),'film-status':make(),'film-booking-text':make(),'film-agenda-text':make(),'film-receipt-text':make()};
+ const film={style:{setProperty(){}},querySelector:()=>shape,querySelectorAll:s=>s.includes('layer')?layers:s.includes('caption')?captions:steps};
  const frames=new Map();let id=0,observer;const media={matches:reduce,addEventListener(k,fn){this.change=fn}};
  const document={hidden:false,getElementById:k=>k==='product-film'?film:nodes[k],addEventListener(k,fn){this[k]=fn}};
  const context={window:{},document,matchMedia:()=>media,requestAnimationFrame:fn=>{frames.set(++id,fn);return id},cancelAnimationFrame:n=>frames.delete(n),IntersectionObserver:class{constructor(fn){observer=fn}observe(){}}};
