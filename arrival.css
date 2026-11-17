@@ -9,13 +9,6 @@
 .arrival-actions .button{font-size:16px;min-height:58px;padding:18px 28px;gap:32px}
 .arrival-secondary{color:#faf7ed;font-size:16px;text-decoration:none;border-bottom:1px solid #95869d;padding:12px 0;display:flex;gap:18px}
 .arrival-secondary:hover{color:#e7f29b}
-.arrival-product{perspective:1800px;min-width:0}
-.arrival-window{display:block;text-decoration:none;color:#302139;background:#f9f7f3;border:1px solid #ffffff70;border-radius:18px;overflow:hidden;box-shadow:0 50px 100px #0d061c80,0 0 80px #d6bbed15;transform:rotateY(-7deg) rotateX(3deg);animation:arrival-surface 1.6s cubic-bezier(.16,1,.3,1) both;transform-origin:left center;transition:box-shadow .35s}
-.arrival-window:hover{box-shadow:0 50px 100px #0d061c80,0 0 80px #d6bbed35}
-.arrival-window:focus-visible{outline:3px solid #e7f29b;outline-offset:8px}
-.arrival-chrome{display:flex;justify-content:space-between;align-items:center;padding:18px 24px;font-size:14px;background:#f2eef5;border-bottom:1px solid #dcd4e2}
-.arrival-chrome>span:first-child{font-weight:700}
-.arrival-window img{display:block;width:100%;height:auto}
 @keyframes arrival-copy{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:translateY(0)}}
 @keyframes arrival-surface{from{opacity:0;transform:translateY(65px) rotateY(-15deg) rotateX(8deg) scale(.94)}to{opacity:1;transform:rotateY(-7deg) rotateX(3deg)}}
 @media(min-width:1900px){.arrival{padding-inline:max(6vw,calc((100vw - 2200px)/2));gap:7vw}}
@@ -23,3 +16,30 @@
 @keyframes arrival-mobile{from{opacity:0;transform:translateY(30px)}to{opacity:1;transform:none}}
 @media(max-width:540px){.arrival{padding:48px 22px 48px;gap:38px}.arrival h1{font-size:clamp(58px,13vw,76px);margin-bottom:24px}.arrival-copy>p{font-size:18px;margin-bottom:28px}.arrival-actions{gap:22px}.arrival-actions .button{padding:16px 21px;min-height:54px;font-size:15px;gap:20px}.arrival-secondary{font-size:15px}.arrival-window{border-radius:10px}.arrival-chrome{padding:12px 14px;font-size:13px}}
 @media(prefers-reduced-motion:reduce){.arrival-copy,.arrival-window{animation:none;transform:none;transition:none}}
+
+/* A single continuous vector composition: the selected time becomes the
+   appointment and then the receipt status. No image layers or floating cards. */
+.product-film{min-width:0;position:relative;width:100%;max-width:840px;justify-self:center}
+.film-canvas{display:block;width:100%;height:auto;overflow:visible;font-family:"DM Sans",sans-serif;fill:#faf7ed}
+.film-brand{font-family:"Instrument Serif",serif;font-size:34px;letter-spacing:-1px}
+.film-label{font-size:16px;fill:#c3b5ce}
+.film-heading{font-family:"Instrument Serif",serif;font-size:43px;letter-spacing:-1px}
+.film-muted{font-size:21px;fill:#c9bed2}
+.film-body{font-size:23px;fill:#eee7f2}
+.film-total{font-family:"Instrument Serif",serif;font-size:46px}
+.film-dates{text-anchor:middle;font-size:17px;fill:#b9aac5}
+.film-dates text:nth-child(n+6){font-size:31px;fill:#eee7f2}
+.film-dates text:nth-child(8){fill:#e7f29b}
+.film-selected{font-size:23px;font-weight:600;fill:#302139}
+.film-selected-small{font-size:17px;fill:#302139}
+.film-footer{font-size:19px;fill:#d5cadd}
+.film-controls{display:flex;gap:20px;align-items:center;margin:0 5.3%;border-top:1px solid #e4d5f023;padding-top:16px}
+.film-controls button{position:relative;flex:1;background:none;border:0;color:#c6b8d0;font:500 15px "DM Sans",sans-serif;padding:12px 0 18px;text-align:left;cursor:pointer}
+.film-controls button[aria-pressed=true]{color:#e7f29b}
+.film-controls button span{position:absolute;bottom:0;left:0;height:2px;width:100%;background:#e7f29b;transform:scaleX(0);transform-origin:left}
+.film-controls button:focus-visible{outline:2px solid #e7f29b;outline-offset:5px;border-radius:2px}
+.film-controls #film-toggle{flex:0 0 auto;text-align:right;color:#eee7f2;font-size:14px;padding-left:12px;border-left:1px solid #e4d5f030}
+.film-accessible{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media(min-width:1001px){.arrival{grid-template-columns:minmax(340px,.9fr) minmax(0,1.1fr);gap:4vw;padding-block:70px;min-height:min(920px,calc(100svh - 80px))}}
+@media(max-width:1000px){.product-film{max-width:680px;justify-self:start}}
+@media(max-width:540px){.arrival{gap:30px;padding-bottom:38px}.product-film{width:calc(100% + 16px);margin-left:-8px;max-width:none}.film-controls{gap:12px;padding-top:8px}.film-controls button{font-size:13px}.film-controls #film-toggle{font-size:12px}.film-label{font-size:20px}.film-muted{font-size:24px}.film-footer{font-size:21px}.film-selected-small{font-size:20px}}

@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="/rebrand-refinements.css" />
     <link rel="stylesheet" href="/design-finish.css?v=3" />
     <link rel="stylesheet" href="/product-story.css?v=2" />
-    <link rel="stylesheet" href="/arrival.css?v=1" />
+    <link rel="stylesheet" href="/arrival.css?v=2" />
   </head>
   <body>
     <a class="skip-link" href="#main">Naar de inhoud</a>
@@ -87,11 +87,55 @@
             <a class="arrival-secondary" href="#kennismaken">Kennismaken <span aria-hidden="true">↗</span></a>
           </div>
         </div>
-        <div class="arrival-product">
-          <a class="arrival-window" href="/demo/" aria-label="Ontdek Kronr in de interactieve demo">
-            <div class="arrival-chrome"><span>Studio Nova</span><span>Voorbeelddata</span></div>
-            <img src="/images/backoffice/agenda-example.png" width="1440" height="900" alt="Kronr-agenda gevuld met fictieve afspraken. Fictieve salon en voorbeelddata." fetchpriority="high">
-          </a>
+        <div class="arrival-product product-film" id="product-film" aria-label="Geanimeerd voorbeeld: van boeking naar agenda en bon">
+          <svg class="film-canvas" viewBox="0 0 600 560" role="img" aria-labelledby="film-title film-description">
+            <title id="film-title">Een werkdag die samenkomt</title>
+            <desc id="film-description">Fictieve salon en voorbeelddata. Lisa kiest 11:00. Haar afspraak verschijnt in de agenda. De behandeling wordt afgerond op een voorbeeldbon van 72 euro.</desc>
+            <defs>
+              <linearGradient id="film-line"><stop stop-color="#ede7f3" stop-opacity=".04"/><stop offset=".5" stop-color="#ede7f3" stop-opacity=".5"/><stop offset="1" stop-color="#ede7f3" stop-opacity=".04"/></linearGradient>
+              <radialGradient id="film-glow"><stop stop-color="#9b80b8" stop-opacity=".28"/><stop offset="1" stop-color="#9b80b8" stop-opacity="0"/></radialGradient>
+            </defs>
+            <ellipse cx="310" cy="310" rx="290" ry="250" fill="url(#film-glow)"/>
+            <path d="M20 98H580M20 468H580" stroke="url(#film-line)"/>
+            <text x="32" y="60" class="film-brand">Studio Nova<tspan fill="#e7f29b">.</tspan></text>
+            <text x="568" y="56" text-anchor="end" class="film-label">Voorbeelddata</text>
+            <g data-film-layer="0">
+              <text x="32" y="158" class="film-heading">Een moment voor jezelf.</text>
+              <text x="32" y="195" class="film-muted">Knippen &amp; styling · Julia</text>
+              <g class="film-dates"><text x="70" y="261">MA</text><text x="185" y="261">DI</text><text x="300" y="261" fill="#e7f29b">WO</text><text x="415" y="261">DO</text><text x="530" y="261">VR</text>
+              <text x="70" y="306">19</text><text x="185" y="306">20</text><text x="300" y="306" fill="#e7f29b">21</text><text x="415" y="306">22</text><text x="530" y="306">23</text></g>
+              <path d="M272 327H328" stroke="#e7f29b" stroke-width="2"/>
+              <text x="114" y="400" text-anchor="middle" class="film-muted">09:30</text><text x="486" y="400" text-anchor="middle" class="film-muted">14:30</text>
+            </g>
+            <g data-film-layer="1" opacity="0">
+              <text x="32" y="158" class="film-heading">Precies op haar plek.</text>
+              <text x="32" y="195" class="film-muted">Woensdag 21 · jouw agenda</text>
+              <g class="film-grid" stroke="#c6b6d3" stroke-opacity=".19"><path d="M110 240H568M110 300H568M110 360H568M110 420H568"/><path d="M110 240V440M340 240V440M568 240V440"/></g>
+              <g class="film-label"><text x="32" y="265">10:00</text><text x="32" y="325">11:00</text><text x="32" y="385">12:00</text></g>
+              <text x="136" y="276" class="film-muted">Emma · Knippen</text>
+            </g>
+            <g data-film-layer="2" opacity="0">
+              <text x="32" y="158" class="film-heading">Mooi afgerond.</text>
+              <text x="32" y="195" class="film-muted">Lisa · jouw voorbeeldbon</text>
+              <text x="32" y="262" class="film-body">Knippen &amp; styling</text><text x="568" y="262" text-anchor="end" class="film-body">€ 72,00</text>
+              <path d="M32 288H568" stroke="#c6b6d3" stroke-opacity=".28"/>
+              <text x="32" y="338" class="film-muted">Totaal</text><text x="568" y="345" text-anchor="end" class="film-total">€ 72,00</text>
+            </g>
+            <rect id="film-shape" x="218" y="362" width="164" height="60" rx="30" fill="#e7f29b"/>
+            <g id="film-booking-text"><text x="300" y="400" text-anchor="middle" class="film-selected">11:00</text></g>
+            <g id="film-agenda-text" opacity="0"><text x="139" y="331" class="film-selected">Lisa</text><text x="139" y="357" class="film-selected-small">Knippen &amp; styling · 11:00</text><path d="m514 336 9 9 17-19" fill="none" stroke="#302139" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></g>
+            <g id="film-receipt-text" opacity="0"><path d="m205 402 8 8 16-18" fill="none" stroke="#302139" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="312" y="408" text-anchor="middle" class="film-selected">Afgerond</text></g>
+            <text x="32" y="514" class="film-footer" data-film-caption="0">Jouw klant kiest. Jij houdt je aandacht erbij.</text>
+            <text x="32" y="514" class="film-footer" data-film-caption="1" opacity="0">Een online boeking. Direct in je overzicht.</text>
+            <text x="32" y="514" class="film-footer" data-film-caption="2" opacity="0">Van afspraak naar bon. Alles bij elkaar.</text>
+          </svg>
+          <div class="film-controls" role="group" aria-label="Stappen van het voorbeeld">
+            <button data-film-step="0" aria-pressed="true">Boeken<span></span></button>
+            <button data-film-step="1" aria-pressed="false">Plannen<span></span></button>
+            <button data-film-step="2" aria-pressed="false">Afronden<span></span></button>
+            <button id="film-toggle" aria-label="Animatie pauzeren">Pauze</button>
+          </div>
+          <p class="film-accessible" id="film-status" aria-live="polite">Voorbeeld: Lisa kiest een tijd voor haar behandeling.</p>
         </div>
       </section>
       <div class="capability-strip" aria-label="De basis van Kronr">
@@ -369,5 +413,6 @@
       </div>
     </footer>
     <script src="/product-screens.js?v=2" defer></script>
+      <script src="/product-film.js?v=1" defer></script>
   </body>
 </html>
