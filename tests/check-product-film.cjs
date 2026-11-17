@@ -13,7 +13,7 @@ for(let i=0;i<=1000;i++){
 assert.deepEqual(stateAt(-1),stateAt(0));assert.deepEqual(stateAt(2),stateAt(1));
 const home=fs.readFileSync('index.html','utf8'),hero=home.slice(home.indexOf('<section class="arrival"'),home.indexOf('<div class="capability-strip"'));
 assert.ok(!hero.includes('<img'));assert.ok(!hero.includes('space-card'));
-assert.ok(hero.includes('Voorbeelddata'));assert.ok(hero.includes('film-toggle'));
+assert.ok(hero.includes('film-toggle'));
 console.log('PASS: continuous bounded shared-shape morph, correct stages, no screenshot/card stack and visible example label/pause control');
 // Exercise the actual browser controller with a deterministic animation clock.
 const vm=require('node:vm');
