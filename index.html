@@ -34,7 +34,7 @@
     <link rel="stylesheet" href="/rebrand-refinements.css" />
     <link rel="stylesheet" href="/design-finish.css?v=3" />
     <link rel="stylesheet" href="/product-story.css?v=2" />
-    <link rel="stylesheet" href="/arrival.css?v=2" />
+    <link rel="stylesheet" href="/arrival.css?v=3" />
   </head>
   <body>
     <a class="skip-link" href="#main">Naar de inhoud</a>
@@ -94,8 +94,13 @@
             <defs>
               <linearGradient id="film-line"><stop stop-color="#ede7f3" stop-opacity=".04"/><stop offset=".5" stop-color="#ede7f3" stop-opacity=".5"/><stop offset="1" stop-color="#ede7f3" stop-opacity=".04"/></linearGradient>
               <radialGradient id="film-glow"><stop stop-color="#9b80b8" stop-opacity=".28"/><stop offset="1" stop-color="#9b80b8" stop-opacity="0"/></radialGradient>
+              <linearGradient id="film-surface" x1="0" y1="0" x2="0.3" y2="1"><stop stop-color="#f0f7bd"/><stop offset=".48" stop-color="#e7f29b"/><stop offset="1" stop-color="#d5e589"/></linearGradient>
+              <linearGradient id="film-edge" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ffffea" stop-opacity=".85"/><stop offset=".5" stop-color="#ffffea" stop-opacity=".1"/><stop offset="1" stop-color="#a8bb65" stop-opacity=".4"/></linearGradient>
+              <linearGradient id="film-sheen" gradientUnits="userSpaceOnUse" x1="-100" y1="0" x2="100" y2="50"><stop stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".26"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+              <filter id="film-shadow" x="-30%" y="-80%" width="160%" height="300%"><feDropShadow dx="0" dy="12" stdDeviation="9" flood-color="#100917" flood-opacity=".4"/></filter>
+              <clipPath id="film-clip"><use href="#film-shape"/></clipPath>
             </defs>
-            <ellipse cx="310" cy="310" rx="290" ry="250" fill="url(#film-glow)"/>
+            <ellipse id="film-light" cx="310" cy="310" rx="290" ry="250" fill="url(#film-glow)"/>
             <path d="M20 98H580M20 468H580" stroke="url(#film-line)"/>
             <g data-film-layer="0">
               <text x="32" y="158" class="film-heading">Een moment voor jezelf.</text>
@@ -119,7 +124,8 @@
               <path d="M32 288H568" stroke="#c6b6d3" stroke-opacity=".28"/>
               <text x="32" y="338" class="film-muted">Totaal</text><text x="568" y="345" text-anchor="end" class="film-total">€ 72,00</text>
             </g>
-            <rect id="film-shape" x="218" y="362" width="164" height="60" rx="30" fill="#e7f29b"/>
+            <rect id="film-shape" x="218" y="362" width="164" height="60" rx="30" fill="url(#film-surface)" stroke="url(#film-edge)" stroke-width="1.2" filter="url(#film-shadow)"/>
+            <rect x="0" y="240" width="600" height="220" fill="url(#film-sheen)" clip-path="url(#film-clip)" pointer-events="none"/>
             <g id="film-booking-text"><text x="300" y="400" text-anchor="middle" class="film-selected">11:00</text></g>
             <g id="film-agenda-text" opacity="0"><text x="139" y="331" class="film-selected">Lisa</text><text x="139" y="357" class="film-selected-small">Knippen &amp; styling · 11:00</text><path d="m514 336 9 9 17-19" fill="none" stroke="#302139" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></g>
             <g id="film-receipt-text" opacity="0"><path d="m205 402 8 8 16-18" fill="none" stroke="#302139" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><text x="312" y="408" text-anchor="middle" class="film-selected">Afgerond</text></g>
@@ -408,6 +414,6 @@
       </div>
     </footer>
     <script src="/product-screens.js?v=3" defer></script>
-      <script src="/product-film.js?v=1" defer></script>
+      <script src="/product-film.js?v=2" defer></script>
   </body>
 </html>
