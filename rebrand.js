@@ -33,6 +33,10 @@
       document
         .querySelectorAll("[data-price]")
         .forEach((el) => (el.textContent = amounts[period][el.dataset.price]));
+      document.querySelectorAll("[data-saving]").forEach(el => {
+        el.textContent = period === "yearly" ? `Bespaar €${amounts.monthly[el.dataset.saving] * 2} per jaar` : "Maandelijks gefactureerd";
+        el.classList.toggle("monthly-note", period === "monthly");
+      });
       document
         .querySelectorAll("[data-price-unit]")
         .forEach(
