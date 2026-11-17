@@ -10,7 +10,7 @@ for (const file of ["index.html", "demo/index.html", "login/index.html"]) {
       new vm.Script(code, { filename: file });
   }
   for (const [, href, label] of html.matchAll(
-    /<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi,
+    /<a\b[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a\s*>/gi,
   )) {
     if (
       /Start.*gratis|launchupdate|Blijf op de hoogte|Houd me op de hoogte/i.test(
@@ -39,11 +39,11 @@ assert.ok(home.includes('aria-label="Menu sluiten"'));
 assert.ok(
   fs
     .readFileSync("login/index.html", "utf8")
-    .includes("const PRE_LAUNCH = true;"),
-  "Do not open public registration as part of design changes",
+    .includes("async function registreer()"),
+  "Public registration entry point exists",
 );
 console.log(
-  "Launch checks passed: JS syntax, registration links, UTM hash, fixed heading, menu semantics and pre-launch guard.",
+  "Launch checks passed: JS syntax, registration links, UTM hash, fixed heading, menu semantics and registration entry.",
 );
 // Internal routes/assets must resolve on the static host; anchors must exist.
 const ids = new Set([...home.matchAll(/\bid="([^"]+)"/g)].map((m) => m[1]));

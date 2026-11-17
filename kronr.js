@@ -278,25 +278,11 @@ async function kronrInit(callback, paginaModule) {
     // Nog steeds geen salon EN geen medewerker gevonden? Dan is dit
     // een gloednieuwe eigenaar — salon aanmaken op basis van user metadata.
     if (!salon) {
-      const meta = session.user.user_metadata || {};
-      const naam = meta.bedrijf_naam || meta.full_name || 'Mijn Salon';
-      const type = meta.type_bedrijf || 'Kapper';
-      const { data: nieuw } = await sb.from('salons').insert({
-        owner_id: session.user.id,
-        naam,
-        type_bedrijf: type,
-        email: session.user.email,
-        plan: 'free'
-      }).select().single();
+      const { data: nieuw, error: startError } = await sb.rpc('kronr_start_salon');
+      if (startError) throw startError;
       salon = nieuw;
     }
-
-    if (!salon) {
-      // Salon aanmaken mislukt, log uit en stuur naar login
-      await sb.auth.signOut();
-      window.location.href = '/login/';
-      return;
-    }
+    if (!salon) throw new Error('Je salon kon niet worden klaargezet. Probeer opnieuw.');
 
     SALON_ID = salon.id;
     SALON = salon;
