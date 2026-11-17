@@ -39,7 +39,8 @@ const home = fs.readFileSync("index.html", "utf8").replace(/\s+/g, " ");
 assert.ok(home.includes('id="kennismaken"'));
 assert.ok(home.includes("geen automatische of"));
 assert.ok(!home.includes("Kronr heeft een importfunctie"));
-assert.ok(home.includes("Registratie is nog gesloten"));
+assert.ok(!home.includes("Registratie is nog gesloten"));
+assert.ok(home.includes('data-period="yearly" aria-pressed="true"'));
 console.log(
   "PASS connected demo: booking, reschedule, quantity limits, exact cents, receipt consistency, idempotent payment, reset and no production APIs",
 );

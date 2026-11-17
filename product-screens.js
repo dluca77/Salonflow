@@ -17,6 +17,8 @@
       alt: "Kronr-kassa met behandeling en shampoo op een bon van 90,50 euro",
       caption: "Kassa",
     },
+    klanten: {src:"/images/backoffice/klanten-clean.png", width:1440, height:900, alt:"Kronr klantenoverzicht", caption:"Klanten"},
+    rapportages: {src:"/images/backoffice/rapportages-clean.png", width:1440, height:900, alt:"Kronr rapportages met omzet en behandelingen", caption:"Rapportages"},
   };
   document.querySelectorAll("[data-screen]").forEach((button) =>
     button.addEventListener("click", () => {
@@ -29,11 +31,7 @@
       link.href = screen.src;
       link.setAttribute(
         "aria-label",
-        "Open het echte " +
-          (button.dataset.screen === "agenda"
-            ? "agendascherm"
-            : "kassascherm") +
-          " op volledig formaat",
+        "Open " + screen.caption + " op volledig formaat",
       );
       caption.textContent = screen.caption;
       document

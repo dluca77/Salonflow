@@ -30,10 +30,10 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/rebrand.css" />
-    <script src="/rebrand.js?v=arrival-1" defer></script>
+    <script src="/rebrand.js?v=annual-arrival-1" defer></script>
     <link rel="stylesheet" href="/rebrand-refinements.css" />
     <link rel="stylesheet" href="/design-finish.css?v=3" />
-    <link rel="stylesheet" href="/product-story.css?v=2" />
+    <link rel="stylesheet" href="/product-story.css?v=annual-2" />
     <link rel="stylesheet" href="/arrival.css?v=3" />
   </head>
   <body>
@@ -158,7 +158,7 @@
           <h2 id="product-title">Dit is waar<br /><em>je werkt.</em></h2>
           <p>
             Een week vol afspraken. Een behandeling en product op één bon.
-            Bekijk hoe je werkt met Kronr.
+            Je klanten bij de hand en inzicht in je omzet.
           </p>
         </div>
         <div
@@ -167,7 +167,7 @@
           aria-label="Bekijk een backofficescherm"
         >
           <button data-screen="agenda" aria-pressed="true">01 Agenda</button
-          ><button data-screen="kassa" aria-pressed="false">02 Kassa</button>
+          ><button data-screen="kassa" aria-pressed="false">02 Kassa</button><button data-screen="klanten" aria-pressed="false">03 Klanten</button><button data-screen="rapportages" aria-pressed="false">04 Rapportages</button>
         </div>
         <figure class="real-screen">
           <a
@@ -216,22 +216,23 @@
         </div>
         <div class="pricing-toolbar">
           <div class="period-switch" role="group" aria-label="Betaalperiode">
-            <button data-period="monthly" aria-pressed="true">
+            <button data-period="monthly" aria-pressed="false">
               Maandelijks</button
-            ><button data-period="yearly" aria-pressed="false">
+            ><button data-period="yearly" aria-pressed="true">
               Jaarlijks <span>2 maanden gratis</span>
             </button>
           </div>
-          <p>Beoogde pakketten bij lancering. Registratie is nog gesloten.</p>
+
         </div>
         <div class="price-grid">
           <article class="price-card">
             <span class="plan-name">Starter</span>
             <p>Een sterke basis voor jouw eigen zaak.</p>
             <div class="price">
-              <span>€</span><strong data-price="starter">19</strong
-              ><span data-price-unit>/ maand</span>
+              <span>€</span><strong data-price="starter">190</strong
+              ><span data-price-unit>/ jaar</span>
             </div>
+            <p class="annual-saving" data-saving="starter">Bespaar €38 per jaar</p>
             <span class="plan-team">1 medewerker</span
             ><a class="button button-outline" href="#kennismaken"
               >Bespreek dit pakket ↗</a
@@ -251,9 +252,10 @@
             </div>
             <p>Meer inzicht. Meer ruimte om te groeien.</p>
             <div class="price">
-              <span>€</span><strong data-price="pro">39</strong
-              ><span data-price-unit>/ maand</span>
+              <span>€</span><strong data-price="pro">390</strong
+              ><span data-price-unit>/ jaar</span>
             </div>
+            <p class="annual-saving" data-saving="pro">Bespaar €78 per jaar</p>
             <span class="plan-team">Tot en met 5 medewerkers</span
             ><a class="button button-plum" href="#kennismaken"
               >Bespreek dit pakket ↗</a
@@ -264,16 +266,16 @@
               <li>Uitgebreide rapportages</li>
               <li>Kai-inzichten</li>
               <li>Boekhoudkoppeling</li>
-              <li>WhatsApp-herinneringen <small>Binnenkort</small></li>
             </ul>
           </article>
           <article class="price-card">
             <span class="plan-name">Business</span>
             <p>Voor grote plannen en meerdere locaties.</p>
             <div class="price">
-              <span>€</span><strong data-price="business">69</strong
-              ><span data-price-unit>/ maand</span>
+              <span>€</span><strong data-price="business">690</strong
+              ><span data-price-unit>/ jaar</span>
             </div>
+            <p class="annual-saving" data-saving="business">Bespaar €138 per jaar</p>
             <span class="plan-team">Onbeperkt medewerkers</span
             ><a class="button button-outline" href="#kennismaken"
               >Bespreek dit pakket ↗</a
@@ -334,11 +336,10 @@
         </div>
         <div class="faq-list">
           <details>
-            <summary>Kan ik Kronr nu al gebruiken?<span>+</span></summary>
+            <summary>Hoe ontdek ik of Kronr bij mijn salon past?<span>+</span></summary>
             <p>
-              De demo is vrij te gebruiken. Nieuwe accounts zijn nog gesloten.
-              WhatsApp is nog niet beschikbaar en betalingen staan voorlopig op
-              testmodus. Bespreek de actuele mogelijkheden in een kennismaking.
+              Probeer de productdemo zonder account. Wil je jouw werkwijze bespreken?
+              Plan een kennismaking en bekijk welk pakket bij je salon past.
             </p>
           </details>
           <details>
@@ -413,7 +414,7 @@
         ><a href="#main">Terug naar boven ↑</a>
       </div>
     </footer>
-    <script src="/product-screens.js?v=3" defer></script>
+    <script src="/product-screens.js?v=4" defer></script>
       <script src="/product-film.js?v=2" defer></script>
   </body>
 </html>

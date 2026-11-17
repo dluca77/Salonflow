@@ -302,3 +302,11 @@
     border-radius: 10px;
   }
 }
+
+/* Annual billing is the primary choice, with transparent yearly totals. */
+.period-switch button[data-period="yearly"][aria-pressed="true"] { background: #e7f497; color: #251b30; box-shadow: 0 3px 12px #251b3012; }
+.period-switch button[data-period="yearly"] span { display:inline-block; padding:5px 8px; border-radius:20px; background:#251b30; color:#fff; font-size:11px; margin-left:8px; }
+.price-card .annual-saving { color:#364512; background:#e7f497; border-radius:6px; padding:7px 11px; width:fit-content; font-size:13px; margin:0 0 18px; min-height:0; }
+.price-card .annual-saving.monthly-note { background:transparent; color:#6f647a; padding-left:0; }
+.screen-switch { flex-wrap:wrap; }
+@media(max-width:480px) { .screen-switch {display:grid;grid-template-columns:1fr 1fr;} .screen-switch button {padding:12px 10px;} .period-switch {display:flex;width:100%;} .period-switch button {padding:12px 10px;} .period-switch button[data-period="yearly"] span {margin-left:4px;font-size:10px;padding:4px 6px;} }

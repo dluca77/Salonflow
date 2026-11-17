@@ -30,7 +30,7 @@
   }
   window.supabase={createClient:()=>({
     auth:{getSession:async()=>({data:{session:{user:{id:staffMode?'preview-staff':'preview-owner',email:'demo@example.invalid'}}}}),signOut:async()=>({})},
-    from:table=>query(({salons:staffMode?[]:[salon],medewerkers:staffMode?[{...team[0],salon_id:salon.id,auth_user_id:'preview-staff',rechten:{agenda:'bekijken',klanten:'bekijken',diensten:'bekijken',kassa:'geen',rapportages:'geen'}}]:team,diensten:services,producten:products,afspraken:appointments,klanten:names.map((naam,i)=>({id:'k'+i,naam,email:'voorbeeld'+i+'@example.invalid'}))})[table]||[]),
+    from:table=>query(({salons:staffMode?[]:[salon],medewerkers:staffMode?[{...team[0],salon_id:salon.id,auth_user_id:'preview-staff',rechten:{agenda:'bekijken',klanten:'bekijken',diensten:'bekijken',kassa:'geen',rapportages:'geen'}}]:team,diensten:services,producten:products,betalingen:appointments.map((a,i)=>({bedrag:a.diensten.prijs,methode:i%3?"pin":"contant",datum:a.datum_tijd})),afspraken:appointments,klanten:names.map((naam,i)=>({id:'k'+i,naam,created_at:'2026-06-12',email:'voorbeeld'+i+'@example.invalid'}))})[table]||[]),
     rpc:name=>query(name==='kronr_team_overzicht'?team:name==='kronr_medewerker_context'?salon:[])
   })};
 })();
