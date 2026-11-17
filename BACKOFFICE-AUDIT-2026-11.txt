@@ -46,3 +46,13 @@ Remaining external validation:
 - User confirmed no separate employee test account exists; real employee authentication cannot be certified by fixture or unit tests.
 - Hosted Stripe test checkout not completed: the current salon has no Stripe billing customer. Stripe configuration unchanged and remains test-only; no live payment taken.
 - Physical iOS/Android testing and real salon pilot remain outstanding. No claim of a fully verified public paid launch.
+
+17 Nov — self-registration release
+- Removed homepage/login registration gate; signup CTAs start 14-day trial.
+- Supabase email provider and SMTP enabled; Google provider disabled, so removed broken Google button.
+- New kronr_start_salon RPC deployed: confirmed users only, ownership from auth.uid(), fixed free plan, profile metadata preserved, advisory lock makes repeats idempotent; team accounts excluded.
+- Removed anonymous/pre-confirmation salon insert. App initialization reports failures without signing out.
+- Registration validates input, guards duplicate submissions and recovers from captcha/network/auth failures. Confirmation resend added. Password recovery now shows a password form instead of redirecting directly to dashboard.
+- All Node CJS regressions passed. Production SQL regression rolled back. Live Auth token confirmation, owner isolation, salon creation, service/customer/appointment CRUD and subsequent password sign-in passed using isolated disposable account; cleaned up afterward.
+- Email inbox delivery is separate from the generated-token smoke test; awaiting permission for a mail to the owner's inbox.
+- Stripe remains test; no payment configuration changed.

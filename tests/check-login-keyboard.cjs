@@ -8,11 +8,11 @@ const context = {
   PRE_LAUNCH: true,
   document: {
     addEventListener: (name, fn) => { if(name === 'keydown') keydown = fn; },
-    getElementById: () => ({classList: {contains: () => section === 'login'}}),
+    getElementById: id => ({classList: {contains: () => id === 'sectie-'+section}}),
     querySelector: () => busy ? {} : null,
   },
   login: () => calls.push('login'),
-  schrijfInPrelaunch: () => calls.push('prelaunch'),
+  bewaarNieuwWachtwoord: () => calls.push('recovery'),
   registreer: () => calls.push('register'),
 };
 vm.runInNewContext(handler, context);
@@ -30,8 +30,8 @@ press();
 assert.deepEqual(calls, ['login']);
 busy=true; press();
 assert.deepEqual(calls, ['login'], 'Enter while pending must not send a duplicate request');
-busy=false; section='prelaunch'; press();
-assert.deepEqual(calls, ['login','prelaunch']);
-context.PRE_LAUNCH=false; press();
-assert.deepEqual(calls, ['login','prelaunch','register']);
+busy=false; section='reg'; press();
+assert.deepEqual(calls, ['login','register']);
+section='herstel'; press();
+assert.deepEqual(calls, ['login','register','recovery']);
 console.log('Login keyboard checks passed: navigation, IME, repeat, pending and correct form routing.');

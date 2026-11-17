@@ -208,25 +208,6 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
         <div class="forgot"><a href="#" onclick="resetWw(event)">Wachtwoord vergeten?</a></div>
       </div>
       <button class="btn-main" id="btn-login" onclick="login()">Inloggen</button>
-      <div class="divider"><div class="dline"></div><div class="dtxt">of</div><div class="dline"></div></div>
-      <button class="btn-google" onclick="loginGoogle()">
-        <svg width="17" height="17" viewBox="0 0 24 24"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-        Doorgaan met Google
-      </button>
-    </div>
-
-    <!-- PRE-LAUNCH: registreren nog niet mogelijk -->
-    <div class="form-section" id="sectie-prelaunch" style="padding:8px 0 4px;">
-      <p style="font-size:14px;color:var(--mu);line-height:1.7;margin-bottom:22px;text-align:center;">
-        Kronr is bijna klaar, maar nog niet volledig live — nieuwe accounts kunnen we
-        nog niet aanmaken. Laat je e-mailadres achter en we laten je weten zodra het zover is.
-      </p>
-      <div class="frow">
-        <label class="flabel" for="prelaunch-email">E-mailadres</label>
-        <input class="finput" type="email" id="prelaunch-email" placeholder="jij@bedrijf.nl" autocomplete="email">
-      </div>
-      <button class="btn-main" id="btn-prelaunch" onclick="schrijfInPrelaunch()">Blijf op de hoogte</button>
-      <p id="prelaunch-msg" role="status" aria-live="polite" style="display:none;font-size:13px;margin-top:12px;text-align:center;"></p>
     </div>
 
     <!-- REGISTREREN -->
@@ -244,14 +225,14 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
         <select class="finput" id="r-type">
           <option value="Kapper">Kapper / Barbier</option>
           <option value="Nagelstudio">Nagelstudio</option>
-          <option value="Spa">Spa & Wellness</option>
+          <option value="Wellness">Spa & Wellness</option>
           <option value="Hondentrimsalon">Hondentrimsalon</option>
           <option value="Schoonheidssalon">Schoonheidssalon</option>
-          <option value="Personal trainer">Personal trainer</option>
+          <option value="Sportschool/PT">Personal trainer</option>
           <option value="Tattoo">Tattoo & Piercing</option>
-          <option value="Yoga">Yoga & Fitness</option>
+          <option value="Sportschool/PT">Yoga & Fitness</option>
           <option value="Tandarts">Tandarts / Zorg</option>
-          <option value="Massage">Massagepraktijk</option>
+          <option value="Massagesalon">Massagepraktijk</option>
           <option value="Anders">Anders</option>
         </select>
       </div>
@@ -284,18 +265,25 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
           </div>
         </div>
       </div>
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAAD0aeX0QQ5F-MtW4" style="margin-bottom:16px;"></div>
+      <div class="cf-turnstile" data-sitekey="0x4AAAAAAD0aeX0QQ5F-MtW4" data-size="compact" style="margin-bottom:16px;"></div>
       <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken</button>
       <div class="terms">Door te registreren ga je akkoord met onze <a href="/algemene-voorwaarden/" target="_blank">voorwaarden</a> en <a href="/privacybeleid/" target="_blank">privacybeleid</a>.</div>
     </div>
 
+    <div class="form-section" id="sectie-herstel">
+      <label class="flabel" for="h-pass">Nieuw wachtwoord</label>
+      <input class="finput" type="password" id="h-pass" autocomplete="new-password" style="margin-bottom:18px">
+      <button class="btn-main" id="btn-herstel" onclick="bewaarNieuwWachtwoord()">Wachtwoord opslaan</button>
+      <a href="/login/" class="back">Terug naar inloggen</a>
+    </div>
     <div id="reg-succes" style="display:none;text-align:center;padding:20px 0;">
       <div style="width:56px;height:56px;border-radius:50%;background:#eaf2ec;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
         <svg width="28" height="28" fill="none" stroke="#2d6a4f" stroke-width="2.5" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
       </div>
       <div style="font-family:'Playfair Display',serif;font-size:21px;font-weight:800;color:var(--ink);margin-bottom:8px;">Account aangemaakt!</div>
       <p style="font-size:14px;color:var(--mu);line-height:1.6;">We hebben een bevestigingsmail gestuurd naar<br><strong id="reg-succes-email" style="color:var(--ink);"></strong></p>
-      <p style="font-size:13px;color:var(--mu);margin-top:16px;">Klik op de link in die mail om je account te activeren.</p>
+      <p style="font-size:13px;color:var(--mu);margin-top:16px;">Klik op de link in die mail om je account te activeren en je salon klaar te zetten. Kijk ook in je spammap.</p>
+      <button class="btn-main" id="btn-resend" onclick="verstuurBevestigingOpnieuw()" style="margin-top:20px">Bevestigingsmail opnieuw sturen</button>
     </div>
 
     <a href="/" class="back">← Terug naar Kronr.nl</a>
@@ -307,13 +295,6 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
 <script>
 const SB_URL = 'https://pscybcirexnltqvziixt.supabase.co';
 const SB_KEY = 'sb_publishable_9cyuoATNMTImTp207rTHaA_sXGi5fm6';
-
-// Pre-launch: nieuwe accounts (via het formulier of via Google) mogen nog
-// niet aangemaakt worden, alleen inloggen op bestaande accounts blijft
-// werken. Zet dit op false zodra Kronr écht live gaat — verder geen
-// andere code hoeft dan te wijzigen.
-const PRE_LAUNCH = true;
-if (PRE_LAUNCH) document.getElementById('tab-reg').textContent = 'Launchupdate';
 
 // Zelfde opslag-adapter als kronr.js: leest live de 'kronr_remember' vlag,
 // zodat de sessie na inloggen op de juiste plek staat voor alle andere pagina's.
@@ -331,24 +312,28 @@ const sb = window.supabase.createClient(SB_URL, SB_KEY, {
   auth: { storage: kronrStorage(), persistSession: true, autoRefreshToken: true }
 });
 
-// Auth check: access_token in hash = e-mail bevestigd
+// Recovery links must show a password form rather than redirect to the dashboard.
+let recoveryMode = location.hash.includes('type=recovery') || new URLSearchParams(location.search).get('reset')==='1';
 async function redirectNaJuisteBestemming(session){
-  if(!session) return;
-  // Is dit account ook een Kronr-teamlid (Isaak zelf)? Dan naar het
-  // beheer-dashboard i.p.v. het gewone salon-dashboard.
-  const{data:teamlid}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
-  window.location.href = teamlid ? '/admin/' : '/dashboard/';
+  if (!session || recoveryMode) return;
+  const {data:teamlid,error}=await sb.from('kronr_team').select('id').eq('auth_user_id',session.user.id).maybeSingle();
+  if(error) throw error;
+  window.location.href=teamlid?'/admin/':'/dashboard/';
 }
-
-if (window.location.hash.includes('access_token')) {
-  sb.auth.getSession().then(({ data: { session } }) => {
-    redirectNaJuisteBestemming(session);
-  });
-} else {
-  sb.auth.getSession().then(({ data: { session } }) => {
-    redirectNaJuisteBestemming(session);
-  });
+function toonHerstel(){
+  recoveryMode=true;
+  document.getElementById('login-tabs').style.display='none';
+  document.querySelectorAll('.form-section').forEach(el=>el.classList.remove('visible'));
+  document.getElementById('sectie-herstel').classList.add('visible');
+  document.getElementById('form-title').textContent='Kies een nieuw wachtwoord';
+  document.getElementById('form-sub').textContent='Gebruik minimaal 8 tekens, een hoofdletter, kleine letter en cijfer.';
 }
+sb.auth.onAuthStateChange((event)=>{if(event==='PASSWORD_RECOVERY') toonHerstel();});
+sb.auth.getSession().then(async({data:{session},error})=>{
+  if(error) throw error;
+  if(recoveryMode){toonHerstel();if(!session) toonMsg('Deze herstel-link is verlopen. Vraag een nieuwe link aan via Inloggen.');}
+  else await redirectNaJuisteBestemming(session);
+}).catch(()=>toonMsg('Je sessie kon niet worden gecontroleerd. Herlaad de pagina.'));
 
 // ── TABS ──
 function toonLogin() {
@@ -356,7 +341,7 @@ function toonLogin() {
   document.getElementById('tab-reg').setAttribute('aria-pressed', 'false');
   document.getElementById('sectie-login').classList.add('visible');
   document.getElementById('sectie-reg').classList.remove('visible');
-  document.getElementById('sectie-prelaunch').classList.remove('visible');
+
   document.getElementById('tab-login').classList.add('active');
   document.getElementById('tab-reg').classList.remove('active');
   document.getElementById('form-title').textContent = 'Welkom terug';
@@ -367,13 +352,12 @@ function toonLogin() {
 function toonRegistreer() {
   document.getElementById('tab-login').setAttribute('aria-pressed', 'false');
   document.getElementById('tab-reg').setAttribute('aria-pressed', 'true');
-  document.getElementById('sectie-reg').classList.toggle('visible', !PRE_LAUNCH);
-  document.getElementById('sectie-prelaunch').classList.toggle('visible', PRE_LAUNCH);
+  document.getElementById('sectie-reg').classList.add('visible');
   document.getElementById('sectie-login').classList.remove('visible');
   document.getElementById('tab-reg').classList.add('active');
   document.getElementById('tab-login').classList.remove('active');
-  document.getElementById('form-title').textContent = PRE_LAUNCH ? 'Bijna zover' : 'Begin vandaag gratis';
-  document.getElementById('form-sub').textContent = PRE_LAUNCH ? 'We laten je weten zodra je terecht kan' : 'Maak je Kronr account aan, geen creditcard nodig';
+  document.getElementById('form-title').textContent = 'Probeer Kronr 14 dagen gratis';
+  document.getElementById('form-sub').textContent = 'Maak je account aan. Geen creditcard nodig.';
   leegMsg();
 }
 
@@ -405,13 +389,12 @@ async function login() {
   localStorage.setItem('kronr_remember', onthoud ? '1' : '0');
   setLaden('btn-login', true, 'Inloggen');
   leegMsg();
-  const { data, error } = await sb.auth.signInWithPassword({ email, password: pass });
-  if (error) {
-    toonMsg('Inloggen mislukt. Controleer je gegevens.');
-    setLaden('btn-login', false, 'Inloggen');
-  } else {
+  try {
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    if(error) return toonMsg(error.code==='email_not_confirmed'?'Bevestig eerst je e-mailadres via de link in je mail.':'Inloggen mislukt. Controleer je gegevens.');
     await redirectNaJuisteBestemming(data.session);
-  }
+  } catch { toonMsg('Verbinding onderbroken. Probeer opnieuw.'); }
+  finally { setLaden('btn-login',false,'Inloggen'); }
 }
 
 // ── REGISTREREN ──
@@ -448,160 +431,94 @@ function checkWwSterkte(){
   });
 }
 
+let registratieBezig = false;
 async function registreer() {
-  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden — schrijf je in op de homepage voor een seintje zodra we live gaan.');
+  if (registratieBezig) return;
   const contactNaam = document.getElementById('r-contactnaam').value.trim();
-  const naam  = document.getElementById('r-naam').value.trim();
-  const type  = document.getElementById('r-type').value;
-  const email = document.getElementById('r-email').value.trim();
-  const telefoonInvoer = document.getElementById('r-telefoon').value.trim();
-  const telefoon = telefoonInvoer ? '+31' + telefoonInvoer.replace(/^0/, '') : null;
-  const pass  = document.getElementById('r-pass').value;
-
-  if (!contactNaam) return toonMsg('Vul je naam in.');
-  if (!naam)  return toonMsg('Vul de naam van je bedrijf in.');
-  if (!email) return toonMsg('Vul je e-mailadres in.');
-  if (!pass)  return toonMsg('Vul een wachtwoord in.');
-  if (pass.length < 8) return toonMsg('Wachtwoord moet minimaal 8 tekens zijn.');
-  if (!wwVoldoetAanEisen(pass)) return toonMsg('Wachtwoord moet minimaal 1 hoofdletter, 1 kleine letter en 1 cijfer bevatten.');
-
-  const turnstileToken = typeof turnstile !== 'undefined' ? turnstile.getResponse() : null;
-  if (!turnstileToken) return toonMsg('Bevestig eerst dat je geen robot bent.');
-
-  setLaden('btn-reg', true, 'Gratis account aanmaken');
+  const naam = document.getElementById('r-naam').value.trim();
+  const type = document.getElementById('r-type').value;
+  const email = document.getElementById('r-email').value.trim().toLowerCase();
+  const telefoonInvoer = document.getElementById('r-telefoon').value.replace(/[\s()-]/g,'');
+  const telefoon = telefoonInvoer ? (telefoonInvoer.startsWith('+') ? telefoonInvoer : '+31'+telefoonInvoer.replace(/^0/,'')) : null;
+  const pass = document.getElementById('r-pass').value;
+  if (!contactNaam || contactNaam.length>150) return toonMsg('Vul je naam in (maximaal 150 tekens).');
+  if (!naam || naam.length>150) return toonMsg('Vul je bedrijfsnaam in (maximaal 150 tekens).');
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toonMsg('Vul een geldig e-mailadres in.');
+  if (telefoon && !/^\+[0-9]{8,15}$/.test(telefoon)) return toonMsg('Controleer je telefoonnummer.');
+  if (!wwVoldoetAanEisen(pass)) return toonMsg('Gebruik minimaal 8 tekens, een hoofdletter, kleine letter en cijfer.');
+  const token = typeof turnstile !== 'undefined' ? turnstile.getResponse() : null;
+  if (!token) return toonMsg('Bevestig eerst dat je geen robot bent.');
+  registratieBezig=true;
+  setLaden('btn-reg',true,'Gratis account aanmaken');
   leegMsg();
-
-  const verificatieRes = await fetch('https://kronr-turnstile.isaak-elia.workers.dev/verify', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ token: turnstileToken }),
-  });
-  const verificatieData = await verificatieRes.json();
-
-  if (!verificatieData.success) {
-    toonMsg('Verificatie mislukt, probeer het opnieuw.');
-    setLaden('btn-reg', false, 'Gratis account aanmaken');
-    if (typeof turnstile !== 'undefined') turnstile.reset();
-    return;
-  }
-
-  localStorage.setItem('kronr_remember', '1');
-
-  const { data, error } = await sb.auth.signUp({
-    email, password: pass,
-    options: {
-      emailRedirectTo: 'https://kronr.nl/login/',
-      data: { bedrijf_naam: naam, type_bedrijf: type, contact_naam: contactNaam }
-    }
-  });
-
-  if (error) {
-    toonMsg('Registratie mislukt: ' + error.message);
-    setLaden('btn-reg', false, 'Gratis account aanmaken');
-    if (typeof turnstile !== 'undefined') turnstile.reset();
-    return;
-  }
-
-  // Supabase geeft (bewust, om te voorkomen dat je kunt aftasten welke
-  // e-mailadressen al bestaan) GEEN foutmelding als je registreert met
-  // een e-mailadres dat al bestaat — data.user wordt gewoon terug-
-  // gegeven, maar met een LEGE identities-array. Zonder deze check zou
-  // de gebruiker hier ten onrechte "Account aangemaakt!" te zien
-  // krijgen, terwijl er niets nieuws gebeurt en er dus ook geen
-  // (nieuwe) bevestigingsmail wordt verstuurd.
-  if (data.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-    toonMsg('Dit e-mailadres is al geregistreerd. Log in, of gebruik "Wachtwoord vergeten" als je het wachtwoord niet meer weet.');
-    setLaden('btn-reg', false, 'Gratis account aanmaken');
-    if (typeof turnstile !== 'undefined') turnstile.reset();
-    return;
-  }
-
-  if (data.user) {
-    await sb.from('salons').insert({
-      owner_id: data.user.id, naam,
-      type_bedrijf: type, email, plan: 'free',
-      contact_naam: contactNaam, telefoon
+  try {
+    const res=await fetch('https://kronr-turnstile.isaak-elia.workers.dev/verify',{
+      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token}),signal:AbortSignal.timeout(15000)
     });
-  }
-
-  // Formulier + tabbladen wegklappen, en een duidelijke bevestiging
-  // ervoor in de plaats tonen — zodat het echt voelt alsof er iets is
-  // gebeurd, in plaats van alleen een kleine tekstregel boven een
-  // formulier dat gewoon zichtbaar blijft staan.
-  document.getElementById('login-tabs').style.display = 'none';
-  document.getElementById('sectie-reg').style.display = 'none';
-  document.getElementById('form-title').style.display = 'none';
-  document.getElementById('form-sub').style.display = 'none';
-  document.getElementById('reg-succes-email').textContent = email;
-  document.getElementById('reg-succes').style.display = 'block';
-  leegMsg();
-}
-
-// ── PRE-LAUNCH: interesse-inschrijving ──
-const PRELAUNCH_EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-async function schrijfInPrelaunch() {
-  const input = document.getElementById('prelaunch-email');
-  const btn = document.getElementById('btn-prelaunch');
-  const msg = document.getElementById('prelaunch-msg');
-  const email = input.value.trim();
-
-  msg.style.display = 'none';
-
-  if (!PRELAUNCH_EMAIL_REGEX.test(email)) {
-    msg.textContent = 'Vul een geldig e-mailadres in.';
-    msg.style.color = 'var(--red)';
-    msg.style.display = 'block';
-    return;
-  }
-
-  btn.disabled = true; btn.textContent = 'Bezig...';
-  const { error } = await sb.from('launch_interesse').insert({ email: email.toLowerCase() });
-  btn.disabled = false; btn.textContent = 'Blijf op de hoogte';
-
-  if (error) {
-    if (error.code === '23505') {
-      msg.textContent = 'Dit e-mailadres staat al ingeschreven!';
-      msg.style.color = 'var(--green)';
-    } else {
-      msg.textContent = 'Er ging iets mis. Probeer het later opnieuw.';
-      msg.style.color = 'var(--red)';
+    if (!res.ok || !(await res.json()).success) throw new Error('Verificatie mislukt. Probeer opnieuw.');
+    localStorage.setItem('kronr_remember','1');
+    const {data,error}=await sb.auth.signUp({email,password:pass,options:{
+      emailRedirectTo:'https://kronr.nl/login/',
+      data:{bedrijf_naam:naam,type_bedrijf:type,contact_naam:contactNaam,telefoon}
+    }});
+    if (error) throw new Error(error.status===429 ? 'Te veel pogingen. Wacht even en probeer opnieuw.' : 'Account aanmaken is niet gelukt. Probeer opnieuw of log in als je al een account hebt.');
+    if (!data?.user) throw new Error('Geen bevestiging ontvangen. Probeer opnieuw.');
+    if (Array.isArray(data.user.identities) && data.user.identities.length===0) {
+      return toonMsg('Heb je al een account? Log in of gebruik Wachtwoord vergeten.');
     }
-  } else {
-    msg.textContent = 'Bedankt! We laten het je weten zodra we live gaan.';
-    msg.style.color = 'var(--green)';
-    input.value = '';
-    // Bevestigingsmail is 'best effort' — als dit faalt blijft de
-    // inschrijving zelf gewoon geldig, dat merkt de bezoeker niet.
-    fetch('https://kronr-mail.isaak-elia.workers.dev/interesse-bevestiging', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email: email.toLowerCase() })
-    }).catch(() => {});
+    if (data.session) return await redirectNaJuisteBestemming(data.session);
+    document.getElementById('login-tabs').style.display='none';
+    document.getElementById('sectie-reg').style.display='none';
+    document.getElementById('form-title').style.display='none';
+    document.getElementById('form-sub').style.display='none';
+    document.getElementById('reg-succes-email').textContent=email;
+    document.getElementById('reg-succes').style.display='block';
+    document.getElementById('r-pass').value='';
+  } catch(error) {
+    toonMsg(error.name==='TypeError' || error.name==='TimeoutError' ? 'Verbinding onderbroken. Controleer je internet en probeer opnieuw.' : error.message);
+  } finally {
+    registratieBezig=false;
+    setLaden('btn-reg',false,'Gratis account aanmaken');
+    if (typeof turnstile!=='undefined') turnstile.reset();
   }
-  msg.style.display = 'block';
 }
 
-// ── GOOGLE ──
-async function loginGoogle() {
-  // Google-inloggen maakt bij Supabase automatisch een nieuw account aan
-  // als het e-mailadres nog niet bestaat — tijdens de pre-launch mag dat
-  // net zo min als via het gewone registratieformulier.
-  if (PRE_LAUNCH) return toonMsg('Nieuwe accounts kunnen nog niet aangemaakt worden — schrijf je in op de homepage voor een seintje zodra we live gaan.');
-  localStorage.setItem('kronr_remember', '1');
-  await sb.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: 'https://kronr.nl/dashboard/' }
-  });
+async function verstuurBevestigingOpnieuw(){
+  const btn=document.getElementById('btn-resend');if(btn.disabled)return;
+  setLaden('btn-resend',true,'Bevestigingsmail opnieuw sturen');
+  try{
+    const email=document.getElementById('reg-succes-email').textContent;
+    const {error}=await sb.auth.resend({type:'signup',email,options:{emailRedirectTo:'https://kronr.nl/login/'}});
+    if(error)throw error;
+    toonMsg('Bevestigingsmail opnieuw aangevraagd. Kijk ook in je spammap.','ok');
+  }catch{toonMsg('Mail nog niet verstuurd. Wacht een minuut en probeer opnieuw.');}
+  finally{setLaden('btn-resend',false,'Bevestigingsmail opnieuw sturen');}
 }
 
 // ── WACHTWOORD RESET ──
 async function resetWw(e) {
   e.preventDefault();
-  const email = document.getElementById('l-email').value.trim();
-  if (!email) return toonMsg('Vul eerst je e-mailadres in.');
-  await sb.auth.resetPasswordForEmail(email, {
-    redirectTo: 'https://kronr.nl/login/'
-  });
-  toonMsg('Reset-link verstuurd! Check je e-mail.', 'ok');
+  const email=document.getElementById('l-email').value.trim();
+  if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toonMsg('Vul eerst een geldig e-mailadres in.');
+  try {
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://kronr.nl/login/?reset=1'});
+    if(error) throw error;
+    toonMsg('Als dit adres een account heeft, ontvang je een herstel-link. Check ook je spammap.','ok');
+  } catch {toonMsg('De herstelmail kon niet worden verstuurd. Wacht even en probeer opnieuw.');}
+}
+async function bewaarNieuwWachtwoord(){
+  const pass=document.getElementById('h-pass').value;
+  if(!wwVoldoetAanEisen(pass)) return toonMsg('Gebruik minimaal 8 tekens, een hoofdletter, kleine letter en cijfer.');
+  const btn=document.getElementById('btn-herstel');if(btn.disabled)return;
+  setLaden('btn-herstel',true,'Wachtwoord opslaan');
+  try{
+    const {error}=await sb.auth.updateUser({password:pass});
+    if(error)throw error;
+    document.getElementById('h-pass').value='';
+    recoveryMode=false;
+    location.href='/dashboard/';
+  }catch{toonMsg('Opslaan is niet gelukt. Probeer opnieuw of vraag een nieuwe herstel-link aan.');}
+  finally{setLaden('btn-herstel',false,'Wachtwoord opslaan');}
 }
 
 // ── ENTER TOETS ──
@@ -609,12 +526,13 @@ document.addEventListener('keydown', e => {
   if (e.key !== 'Enter' || e.repeat || e.isComposing || e.target.tagName !== 'INPUT' || e.target.type === 'checkbox') return;
   e.preventDefault();
   if (document.querySelector('.form-section.visible button[id]:disabled')) return;
-  if (document.getElementById('sectie-login').classList.contains('visible')) login();
-  else if (PRE_LAUNCH) schrijfInPrelaunch();
+  if (document.getElementById('sectie-herstel').classList.contains('visible')) bewaarNieuwWachtwoord();
+  else if (document.getElementById('sectie-login').classList.contains('visible')) login();
   else registreer();
 });
 
 // ── URL HASH ──
+if (new URLSearchParams(location.hash.slice(1)).has('error')) toonMsg('Deze bevestigingslink is verlopen of niet geldig. Vraag een nieuwe mail aan of log in.');
 if (window.location.hash === '#registreer' || window.location.hash === '#register') {
   toonRegistreer();
 }
