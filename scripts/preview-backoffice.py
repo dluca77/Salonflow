@@ -22,8 +22,6 @@ class Preview(SimpleHTTPRequestHandler):
         if file.suffix == '.html' and file.exists():
             page = file.read_text(encoding='utf-8')
             page = re.sub(r'<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>', '<script src="/scripts/preview-fixtures.js"></script>', page)
-            page = page.replace('</head>', '<style>body{padding-bottom:34px!important}.preview-label{position:fixed;bottom:0;left:0;right:0;z-index:999999;background:#e7f29b;color:#261b30;text-align:center;padding:9px 12px;font:600 12px system-ui;pointer-events:none}</style></head>')
-            page = page.replace('</body>', '<aside class="preview-label">VOORBEELDDATA · Studio Nova · Fictieve klanten en bedragen · Geen echte boekingen of betalingen</aside></body>')
             payload = page.encode()
             self.send_response(200)
             self.send_header('Content-Type', 'text/html; charset=utf-8')
