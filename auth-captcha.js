@@ -1,12 +1,13 @@
 /* One fresh, single-use token per Auth request; Supabase verifies it server-side. */
 (() => {
   let loading, pending = false;
+  const captchaError = message => Object.assign(new Error(message), { name: 'CaptchaError' });
   function load() {
     if (window.turnstile) return Promise.resolve();
     if (!loading) loading = new Promise((resolve, reject) => {
       const script = document.createElement('script');
       const timer = setTimeout(() => fail(), 15000);
-      const fail = () => { clearTimeout(timer); script.remove(); loading = null; reject(new Error('De beveiligingscontrole kon niet laden. Probeer opnieuw.')); };
+      const fail = () => { clearTimeout(timer); script.remove(); loading = null; reject(captchaError('De beveiligingscontrole kon niet laden. Probeer opnieuw.')); };
       script.src = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
       script.onload = () => { clearTimeout(timer); resolve(); };
       script.onerror = fail;
@@ -15,7 +16,7 @@
     return loading;
   }
   window.kronrCaptcha = async () => {
-    if (pending) throw new Error('Er loopt al een beveiligingscontrole.');
+    if (pending) throw captchaError('Er loopt al een beveiligingscontrole.');
     pending = true;
     let dialog, widget, timer;
     const previous = document.activeElement;
@@ -29,7 +30,7 @@
         const target = document.createElement('div');
         const cancel = document.createElement('button'); cancel.textContent = 'Annuleren';
         cancel.style.cssText = 'display:block;margin-top:16px;padding:10px 16px;margin:auto;border:1px solid #ded5e7;border-radius:8px;background:transparent;color:inherit;cursor:pointer';
-        const fail = () => reject(new Error('Beveiligingscontrole niet afgerond. Probeer opnieuw.'));
+        const fail = () => reject(captchaError('Beveiligingscontrole niet afgerond. Probeer opnieuw.'));
         cancel.onclick = fail;
         dialog.addEventListener('cancel', fail);
         dialog.append(title, target, cancel); document.body.append(dialog); dialog.showModal();
