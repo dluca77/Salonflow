@@ -48,3 +48,11 @@ jobs:
           path: ${{ runner.temp }}/restore-test/restore-report.json
           if-no-files-found: error
           retention-days: 30
+      - name: Retain encrypted failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-restore-diagnostics-${{ github.run_id }}
+          path: ${{ runner.temp }}/restore-test/restore-diagnostics.fernet
+          if-no-files-found: ignore
+          retention-days: 7

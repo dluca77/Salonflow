@@ -22,13 +22,15 @@ def restore(backup,binpath,workroot):
             r.stdout=(work/'stdout.log').read_bytes();r.stderr=(work/'stderr.log').read_bytes()
             if r.returncode:
                 # Keep detailed database errors private; they may contain data.
-                (root/'last-restore-error.txt').write_bytes(r.stderr+r.stdout)
+                details=r.stderr+r.stdout+((work/'server.log').read_bytes() if (work/'server.log').exists() else b'')
+                (root/'last-restore-error.txt').write_bytes(details)
+                (root/'restore-diagnostics.fernet').write_bytes(Fernet(os.environ['KRONR_BACKUP_KEY'].encode()).encrypt(details))
                 raise RuntimeError(tool+' failed; private last-restore-error.txt contains details')
             return r.stdout
         with socket.socket() as sock:sock.bind(('127.0.0.1',0));port=sock.getsockname()[1]
         try:
             run('initdb',['-D',str(data),'-U','postgres','--auth=scram-sha-256','--pwfile',str(pwfile),'--encoding=UTF8','--locale=C'])
-            with (data/'postgresql.conf').open('a') as f:f.write("\nlisten_addresses='127.0.0.1'\nport="+str(port)+"\n")
+            with (data/'postgresql.conf').open('a') as f:f.write("\nlisten_addresses='127.0.0.1'\nunix_socket_directories=''\nport="+str(port)+"\n")
             run('pg_ctl',['-D',str(data),'-l',str(work/'server.log'),'-w','start']);started=True
             base=['-h','127.0.0.1','-p',str(port),'-U','postgres','-d','postgres','-v','ON_ERROR_STOP=1','-X','-q']
             def sql(text):

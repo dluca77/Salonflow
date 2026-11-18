@@ -28,7 +28,7 @@ def backup(output, pg_dump):
         pool=api('config/database/pooler')[0]
         env=dict(os.environ,PGPASSWORD=password,PGSSLMODE='require',PGCONNECT_TIMEOUT='20')
         command=[pg_dump,'-h',pool['db_host'],'-p','5432','-U',role+'.'+REF,'-d','postgres','--schema-only','--no-owner','--schema=public','--schema=auth','--schema=storage']
-        dumped=subprocess.run(command,env=env,capture_output=True,check=True)
+        dumped=subprocess.run(command,env=env,capture_output=True,check=True,timeout=180)
         tables=query("select n.nspname as schema,c.relname as name from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname in ('public','auth','storage') and c.relkind='r' order by 1,2")
         # One SQL statement = one MVCC snapshot for every table, including Auth.
         parts=["select "+literal(t['schema']+'.'+t['name'])+" as name,coalesce(jsonb_agg(to_jsonb(t)),'[]') as rows from "+ident(t['schema'])+'.'+ident(t['name'])+' t' for t in tables]
