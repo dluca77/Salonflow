@@ -32,6 +32,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .msg-center{text-align:center;color:var(--mu);font-size:13px;line-height:1.6;}
 .err{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none;}
 </style>
+<script src="/auth-captcha.js?v=1"></script>
 </head>
 <body>
 
@@ -108,7 +109,8 @@ async function activeer(email){
   // Account aanmaken en direct inloggen (signUp logt automatisch in als
   // e-mailbevestiging uit staat; anders moet de medewerker eerst de
   // bevestigingsmail van Supabase zelf openen voordat accepteer_medewerker_uitnodiging kan draaien)
-  const{data:signUpData,error:signUpErr}=await sb.auth.signUp({email,password:ww});
+  try {
+  const{data:signUpData,error:signUpErr}=await sb.auth.signUp({email,password:ww,options:{captchaToken:await kronrCaptcha(),emailRedirectTo:'https://kronr.nl/medewerker-login/'}});
 
   if(signUpErr){
     btn.disabled=false;btn.textContent='Account activeren';
@@ -142,6 +144,8 @@ async function activeer(email){
   }
 
   window.location.href = '/medewerker-portal/';
+  } catch(error) { errEl.textContent=error.message || 'Verbinding mislukt. Probeer opnieuw.';errEl.style.display='block'; }
+  finally { btn.disabled=false;btn.textContent='Account activeren'; }
 }
 
 init();

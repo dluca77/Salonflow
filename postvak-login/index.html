@@ -25,6 +25,7 @@ body{font-family:'Inter',sans-serif;background:var(--iv);min-height:100vh;displa
 .msg.fout{background:rgba(192,57,43,.08);color:var(--red);}
 .msg.ok{background:rgba(45,106,79,.08);color:#2d6a4f;}
 </style>
+<script src="/auth-captcha.js?v=1"></script>
 </head>
 <body>
 
@@ -92,7 +93,8 @@ async function inloggen(){
   const btn=document.getElementById('btn-login');
   btn.disabled=true;btn.textContent='Bezig...';
 
-  const{data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  try {
+  const{data,error}=await sb.auth.signInWithPassword({email,password:pass,options:{captchaToken:await kronrCaptcha()}});
   if(error){
     btn.disabled=false;btn.textContent='Inloggen';
     return toonMsg('Inloggen mislukt: '+error.message);
@@ -112,6 +114,8 @@ async function inloggen(){
   }
 
   await voltooiInloggen(btn,'Inloggen');
+  } catch(error) { toonMsg(error.message || 'Verbinding mislukt. Probeer opnieuw.'); }
+  finally { btn.disabled=false;btn.textContent='Inloggen'; }
 }
 
 async function bevestigMfaInloggen(){

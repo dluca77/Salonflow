@@ -146,9 +146,10 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
   .right{max-width:100%;padding:40px 6vw 40px;min-height:100vh;margin:0;}
 }
 </style>
-<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/brand-surfaces.css?v=6">
+<script src="/auth-captcha.js?v=1"></script>
 </head>
 <body>
 <div class="wrap">
@@ -265,7 +266,6 @@ select.finput{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg wid
           </div>
         </div>
       </div>
-      <div class="cf-turnstile" data-sitekey="0x4AAAAAAD0aeX0QQ5F-MtW4" data-size="compact" style="margin-bottom:16px;"></div>
       <button class="btn-main" id="btn-reg" onclick="registreer()">Gratis account aanmaken</button>
       <div class="terms">Door te registreren ga je akkoord met onze <a href="/algemene-voorwaarden/" target="_blank">voorwaarden</a> en <a href="/privacybeleid/" target="_blank">privacybeleid</a>.</div>
     </div>
@@ -393,7 +393,7 @@ async function login() {
   setLaden('btn-login', true, 'Inloggen');
   leegMsg();
   try {
-    const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+    const {data,error}=await sb.auth.signInWithPassword({email,password:pass,options:{captchaToken:await kronrCaptcha()}});
     if(error) return toonMsg(error.code==='email_not_confirmed'?'Bevestig eerst je e-mailadres via de link in je mail.':'Inloggen mislukt. Controleer je gegevens.');
     await redirectNaJuisteBestemming(data.session);
   } catch { toonMsg('Verbinding onderbroken. Probeer opnieuw.'); }
@@ -449,19 +449,14 @@ async function registreer() {
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toonMsg('Vul een geldig e-mailadres in.');
   if (telefoon && !/^\+[0-9]{8,15}$/.test(telefoon)) return toonMsg('Controleer je telefoonnummer.');
   if (!wwVoldoetAanEisen(pass)) return toonMsg('Gebruik minimaal 8 tekens, een hoofdletter, kleine letter en cijfer.');
-  const token = typeof turnstile !== 'undefined' ? turnstile.getResponse() : null;
-  if (!token) return toonMsg('Bevestig eerst dat je geen robot bent.');
   registratieBezig=true;
   setLaden('btn-reg',true,'Gratis account aanmaken');
   leegMsg();
   try {
-    const res=await fetch('https://kronr-turnstile.isaak-elia.workers.dev/verify',{
-      method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({token}),signal:AbortSignal.timeout(15000)
-    });
-    if (!res.ok || !(await res.json()).success) throw new Error('Verificatie mislukt. Probeer opnieuw.');
+    const captchaToken=await kronrCaptcha();
     localStorage.setItem('kronr_remember','1');
     const {data,error}=await sb.auth.signUp({email,password:pass,options:{
-      emailRedirectTo:'https://kronr.nl/login/',
+      emailRedirectTo:'https://kronr.nl/login/',captchaToken,
       data:{bedrijf_naam:naam,type_bedrijf:type,contact_naam:contactNaam,telefoon}
     }});
     if (error) throw new Error(error.status===429 ? 'Te veel pogingen. Wacht even en probeer opnieuw.' : 'Account aanmaken is niet gelukt. Probeer opnieuw of log in als je al een account hebt.');
@@ -482,7 +477,6 @@ async function registreer() {
   } finally {
     registratieBezig=false;
     setLaden('btn-reg',false,'Gratis account aanmaken');
-    if (typeof turnstile!=='undefined') turnstile.reset();
   }
 }
 
@@ -491,7 +485,7 @@ async function verstuurBevestigingOpnieuw(){
   setLaden('btn-resend',true,'Bevestigingsmail opnieuw sturen');
   try{
     const email=document.getElementById('reg-succes-email').textContent;
-    const {error}=await sb.auth.resend({type:'signup',email,options:{emailRedirectTo:'https://kronr.nl/login/'}});
+    const {error}=await sb.auth.resend({type:'signup',email,options:{emailRedirectTo:'https://kronr.nl/login/',captchaToken:await kronrCaptcha()}});
     if(error)throw error;
     toonMsg('Bevestigingsmail opnieuw aangevraagd. Kijk ook in je spammap.','ok');
   }catch{toonMsg('Mail nog niet verstuurd. Wacht een minuut en probeer opnieuw.');}
@@ -504,7 +498,7 @@ async function resetWw(e) {
   const email=document.getElementById('l-email').value.trim();
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return toonMsg('Vul eerst een geldig e-mailadres in.');
   try {
-    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://kronr.nl/login/?reset=1'});
+    const {error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://kronr.nl/login/?reset=1',captchaToken:await kronrCaptcha()});
     if(error) throw error;
     toonMsg('Als dit adres een account heeft, ontvang je een herstel-link. Check ook je spammap.','ok');
   } catch {toonMsg('De herstelmail kon niet worden verstuurd. Wacht even en probeer opnieuw.');}
