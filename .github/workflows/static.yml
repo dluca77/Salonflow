@@ -2,6 +2,8 @@
 name: Deploy static content to Pages
 
 on:
+  pull_request:
+    branches: ["main"]
   # Runs on pushes targeting the default branch
   push:
     branches: ["main"]
@@ -22,8 +24,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Run regression checks
+        run: |
+          set -e
+          for test in tests/check-*.cjs tests/check-*.mjs; do node "$test"; done
+
   # Single deploy job since we're just deploying
   deploy:
+    needs: validate
+    if: github.event_name != 'pull_request'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
