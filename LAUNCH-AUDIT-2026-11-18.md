@@ -11,7 +11,7 @@
 
 ## Release limits / launch gates
 - Stripe remains TEST. No real payment acceptance or payout certification claimed.
-- Supabase managed backup list is empty and PITR remains disabled. A separate encrypted logical backup now includes public/Auth/Storage schema and rows, Auth configuration and actual Storage files. Local restore verified 76 tables, 398 rows and 5 files; all 13 SQL suites passed. No production restore was attempted. Daily GitHub backup/restore workflow retains encrypted artifacts for 30 days; check its actual run before treating scheduling as verified.
+- Supabase managed backup list is empty and PITR remains disabled. A separate encrypted logical backup now includes public/Auth/Storage schema and rows, Auth configuration and actual Storage files. Local restore verified 76 tables, 398 rows and 5 files; all 13 SQL suites passed. No production restore was attempted. Daily GitHub backup/restore workflow retains encrypted artifacts for 30 days; first complete external run verified successfully: https://github.com/dluca77/Salonflow/actions/runs/44369766543 (76 tables / 401 records / 5 files, 13 SQL suites).
 - Auth entry points now pass a fresh Turnstile token directly to Supabase, including employee activation, staff/mailbox login, resend and recovery. Native enforcement is enabled and eight direct API checks reject missing/forged tokens on signup, password login, recovery and resend. Desktop browser login succeeded through the actual Turnstile/Supabase flow. Leaked-password protection remains a separate setting.
 - Real iOS/Android hardware, payment provider outages and a pilot salon's complete workday are not covered by these automated checks.
 - Legal text and processing agreements need owner approval against actual business arrangements.
@@ -26,8 +26,8 @@
 ## Regression commands
 Run each tests/check-*.cjs and tests/check-*.mjs with Node 22.
 SQL tests must run in transactions that roll back; several files need an outer BEGIN/ROLLBACK wrapper.
-scripts/test-registration-live.py creates and cleans isolated fixtures; requires local Supabase CLI authorization.
-scripts/test-registration-mail.py additionally exercises actual confirmation and recovery email using a temporary routing alias; requires refreshed Wrangler OAuth.
+scripts/test-auth-protection.py verifies live missing/forged-token rejection. The older test-registration-live.py and test-registration-mail.py scripts predate mandatory CAPTCHA and cannot complete their public password/signup steps unattended. Do not disable protection to run them; use the browser for valid-token tests.
+Confirmation and recovery email delivery were verified before native CAPTCHA was enabled. After enablement, the actual browser password login and eight negative public API requests were verified.
 
 ## Recovery operations
 The backup workflow runs daily at 02:17 UTC (GitHub schedules can be delayed). Backup includes actual uploaded objects, not only Storage metadata. Artifacts are encrypted with a separate Fernet key held in GitHub Actions secrets and a restricted local private directory. Never commit the key, plaintext backup or Auth configuration.
@@ -35,3 +35,8 @@ The backup workflow runs daily at 02:17 UTC (GitHub schedules can be delayed). B
 Download an encrypted artifact from Actions and run scripts/test-backup-restore.py with KRONR_BACKUP_KEY and local PostgreSQL binaries. The script only creates a new localhost cluster, restores every table and file, checks exact record equality, runs all SQL suites and stops/removes the cluster. It does not call customer-facing mail or payment providers. The report explicitly distinguishes this database/file rehearsal from running a complete restored Supabase Auth/Storage service. A real project replacement also requires restoring Auth configuration and uploading the files through Storage, then switching application credentials and worker bindings.
 
 The daily job uploads the encrypted backup before rehearsing recovery, so a failed rehearsal does not discard the newest backup. Workflow failures appear in GitHub Actions; delivery of notification emails depends on the owner's GitHub notification preferences. Retain a separately protected copy of the decryption key for disaster recovery. Stripe configuration is unchanged and remains test-only.
+
+## Additional recovery evidence
+The encrypted off-site artifact from run 44369225793 was downloaded from GitHub and independently restored locally: 76 tables, all 404 records and 5 files matched; all 13 SQL suites passed. Tampering with an encrypted backup or using a different key is rejected before any database starts. Temporary backup login roles were removed.
+
+Desktop login with the new native CAPTCHA succeeded with an isolated account. On a 390px mobile viewport the challenge remained usable, timed out cleanly and re-enabled the login button. Completing its explicit human checkbox requires confirmation; do not describe that mobile login as passed until completed.
