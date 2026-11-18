@@ -56,3 +56,12 @@ Remaining external validation:
 - All Node CJS regressions passed. Production SQL regression rolled back. Live Auth token confirmation, owner isolation, salon creation, service/customer/appointment CRUD and subsequent password sign-in passed using isolated disposable account; cleaned up afterward.
 - Email inbox delivery is separate from the generated-token smoke test; awaiting permission for a mail to the owner's inbox.
 - Stripe remains test; no payment configuration changed.
+
+18 Nov — full registration/mail route
+- Public Auth signup tested with a unique temporary @kronr.nl routing address, not an administratively generated signup link.
+- Real confirmation and password recovery emails arrived through Resend SMTP -> Cloudflare Email Routing -> Kronr inbox on two completed runs. First attempt was inconclusive because the temporary route had not propagated; test now allows propagation before sending.
+- Mail tokens matched only the disposable test account. Confirmed account, rejected reused confirmation link, initialized exactly one free salon, signed in/out, recovered password, accepted new password and rejected old password.
+- Real browser: signed into the newly confirmed account, created first service (25 EUR / 30 minutes), customer and appointment; reloaded agenda and confirmed persistence. Dashboard checklist correctly advanced to 3/4 (profile intentionally not completed).
+- Fixed login/register status messages remaining above the viewport after submitting a long form: message now receives focus and scrolls into view. Mobile 390px verification passed. Invalid recovery session produces a clear message.
+- Test users, salons, records, identified test emails, routing aliases and temporary browser credentials removed. Stripe unchanged/test.
+- Scope: SMTP and inbox delivery tested to Kronr's own mail infrastructure; this does not certify deliverability to every external mail provider. Signup form validation is browser/unit-tested; live signup and password mutation exercised through the public Auth API.
