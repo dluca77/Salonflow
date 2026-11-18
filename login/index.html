@@ -366,6 +366,9 @@ function toonMsg(tekst, type) {
   const el = document.getElementById('msg');
   el.textContent = tekst;
   el.className = 'msg ' + (type === 'ok' ? 'ok' : 'err');
+  el.tabIndex = -1;
+  el.focus({ preventScroll: true });
+  el.scrollIntoView({ block: 'nearest', behavior: 'auto' });
 }
 function leegMsg() {
   const el = document.getElementById('msg');
