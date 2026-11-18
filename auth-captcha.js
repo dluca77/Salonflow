@@ -24,11 +24,11 @@
       return await new Promise((resolve, reject) => {
         dialog = document.createElement('dialog');
         dialog.setAttribute('aria-label', 'Beveiligingscontrole');
-        dialog.style.cssText = 'border:1px solid #ded5e7;border-radius:18px;padding:24px;background:#faf8f2;color:#291d32;max-width:calc(100vw - 32px);font:14px Inter, sans-serif';
+        dialog.style.cssText = 'margin:auto;border:1px solid #ded5e7;border-radius:18px;padding:24px;background:#faf8f2;color:#291d32;max-width:calc(100vw - 32px);font:14px Inter, sans-serif';
         const title = document.createElement('p'); title.textContent = 'Een korte beveiligingscontrole';
         const target = document.createElement('div');
         const cancel = document.createElement('button'); cancel.textContent = 'Annuleren';
-        cancel.style.cssText = 'display:block;margin-top:16px;padding:10px 16px;border:1px solid #ded5e7;border-radius:8px;background:transparent;color:inherit;cursor:pointer';
+        cancel.style.cssText = 'display:block;margin-top:16px;padding:10px 16px;margin:auto;border:1px solid #ded5e7;border-radius:8px;background:transparent;color:inherit;cursor:pointer';
         const fail = () => reject(new Error('Beveiligingscontrole niet afgerond. Probeer opnieuw.'));
         cancel.onclick = fail;
         dialog.addEventListener('cancel', fail);

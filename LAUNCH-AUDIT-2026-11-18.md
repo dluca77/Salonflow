@@ -1,7 +1,7 @@
 # Launch audit — 18 November 2026
 
 ## Verified this release
-- All 20 JavaScript regression scripts pass (external payment providers mocked).
+- All 21 JavaScript regression scripts pass (external payment providers mocked).
 - All 13 SQL suites pass against production schema inside rolled-back transactions: staff permissions, tenant isolation, booking conflicts, membership verification, products, payments/waitlists and registration.
 - Disposable real Auth account: confirmation token exchange, password login, idempotent free salon provisioning, service/customer/appointment persistence; fixtures removed.
 - Owner profile updates remain possible. Direct salon creation, subscription escalation, trial reset and Stripe identifier changes are denied to ordinary authenticated users.
@@ -12,7 +12,7 @@
 ## Release limits / launch gates
 - Stripe remains TEST. No real payment acceptance or payout certification claimed.
 - Supabase managed backup list is empty and PITR remains disabled. A separate encrypted logical backup now includes public/Auth/Storage schema and rows, Auth configuration and actual Storage files. Local restore verified 76 tables, 398 rows and 5 files; all 13 SQL suites passed. No production restore was attempted. Daily GitHub backup/restore workflow retains encrypted artifacts for 30 days; check its actual run before treating scheduling as verified.
-- Auth entry points now pass a fresh Turnstile token directly to Supabase, including employee activation, staff/mailbox login, resend and recovery. Native enforcement must be verified after deployment. Leaked-password protection remains a separate setting.
+- Auth entry points now pass a fresh Turnstile token directly to Supabase, including employee activation, staff/mailbox login, resend and recovery. Native enforcement is enabled and eight direct API checks reject missing/forged tokens on signup, password login, recovery and resend. Desktop browser login succeeded through the actual Turnstile/Supabase flow. Leaked-password protection remains a separate setting.
 - Real iOS/Android hardware, payment provider outages and a pilot salon's complete workday are not covered by these automated checks.
 - Legal text and processing agreements need owner approval against actual business arrangements.
 
