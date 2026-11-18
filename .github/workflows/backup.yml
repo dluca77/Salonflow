@@ -1,0 +1,47 @@
+name: Encrypted backup and restore rehearsal
+on:
+  schedule:
+    - cron: '17 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: database-backup
+  cancel-in-progress: false
+jobs:
+  backup:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.KRONR_BACKUP_SUPABASE_TOKEN }}
+      KRONR_BACKUP_KEY: ${{ secrets.KRONR_BACKUP_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install official PostgreSQL tools and encryption library
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-17
+          python -m pip install 'cryptography>=46,<47'
+      - name: Create encrypted snapshot
+        run: python scripts/backup-kronr.py --output "$RUNNER_TEMP/encrypted-backups" --pg-dump /usr/lib/postgresql/17/bin/pg_dump
+      - name: Retain encrypted off-site backup
+        uses: actions/upload-artifact@v4
+        with:
+          name: encrypted-kronr-backup-${{ github.run_id }}
+          path: ${{ runner.temp }}/encrypted-backups/*.fernet
+          if-no-files-found: error
+          retention-days: 30
+      - name: Restore into isolated loopback database and run regression suites
+        run: |
+          backup=$(find "$RUNNER_TEMP/encrypted-backups" -name '*.fernet' -type f | head -1)
+          python scripts/test-backup-restore.py "$backup" --bin /usr/lib/postgresql/17/bin --workroot "$RUNNER_TEMP/restore-test"
+      - name: Retain non-sensitive verification report
+        uses: actions/upload-artifact@v4
+        with:
+          name: restore-report-${{ github.run_id }}
+          path: ${{ runner.temp }}/restore-test/restore-report.json
+          if-no-files-found: error
+          retention-days: 30

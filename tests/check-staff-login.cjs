@@ -3,7 +3,7 @@ const source=fs.readFileSync('medewerker-login/index.html','utf8');
 const body=source.slice(source.indexOf('async function login(){'),source.indexOf('</script>',source.indexOf('async function login(){')));
 function context(sb){
  const nodes={'inp-email':{value:'test@example.invalid'},'inp-ww':{value:'not-a-real-password'},'btn-login':{disabled:false},err:{style:{}}};
- const ctx={sb,document:{getElementById:id=>nodes[id]},window:{location:{href:''}},sessionStorage:{getItem:()=> 'pending',removeItem:()=>{ctx.removed=true}}};
+ const ctx={sb,kronrCaptcha:async()=>'captcha',document:{getElementById:id=>nodes[id]},window:{location:{href:''}},sessionStorage:{getItem:()=> 'pending',removeItem:()=>{ctx.removed=true}}};
  vm.createContext(ctx);vm.runInContext(body,ctx);return {ctx,nodes};
 }
 (async()=>{

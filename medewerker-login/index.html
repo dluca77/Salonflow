@@ -29,6 +29,7 @@ html,body{background:var(--iv);color:var(--ink);font-family:'Inter',sans-serif;m
 .err{color:var(--red);font-size:12px;text-align:center;margin-top:10px;display:none;}
 .terug{display:block;text-align:center;margin-top:20px;font-size:12px;color:var(--mu);text-decoration:none;}
 </style>
+<script src="/auth-captcha.js?v=1"></script>
 </head>
 <body>
 
@@ -67,7 +68,7 @@ async function login(){
   btn.disabled=true;btn.textContent='Bezig...';
   try {
   if(!sb) throw new Error('De inlogverbinding kon niet laden. Vernieuw de pagina en probeer opnieuw.');
-  const{error}=await sb.auth.signInWithPassword({email,password:ww});
+  const{error}=await sb.auth.signInWithPassword({email,password:ww,options:{captchaToken:await kronrCaptcha()}});
 
   if(error){
     btn.disabled=false;btn.textContent='Inloggen';
