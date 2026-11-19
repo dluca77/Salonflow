@@ -407,8 +407,19 @@ async function verbergIrrelevanteNavItems(salon) {
 }
 
 async function uitloggen() {
-  await sb.auth.signOut();
-  window.location.href = '/login/';
+  let timer;
+  try {
+    await Promise.race([sb?.auth.signOut({scope:'local'}), new Promise(resolve=>{timer=setTimeout(resolve,4000);})]);
+  } catch {} finally {
+    clearTimeout(timer);
+    // Clear only this project's Auth keys, even when an expired session cannot reach Auth.
+    for(const storage of [window.localStorage,window.sessionStorage]) {
+      for(const key of ['sb-pscybcirexnltqvziixt-auth-token','sb-pscybcirexnltqvziixt-auth-token-code-verifier']) {
+        try {storage.removeItem(key);} catch {}
+      }
+    }
+    window.location.href = '/login/';
+  }
 }
 
 // Kleine helper: past het locatie-filter alleen toe als er daadwerkelijk
