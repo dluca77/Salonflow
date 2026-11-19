@@ -81,9 +81,20 @@ function escapeHtml(tekst) {
     .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
 
-async function logUit(){
-  await sb.auth.signOut();
-  window.location.href = '/medewerker-login/';
+async function logUit() {
+  let timer;
+  try {
+    await Promise.race([sb?.auth.signOut({scope:'local'}), new Promise(resolve=>{timer=setTimeout(resolve,4000);})]);
+  } catch {} finally {
+    clearTimeout(timer);
+    // Clear only this project's Auth keys, even when an expired session cannot reach Auth.
+    for(const storage of [window.localStorage,window.sessionStorage]) {
+      for(const key of ['sb-pscybcirexnltqvziixt-auth-token','sb-pscybcirexnltqvziixt-auth-token-code-verifier']) {
+        try {storage.removeItem(key);} catch {}
+      }
+    }
+    window.location.href = '/medewerker-login/';
+  }
 }
 
 function fmtDatum(d){

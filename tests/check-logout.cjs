@@ -1,7 +1,7 @@
 const fs=require('node:fs'),vm=require('node:vm'),assert=require('node:assert/strict');
 const s=fs.readFileSync('kronr.js','utf8');const code=s.slice(s.indexOf('async function uitloggen()'),s.indexOf('// Kleine helper:',s.indexOf('async function uitloggen()')));
-(async()=>{for(const state of ['success','failure','unavailable']){
+(async()=>{for(const target of ['owner','staff']){let selected=code;if(target==='staff'){const html=fs.readFileSync('medewerker-portal/index.html','utf8');selected=html.slice(html.indexOf('async function logUit()'),html.indexOf('function fmtDatum'));}for(const state of ['success','failure','unavailable','hung']){
  const removed=[];const storage={removeItem:key=>removed.push(key)};
- const ctx={window:{localStorage:storage,sessionStorage:storage,location:{}},sb:state==='unavailable'?null:{auth:{signOut:async opts=>{assert.equal(opts.scope,'local');if(state==='failure')throw Error('Expired session')}}},setTimeout,clearTimeout};
- vm.createContext(ctx);vm.runInContext(code,ctx);await ctx.uitloggen();assert.equal(ctx.window.location.href,'/login/');assert.equal(removed.length,4);assert.ok(removed.every(k=>k.startsWith('sb-pscybcirexnltqvziixt-auth-token')));
-}console.log('PASS logout clears only own Auth keys and redirects despite expired session or missing client');})().catch(e=>{console.error(e);process.exit(1)});
+ const ctx={window:{localStorage:storage,sessionStorage:storage,location:{}},sb:state==='unavailable'?null:{auth:{signOut:async opts=>{assert.equal(opts.scope,'local');if(state==='failure')throw Error('Expired session');if(state==='hung')return new Promise(()=>{})}}},setTimeout:(fn,ms)=>{assert.equal(ms,4000);return setTimeout(fn,state==='hung'?0:ms)},clearTimeout};
+ vm.createContext(ctx);vm.runInContext(selected,ctx);await ctx[target==='staff'?'logUit':'uitloggen']();assert.equal(ctx.window.location.href,target==='staff'?'/medewerker-login/':'/login/');assert.equal(removed.length,4);assert.ok(removed.every(k=>k.startsWith('sb-pscybcirexnltqvziixt-auth-token')));
+}}console.log('PASS owner/staff logout clears only own Auth keys and redirects despite expired session, hung sign-out or missing client');})().catch(e=>{console.error(e);process.exit(1)});
