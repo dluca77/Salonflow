@@ -87,6 +87,7 @@ async function init(){
     return;
   }
 
+  if(!['gepland','bevestigd'].includes(afspraak.status)){ toonFout('Deze afspraak kan niet meer online worden geannuleerd. Neem contact op met de salon.'); return; }
   toonDetails(afspraak);
 }
 
@@ -96,7 +97,7 @@ function fmtDatum(iso){
 }
 
 function magNogAnnuleren(a){
-  if(!a.annuleer_cutoff_uren) return true; // 0 = geen limiet
+  if(!['gepland','bevestigd'].includes(a.status) || new Date(a.datum_tijd)<new Date()) return false;
   const grens=new Date(Date.now()+a.annuleer_cutoff_uren*60*60*1000);
   return new Date(a.datum_tijd) >= grens;
 }
@@ -150,7 +151,8 @@ async function bevestigAnnulering(a){
     const{data:verse}=await sb.rpc('get_afspraak_via_token',{p_token:token});
     const afspraak=Array.isArray(verse)?verse[0]:verse;
     if(afspraak?.status==='geannuleerd'){ toonAlAnnuleerd(); return; }
-    if(afspraak){ toonTeLaat(afspraak); return; }
+    if(afspraak && ['gepland','bevestigd'].includes(afspraak.status) && !magNogAnnuleren(afspraak)){ toonTeLaat(afspraak); return; }
+    if(afspraak){ toonFout('Deze afspraak kan niet meer online worden geannuleerd. Neem contact op met de salon.'); return; }
     toonFout('Annuleren is niet gelukt. Probeer het later opnieuw of neem contact op met de salon.');
     return;
   }
