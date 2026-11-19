@@ -449,7 +449,7 @@ async function loadData(){
 let huidigeLesBoekingId=null;
 
 async function koppelLesBoeking(lesBoekingId){
-  const{data:lb,error}=await sb.from('les_boekingen').select('*,lessen(dienst_id,diensten(naam,prijs))').eq('id',lesBoekingId).single();
+  const{data:lb,error}=await sb.from('les_boekingen').select('*,lessen(dienst_id,medewerker_id,diensten(naam,prijs))').eq('id',lesBoekingId).single();
   if(error||!lb){
     console.warn('Kon les-boeking niet laden:',error);
     return;
@@ -466,11 +466,11 @@ async function koppelLesBoeking(lesBoekingId){
   const dienst=lb.lessen?.diensten;
   if(dienst?.naam && typeof dienst.prijs==='number'){
     if(huidigeMedewerkerId){
-      add(dienst.naam+' (groepsles)', dienst.prijs, 'dienst');
+      add(dienst.naam+' (groepsles)', dienst.prijs, 'dienst', true, lb.lessen.dienst_id);
     }else{
       // Les heeft geen vaste medewerker — vraag de kassamedewerker om er
       // eerst een te kiezen, en zet de dienst dan alsnog op de bon.
-      pendingLesDienst={naam:dienst.naam+' (groepsles)',prijs:dienst.prijs};
+      pendingLesDienst={naam:dienst.naam+' (groepsles)',prijs:dienst.prijs,dienst_id:lb.lessen.dienst_id};
       document.getElementById('med-warn').style.display='block';
       document.getElementById('med-select').focus();
     }
@@ -497,16 +497,16 @@ async function koppelAfspraak(afspraakId){
   // gebruiken i.p.v. de basisprijs van de dienst — anders reken je bij
   // het afrekenen per ongeluk de verkeerde (basis-)prijs af.
   if(a.dienst_variant_id && a.dienst_varianten?.naam && typeof a.dienst_varianten.prijs==='number'){
-    add(`${a.diensten?.naam||'Dienst'} (${a.dienst_varianten.naam})`, a.dienst_varianten.prijs, 'dienst');
+    add(`${a.diensten?.naam||'Dienst'} (${a.dienst_varianten.naam})`, a.dienst_varianten.prijs, 'dienst', true, a.dienst_id, null, a.dienst_variant_id);
   } else if(a.diensten?.naam && typeof a.diensten.prijs==='number'){
-    add(a.diensten.naam, a.diensten.prijs, 'dienst');
+    add(a.diensten.naam, a.diensten.prijs, 'dienst', true, a.dienst_id);
   }
 
   // Eventuele extra diensten die bij het boeken zijn bijgevoegd, ook op de
   // bon zetten — deze hebben geen aanbetaling/abonnement, dus worden hier
   // gewoon als losse regel afgerekend (zie 2026-07-extra-diensten-migratie.sql).
   const{data:extras}=await sb.rpc('get_extra_diensten_voor_afspraken',{p_afspraak_ids:[afspraakId]});
-  (extras||[]).forEach(e=>add(e.naam, e.prijs, 'dienst'));
+  (extras||[]).forEach(e=>add(e.naam, e.prijs, 'dienst', true, e.dienst_id));
 }
 
 function ontkoppelAfspraak(){
@@ -521,7 +521,7 @@ function setMedewerker(){
   huidigeMedewerkerId=document.getElementById('med-select').value;
   document.getElementById('med-warn').style.display='none';
   if(pendingLesDienst && huidigeMedewerkerId){
-    add(pendingLesDienst.naam, pendingLesDienst.prijs, 'dienst');
+    add(pendingLesDienst.naam, pendingLesDienst.prijs, 'dienst', true, pendingLesDienst.dienst_id);
     pendingLesDienst=null;
   }
 }
@@ -538,7 +538,7 @@ function medewerkerInit(id){
 let cadeaubonActief=null; // {id, code, saldo, bedrag_te_gebruiken}
 let cbBedragGekozen=0;
 
-function add(naam,prijs,type,inclBtw=true,dienstId=null,productId=null){
+function add(naam,prijs,type,inclBtw=true,dienstId=null,productId=null,variantId=null){
   if(!huidigeMedewerkerId){
     document.getElementById('med-warn').style.display='block';
     document.getElementById('med-select').focus();
@@ -552,9 +552,9 @@ function add(naam,prijs,type,inclBtw=true,dienstId=null,productId=null){
       return;
     }
   }
-  const e=bon.find(i=>i.naam===naam && i.medewerker_id===huidigeMedewerkerId && i.type===type && i.product_id===productId);
+  const e=bon.find(i=>i.naam===naam && i.medewerker_id===huidigeMedewerkerId && i.type===type && i.product_id===productId && i.dienst_id===dienstId && i.dienst_variant_id===variantId);
   if(e){e.qty++;e.total+=prijs;}
-  else bon.push({naam,prijs,qty:1,total:prijs,type:type||'dienst',inclBtw,dienst_id:dienstId,product_id:productId,medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId)});
+  else bon.push({naam,prijs,qty:1,total:prijs,type:type||'dienst',inclBtw,dienst_id:dienstId,dienst_variant_id:variantId,product_id:productId,medewerker_id:huidigeMedewerkerId,medewerker_naam:medewerkerNaam(huidigeMedewerkerId)});
   renderBon();
 }
 
@@ -757,6 +757,7 @@ async function betaal(){
   // mutaties atomisch verwerkt. Zie db/2026-07-kassa-server-side-migratie.sql.
   const items=bon.filter(i=>i.type!=='cadeaubon_verkoop').map(i=>({
     dienst_id:i.dienst_id||null,
+    dienst_variant_id:i.dienst_variant_id||null,
     product_id:i.product_id||null,
     naam:i.naam,
     type:i.type||'dienst',
