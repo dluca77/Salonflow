@@ -829,12 +829,20 @@ async function betaal(){
   document.body.style.overflow='hidden';
 }
 
-function newBon(){
+async function newBon(){
   bon=[];cadeaubonActief=null;renderBon();
   huidigeLesBoekingId=null;
   ontkoppelAfspraak();
   document.getElementById('m-success').classList.remove('on');
   document.body.style.overflow='';
+  try {
+    await loadData();
+    document.getElementById('med-select').value=huidigeMedewerkerId;
+  } catch(error) {
+    allProducten=[];
+    document.getElementById('prod-grid').textContent='Voorraad niet beschikbaar. Herlaad de kassa.';
+    console.warn('Voorraad verversen mislukt:',error);
+  }
 }
 
 let dafTotalen=null;
